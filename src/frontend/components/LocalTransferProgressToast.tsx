@@ -1,5 +1,5 @@
-import { Button } from "@termix/plugin-sdk/ui";
-import type { TranslateFn } from "@termix/plugin-sdk/frontend";
+import { Button } from "@termix-ssh/plugin-sdk/ui";
+import type { TranslateFn } from "@termix-ssh/plugin-sdk/frontend";
 import { formatFileSize } from "../file-manager-utils.ts";
 
 export interface LocalTransferBatchStatus {

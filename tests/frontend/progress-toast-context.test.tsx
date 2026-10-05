@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
-vi.mock("@termix/plugin-sdk/frontend", () => ({
+vi.mock("@termix-ssh/plugin-sdk/frontend", () => ({
   useTranslation: () => {
     throw Error("No plugin scope in the global toaster");
   },

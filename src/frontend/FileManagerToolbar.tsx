@@ -29,7 +29,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
 import type { FileItem } from "./host-types";
 
 type SortBy = "name" | "modified" | "size";

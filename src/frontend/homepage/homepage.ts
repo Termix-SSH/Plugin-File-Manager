@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import type { ExtensionContribution } from "@termix/plugin-sdk/frontend";
+import type { ExtensionContribution } from "@termix-ssh/plugin-sdk/frontend";
 
 /** The homepage's grid step, in pixels. */
 export const GRID_SIZE = 30;

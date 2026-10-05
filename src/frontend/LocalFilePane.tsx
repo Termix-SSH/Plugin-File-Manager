@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
 import {
   ArrowDown,
@@ -26,9 +26,9 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { cn } from "@termix/plugin-sdk/ui";
-import { Button, Input } from "@termix/plugin-sdk/ui";
-import type { LocalFileEntry } from "@termix/plugin-sdk/frontend";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { Button, Input } from "@termix-ssh/plugin-sdk/ui";
+import type { LocalFileEntry } from "@termix-ssh/plugin-sdk/frontend";
 import {
   createLocalFile,
   createLocalFolder,
@@ -39,8 +39,8 @@ import {
   revealLocalPath,
   trashLocalPaths,
 } from "./lib/local-files";
-import { copyToClipboard } from "@termix/plugin-sdk/ui";
-import { useConfirm } from "@termix/plugin-sdk/ui";
+import { copyToClipboard } from "@termix-ssh/plugin-sdk/ui";
+import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { LocalFileContextMenu } from "./LocalFileContextMenu.tsx";
 import {
   useResizableColumns,

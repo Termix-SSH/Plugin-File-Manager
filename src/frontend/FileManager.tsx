@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { asHttpError } from "./lib/http-error";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerGrid } from "./FileManagerGrid.tsx";
 import { FileManagerSidebar, type SidebarItem } from "./FileManagerSidebar.tsx";
 import { FileManagerContextMenu } from "./FileManagerContextMenu.tsx";
@@ -24,11 +24,11 @@ import { DownloadProgressToast } from "./components/DownloadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
-import { useConfirm } from "@termix/plugin-sdk/ui";
+import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
-import { PassphraseDialog } from "@termix/plugin-sdk/ui";
+import { PassphraseDialog } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerToolbar } from "./FileManagerToolbar.tsx";
 import { LocalFilePane } from "./LocalFilePane.tsx";
 import { useLocalTransfers } from "./hooks/useLocalTransfers.ts";
@@ -43,16 +43,16 @@ import {
   ConnectionLogProvider,
   useConnectionLog,
   ConnectionScreen,
-} from "@termix/plugin-sdk/ui";
-import { ConnectionLogPanel } from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
+import { ConnectionLogPanel } from "@termix-ssh/plugin-sdk/ui";
 import {
   usePluginUiPreferences,
   invokeAction,
   useSettings,
   useConnectionRetry,
   logActivity,
-} from "@termix/plugin-sdk/frontend";
-import { copyToClipboard } from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/frontend";
+import { copyToClipboard } from "@termix-ssh/plugin-sdk/ui";
 import {
   listSSHFiles,
   readSSHFile,
@@ -93,7 +93,7 @@ import {
   getAdaptiveResourceBudget,
   markAdaptiveResourceUsed,
   runAdaptiveBackgroundTask,
-} from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
 import { shouldPrefetchFileContent } from "./lib/file-content-request-cache";
 import {
   markFilePreviewUsed,

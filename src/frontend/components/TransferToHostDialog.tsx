@@ -12,8 +12,8 @@ import {
   Label,
   Select2,
   InlineView,
-} from "@termix/plugin-sdk/ui";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+} from "@termix-ssh/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
 import {
   ArrowRightLeft,

@@ -1,5 +1,5 @@
-import type { TranslateFn } from "@termix/plugin-sdk/frontend";
-import type { TranslateFn as TFunction } from "@termix/plugin-sdk/frontend";
+import type { TranslateFn } from "@termix-ssh/plugin-sdk/frontend";
+import type { TranslateFn as TFunction } from "@termix-ssh/plugin-sdk/frontend";
 import { getTransferStatus, listActiveTransfers } from "./api/transfer-api";
 import { createFormatTransferMetrics } from "./transferMetricsFormat.ts";
 import {
@@ -12,7 +12,7 @@ import {
   getPendingTransferIds,
   isTransferNotified,
 } from "./transferNotificationStore.ts";
-import { runAdaptivePolling } from "@termix/plugin-sdk/ui";
+import { runAdaptivePolling } from "@termix-ssh/plugin-sdk/ui";
 
 const POLL_INTERVAL_MS = 2000;
 

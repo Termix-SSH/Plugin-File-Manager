@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { getMimeType } from "./utils.js";
 import { createDownloadStream } from "./download-stream.js";
 import { execChannel, getSessionSftp, type SSHSession } from "./session.js";

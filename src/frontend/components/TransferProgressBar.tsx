@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 
 export function TransferProgressBar({
   value,

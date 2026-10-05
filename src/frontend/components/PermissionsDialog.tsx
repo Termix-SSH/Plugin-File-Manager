@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, InlineView } from "@termix/plugin-sdk/ui";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { Button, Input, InlineView } from "@termix-ssh/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { Lock } from "lucide-react";
 
 interface FileItem {

@@ -1,4 +1,4 @@
-import type { HostSshOptions } from "@termix/plugin-sdk/frontend";
+import type { HostSshOptions } from "@termix-ssh/plugin-sdk/frontend";
 
 /** A host as the shell hands it to the file manager. */
 export interface SSHHost {

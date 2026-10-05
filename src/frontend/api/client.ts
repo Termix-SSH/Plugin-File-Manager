@@ -1,4 +1,4 @@
-import type { TermixApp } from "@termix/plugin-sdk/frontend";
+import type { TermixApp } from "@termix-ssh/plugin-sdk/frontend";
 
 // Response bodies are typed at each call site's return type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

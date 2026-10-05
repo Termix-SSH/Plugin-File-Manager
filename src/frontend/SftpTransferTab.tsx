@@ -1,4 +1,4 @@
-import { useSettings } from "@termix/plugin-sdk/frontend";
+import { useSettings } from "@termix-ssh/plugin-sdk/frontend";
 import { fileManagerHostSetting } from "./host-settings";
 import {
   useCallback,
@@ -9,8 +9,8 @@ import {
   type MouseEvent,
 } from "react";
 import { toast } from "sonner";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
-import type { TranslateFn as TFunction } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import type { TranslateFn as TFunction } from "@termix-ssh/plugin-sdk/frontend";
 import {
   ArrowLeftRight,
   File as FileIcon,
@@ -25,7 +25,7 @@ import {
   useConfirm,
   Label,
   Select2,
-} from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
 import {
   addTransferRecent,
   transferToHost,

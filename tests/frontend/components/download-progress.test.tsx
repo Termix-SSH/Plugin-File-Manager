@@ -26,8 +26,8 @@ vi.mock("../../../src/frontend/api/ssh-file-operations-api", () => api);
 vi.mock("sonner", () => ({
   toast: { loading: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
-vi.mock("@termix/plugin-sdk/frontend", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@termix/plugin-sdk/frontend")>()),
+vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@termix-ssh/plugin-sdk/frontend")>()),
   useTranslation: () => ({
     t: (key: string, params?: { name?: string }) =>
       params?.name ? `${key}: ${params.name}` : key,

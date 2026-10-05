@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, PanePrompt, PasswordInput } from "@termix/plugin-sdk/ui";
+import { Button, PanePrompt, PasswordInput } from "@termix-ssh/plugin-sdk/ui";
 import { Shield } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface SudoPasswordDialogProps {
   open: boolean;

@@ -1,7 +1,7 @@
 import { FolderSearch } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
-import { useHost } from "@termix/plugin-sdk/frontend";
-import { WidgetTitle } from "@termix/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import { useHost } from "@termix-ssh/plugin-sdk/frontend";
+import { WidgetTitle } from "@termix-ssh/plugin-sdk/ui";
 import type {
   FileManagerWidgetConfig,
   WidgetComponentProps,

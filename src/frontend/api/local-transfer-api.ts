@@ -13,9 +13,9 @@ import {
   getLocalAuthToken,
   type LocalTransferOrigin,
   type LocalTransferProgress,
-} from "@termix/plugin-sdk/frontend";
+} from "@termix-ssh/plugin-sdk/frontend";
 import { getSessionOrigin } from "./client";
-import { getDeviceId } from "@termix/plugin-sdk/ui";
+import { getDeviceId } from "@termix-ssh/plugin-sdk/ui";
 
 export interface LocalTransferProgressEvent {
   transferred: number;

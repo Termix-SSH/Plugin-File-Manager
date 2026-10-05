@@ -1,4 +1,4 @@
-import { SurfaceScope } from "@termix/plugin-sdk/ui";
+import { SurfaceScope } from "@termix-ssh/plugin-sdk/ui";
 import {
   fireEvent,
   render,
@@ -54,8 +54,8 @@ vi.mock("../../src/frontend/transferMetricsFormat", () => ({
   createFormatTransferMetrics: () => () => "",
 }));
 
-vi.mock("@termix/plugin-sdk/frontend", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@termix/plugin-sdk/frontend")>()),
+vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@termix-ssh/plugin-sdk/frontend")>()),
   useTranslation: () => ({ t: (key: string) => key, language: "en" }),
   useSettings: () => ({
     values: { confirmBeforeTrash: api.confirmBeforeTrash },

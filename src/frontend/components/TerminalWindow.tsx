@@ -1,9 +1,9 @@
 import React from "react";
 import { DraggableWindow } from "./DraggableWindow.tsx";
-import type { TabHandle as TerminalHandle } from "@termix/plugin-sdk/frontend";
-import { PluginComponent } from "@termix/plugin-sdk/ui";
+import type { TabHandle as TerminalHandle } from "@termix-ssh/plugin-sdk/frontend";
+import { PluginComponent } from "@termix-ssh/plugin-sdk/ui";
 import { useWindowManager } from "./WindowManager.tsx";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { SSHHost } from "../host-types";
 import { ExternalLink } from "lucide-react";
 

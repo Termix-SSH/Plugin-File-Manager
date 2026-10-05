@@ -3,7 +3,7 @@ import {
   TOTPDialog,
   SSHAuthDialog,
   BrowserSignInDialog,
-} from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
 import { PermissionsDialog } from "./components/PermissionsDialog.tsx";
 import { CompressDialog } from "./components/CompressDialog.tsx";
 import { SudoPasswordDialog } from "./SudoPasswordDialog.tsx";

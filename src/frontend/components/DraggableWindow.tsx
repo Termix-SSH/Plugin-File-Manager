@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 import { Minus, X, Maximize2, Minimize2 } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface DraggableWindowProps {
   title: string;

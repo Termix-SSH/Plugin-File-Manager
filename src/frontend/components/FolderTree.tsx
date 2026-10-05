@@ -20,7 +20,7 @@ import {
   File,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 
 const animationVariants: Variants = {
   rootInitial: { opacity: 0, y: 20 },

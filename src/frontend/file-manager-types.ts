@@ -1,5 +1,5 @@
 import type { FileItem, SSHHost } from "./host-types";
-import type { LogEntry } from "@termix/plugin-sdk/ui";
+import type { LogEntry } from "@termix-ssh/plugin-sdk/ui";
 
 export interface FileManagerProps {
   initialHost?: SSHHost | null;

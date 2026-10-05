@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Label, InlineView } from "@termix/plugin-sdk/ui";
+import { Button, Input, Label, InlineView } from "@termix-ssh/plugin-sdk/ui";
 import { Package } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface CompressDialogProps {
   open: boolean;

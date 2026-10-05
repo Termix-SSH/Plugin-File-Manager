@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 import {
   Download,
   Edit3,
@@ -21,8 +21,8 @@ import {
   ArrowRightLeft,
   Link,
 } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
-import { Kbd, KbdKey, KbdSeparator } from "@termix/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import { Kbd, KbdKey, KbdSeparator } from "@termix-ssh/plugin-sdk/ui";
 
 const VIEWPORT_PADDING = 16;
 

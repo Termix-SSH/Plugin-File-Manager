@@ -1,10 +1,10 @@
-import { Button } from "@termix/plugin-sdk/ui";
+import { Button } from "@termix-ssh/plugin-sdk/ui";
 import {
   formatTransferMbPerSec,
   getTransferProgressPercent,
   type TransferProgressResponse,
 } from "../api/transfer-api";
-import type { TranslateFn } from "@termix/plugin-sdk/frontend";
+import type { TranslateFn } from "@termix-ssh/plugin-sdk/frontend";
 import {
   Archive,
   ArchiveRestore,

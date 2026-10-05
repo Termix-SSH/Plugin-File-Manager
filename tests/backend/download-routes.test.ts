@@ -1,7 +1,7 @@
 import { once } from "node:events";
 import { PassThrough } from "node:stream";
 import type { Express, Request, Response } from "express";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { describe, expect, it, vi } from "vitest";
 import { registerFileDownloadRoutes } from "../../src/backend/download-routes.js";
 import type { SSHSession } from "../../src/backend/session.js";

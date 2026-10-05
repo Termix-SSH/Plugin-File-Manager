@@ -1,5 +1,5 @@
 import type React from "react";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 
 interface ColumnResizeHandleProps {
   onMouseDown: (event: React.MouseEvent) => void;

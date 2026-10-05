@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
 import { createElement } from "react";
 import { toast } from "sonner";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "../host-types";
-import type { LocalWalkResult } from "@termix/plugin-sdk/frontend";
-import { useSettings } from "@termix/plugin-sdk/frontend";
+import type { LocalWalkResult } from "@termix-ssh/plugin-sdk/frontend";
+import { useSettings } from "@termix-ssh/plugin-sdk/frontend";
 import {
   cancelLocalTransfer,
   createLocalTransferId,

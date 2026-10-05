@@ -8,8 +8,8 @@ import type {
   LocalFsResult,
   LocalTrashResult,
   LocalWalkResult,
-} from "@termix/plugin-sdk/frontend";
-import { isElectron } from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/frontend";
+import { isElectron } from "@termix-ssh/plugin-sdk/ui";
 
 export function isLocalFileBrowserAvailable(): boolean {
   if (!isElectron()) return false;

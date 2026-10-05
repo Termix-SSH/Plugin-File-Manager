@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
-import { cn } from "@termix/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 import type { ResizableColumns } from "../hooks/useResizableColumns.ts";
 
 interface ColumnVisibilityMenuProps {

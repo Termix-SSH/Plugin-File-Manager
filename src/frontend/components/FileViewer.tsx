@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Suspense, lazy, useState, useEffect, useRef } from "react";
-import { cn } from "@termix/plugin-sdk/ui";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import {
   FileText,
   Image as ImageIcon,
@@ -42,8 +42,8 @@ import {
   SiMysql,
   SiDocker,
 } from "react-icons/si";
-import { Button } from "@termix/plugin-sdk/ui";
-import { Kbd, KbdKey } from "@termix/plugin-sdk/ui";
+import { Button } from "@termix-ssh/plugin-sdk/ui";
+import { Kbd, KbdKey } from "@termix-ssh/plugin-sdk/ui";
 import type { CodeEditorHandle } from "./CodeEditor.tsx";
 import {
   loadAudioPreview,

@@ -5,7 +5,7 @@ import type {
   PluginContext,
   PluginSshHost,
   PluginSshPromptChannel,
-} from "@termix/plugin-sdk/backend";
+} from "@termix-ssh/plugin-sdk/backend";
 import { getErrorMessage } from "./error-message.js";
 import { setPluginSsh, pluginSsh } from "./ssh.js";
 import { setPluginCtx } from "./plugin-ctx.js";

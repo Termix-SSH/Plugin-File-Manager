@@ -15,7 +15,7 @@ import { SudoPasswordDialog } from "../SudoPasswordDialog.tsx";
 import { toast } from "sonner";
 import { DownloadProgressToast } from "./DownloadProgressToast";
 import type { SSHHost } from "../host-types";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface FileItem {
   name: string;

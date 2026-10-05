@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { downloadSSHFile } from "../api/ssh-file-operations-api";
 import type { FileItem, SSHHost } from "../host-types";
 

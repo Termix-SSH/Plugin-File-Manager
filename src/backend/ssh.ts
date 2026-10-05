@@ -5,7 +5,7 @@ import type {
   PluginSshConnection,
   PluginSshConnectOptions,
   PluginSshHost,
-} from "@termix/plugin-sdk/backend";
+} from "@termix-ssh/plugin-sdk/backend";
 
 let current: PluginSsh | null = null;
 

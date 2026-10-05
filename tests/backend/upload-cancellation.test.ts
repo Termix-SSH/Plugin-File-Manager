@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import { PassThrough, Writable } from "node:stream";
 import type { Express, Request, Response } from "express";
 import { describe, expect, it, vi } from "vitest";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { registerFileContentRoutes } from "../../src/backend/content-routes";
 import type { SSHSession } from "../../src/backend/session";
 

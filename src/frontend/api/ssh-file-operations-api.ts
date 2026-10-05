@@ -10,7 +10,7 @@ import {
 import {
   createFrontendLogger,
   resolveConnectionOrigin,
-} from "@termix/plugin-sdk/ui";
+} from "@termix-ssh/plugin-sdk/ui";
 import type { FileItem, SSHHost } from "../host-types";
 import { getCachedFileList } from "../lib/file-list-request-cache";
 import {

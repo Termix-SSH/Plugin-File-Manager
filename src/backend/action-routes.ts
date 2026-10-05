@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { execChannel, type SSHSession } from "./session.js";
 
 type FileActionRoutesDeps = {

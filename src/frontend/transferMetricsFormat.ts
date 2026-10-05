@@ -1,4 +1,4 @@
-import type { TranslateFn as TFunction } from "@termix/plugin-sdk/frontend";
+import type { TranslateFn as TFunction } from "@termix-ssh/plugin-sdk/frontend";
 import {
   formatDurationMs,
   formatTransferMbPerSec,

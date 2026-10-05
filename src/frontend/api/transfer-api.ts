@@ -1,4 +1,4 @@
-import { createFrontendLogger } from "@termix/plugin-sdk/ui";
+import { createFrontendLogger } from "@termix-ssh/plugin-sdk/ui";
 import { fileManagerApi, handleApiError } from "./client";
 
 const fileLogger = createFrontendLogger("FILE");

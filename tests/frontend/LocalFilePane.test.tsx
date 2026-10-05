@@ -1,4 +1,4 @@
-import { SurfaceScope } from "@termix/plugin-sdk/ui";
+import { SurfaceScope } from "@termix-ssh/plugin-sdk/ui";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   fireEvent,
@@ -13,7 +13,7 @@ import {
   LOCAL_FILES_DRAG_MIME,
   REMOTE_FILES_DRAG_MIME,
 } from "../../src/frontend/local-transfer-utils";
-import type { LocalFileEntry } from "@termix/plugin-sdk/frontend";
+import type { LocalFileEntry } from "@termix-ssh/plugin-sdk/frontend";
 
 // jsdom has no layout, so render every row instead of a virtual window.
 vi.mock("@tanstack/react-virtual", () => ({
@@ -42,8 +42,8 @@ const sonnerToast = vi.hoisted(() => {
 });
 vi.mock("sonner", () => ({ toast: sonnerToast }));
 
-vi.mock("@termix/plugin-sdk/frontend", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@termix/plugin-sdk/frontend")>()),
+vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@termix-ssh/plugin-sdk/frontend")>()),
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts?.count !== undefined ? `${key}:${opts.count}` : key,

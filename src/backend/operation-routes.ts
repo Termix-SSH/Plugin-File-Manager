@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import type { SFTPWrapper } from "ssh2";
 import {
   execChannel,

@@ -1,6 +1,6 @@
 import { getErrorMessage } from "./lib/error-message";
 import { toast } from "sonner";
-import type { TranslateFn as TFunction } from "@termix/plugin-sdk/frontend";
+import type { TranslateFn as TFunction } from "@termix-ssh/plugin-sdk/frontend";
 import {
   pollTransferUntilComplete,
   cancelTransferToHost,

@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import Busboy from "busboy";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import {
   execBuffer,
   execChannel,

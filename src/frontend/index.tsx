@@ -7,7 +7,7 @@ import {
   type StandaloneViewProps,
   type TabProps,
   type TermixApp,
-} from "@termix/plugin-sdk/frontend";
+} from "@termix-ssh/plugin-sdk/frontend";
 import {
   GRID_SIZE,
   type FileManagerWidgetConfig,

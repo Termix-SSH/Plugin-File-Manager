@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { cn } from "@termix/plugin-sdk/ui";
+import { cn } from "@termix-ssh/plugin-sdk/ui";
 import {
   Clipboard,
   Edit3,
@@ -13,9 +13,9 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useTranslation } from "@termix/plugin-sdk/frontend";
-import { Kbd, KbdKey, KbdSeparator } from "@termix/plugin-sdk/ui";
-import type { LocalFileEntry } from "@termix/plugin-sdk/frontend";
+import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import { Kbd, KbdKey, KbdSeparator } from "@termix-ssh/plugin-sdk/ui";
+import type { LocalFileEntry } from "@termix-ssh/plugin-sdk/frontend";
 
 const VIEWPORT_PADDING = 16;
 

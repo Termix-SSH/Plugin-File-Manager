@@ -1,5 +1,5 @@
 import { formatTransferMbPerSec } from "../api/transfer-api";
-import type { TranslateFn } from "@termix/plugin-sdk/frontend";
+import type { TranslateFn } from "@termix-ssh/plugin-sdk/frontend";
 import { ArrowDownToLine } from "lucide-react";
 import { TransferProgressBar } from "./TransferProgressBar";
 

@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import type { Express, Request, Response } from "express";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { registerFileListingRoutes } from "../../src/backend/list-routes.js";
 import {

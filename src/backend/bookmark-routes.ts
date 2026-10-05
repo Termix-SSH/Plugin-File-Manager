@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { and, desc, eq } from "drizzle-orm";
-import type { PluginContext } from "@termix/plugin-sdk/backend";
+import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // The tables come from ctx.db.define, which the SDK hands back untyped, and
