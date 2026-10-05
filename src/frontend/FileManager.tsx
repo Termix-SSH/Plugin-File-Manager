@@ -191,17 +191,6 @@ function FileManagerContent({
     (next: "grid" | "list") => setFmPref("viewMode", next),
     [setFmPref],
   );
-  useEffect(() => {
-    // Before 2.9 the view mode lived in this browser's localStorage.
-    try {
-      const legacy = localStorage.getItem("fileManagerViewMode");
-      if (legacy === null) return;
-      localStorage.removeItem("fileManagerViewMode");
-      if (legacy === "grid" || legacy === "list") setFmPref("viewMode", legacy);
-    } catch {
-      // Storage can be unavailable.
-    }
-  }, []);
   const [density, setDensity] = useState<"comfortable" | "compact">(() =>
     localStorage.getItem("fileManagerDensity") === "compact"
       ? "compact"
