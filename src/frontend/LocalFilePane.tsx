@@ -40,7 +40,7 @@ import {
   trashLocalPaths,
 } from "./lib/local-files";
 import { copyToClipboard } from "@termix/plugin-sdk/ui";
-import { useConfirmation } from "@termix/plugin-sdk/ui";
+import { useConfirm } from "@termix/plugin-sdk/ui";
 import { LocalFileContextMenu } from "./LocalFileContextMenu.tsx";
 import {
   useResizableColumns,
@@ -126,7 +126,7 @@ export function LocalFilePane({
   onPathChange,
 }: LocalFilePaneProps) {
   const { t } = useTranslation();
-  const { confirmWithToast } = useConfirmation();
+  const confirm = useConfirm();
   const [homePath, setHomePath] = useState<string | null>(null);
   const [currentPath, setCurrentPath] = useState<string | null>(null);
   const [parentPath, setParentPath] = useState<string | null>(null);
@@ -556,29 +556,29 @@ export function LocalFilePane({
           )
         : t("fileManager.localTrashConfirmMany", { count: targets.length });
 
-    void confirmWithToast(
-      message,
-      async () => {
-        try {
-          const result = await trashLocalPaths(targets.map((e) => e.path));
-          if (result.failed.length === 0) {
-            toast.success(
-              t("fileManager.localTrashed", { count: result.trashed }),
-            );
-          } else {
-            toast.error(t("fileManager.localTrashFailed"), {
-              description: result.failed
-                .map((f) => `${f.path}: ${f.error}`)
-                .join("\n"),
-            });
+    void confirm({ title: message }).then((ok) => {
+      if (ok)
+        void (async () => {
+          try {
+            const result = await trashLocalPaths(targets.map((e) => e.path));
+            if (result.failed.length === 0) {
+              toast.success(
+                t("fileManager.localTrashed", { count: result.trashed }),
+              );
+            } else {
+              toast.error(t("fileManager.localTrashFailed"), {
+                description: result.failed
+                  .map((f) => `${f.path}: ${f.error}`)
+                  .join("\n"),
+              });
+            }
+          } catch (err) {
+            reportError(err, "fileManager.localTrashFailed");
           }
-        } catch (err) {
-          reportError(err, "fileManager.localTrashFailed");
-        }
-        await load(currentPath);
-      },
-      "destructive",
-    );
+          await load(currentPath);
+        })();
+      return ok;
+    });
   };
 
   const selectedEntries = () =>

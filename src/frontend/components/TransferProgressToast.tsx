@@ -139,7 +139,7 @@ export function TransferProgressToast({
       <div className="flex items-center justify-between gap-3 pr-1 text-xs text-muted-foreground">
         <span className="min-w-0 truncate">{detailLeft ?? ""}</span>
         <span
-          className={`shrink-0 tabular-nums ${stalled ? "text-amber-500" : liveRate ? "font-medium text-foreground" : "invisible"}`}
+          className={`shrink-0 tabular-nums ${stalled ? "text-warning" : liveRate ? "font-medium text-foreground" : "invisible"}`}
           aria-hidden={!liveRate}
         >
           {liveRate ?? "0 MB/s"}

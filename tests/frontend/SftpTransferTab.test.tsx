@@ -1,4 +1,11 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { SurfaceScope } from "@termix/plugin-sdk/ui";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { toast } from "sonner";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -139,7 +146,11 @@ describe("SftpTransferTab", () => {
         ],
       }),
     );
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
     await waitFor(() => {
       expect(api.browseSSHDirectory).toHaveBeenCalledWith("1", ".");
@@ -150,14 +161,22 @@ describe("SftpTransferTab", () => {
   });
 
   it("loads file manager-enabled hosts into both host pickers", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     const selects = await screen.findAllByRole("combobox");
     expect(selects).toHaveLength(2);
     expect(api.getSSHHosts).toHaveBeenCalled();
   });
 
   it("copies a source server file to the destination server via the context menu", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
 
     fireEvent.contextMenu(screen.getByText("remote-1.txt"));
@@ -179,7 +198,11 @@ describe("SftpTransferTab", () => {
   });
 
   it("records the destination as a transfer recent after a successful copy", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
 
     fireEvent.contextMenu(screen.getByText("remote-1.txt"));
@@ -191,7 +214,11 @@ describe("SftpTransferTab", () => {
   });
 
   it("blocks a same-host transfer where the destination is inside the source path", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     const selects = await screen.findAllByRole("combobox");
     fireEvent.change(selects[0], { target: { value: "1" } });
     fireEvent.change(selects[1], { target: { value: "1" } });
@@ -221,7 +248,11 @@ describe("SftpTransferTab", () => {
   });
 
   it("renames a remote file from the row context menu", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
 
     fireEvent.contextMenu(screen.getByText("remote-1.txt"));
@@ -242,7 +273,11 @@ describe("SftpTransferTab", () => {
 
   it("moves files to trash directly when confirmation is disabled", async () => {
     api.confirmBeforeTrash = false;
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
     fireEvent.contextMenu(screen.getByText("remote-1.txt"));
     await userEvent.click(screen.getByText("sftpTransfer.delete"));
@@ -257,14 +292,19 @@ describe("SftpTransferTab", () => {
   });
 
   it("deletes a remote file after confirming", async () => {
-    render(<SftpTransferTab />);
+    render(
+      <SurfaceScope>
+        <SftpTransferTab />
+      </SurfaceScope>,
+    );
     await selectHosts();
 
     fireEvent.contextMenu(screen.getByText("remote-1.txt"));
     await userEvent.click(screen.getByText("sftpTransfer.delete"));
     expect(api.deleteSSHItem).not.toHaveBeenCalled();
-    const confirmButtons = await screen.findAllByText("sftpTransfer.delete");
-    await userEvent.click(confirmButtons[confirmButtons.length - 1]);
+    const dialog = await screen.findByRole("alertdialog");
+    const buttons = within(dialog).getAllByRole("button");
+    await userEvent.click(buttons[buttons.length - 1]);
 
     await waitFor(() => {
       expect(api.deleteSSHItem).toHaveBeenCalledWith(

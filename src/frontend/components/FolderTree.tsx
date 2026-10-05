@@ -590,7 +590,7 @@ const Item: React.FC<ItemProps> = ({
             {renderBadge(
               modified,
               "M",
-              "ml-auto text-xs bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-200 px-2 py-0.5 rounded-full",
+              "ml-auto text-xs bg-warning/15 text-warning px-2 py-0.5 rounded-full",
             )}
             {renderBadge(
               untracked,

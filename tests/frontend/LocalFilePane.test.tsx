@@ -1,5 +1,12 @@
+import { SurfaceScope } from "@termix/plugin-sdk/ui";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { LocalFilePane } from "../../src/frontend/LocalFilePane";
 import {
@@ -369,7 +376,11 @@ describe("LocalFilePane", () => {
 
   it("asks for confirmation before moving to the trash", async () => {
     const api = installElectronApi();
-    render(<LocalFilePane onRemoteItemsDropped={vi.fn()} />);
+    render(
+      <SurfaceScope>
+        <LocalFilePane onRemoteItemsDropped={vi.fn()} />
+      </SurfaceScope>,
+    );
     await waitFor(() =>
       expect(screen.getByDisplayValue(HOME)).toBeInTheDocument(),
     );
@@ -380,16 +391,14 @@ describe("LocalFilePane", () => {
     fireEvent.contextMenu(row, { clientX: 40, clientY: 50 });
     fireEvent.click(screen.getByText("fileManager.localMoveToTrash"));
 
-    // Nothing is trashed until the toast's confirm action is clicked.
+    // Nothing is trashed until the question is answered.
     expect(api.localFs.trash).not.toHaveBeenCalled();
-    expect(sonnerToast).toHaveBeenCalledWith(
-      "fileManager.localTrashConfirmSingle",
-      expect.objectContaining({ action: expect.anything() }),
-    );
-    const call = sonnerToast.mock.calls.find(
-      (c) => c[0] === "fileManager.localTrashConfirmSingle",
-    )!;
-    (call[1] as { action: { onClick: () => void } }).action.onClick();
+    const dialog = await screen.findByRole("alertdialog");
+    expect(
+      within(dialog).getByText("fileManager.localTrashConfirmSingle"),
+    ).toBeInTheDocument();
+    const buttons = within(dialog).getAllByRole("button");
+    fireEvent.click(buttons[buttons.length - 1]);
 
     await waitFor(() =>
       expect(api.localFs.trash).toHaveBeenCalledWith([`${HOME}/notes.txt`]),

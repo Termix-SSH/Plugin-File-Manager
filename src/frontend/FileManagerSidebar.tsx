@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  useConfirm,
 } from "@termix/plugin-sdk/ui";
 
 // ─── Interfaces ────────────────────────────────────────────────────────────────
@@ -194,6 +195,7 @@ export function FileManagerSidebar({
   diskInfo,
 }: FileManagerSidebarProps) {
   const { t } = useTranslation();
+  const confirm = useConfirm();
 
   // ── Quick access state (API-backed) ──────────────────────────────────────────
   const [recentItems, setRecentItems] = useState<SidebarItem[]>([]);
@@ -457,6 +459,11 @@ export function FileManagerSidebar({
 
   const handleRemoveShortcut = async (item: SidebarItem) => {
     if (!currentHost?.id) return;
+    const ok = await confirm({
+      title: t("fileManager.removeShortcutConfirm", { name: item.name }),
+      confirmLabel: t("common.remove"),
+    });
+    if (!ok) return;
     try {
       await removeFolderShortcut(currentHost.id, item.path);
       loadQuickAccessData();
@@ -469,6 +476,11 @@ export function FileManagerSidebar({
 
   const handleClearAllRecent = async () => {
     if (!currentHost?.id || recentItems.length === 0) return;
+    const ok = await confirm({
+      title: t("fileManager.clearRecentConfirm"),
+      confirmLabel: t("common.clear"),
+    });
+    if (!ok) return;
     try {
       await Promise.all(
         recentItems.map((item) => removeRecentFile(currentHost.id, item.path)),

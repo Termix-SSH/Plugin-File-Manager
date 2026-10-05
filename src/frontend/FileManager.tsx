@@ -24,7 +24,7 @@ import { DownloadProgressToast } from "./components/DownloadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
-import { useConfirmation } from "@termix/plugin-sdk/ui";
+import { useConfirm } from "@termix/plugin-sdk/ui";
 import { toast } from "sonner";
 import { useTranslation } from "@termix/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
@@ -146,7 +146,7 @@ function FileManagerContent({
     () => createFormatTransferMetrics(t),
     [t],
   );
-  const { confirmWithToast } = useConfirmation();
+  const confirm = useConfirm();
   const confirmBeforeTrash =
     useSettings("user").values.confirmBeforeTrash !== false;
   const { addLog, clearLogs } = useConnectionLog();
@@ -411,9 +411,13 @@ function FileManagerContent({
     }
   }, []);
 
+  const [lastConnectionError, setLastConnectionError] = useState<string | null>(
+    null,
+  );
   const handleCloseWithError = useCallback(
     (errorMessage: string) => {
       setHasConnectionError(true);
+      setLastConnectionError(errorMessage);
       addLog({
         type: "error",
         stage: "connection",
@@ -1563,7 +1567,9 @@ function FileManagerContent({
         if (
           (axiosError.response?.data as { trashUnavailable?: boolean })
             ?.trashUnavailable &&
-          window.confirm(t("fileManager.trashUnavailableConfirm"))
+          (await confirm({
+            title: t("fileManager.trashUnavailableConfirm"),
+          }))
         ) {
           for (const file of files.slice(completed)) {
             await deleteSSHItem(
@@ -1608,7 +1614,10 @@ function FileManagerContent({
       }
     };
     if (confirmBeforeTrash) {
-      confirmWithToast(fullMessage, moveToTrash, "destructive");
+      confirm({ title: fullMessage }).then((ok) => {
+        if (ok) void moveToTrash();
+        return ok;
+      });
     } else {
       await moveToTrash();
     }
@@ -1809,20 +1818,14 @@ function FileManagerContent({
   async function confirmLargeFileOpen(file: FileItem) {
     if (!file.size || file.size <= LARGE_FILE_WARNING_SIZE) return true;
 
-    return confirmWithToast(
-      {
-        title: t("fileManager.largeFileWarning"),
-        description: t("fileManager.largeFileWarningDesc", {
-          size: formatFileSize(file.size),
-        }),
-        confirmText: t("fileManager.confirm"),
-        cancelText: t("common.cancel"),
-      },
-      undefined,
-      "default",
-      t("common.cancel"),
-      { duration: 12000 },
-    );
+    return confirm({
+      title: t("fileManager.largeFileWarning"),
+      description: t("fileManager.largeFileWarningDesc", {
+        size: formatFileSize(file.size),
+      }),
+      confirmLabel: t("fileManager.confirm"),
+      destructive: false,
+    });
   }
 
   async function handleFileOpen(file: FileItem) {
@@ -3410,12 +3413,28 @@ function FileManagerContent({
     );
   }
 
-  if ((isLoading || isReconnecting) && !sshSessionId) {
+  // No session yet: the connection screen stays up through failures and
+  // retries, instead of falling through to an empty file tree. A login
+  // prompt still gets the main view, which draws it.
+  const awaitingPrompt =
+    totpRequired ||
+    browserSignInRequired ||
+    showAuthDialog ||
+    showPassphraseDialog;
+  if (currentHost && !sshSessionId && !awaitingPrompt) {
     return (
       <div className="h-full w-full flex flex-col bg-background relative">
         <ConnectionScreen
-          status={isReconnecting ? "connecting" : connectRetry.status}
+          status={
+            isReconnecting || isLoading ? "connecting" : connectRetry.status
+          }
           message={t("fileManager.connecting")}
+          detail={
+            currentHost.ip
+              ? `${currentHost.username ? `${currentHost.username}@` : ""}${currentHost.ip}`
+              : undefined
+          }
+          errorDetail={lastConnectionError}
           attempt={connectRetry.attempt}
           maxAttempts={connectRetry.maxAttempts}
           nextRetryInMs={connectRetry.nextRetryInMs}

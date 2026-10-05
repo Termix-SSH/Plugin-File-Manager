@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  Button,
-  Input,
-} from "@termix/plugin-sdk/ui";
+import { Button, Input, InlineView } from "@termix/plugin-sdk/ui";
 import { useTranslation } from "@termix/plugin-sdk/frontend";
 import { Lock } from "lucide-react";
 
@@ -167,80 +158,17 @@ export function PermissionsDialog({
   ];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg rounded-none border-border bg-card">
-        <DialogHeader>
-          <DialogTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-            <Lock className="size-4 text-accent-brand" />
-            {t("fileManager.changePermissions")}
-          </DialogTitle>
-          <DialogDescription className="text-[10px] font-bold tracking-tight text-muted-foreground font-mono break-all">
-            {file.path}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="py-3 flex flex-col gap-4">
-          <div className="border border-border overflow-hidden">
-            <div className="grid grid-cols-[1fr_64px_64px_64px] bg-muted/50 border-b border-border">
-              <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground" />
-              {[
-                t("fileManager.read"),
-                t("fileManager.write"),
-                t("fileManager.execute"),
-              ].map((h) => (
-                <div
-                  key={h}
-                  className="py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-center border-l border-border"
-                >
-                  {h}
-                </div>
-              ))}
-            </div>
-            {rows.map((row, i) => (
-              <div
-                key={i}
-                className={`grid grid-cols-[1fr_64px_64px_64px] ${i < rows.length - 1 ? "border-b border-border" : ""}`}
-              >
-                <div className="px-3 py-3 text-xs font-semibold">
-                  {row.label}
-                </div>
-                {[
-                  { val: row.read, set: row.setRead },
-                  { val: row.write, set: row.setWrite },
-                  { val: row.execute, set: row.setExecute },
-                ].map((perm, j) => (
-                  <div
-                    key={j}
-                    className="flex items-center justify-center border-l border-border py-3"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={perm.val}
-                      onChange={(e) => perm.set(e.target.checked)}
-                      className="accent-[var(--accent-brand)] size-4 cursor-pointer"
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground shrink-0">
-              {t("fileManager.octal")}
-            </span>
-            <Input
-              value={octal}
-              readOnly
-              className="w-20 rounded-none bg-muted/50 border-border text-xs font-mono text-center h-8"
-            />
-            <span className="text-[10px] text-muted-foreground font-mono">
-              {t("fileManager.currentPermissions")}: {file.permissions || "—"}
-            </span>
-          </div>
-        </div>
-
-        <DialogFooter>
+    <InlineView
+      open={open}
+      onOpenChange={onOpenChange}
+      title={
+        <>
+          <Lock className="size-4 text-accent-brand" />
+          {t("fileManager.changePermissions")}
+        </>
+      }
+      footer={
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}
@@ -257,8 +185,68 @@ export function PermissionsDialog({
           >
             {loading ? t("common.saving") : t("common.save")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      }
+    >
+      <p className="text-xs text-muted-foreground">{file.path}</p>
+      <div className="py-3 flex flex-col gap-4">
+        <div className="border border-border overflow-hidden">
+          <div className="grid grid-cols-[1fr_64px_64px_64px] bg-muted/50 border-b border-border">
+            <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground" />
+            {[
+              t("fileManager.read"),
+              t("fileManager.write"),
+              t("fileManager.execute"),
+            ].map((h) => (
+              <div
+                key={h}
+                className="py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-center border-l border-border"
+              >
+                {h}
+              </div>
+            ))}
+          </div>
+          {rows.map((row, i) => (
+            <div
+              key={i}
+              className={`grid grid-cols-[1fr_64px_64px_64px] ${i < rows.length - 1 ? "border-b border-border" : ""}`}
+            >
+              <div className="px-3 py-3 text-xs font-semibold">{row.label}</div>
+              {[
+                { val: row.read, set: row.setRead },
+                { val: row.write, set: row.setWrite },
+                { val: row.execute, set: row.setExecute },
+              ].map((perm, j) => (
+                <div
+                  key={j}
+                  className="flex items-center justify-center border-l border-border py-3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={perm.val}
+                    onChange={(e) => perm.set(e.target.checked)}
+                    className="accent-[var(--accent-brand)] size-4 cursor-pointer"
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground shrink-0">
+            {t("fileManager.octal")}
+          </span>
+          <Input
+            value={octal}
+            readOnly
+            className="w-20 rounded-none bg-muted/50 border-border text-xs font-mono text-center h-8"
+          />
+          <span className="text-[10px] text-muted-foreground font-mono">
+            {t("fileManager.currentPermissions")}: {file.permissions || "-"}
+          </span>
+        </div>
+      </div>
+    </InlineView>
   );
 }

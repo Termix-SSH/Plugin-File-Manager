@@ -392,7 +392,9 @@
     "emptyPreview": "Nothing to preview yet...",
     "revert": "Revert",
     "openAsText": "Open as Text",
-    "confirmOpenAsText": "Do you want to continue opening this file as text? This may slow down your browser."
+    "confirmOpenAsText": "Do you want to continue opening this file as text? This may slow down your browser.",
+    "removeShortcutConfirm": "Remove the shortcut {{name}}?",
+    "clearRecentConfirm": "Clear all recent files?"
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -551,5 +553,9 @@
   },
   "plugin": {
     "name": "File Manager"
+  },
+  "common": {
+    "remove": "Remove",
+    "clear": "Clear"
   }
 }

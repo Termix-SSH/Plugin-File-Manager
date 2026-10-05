@@ -19,21 +19,10 @@ import {
   Server,
 } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Input,
+  PanePrompt,
+  useConfirm,
   Label,
   Select2,
 } from "@termix/plugin-sdk/ui";
@@ -897,6 +886,23 @@ export function SftpTransferTab() {
     }
   };
 
+  const confirm = useConfirm();
+  useEffect(() => {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    void confirm({
+      title: t("sftpTransfer.deleteSelectedItems"),
+      description: t("sftpTransfer.deleteConfirm", {
+        count: getContextEntries(target).length,
+      }),
+      confirmLabel: t("sftpTransfer.delete"),
+    }).then((ok) => {
+      if (ok) void handleDeleteConfirmed(target);
+      else setDeleteTarget(null);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deleteTarget]);
+
   const handleDeleteConfirmed = async (target = deleteTarget) => {
     if (!target) return;
     const entries = getContextEntries(target);
@@ -1121,80 +1127,48 @@ export function SftpTransferTab() {
         </div>
       )}
 
-      <Dialog
+      <PanePrompt
         open={!!nameDialog}
-        onOpenChange={(open) => !open && setNameDialog(null)}
-      >
-        <DialogContent className="rounded-none border-border bg-card sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-xs font-bold uppercase tracking-widest">
-              {nameDialog?.kind === "mkdir"
-                ? t("sftpTransfer.createNewFolder")
-                : t("sftpTransfer.rename")}
-            </DialogTitle>
-          </DialogHeader>
-          <Input
-            autoFocus
-            value={nameDialog?.value || ""}
-            onChange={(event) =>
-              setNameDialog((current) =>
-                current ? { ...current, value: event.target.value } : current,
-              )
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Enter") void handleNameDialogSubmit();
-            }}
-            className="h-9 rounded-none border-border bg-muted/40 text-xs"
-          />
-          <DialogFooter>
+        title={
+          nameDialog?.kind === "mkdir"
+            ? t("sftpTransfer.createNewFolder")
+            : t("sftpTransfer.rename")
+        }
+        onCancel={() => setNameDialog(null)}
+        actions={
+          <>
             <Button
               variant="ghost"
-              className="rounded-none text-xs"
+              size="sm"
               onClick={() => setNameDialog(null)}
             >
               {t("sftpTransfer.cancel")}
             </Button>
             <Button
               variant="outline"
-              className="rounded-none text-xs"
+              size="sm"
+              className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10"
               onClick={() => void handleNameDialogSubmit()}
             >
               {t("sftpTransfer.save")}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
+          </>
+        }
       >
-        <AlertDialogContent className="rounded-none border-border bg-card">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xs font-bold uppercase tracking-widest">
-              {t("sftpTransfer.deleteSelectedItems")}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-xs text-muted-foreground">
-              {t("sftpTransfer.deleteConfirm", {
-                count: deleteTarget
-                  ? getContextEntries(deleteTarget).length
-                  : 0,
-              })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-none text-xs">
-              {t("sftpTransfer.cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-none text-xs"
-              onClick={() => void handleDeleteConfirmed()}
-            >
-              {t("sftpTransfer.delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <Input
+          autoFocus
+          value={nameDialog?.value || ""}
+          onChange={(event) =>
+            setNameDialog((current) =>
+              current ? { ...current, value: event.target.value } : current,
+            )
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter") void handleNameDialogSubmit();
+          }}
+          className="h-8 text-xs"
+        />
+      </PanePrompt>
 
       <PermissionsDialog
         file={permissionsDialogFile}

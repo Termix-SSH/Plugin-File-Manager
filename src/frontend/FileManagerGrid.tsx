@@ -1524,7 +1524,7 @@ export function FileManagerGrid({
 
                         {!isEditing && listColumns.isVisible("permissions") && (
                           <span className="text-[10px] text-right font-mono text-muted-foreground/60 pointer-events-none truncate">
-                            {file.permissions || "—"}
+                            {file.permissions || "-"}
                           </span>
                         )}
                       </div>
