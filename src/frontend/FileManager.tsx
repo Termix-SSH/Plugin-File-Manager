@@ -1,3 +1,4 @@
+import { Folder } from "lucide-react";
 import { fileManagerHostSetting } from "./host-settings";
 import { getErrorMessage } from "./lib/error-message";
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -9,7 +10,7 @@ import React, {
   useMemo,
 } from "react";
 import { asHttpError } from "./lib/http-error";
-import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { cn, PanelShell } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerGrid } from "./FileManagerGrid.tsx";
 import { FileManagerSidebar, type SidebarItem } from "./FileManagerSidebar.tsx";
 import { FileManagerContextMenu } from "./FileManagerContextMenu.tsx";
@@ -3447,7 +3448,16 @@ function FileManagerContent({
 
   return (
     <div className="h-full flex flex-col bg-background relative overflow-hidden isolate">
-      <div className="h-full w-full flex flex-col min-h-0">
+      <PanelShell
+        icon={<Folder className="size-4" />}
+        title={t("nav.files")}
+        status={
+          currentHost
+            ? currentHost.name || `${currentHost.username}@${currentHost.ip}`
+            : undefined
+        }
+        scroll={false}
+      >
         <FileManagerToolbar
           t={t}
           currentPath={currentPath}
@@ -3486,7 +3496,7 @@ function FileManagerContent({
 
         <div
           ref={panesRowRef}
-          className="flex-1 flex px-3 pb-3 pt-2 gap-3 min-h-0 relative"
+          className="flex-1 flex min-h-0 relative"
           {...dragHandlers}
         >
           {/* Mobile sidebar backdrop */}
@@ -3513,7 +3523,7 @@ function FileManagerContent({
                 : { width: sidebarSize.width, minWidth: SIDEBAR_MIN_WIDTH }
             }
           >
-            <div className="flex-1 flex flex-col overflow-hidden min-h-0 border border-border bg-card">
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0 border-r border-border bg-background">
               <FileManagerSidebar
                 density={density}
                 currentHost={currentHost}
@@ -3540,7 +3550,7 @@ function FileManagerContent({
           {localPaneAvailable && localPaneOpen && (
             <>
               <div
-                className="hidden md:flex flex-shrink-0 relative overflow-hidden min-h-0 flex-col border border-border bg-card"
+                className="hidden md:flex flex-shrink-0 relative overflow-hidden min-h-0 flex-col border-r border-border bg-background"
                 style={{
                   width: localPaneSize.width,
                   minWidth: LOCAL_PANE_MIN_WIDTH,
@@ -3563,7 +3573,7 @@ function FileManagerContent({
             </>
           )}
 
-          <div className="flex-1 basis-0 relative overflow-hidden min-h-0 flex flex-col border border-border bg-card">
+          <div className="flex-1 basis-0 relative overflow-hidden min-h-0 flex flex-col bg-background">
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
@@ -3685,7 +3695,7 @@ function FileManagerContent({
             void handleRefreshDirectory();
           }}
         />
-      </div>
+      </PanelShell>
 
       {currentHost && (
         <TransferToHostDialog

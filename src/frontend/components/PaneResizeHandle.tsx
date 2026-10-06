@@ -28,7 +28,7 @@ export function PaneResizeHandle({
       data-pane-resize-handle
       onMouseDown={onMouseDown}
       onDoubleClick={onDoubleClick}
-      className="hidden md:block -mx-3 w-3 shrink-0 cursor-col-resize group relative z-10"
+      className="hidden md:block -mx-1.5 w-3 shrink-0 cursor-col-resize group relative z-10"
     >
       <div
         className={cn(

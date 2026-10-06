@@ -1,7 +1,10 @@
 import React from "react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManager } from "./FileManager.tsx";
-import { FullScreenAppWrapper, ConnectionScreen } from "@termix-ssh/plugin-sdk/ui";
+import {
+  FullScreenAppWrapper,
+  ConnectionScreen,
+} from "@termix-ssh/plugin-sdk/ui";
 
 interface FileManagerAppProps {
   hostId?: string;

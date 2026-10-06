@@ -132,14 +132,14 @@ interface FileManagerGridProps {
 
 const getFileTypeColor = (file: FileItem): string => {
   if (file.type === "directory") {
-    return "text-red-400";
+    return "text-accent-brand";
   }
 
   if (file.type === "link") {
-    return "text-green-400";
+    return "text-blue-400";
   }
 
-  return "text-blue-400";
+  return "text-muted-foreground";
 };
 
 const getFileIcon = (
@@ -339,14 +339,9 @@ export function FileManagerGrid({
   useLayoutEffect(() => {
     if (viewMode === "list") listVirtualizer.measure();
     else gridVirtualizer.measure();
-  }, [
-    viewMode,
-    density,
-    files.length,
-    editingFile?.path,
-    createIntent,
-    gridCols,
-  ]);
+    // Keyed on the list itself: another folder with the same number of
+    // entries would otherwise keep this folder's measured row heights.
+  }, [viewMode, density, files, editingFile?.path, createIntent, gridCols]);
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -1106,8 +1101,8 @@ export function FileManagerGrid({
         title={t("fileManager.goToParentFolder")}
         style={{ gridTemplateColumns: listColumns.gridTemplateColumns }}
         className={cn(
-          "grid gap-2 items-center cursor-pointer border-b border-border hover:bg-muted/50 rounded-none select-none transition-colors text-xs",
-          compact ? "px-2 py-1" : "px-4 py-2",
+          "grid gap-2 items-center cursor-pointer border-l-2 border-transparent hover:bg-muted/50 rounded-none select-none transition-colors text-xs",
+          compact ? "px-3 py-1" : "px-3 py-2",
           isParentTarget &&
             "bg-accent-brand/20 border-accent-brand border-dashed",
         )}
@@ -1117,9 +1112,7 @@ export function FileManagerGrid({
           <div className="shrink-0">
             <CornerLeftUp className="size-4 text-muted-foreground" />
           </div>
-          <span className="font-bold tracking-tight text-muted-foreground">
-            ..
-          </span>
+          <span className="font-medium text-muted-foreground">..</span>
         </div>
       </div>
     ) : null;
@@ -1131,27 +1124,27 @@ export function FileManagerGrid({
         title={t("fileManager.goToParentFolder")}
         className={cn(
           "flex items-center gap-2 rounded-none border border-transparent transition-colors cursor-pointer hover:bg-muted/50 select-none text-xs",
-          compact ? "-mx-2 -mt-2 px-2 py-1" : "-mx-4 -mt-4 px-4 py-1.5",
+          compact ? "-mx-2 -mt-2 px-2 py-1" : "-mx-3 -mt-3 px-3 py-1.5",
           isParentTarget &&
             "bg-accent-brand/20 border-accent-brand border-dashed",
         )}
         {...parentEntryHandlers}
       >
         <CornerLeftUp className="size-3.5 text-muted-foreground pointer-events-none" />
-        <span className="font-bold tracking-tight text-muted-foreground pointer-events-none">
+        <span className="font-medium text-muted-foreground pointer-events-none">
           ..
         </span>
       </div>
     ) : null;
 
   return (
-    <div className="h-full flex flex-col bg-card overflow-hidden relative">
+    <div className="h-full flex flex-col bg-background overflow-hidden relative">
       <div className="flex-1 relative overflow-hidden">
         <div
           ref={gridRef}
           className={cn(
             "absolute inset-0 overflow-y-auto thin-scrollbar",
-            compact ? "p-2" : "p-4",
+            compact ? "p-2" : "p-3",
             (dragState.type === "external" || dragState.type === "local") &&
               "bg-muted/20 border-2 border-dashed border-primary",
           )}
@@ -1170,19 +1163,17 @@ export function FileManagerGrid({
           {files.length === 0 && !createIntent ? (
             <div className="h-full flex flex-col">
               {viewMode === "grid" ? parentGridStrip : parentListRow}
-              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground opacity-10 gap-4 select-none pointer-events-none">
-                <Folder className="size-32" strokeWidth={1} />
-                <span className="text-2xl font-black uppercase tracking-[0.2em]">
-                  {t("fileManager.emptyFolder")}
-                </span>
+              <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground select-none pointer-events-none">
+                <Folder className="size-8 text-muted-foreground/30" />
+                <span className="text-xs">{t("fileManager.emptyFolder")}</span>
               </div>
             </div>
           ) : viewMode === "grid" ? (
-            <div className={cn("flex flex-col", compact ? "gap-2" : "gap-4")}>
+            <div className={cn("flex flex-col", compact ? "gap-2" : "gap-3")}>
               {parentGridStrip}
               {createIntent && (
                 <div
-                  className={cn("grid", compact ? "gap-2" : "gap-4")}
+                  className={cn("grid", compact ? "gap-2" : "gap-3")}
                   style={{
                     gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
                   }}
@@ -1214,7 +1205,7 @@ export function FileManagerGrid({
                       <div
                         className={cn(
                           "grid",
-                          compact ? "gap-2 pb-2" : "gap-4 pb-4",
+                          compact ? "gap-2 pb-2" : "gap-3 pb-3",
                         )}
                         style={{
                           gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
@@ -1230,10 +1221,10 @@ export function FileManagerGrid({
                               data-file-path={file.path}
                               draggable={true}
                               className={cn(
-                                "group flex flex-col items-center rounded-none border-2 border-transparent transition-all cursor-pointer hover:bg-muted/50 select-none",
-                                compact ? "p-1.5" : "p-3",
+                                "group flex flex-col items-center rounded-none border border-transparent transition-colors cursor-pointer hover:bg-muted/50 select-none",
+                                compact ? "p-1.5" : "p-2",
                                 isSelected &&
-                                  "bg-accent-brand/10 hover:bg-accent-brand/10 border-accent-brand/40",
+                                  "bg-accent-brand/10 hover:bg-accent-brand/10 border-accent-brand/30",
                                 dragState.target?.path === file.path &&
                                   "bg-accent-brand/20 border-accent-brand border-dashed",
                                 dragState.files.some(
@@ -1278,7 +1269,7 @@ export function FileManagerGrid({
                                   />
                                 ) : (
                                   <p
-                                    className="font-bold tracking-tight text-center truncate w-full px-1 text-[11px]"
+                                    className="font-medium text-center truncate w-full px-1 text-[11px]"
                                     title={file.name}
                                   >
                                     {file.name}
@@ -1313,8 +1304,8 @@ export function FileManagerGrid({
             <div className="flex flex-col">
               <div
                 className={cn(
-                  "grid gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground border-b border-border bg-card",
-                  compact ? "px-2 py-1" : "px-4 py-2",
+                  "grid gap-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 border-b border-border bg-background",
+                  compact ? "px-3 py-1" : "px-3 py-2",
                 )}
                 style={{ gridTemplateColumns: listColumns.gridTemplateColumns }}
                 title={t("fileManager.columnsHint")}
@@ -1437,10 +1428,10 @@ export function FileManagerGrid({
                             : listColumns.gridTemplateColumns,
                         }}
                         className={cn(
-                          "grid gap-2 items-center cursor-pointer border-b border-border hover:bg-muted/50 rounded-none select-none transition-colors text-xs",
-                          compact ? "px-2 py-1" : "px-4 py-2",
+                          "grid gap-2 items-center cursor-pointer border-l-2 border-transparent hover:bg-muted/50 rounded-none select-none transition-colors text-xs",
+                          compact ? "px-3 py-1" : "px-3 py-2",
                           isSelected &&
-                            "bg-accent-brand/10 hover:bg-accent-brand/10",
+                            "border-accent-brand bg-accent-brand/10 hover:bg-accent-brand/10",
                           dragState.target?.path === file.path &&
                             "bg-accent-brand/20 border-accent-brand border-dashed",
                           dragState.files.some((f) => f.path === file.path) &&
@@ -1485,7 +1476,7 @@ export function FileManagerGrid({
                             />
                           ) : (
                             <span
-                              className="font-bold truncate tracking-tight"
+                              className="font-medium truncate"
                               title={file.name}
                             >
                               {file.name}
@@ -1567,7 +1558,7 @@ export function FileManagerGrid({
         )}
       </div>
 
-      <div className="px-4 py-1.5 bg-muted/30 border-t border-border flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">
+      <div className="px-3 py-1 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground shrink-0">
         <span>
           {files.length} {t("fileManager.items")}
         </span>
@@ -1777,7 +1768,7 @@ function CreateIntentListItem({
 
   return (
     <div
-      className="grid gap-2 px-4 py-2 items-center border-b border-accent-brand/30 bg-accent-brand/5 rounded-none"
+      className="grid gap-2 px-3 py-2 items-center border-l-2 border-accent-brand bg-accent-brand/5 rounded-none"
       style={{
         gridTemplateColumns:
           gridTemplateColumns ?? "minmax(140px, 1fr) 120px 150px 80px 90px",

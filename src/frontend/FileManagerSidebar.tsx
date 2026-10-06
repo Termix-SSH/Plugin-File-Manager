@@ -117,7 +117,7 @@ function StorageMeter({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+      <div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
         {hasPicker ? (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex min-w-0 items-center gap-1 transition-colors hover:text-foreground">
@@ -166,13 +166,13 @@ function StorageMeter({
           {storage.percent}% {t("fileManager.used")}
         </span>
       </div>
-      <div className="h-1.5 bg-muted rounded-none overflow-hidden border border-border">
+      <div className="h-1 bg-muted rounded-none overflow-hidden">
         <div
           className="h-full bg-accent-brand"
           style={{ width: `${storage.percent}%` }}
         />
       </div>
-      <span className="text-[10px] font-bold text-muted-foreground/60 tracking-tight">
+      <span className="text-[10px] text-muted-foreground/70">
         {storage.usedHuman} {t("fileManager.of")} {storage.totalHuman}{" "}
         {t("fileManager.used").toLowerCase()}
       </span>
@@ -677,7 +677,7 @@ export function FileManagerSidebar({
       <button
         key={item.id}
         className={cn(
-          "w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-colors text-left border-l-2",
+          "w-full flex items-center gap-2 py-1 pl-2 pr-2 text-xs transition-colors text-left border-l-2",
           isActive
             ? "bg-accent-brand/10 text-accent-brand border-accent-brand"
             : "text-muted-foreground hover:text-foreground hover:bg-muted border-transparent",
@@ -700,8 +700,8 @@ export function FileManagerSidebar({
     if (items.length === 0) return null;
     return (
       <div>
-        <div className="px-3 py-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        <div className="px-2 pb-1 pt-2">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
             {title}
           </span>
         </div>
@@ -741,17 +741,8 @@ export function FileManagerSidebar({
 
   return (
     <>
-      <div className="h-full flex flex-col bg-card overflow-hidden">
+      <div className="h-full flex flex-col bg-background overflow-hidden">
         <div className="flex-1 overflow-y-auto thin-scrollbar">
-          {onOpenTrash && (
-            <button
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-muted border-l-2 border-transparent"
-              onClick={onOpenTrash}
-            >
-              <Trash2 className="size-3.5 shrink-0" />
-              <span>{t("fileManager.trash")}</span>
-            </button>
-          )}
           {/* ── Recent files ──────────────────────────────────────── */}
           {renderSection(t("fileManager.recent"), recentItems, (item) =>
             renderQuickAccessItem(
@@ -805,8 +796,8 @@ export function FileManagerSidebar({
               hasQuickAccessItems && "border-t border-border mt-1 pt-1",
             )}
           >
-            <div className="px-3 py-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <div className="px-2 pb-1 pt-2">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
                 {t("fileManager.directories")}
               </span>
             </div>
@@ -830,11 +821,6 @@ export function FileManagerSidebar({
           {storage && (
             <div className="md:hidden">
               <div className="border-t border-border mx-0 my-2" />
-              <div className="px-3 py-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {t("fileManager.storage")}
-                </span>
-              </div>
               <div className="px-3 pb-3">
                 <StorageMeter
                   storage={storage}
@@ -847,12 +833,19 @@ export function FileManagerSidebar({
           )}
         </div>
 
+        {onOpenTrash && (
+          <button
+            className="flex w-full shrink-0 items-center gap-2 border-t border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            onClick={onOpenTrash}
+          >
+            <Trash2 className="size-3.5 shrink-0" />
+            <span>{t("fileManager.trash")}</span>
+          </button>
+        )}
+
         {/* ── Storage — desktop only (bottom of sidebar) ──────────── */}
         {storage && (
           <div className="hidden md:flex flex-col p-3 gap-2 border-t border-border shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("fileManager.storage")}
-            </span>
             <StorageMeter
               storage={storage}
               filesystems={storageFilesystems}

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, InlineView } from "@termix-ssh/plugin-sdk/ui";
+import {
+  Input,
+  InlineView,
+  Checkbox,
+  FormFooter,
+} from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { Lock } from "lucide-react";
 
@@ -168,24 +173,11 @@ export function PermissionsDialog({
         </>
       }
       footer={
-        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-            className="rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            {t("common.cancel")}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleSave}
-            disabled={loading}
-            className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            {loading ? t("common.saving") : t("common.save")}
-          </Button>
-        </div>
+        <FormFooter
+          onCancel={() => onOpenChange(false)}
+          onSave={() => void handleSave()}
+          saving={loading}
+        />
       }
     >
       <p className="text-xs text-muted-foreground">{file.path}</p>
@@ -221,11 +213,9 @@ export function PermissionsDialog({
                   key={j}
                   className="flex items-center justify-center border-l border-border py-3"
                 >
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={perm.val}
-                    onChange={(e) => perm.set(e.target.checked)}
-                    className="accent-[var(--accent-brand)] size-4 cursor-pointer"
+                    onCheckedChange={(checked) => perm.set(checked === true)}
                   />
                 </div>
               ))}
