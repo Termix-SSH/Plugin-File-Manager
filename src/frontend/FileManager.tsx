@@ -1399,6 +1399,11 @@ function FileManagerContent({
     if (!sshSessionId) return;
 
     const toastId = `download-${file.path}-${Date.now()}`;
+    const controller = new AbortController();
+    const cancel = {
+      label: t("fileManager.cancel"),
+      onClick: () => controller.abort(),
+    };
     let lastLoaded = 0;
     let lastTime = Date.now();
     let mbPerSec: number | undefined;
@@ -1414,6 +1419,7 @@ function FileManagerContent({
         {
           id: toastId,
           duration: Infinity,
+          cancel,
         },
       );
 
@@ -1421,6 +1427,7 @@ function FileManagerContent({
         sshSessionId,
         file.path,
         ({ loaded, total }) => {
+          if (controller.signal.aborted) return;
           const now = Date.now();
           const deltaMs = now - lastTime;
           if (deltaMs > 200) {
@@ -1440,9 +1447,10 @@ function FileManagerContent({
               total={total}
               mbPerSec={mbPerSec}
             />,
-            { id: toastId, duration: Infinity },
+            { id: toastId, duration: Infinity, cancel },
           );
         },
+        controller.signal,
       );
 
       toast.success(
@@ -1450,6 +1458,13 @@ function FileManagerContent({
         { id: toastId, duration: undefined },
       );
     } catch (error: unknown) {
+      if (controller.signal.aborted) {
+        toast.info(t("fileManager.localTransferCancelled"), {
+          id: toastId,
+          duration: undefined,
+        });
+        return;
+      }
       const err = error instanceof Error ? error : null;
       if (
         err?.message?.includes("connection") ||
