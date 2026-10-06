@@ -8,6 +8,10 @@
     {
       "type": "added",
       "text": "Cancel a download from its progress toast"
+    },
+    {
+      "type": "fixed",
+      "text": "Cancelling a large download no longer stalls browsing on servers that are slow to close the file"
     }
   ],
   "releases": [
