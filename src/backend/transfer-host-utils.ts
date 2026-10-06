@@ -3,7 +3,7 @@ import { normalizeSftpPath } from "./transfer-paths.js";
 
 let cachedLocalAddresses: Set<string> | null = null;
 
-export function normalizeHostAddress(host: string): string {
+function normalizeHostAddress(host: string): string {
   const trimmed = host.trim().toLowerCase();
   if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
     return trimmed.slice(1, -1);

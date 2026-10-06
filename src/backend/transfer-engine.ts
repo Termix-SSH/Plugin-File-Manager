@@ -95,10 +95,7 @@ import {
   selectTransferTuning,
 } from "./transfer-tuning.js";
 
-export type {
-  TransferMethodPreference,
-  TransferScanSummary,
-} from "./transfer-routing.js";
+export type { TransferMethodPreference } from "./transfer-routing.js";
 
 export interface TransferMethodPreview {
   methodPreference: TransferMethodPreference;
@@ -113,7 +110,7 @@ export interface TransferMethodPreview {
 
 type SFTPWrapper = import("ssh2").SFTPWrapper;
 
-export interface SSHSessionLike {
+interface SSHSessionLike {
   client: import("ssh2").Client;
   isConnected: boolean;
   lastActive: number;
@@ -147,22 +144,15 @@ export interface HostTransferDeps {
   closeDedicatedTransferSession: (sessionId: string) => void;
 }
 
-export type TransferPhase =
+type TransferPhase =
   | "compressing"
   | "transferring"
   | "benchmarking"
   | "verifying"
   | "extracting"
   | "reconnecting";
-export type TransferStatus =
-  "running" | "success" | "partial" | "error" | "cancelled";
-export type TransferMethod = "stream" | "tar" | "item_sftp" | "direct_rsync";
-
-export type {
-  TransferHopId,
-  TransferHopMetrics,
-  TransferTimings,
-} from "./transfer-stats.js";
+type TransferStatus = "running" | "success" | "partial" | "error" | "cancelled";
+type TransferMethod = "stream" | "tar" | "item_sftp" | "direct_rsync";
 
 export interface TransferProgress {
   transferId: string;
@@ -3398,7 +3388,7 @@ export function startHostTransfer(
   return { transferId };
 }
 
-export function cleanupOldTransfers(maxAgeMs = 60 * 60 * 1000): void {
+function cleanupOldTransfers(maxAgeMs = 60 * 60 * 1000): void {
   const now = Date.now();
   for (const [id, progress] of activeTransfers.entries()) {
     if (

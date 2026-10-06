@@ -7,7 +7,7 @@ export interface TransferIntegrityResult {
   digest: string;
 }
 
-export async function hashSftpFile(
+async function hashSftpFile(
   sftp: SFTPWrapper,
   path: string,
   shouldAbort: () => boolean = () => false,

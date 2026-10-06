@@ -20,7 +20,7 @@ export function pluginSsh(): PluginSsh {
 }
 
 /** withConnection with ssh2's Client type filled in. */
-export function withSshConnection<T>(
+function withSshConnection<T>(
   host: number | PluginSshHost,
   options: PluginSshConnectOptions & { pool: string },
   fn: (client: Client) => Promise<T>,
@@ -29,7 +29,7 @@ export function withSshConnection<T>(
 }
 
 /** connect with ssh2's Client type filled in. */
-export function connectSsh(
+function connectSsh(
   host: number | PluginSshHost,
   options?: PluginSshConnectOptions,
 ): Promise<PluginSshConnection<Client>> {
@@ -41,7 +41,7 @@ export function connectSsh(
  * own ssh2 Client through the TOTP and browser sign-in parking flow rather than letting
  * ctx.ssh.connect finish the handshake itself.
  */
-export function prepareSsh(
+function prepareSsh(
   host: PluginSshHost,
   options: {
     purpose?: "file-manager" | "file-transfer";
@@ -56,7 +56,7 @@ export function prepareSsh(
   }>;
 }
 
-export function openSshTransport(
+function openSshTransport(
   host: PluginSshHost,
   config: ConnectConfig,
 ): Promise<{ jumpClient: Client | null; via: string }> {
@@ -69,11 +69,13 @@ export function openSshTransport(
   }>;
 }
 
-export const classifyKeyboardInteractive: PluginSsh["classifyKeyboardInteractive"] =
-  (round, host) => pluginSsh().classifyKeyboardInteractive(round, host);
+const classifyKeyboardInteractive: PluginSsh["classifyKeyboardInteractive"] = (
+  round,
+  host,
+) => pluginSsh().classifyKeyboardInteractive(round, host);
 
-export const autoResponses: PluginSsh["autoResponses"] = (prompts, password) =>
+const autoResponses: PluginSsh["autoResponses"] = (prompts, password) =>
   pluginSsh().autoResponses(prompts, password);
 
-export const requiresSecret: PluginSsh["requiresSecret"] = (authType) =>
+const requiresSecret: PluginSsh["requiresSecret"] = (authType) =>
   pluginSsh().requiresSecret(authType);

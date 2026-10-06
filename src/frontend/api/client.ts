@@ -83,7 +83,7 @@ export function getFileManagerApiForSession(
   ) as unknown as FileManagerClient;
 }
 
-export function fileManagerApiFor(
+function fileManagerApiFor(
   origin: "local" | "remote" | undefined,
 ): FileManagerClient {
   return app().apiFor(origin ?? "local") as unknown as FileManagerClient;

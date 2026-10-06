@@ -293,7 +293,7 @@ export function recordTransferProfile(
   return profile;
 }
 
-export function getDirectRouteProfile(
+function getDirectRouteProfile(
   key: string,
   now = Date.now(),
 ): DirectRouteProfile | undefined {

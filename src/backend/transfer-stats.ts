@@ -2,10 +2,9 @@ import { performance } from "node:perf_hooks";
 
 const TRANSFER_PROGRESS_INTERVAL_MS = 200;
 
-export type TransferHopId =
-  "source_read" | "dest_sftp_write" | "dest_local_write";
+type TransferHopId = "source_read" | "dest_sftp_write" | "dest_local_write";
 
-export interface TransferHopMetrics {
+interface TransferHopMetrics {
   id: TransferHopId;
   bytes: number;
   /** Wall-clock span from first I/O on this hop to last I/O complete. */

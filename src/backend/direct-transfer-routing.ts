@@ -4,8 +4,8 @@ export interface DirectTransferEndpoint {
   username: string;
 }
 
-export const DIRECT_TRANSFER_MIN_IMPROVEMENT = 0.2;
-export const DIRECT_TRANSFER_MIN_BYTES = 32 * 1024 * 1024;
+const DIRECT_TRANSFER_MIN_IMPROVEMENT = 0.2;
+const DIRECT_TRANSFER_MIN_BYTES = 32 * 1024 * 1024;
 
 export function shouldBenchmarkDirectTransfer(totalBytes: number): boolean {
   return totalBytes >= DIRECT_TRANSFER_MIN_BYTES;
@@ -19,9 +19,7 @@ function formatHost(host: string): string {
   return host.includes(":") && !host.startsWith("[") ? `[${host}]` : host;
 }
 
-export function buildDirectSshCommand(
-  endpoint: DirectTransferEndpoint,
-): string {
+function buildDirectSshCommand(endpoint: DirectTransferEndpoint): string {
   const target = `${endpoint.username}@${formatHost(endpoint.host)}`;
   return [
     "ssh",

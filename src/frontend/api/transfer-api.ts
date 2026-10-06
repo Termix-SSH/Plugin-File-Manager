@@ -9,7 +9,7 @@ const fileLogger = createFrontendLogger("FILE");
 
 export type TransferMethodPreference = "auto" | "tar" | "item_sftp";
 
-export interface TransferScanSummary {
+interface TransferScanSummary {
   fileCount: number;
   totalBytes: number;
   largestFileBytes: number;
@@ -49,7 +49,7 @@ export async function getTransferMethodPreview(
   }
 }
 
-export interface TransferHopMetrics {
+interface TransferHopMetrics {
   id: string;
   mbPerSec?: number;
 }

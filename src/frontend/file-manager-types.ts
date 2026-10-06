@@ -11,7 +11,7 @@ export interface FileManagerProps {
   isVisible?: boolean;
 }
 
-export type ConnectionLogPayload = Omit<LogEntry, "id" | "timestamp">;
+type ConnectionLogPayload = Omit<LogEntry, "id" | "timestamp">;
 
 export type SSHConnectionError = Error & {
   connectionLogs?: ConnectionLogPayload[];

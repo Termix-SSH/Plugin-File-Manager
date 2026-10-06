@@ -19,7 +19,7 @@ const INCOMPRESSIBLE_EXT =
 const GB = 1024 * 1024 * 1024;
 const MB = 1024 * 1024;
 
-export function isLikelyIncompressiblePath(path: string): boolean {
+function isLikelyIncompressiblePath(path: string): boolean {
   return INCOMPRESSIBLE_EXT.test(path);
 }
 

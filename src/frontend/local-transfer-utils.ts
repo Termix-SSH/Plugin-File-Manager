@@ -12,12 +12,12 @@ export const LOCAL_FILES_DRAG_MIME = "application/x-termix-local-files";
  */
 export const REMOTE_FILES_DRAG_MIME = "application/x-termix-remote-files";
 
-export interface LocalFilesDragPayload {
+interface LocalFilesDragPayload {
   type: "local_files";
   paths: string[];
 }
 
-export interface InternalFilesDragPayload {
+interface InternalFilesDragPayload {
   type: "internal_files";
   files: string[];
 }
@@ -359,7 +359,7 @@ export function formatLocalModified(
 export const TRANSFER_CONCURRENCY_STORAGE_KEY =
   "termix:file-manager:transfer-concurrency";
 export const DEFAULT_TRANSFER_CONCURRENCY = 4;
-export const MAX_TRANSFER_CONCURRENCY = 8;
+const MAX_TRANSFER_CONCURRENCY = 8;
 
 export function clampTransferConcurrency(value: unknown): number {
   const n = Math.floor(Number(value));

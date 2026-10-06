@@ -126,7 +126,7 @@ async function findTrashPaths(sftp: SFTPWrapper): Promise<TrashDirs> {
   return { root, files, info };
 }
 
-export function isSafeTrashSource(itemPath: string, trashRoot: string) {
+function isSafeTrashSource(itemPath: string, trashRoot: string) {
   const normalized = path.posix.normalize(itemPath.replace(/\\/g, "/"));
   const root = path.posix.normalize(trashRoot);
   return (

@@ -17,7 +17,7 @@ import {
 import { getSessionOrigin } from "./client";
 import { getDeviceId } from "@termix-ssh/plugin-sdk/ui";
 
-export interface LocalTransferProgressEvent {
+interface LocalTransferProgressEvent {
   transferred: number;
   total?: number;
 }
@@ -25,7 +25,7 @@ export interface LocalTransferProgressEvent {
 type ProgressListener = (event: LocalTransferProgressEvent) => void;
 
 /** Error from the main process; `code` is e.g. "EEXIST" or "EBUSY". */
-export class LocalTransferError extends Error {
+class LocalTransferError extends Error {
   code?: string;
   constructor(message: string, code?: string) {
     super(message);

@@ -19,14 +19,14 @@ export class TransferStalledError extends Error {
   }
 }
 
-export class TransferConnectionLostError extends Error {
+class TransferConnectionLostError extends Error {
   constructor(message = "Transfer SSH connection lost") {
     super(message);
     this.name = "TransferConnectionLostError";
   }
 }
 
-export function isRecoverableTransferConnectionError(err: unknown): boolean {
+function isRecoverableTransferConnectionError(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
   const msg = err.message.toLowerCase();
   return (

@@ -151,7 +151,7 @@ export async function connectSSH(
   }
 }
 
-export async function disconnectSSH(
+async function disconnectSSH(
   sessionId: string,
 ): Promise<Record<string, unknown>> {
   try {

@@ -1,6 +1,6 @@
 export const SFTP_XFER_SEGMENT_SIZE = 256 * 1024 * 1024;
 export const DEFAULT_PARALLEL_SEGMENT_COUNT = 2;
-export const MAX_PARALLEL_SEGMENT_COUNT = 8;
+const MAX_PARALLEL_SEGMENT_COUNT = 8;
 
 export interface SegmentCopyJob {
   offset: number;
