@@ -2,7 +2,20 @@ import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { getMimeType } from "./utils.js";
 import { createDownloadStream } from "./download-stream.js";
-import { execChannel, getSessionSftp, type SSHSession } from "./session.js";
+import type { SFTPWrapper } from "ssh2";
+import {
+  execChannel,
+  getSessionSftp,
+  openDedicatedSftp,
+  type SSHSession,
+} from "./session.js";
+
+/**
+ * How long a cancelled download waits for the server to confirm the file
+ * close before ending its channel. Some servers answer CLOSE only after
+ * reading the rest of the file, minutes later for a large one.
+ */
+const CANCELLED_CLOSE_GRACE_MS = 2000;
 
 type FileDownloadRoutesDeps = {
   ctx: PluginContext;
@@ -283,8 +296,27 @@ export function registerFileDownloadRoutes(
       return;
     }
 
+    // A download gets its own channel so that a server stalling on it (e.g.
+    // on the CLOSE of a cancelled file) cannot block browsing on session.sftp.
+    let release = () => {};
     try {
-      const sftp = await getSessionSftp(sshConn);
+      let sftp: SFTPWrapper;
+      try {
+        const dedicated = await openDedicatedSftp(sshConn);
+        sftp = dedicated;
+        let released = false;
+        release = () => {
+          if (released) return;
+          released = true;
+          dedicated.end();
+        };
+      } catch (err) {
+        ctx.log.warn(
+          `Could not open a download SFTP channel, using the session's: ${sessionId} (${(err as Error).message})`,
+        );
+        sftp = await getSessionSftp(sshConn);
+      }
+
       const stats = await new Promise<{ size: number; isFile: () => boolean }>(
         (resolve, reject) => {
           sftp.stat(filePath, (err, s) => (err ? reject(err) : resolve(s)));
@@ -292,14 +324,22 @@ export function registerFileDownloadRoutes(
       );
 
       if (!stats.isFile()) {
+        release();
         return res.status(400).json({ error: "Cannot download directories" });
       }
 
       res.setHeader("Content-Length", String(stats.size));
 
-      if (res.destroyed) return;
+      if (res.destroyed) {
+        release();
+        return;
+      }
       const readStream = createDownloadStream(sftp, filePath, stats.size);
-      res.on("close", () => readStream.destroy());
+      readStream.on("close", release);
+      res.on("close", () => {
+        readStream.destroy();
+        setTimeout(release, CANCELLED_CLOSE_GRACE_MS).unref();
+      });
       readStream.on("error", (err) => {
         if (!res.headersSent) {
           res.removeHeader("Content-Length");
@@ -310,6 +350,7 @@ export function registerFileDownloadRoutes(
       });
       readStream.pipe(res);
     } catch (err) {
+      release();
       if (!res.headersSent) {
         res
           .status(500)
