@@ -6,12 +6,13 @@ import { createDownloadStream } from "../../src/backend/download-stream.js";
 
 function source(
   data: Buffer,
-  options: { shortRead?: number; failAt?: number } = {},
+  options: { shortRead?: number; failAt?: number; maxReadLen?: number } = {},
 ) {
   let pending = 0;
   let peak = 0;
   const closedWithPending: number[] = [];
   const sftp = {
+    _maxReadLen: options.maxReadLen,
     open: vi.fn((_path, _flags, _mode, cb) =>
       cb(undefined, Buffer.from("handle")),
     ),
@@ -65,7 +66,47 @@ describe("SFTP download stream", () => {
     // when every plugin suite runs at once.
     expect(received.length).toBe(data.length);
     expect(received.equals(data)).toBe(true);
-    expect(remote.peak()).toBe(8);
+    expect(remote.peak()).toBe(32);
+    expect(remote.closedWithPending).toEqual([0]);
+  });
+
+  it("sizes reads to the negotiated SFTP read limit, capped at 256 KiB", async () => {
+    const negotiated = source(Buffer.alloc(4 * 1024 * 1024), {
+      maxReadLen: 254 * 1024,
+    });
+    await contents(
+      createDownloadStream(negotiated.sftp, "/file", 4 * 1024 * 1024),
+    );
+    expect(negotiated.read.mock.calls[0][3]).toBe(254 * 1024);
+
+    const oversized = source(Buffer.alloc(1024 * 1024), {
+      maxReadLen: 4 * 1024 * 1024,
+    });
+    await contents(createDownloadStream(oversized.sftp, "/file", 1024 * 1024));
+    expect(oversized.read.mock.calls[0][3]).toBe(256 * 1024);
+  });
+
+  it("refills the read window as soon as the oldest read completes", async () => {
+    const remote = source(Buffer.alloc(4 * 1024 * 1024));
+    const replies = new Map<number, () => void>();
+    remote.read.mockImplementation(
+      (_handle, _buffer, _offset, length, position, cb) => {
+        replies.set(position, () => cb(undefined, length));
+      },
+    );
+    const stream = createDownloadStream(remote.sftp, "/file", 4 * 1024 * 1024);
+    stream.resume();
+    await nextTurn();
+    expect(remote.read).toHaveBeenCalledTimes(32);
+    // Only the oldest read replies; the other 31 are still in flight.
+    replies.get(0)!();
+    await nextTurn();
+    await nextTurn();
+    expect(remote.read).toHaveBeenCalledTimes(33);
+    const closed = once(stream, "close");
+    stream.destroy();
+    for (const [position, reply] of replies) if (position !== 0) reply();
+    await closed;
     expect(remote.closedWithPending).toEqual([0]);
   });
 
@@ -95,16 +136,16 @@ describe("SFTP download stream", () => {
     expect(remote.closedWithPending).toEqual([0]);
   });
 
-  it("settles outstanding reads before closing on a read failure", async () => {
-    const remote = source(Buffer.alloc(1024 * 1024), { failAt: 32768 });
+  it("stops scheduling and settles outstanding reads before closing on a read failure", async () => {
+    const remote = source(Buffer.alloc(4 * 1024 * 1024), { failAt: 32768 });
     await expect(
-      contents(createDownloadStream(remote.sftp, "/file", 1024 * 1024)),
+      contents(createDownloadStream(remote.sftp, "/file", 4 * 1024 * 1024)),
     ).rejects.toThrow("read failed");
-    expect(remote.read).toHaveBeenCalledTimes(8);
+    expect(remote.read).toHaveBeenCalledTimes(32);
     expect(remote.closedWithPending).toEqual([0]);
   });
 
-  it("stops scheduling reads and closes the handle when destroyed mid-batch", async () => {
+  it("stops scheduling reads and closes the handle when destroyed mid-window", async () => {
     const remote = source(Buffer.alloc(1024 * 1024), { shortRead: 4096 });
     const replies: Array<() => void> = [];
     remote.read.mockImplementation(
@@ -119,7 +160,7 @@ describe("SFTP download stream", () => {
     stream.destroy();
     for (const reply of replies) reply();
     await closed;
-    expect(remote.read).toHaveBeenCalledTimes(8);
+    expect(remote.read).toHaveBeenCalledTimes(32);
     expect(remote.closedWithPending).toEqual([0]);
   });
 
@@ -128,7 +169,9 @@ describe("SFTP download stream", () => {
     const stream = createDownloadStream(remote.sftp, "/file", 8 * 1024 * 1024);
     stream.read(0);
     await once(stream, "readable");
-    expect(remote.read).toHaveBeenCalledTimes(8);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    // A full window in flight plus the one chunk handed to the paused consumer.
+    expect(remote.read).toHaveBeenCalledTimes(33);
     const closed = once(stream, "close");
     stream.destroy();
     await closed;

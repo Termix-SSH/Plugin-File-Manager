@@ -6,18 +6,34 @@ import {
   SFTP_OPEN_READ,
 } from "./sftp-promisify.js";
 
-const CHUNK_SIZE = 32 * 1024;
-const CONCURRENCY = 8;
+/** Used when the server's read limit is unknown. */
+const DEFAULT_CHUNK_SIZE = 32 * 1024;
+/** OpenSSH serves ~254 KiB per READ. */
+const MAX_CHUNK_SIZE = 256 * 1024;
+/** In-flight READ requests; with OpenSSH limits that is ~8 MiB of read-ahead. */
+const CONCURRENCY = 32;
 
-/** Bounded read-ahead; batches retain file order even if replies arrive out of order. */
+/**
+ * ssh2 splits a READ longer than its negotiated limit into serial follow-up
+ * requests, so chunks never exceed it.
+ */
+function chunkSizeFor(sftp: SFTPWrapper): number {
+  const maxReadLen = (sftp as unknown as { _maxReadLen?: number })._maxReadLen;
+  if (!maxReadLen || !Number.isFinite(maxReadLen) || maxReadLen <= 0)
+    return DEFAULT_CHUNK_SIZE;
+  return Math.min(Math.floor(maxReadLen), MAX_CHUNK_SIZE);
+}
+
+/** Sliding read-ahead window; chunks keep file order even if replies arrive out of order. */
 export function createDownloadStream(
   sftp: SFTPWrapper,
   path: string,
   size: number,
 ): Readable {
+  const chunkSize = chunkSizeFor(sftp);
   const stream = Readable.from(readFile(), {
     objectMode: false,
-    highWaterMark: CHUNK_SIZE,
+    highWaterMark: chunkSize,
   });
   return stream;
 
@@ -45,23 +61,38 @@ export function createDownloadStream(
   async function* readFile() {
     if (stream.destroyed) return;
     const handle = await promisifySftpOpen(sftp, path, SFTP_OPEN_READ, 0o666);
+    const window: Promise<Buffer>[] = [];
+    let failed = false;
+    let position = 0;
+    const fill = () => {
+      while (
+        window.length < CONCURRENCY &&
+        position < size &&
+        !failed &&
+        !stream.destroyed
+      ) {
+        const length = Math.min(chunkSize, size - position);
+        const read = readChunk(handle, position, length);
+        // A failure stops new reads; the error surfaces when it reaches the head.
+        read.catch(() => {
+          failed = true;
+        });
+        window.push(read);
+        position += length;
+      }
+    };
     try {
-      for (let position = 0; position < size && !stream.destroyed;) {
-        const reads: Promise<Buffer>[] = [];
-        for (let i = 0; i < CONCURRENCY && position < size; i++) {
-          const length = Math.min(CHUNK_SIZE, size - position);
-          reads.push(readChunk(handle, position, length));
-          position += length;
-        }
-        // Settle all reads before closing the shared handle after an error.
-        const results = await Promise.allSettled(reads);
+      fill();
+      while (window.length > 0) {
+        const chunk = await window.shift()!;
         if (stream.destroyed) return;
-        for (const result of results) {
-          if (result.status === "rejected") throw result.reason;
-          yield result.value;
-        }
+        // Refill before yielding so reads overlap with the consumer.
+        fill();
+        yield chunk;
       }
     } finally {
+      // Settle all reads before closing the shared handle after an error.
+      await Promise.allSettled(window);
       await promisifySftpClose(sftp, handle);
     }
   }
