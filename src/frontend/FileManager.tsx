@@ -3432,7 +3432,7 @@ function FileManagerContent({
           message={t("fileManager.connecting")}
           detail={
             currentHost.ip
-              ? `${currentHost.username ? `${currentHost.username}@` : ""}${currentHost.ip}`
+              ? `${currentHost.username ? `${currentHost.username}@` : ""}${currentHost.ip}${currentHost.port ? `:${currentHost.port}` : ""}`
               : undefined
           }
           errorDetail={lastConnectionError}
