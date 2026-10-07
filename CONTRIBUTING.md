@@ -26,3 +26,9 @@ npm run format     # format the code with Prettier
 ## Permissions
 
 - `file-manager.use`: browse, edit and transfer files. Admins and users have it by default.
+
+## Services
+
+Provides to other plugins:
+
+- `files.sftp`: read and write files on a host

@@ -27,14 +27,6 @@ File Manager lets you work with the files on your hosts over SFTP, and copy file
 
 <br />
 
-## Services
-
-Provides to other plugins:
-
-- `files.sftp`: read and write files on a host
-
-<br />
-
 ## Sponsors
 
 Interested in a paid placement to support development? Email [mail@termix.site](mailto:mail@termix.site).
