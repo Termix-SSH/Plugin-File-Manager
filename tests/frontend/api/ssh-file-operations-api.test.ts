@@ -32,7 +32,10 @@ vi.mock("../../../src/frontend/lib/file-content-request-cache", () => ({
   invalidateCachedFileContent: vi.fn(),
 }));
 
-import { uploadSSHFile } from "../../../src/frontend/api/ssh-file-operations-api";
+import {
+  downloadSSHFileStream,
+  uploadSSHFile,
+} from "../../../src/frontend/api/ssh-file-operations-api";
 
 describe("chunked SSH file uploads", () => {
   beforeEach(() => {
@@ -142,5 +145,23 @@ describe("upload cancellation", () => {
       expect.objectContaining({ signal: controller.signal }),
     );
     expect(file.slice).toHaveBeenCalledOnce();
+  });
+});
+
+describe("download cancellation", () => {
+  it("passes the signal to streamed downloads", async () => {
+    const controller = new AbortController();
+    fileManagerApiMock.post.mockResolvedValueOnce({
+      data: new Blob(["x"]),
+    } as never);
+    // jsdom has no object URLs.
+    URL.createObjectURL = vi.fn(() => "blob:x");
+    URL.revokeObjectURL = vi.fn();
+    await downloadSSHFileStream("s", "/a.txt", undefined, controller.signal);
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/downloadFileStream",
+      { sessionId: "s", path: "/a.txt" },
+      expect.objectContaining({ signal: controller.signal }),
+    );
   });
 });

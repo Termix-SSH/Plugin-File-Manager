@@ -10,6 +10,7 @@ it("overlaps real SFTP reads while retaining the serial stream's byte content", 
   let pending = 0;
   let peak = 0;
   let closed = 0;
+  const readLengths: number[] = [];
   const server = new Server(
     {
       hostKeys: [utils.generateKeyPairSync("rsa", { bits: 2048 }).private],
@@ -22,6 +23,7 @@ it("overlaps real SFTP reads while retaining the serial stream's byte content", 
             const sftp = acceptSftp();
             sftp.on("OPEN", (id) => sftp.handle(id, Buffer.from("file")));
             sftp.on("READ", (id, _handle, offset, length) => {
+              readLengths.push(length);
               peak = Math.max(peak, ++pending);
               setTimeout(() => {
                 pending--;
@@ -58,12 +60,18 @@ it("overlaps real SFTP reads while retaining the serial stream's byte content", 
     expect(Buffer.concat(serial)).toEqual(data);
     expect(peak).toBe(1);
     peak = 0;
+    readLengths.length = 0;
     const pipelined: Buffer[] = [];
     for await (const chunk of createDownloadStream(sftp, "/file", data.length))
       pipelined.push(chunk);
     expect(Buffer.concat(pipelined)).toEqual(data);
-    expect(peak).toBeGreaterThan(1);
-    expect(peak).toBeLessThanOrEqual(8);
+    expect(peak).toBeGreaterThan(8);
+    expect(peak).toBeLessThanOrEqual(32);
+    // One READ per negotiated-size chunk: ssh2 would otherwise split each
+    // oversized request into serial follow-up READs.
+    const maxReadLen = (sftp as unknown as { _maxReadLen: number })._maxReadLen;
+    expect(readLengths.length).toBe(Math.ceil(data.length / maxReadLen));
+    expect(readLengths[0]).toBe(maxReadLen);
     expect(closed).toBe(2);
   } finally {
     const closedClient = once(client, "close");

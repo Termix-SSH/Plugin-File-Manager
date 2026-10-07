@@ -133,16 +133,23 @@ export function DiffViewer({
   };
 
   const handleDownloadFile = async (file: FileItem) => {
+    const controller = new AbortController();
+    const cancel = {
+      label: t("fileManager.cancel"),
+      onClick: () => controller.abort(),
+    };
     const toastId = toast.loading(
       <DownloadProgressToast t={t} fileName={file.name} loaded={0} />,
-      { duration: Infinity },
+      { duration: Infinity, cancel },
     );
     try {
       await ensureSSHConnection();
+      controller.signal.throwIfAborted();
       await downloadSSHFileStream(
         sshSessionId,
         file.path,
         ({ loaded, total }) => {
+          if (controller.signal.aborted) return;
           toast.loading(
             <DownloadProgressToast
               t={t}
@@ -150,15 +157,23 @@ export function DiffViewer({
               loaded={loaded}
               total={total}
             />,
-            { id: toastId, duration: Infinity },
+            { id: toastId, duration: Infinity, cancel },
           );
         },
+        controller.signal,
       );
       toast.success(t("fileManager.downloadFileSuccess", { name: file.name }), {
         id: toastId,
         duration: undefined,
       });
     } catch (error: unknown) {
+      if (controller.signal.aborted) {
+        toast.info(t("fileManager.localTransferCancelled"), {
+          id: toastId,
+          duration: undefined,
+        });
+        return;
+      }
       console.error("Failed to download file:", error);
       const err = error as { message?: string };
       toast.error(

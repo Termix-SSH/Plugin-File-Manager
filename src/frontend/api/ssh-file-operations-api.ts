@@ -500,6 +500,7 @@ export async function downloadSSHFileStream(
   sessionId: string,
   filePath: string,
   onProgress?: (event: DownloadProgressEvent) => void,
+  signal?: AbortSignal,
 ): Promise<void> {
   const response = await getFileManagerApiForSession(sessionId).post(
     "/downloadFileStream",
@@ -507,6 +508,7 @@ export async function downloadSSHFileStream(
     {
       responseType: "blob",
       timeout: 0,
+      signal,
       onDownloadProgress: onProgress
         ? (event) => onProgress({ loaded: event.loaded, total: event.total })
         : undefined,

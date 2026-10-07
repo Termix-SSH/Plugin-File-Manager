@@ -24,7 +24,12 @@ const api = vi.hoisted(() => ({
 }));
 vi.mock("../../../src/frontend/api/ssh-file-operations-api", () => api);
 vi.mock("sonner", () => ({
-  toast: { loading: vi.fn(), success: vi.fn(), error: vi.fn() },
+  toast: {
+    loading: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+  },
 }));
 vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@termix-ssh/plugin-sdk/frontend")>()),
@@ -58,9 +63,11 @@ const file2: FileItem = { name: "two.txt", path: "/two.txt", type: "file" };
 const host = { id: 1, name: "host", ip: "127.0.0.1", port: 22 } as SSHHost;
 let transfers: Array<{
   progress: (event: { loaded: number; total?: number }) => void;
+  signal?: AbortSignal;
   resolve: () => void;
   reject: (error: Error) => void;
 }>;
+const cancel = { label: "fileManager.cancel", onClick: expect.any(Function) };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -71,9 +78,9 @@ beforeEach(() => {
   );
   transfers = [];
   api.downloadSSHFileStream.mockImplementation(
-    (_session, _path, progress) =>
+    (_session, _path, progress, signal) =>
       new Promise<void>((resolve, reject) => {
-        transfers.push({ progress, resolve, reject });
+        transfers.push({ progress, signal, resolve, reject });
       }),
   );
 });
@@ -123,11 +130,12 @@ describe.each(["preview", "comparison"])("%s download feedback", (kind) => {
     const id = vi.mocked(toast.loading).mock.results[0].value;
     expect(toast.loading).toHaveBeenCalledWith(expect.anything(), {
       duration: Infinity,
+      cancel,
     });
     expect(toast.success).not.toHaveBeenCalled();
     act(() => transfers[0].progress({ loaded: 50, total: 100 }));
     const last = vi.mocked(toast.loading).mock.calls.at(-1)!;
-    expect(last[1]).toEqual({ id, duration: Infinity });
+    expect(last[1]).toEqual({ id, duration: Infinity, cancel });
     render(<>{last[0] as React.ReactNode}</>);
     expect(screen.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
@@ -152,6 +160,29 @@ describe.each(["preview", "comparison"])("%s download feedback", (kind) => {
     );
     expect(toast.success).not.toHaveBeenCalled();
   });
+
+  it("cancels the download from the progress toast", async () => {
+    fireEvent.click(await open(kind));
+    await waitFor(() => expect(transfers).toHaveLength(1));
+    const id = vi.mocked(toast.loading).mock.results[0].value;
+    const signal = transfers[0].signal!;
+    expect(signal.aborted).toBe(false);
+    const cancelAction = vi.mocked(toast.loading).mock.calls[0][1]
+      ?.cancel as unknown as { onClick: () => void };
+    act(() => cancelAction.onClick());
+    expect(signal.aborted).toBe(true);
+    const calls = vi.mocked(toast.loading).mock.calls.length;
+    // Late progress must not resurrect the toast the cancel button closed.
+    act(() => transfers[0].progress({ loaded: 60, total: 100 }));
+    expect(toast.loading).toHaveBeenCalledTimes(calls);
+    await act(async () => transfers[0].reject(new Error("canceled")));
+    expect(toast.info).toHaveBeenCalledWith(
+      "fileManager.localTransferCancelled",
+      { id, duration: undefined },
+    );
+    expect(toast.error).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
+  });
 });
 
 it("keeps simultaneous comparison downloads in separate toasts", async () => {
@@ -166,11 +197,13 @@ it("keeps simultaneous comparison downloads in separate toasts", async () => {
   expect(toast.loading).toHaveBeenLastCalledWith(expect.anything(), {
     id: ids[0],
     duration: Infinity,
+    cancel,
   });
   act(() => transfers[1].progress({ loaded: 2 }));
   expect(toast.loading).toHaveBeenLastCalledWith(expect.anything(), {
     id: ids[1],
     duration: Infinity,
+    cancel,
   });
   await act(async () => {
     transfers[1].resolve();
