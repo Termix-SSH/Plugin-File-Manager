@@ -451,11 +451,11 @@ export function FileViewer({
                   {t("fileManager.revert")}
                 </Button>
                 <Button
-                  variant="default"
+                  variant="outline"
                   size="sm"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40 dark:bg-transparent dark:hover:bg-accent-brand/10"
                 >
                   <Save className="w-4 h-4" />
                   {t("common.save")}
@@ -663,10 +663,10 @@ export function FileViewer({
               <div className="flex gap-3">
                 {!isTooLarge && (
                   <Button
-                    variant="default"
+                    variant="outline"
                     size="sm"
                     onClick={handleConfirmOpenAsText}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40 dark:bg-transparent dark:hover:bg-accent-brand/10"
                   >
                     <FileText className="w-4 h-4" />
                     {t("fileManager.openAsText")}

@@ -7,11 +7,11 @@ import React, {
   useState,
 } from "react";
 import {
-  Button,
   Input,
   Label,
   Select2,
   InlineView,
+  FormFooter,
 } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
@@ -689,29 +689,20 @@ export function TransferToHostDialog({
         </>
       }
       footer={
-        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            className="rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            {t("transfer.cancel")}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleConfirm}
-            disabled={
-              !selectedHost ||
-              !destPath.trim() ||
-              !isHostReady ||
-              availableHosts.length === 0
-            }
-            className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            <ArrowRightLeft className="size-3.5 mr-1" />
-            {move ? t("transfer.confirmMove") : t("transfer.confirmCopy")}
-          </Button>
-        </div>
+        <FormFooter
+          onCancel={() => onOpenChange(false)}
+          cancelLabel={t("transfer.cancel")}
+          onSave={() => void handleConfirm()}
+          saveLabel={
+            move ? t("transfer.confirmMove") : t("transfer.confirmCopy")
+          }
+          disabled={
+            !selectedHost ||
+            !destPath.trim() ||
+            !isHostReady ||
+            availableHosts.length === 0
+          }
+        />
       }
     >
       <p className="text-xs text-muted-foreground">{sourceLabel}</p>

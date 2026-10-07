@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Label, InlineView } from "@termix-ssh/plugin-sdk/ui";
+import {
+  Input,
+  Label,
+  InlineView,
+  FormFooter,
+} from "@termix-ssh/plugin-sdk/ui";
 import { Package } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
@@ -66,24 +71,12 @@ export function CompressDialog({
         </>
       }
       footer={
-        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            className="rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            {t("common.cancel")}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleCompress}
-            disabled={!archiveName.trim()}
-            className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 rounded-none text-[10px] font-bold uppercase tracking-widest"
-          >
-            <Package className="size-3.5 mr-1" />
-            {t("fileManager.compress")}
-          </Button>
-        </div>
+        <FormFooter
+          onCancel={() => onOpenChange(false)}
+          onSave={() => void handleCompress()}
+          saveLabel={t("fileManager.compress")}
+          disabled={!archiveName.trim()}
+        />
       }
     >
       <p className="text-xs text-muted-foreground">

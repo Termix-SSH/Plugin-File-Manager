@@ -672,7 +672,7 @@ export function LocalFilePane({
 
   return (
     <div
-      className="h-full flex flex-col bg-card overflow-hidden relative"
+      className="h-full flex flex-col bg-background overflow-hidden relative"
       data-testid="local-file-pane"
       onDragEnter={handlePaneDragEnter}
       onDragOver={handlePaneDragOver}
@@ -805,7 +805,7 @@ export function LocalFilePane({
 
       {/* Column headers */}
       <div
-        className="grid gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground border-b border-border bg-card select-none"
+        className="grid gap-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70 border-b border-border bg-background select-none"
         style={rowStyle}
         title={t("fileManager.columnsHint")}
         onContextMenu={(e) => {
@@ -912,9 +912,7 @@ export function LocalFilePane({
               <span className="shrink-0">
                 <CornerLeftUp className="size-4 text-muted-foreground" />
               </span>
-              <span className="font-bold tracking-tight text-muted-foreground">
-                ..
-              </span>
+              <span className="font-medium text-muted-foreground">..</span>
             </div>
           </div>
         )}
@@ -970,11 +968,9 @@ export function LocalFilePane({
             </Button>
           </div>
         ) : visibleEntries.length === 0 && !loading ? (
-          <div className="flex-1 min-h-[200px] flex flex-col items-center justify-center text-muted-foreground opacity-10 gap-4 select-none pointer-events-none">
-            <Folder className="size-24" strokeWidth={1} />
-            <span className="text-xl font-black uppercase tracking-[0.2em]">
-              {t("fileManager.emptyFolder")}
-            </span>
+          <div className="flex-1 min-h-[200px] flex flex-col items-center justify-center gap-2 text-muted-foreground select-none pointer-events-none">
+            <Folder className="size-8 text-muted-foreground/30" />
+            <span className="text-xs">{t("fileManager.emptyFolder")}</span>
           </div>
         ) : (
           <div
@@ -1042,7 +1038,7 @@ export function LocalFilePane({
                           className="flex-1 min-w-0 border border-accent-brand/60 bg-card px-2 py-0.5 text-xs rounded-none outline-none focus:ring-1 focus:ring-accent-brand/50 pointer-events-auto"
                         />
                       ) : (
-                        <span className="font-bold truncate tracking-tight">
+                        <span className="font-medium truncate">
                           {entry.name}
                           {entry.type === "link" && entry.linkTarget && (
                             <span className="text-accent-brand ml-1 font-normal">

@@ -1,7 +1,10 @@
 import React from "react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManager } from "./FileManager.tsx";
-import { FullScreenAppWrapper, ConnectionScreen } from "@termix-ssh/plugin-sdk/ui";
+import {
+  FullScreenAppWrapper,
+  ConnectionScreen,
+} from "@termix-ssh/plugin-sdk/ui";
 
 interface FileManagerAppProps {
   hostId?: string;
@@ -31,8 +34,8 @@ const FileManagerApp: React.FC<FileManagerAppProps> = ({
           return (
             <div className="relative h-full w-full">
               <ConnectionScreen
-                status="disconnected"
-                message={t("hosts.hostNotFound")}
+                status="error"
+                unavailable={{ title: t("hosts.hostNotFound") }}
               />
             </div>
           );

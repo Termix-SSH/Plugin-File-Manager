@@ -161,13 +161,6 @@ export function activate(app: TermixApp): void {
     filePath: string,
   ) => openEditorAction(app, host, filePath)) as never);
 
-  app.registerSlotContribution("onboarding.features", {
-    actionId: "file-manager.feature",
-    titleKey: "onboarding.feature_files",
-    descriptionKey: "onboarding.feature_files_desc",
-    icon: FolderSearch as ComponentType<{ className?: string }>,
-  });
-
   const stopTransferMonitor = startTransferMonitor(app.t);
   app.onDispose(stopTransferMonitor);
 }

@@ -25,6 +25,7 @@ import {
   useConfirm,
   Label,
   Select2,
+  Checkbox,
 } from "@termix-ssh/plugin-sdk/ui";
 import {
   addTransferRecent,
@@ -987,15 +988,15 @@ export function SftpTransferTab() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Label className="flex items-center gap-2 border border-border px-3 py-1.5 text-xs">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={move}
-              onChange={(event) => setMove(event.target.checked)}
+              onCheckedChange={(checked) => setMove(checked === true)}
             />
             {t("sftpTransfer.move")}
           </Label>
           <Button
-            className="h-8 rounded-none"
+            variant="outline"
+            className="h-8 rounded-none border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40 dark:bg-transparent dark:hover:bg-accent-brand/10"
             disabled={!canTransfer}
             onClick={() => void transferSelection()}
           >
