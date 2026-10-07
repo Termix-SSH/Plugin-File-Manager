@@ -448,10 +448,6 @@
     "hostNotFound": "Host not found",
     "loadingHost": "Loading host..."
   },
-  "onboarding": {
-    "feature_files": "File manager",
-    "feature_files_desc": "Browse, upload, download and edit files over SFTP without leaving the app."
-  },
   "terminal": {
     "runTitle": "Running {{command}} - {{host}}",
     "terminalTitle": "Terminal - {{host}}",

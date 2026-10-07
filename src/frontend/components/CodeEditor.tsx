@@ -6,6 +6,7 @@ import {
   type LanguageName,
 } from "@uiw/codemirror-extensions-langs";
 import { EditorView, keymap } from "@codemirror/view";
+import { Prec } from "@codemirror/state";
 import { searchKeymap, search, openSearchPanel } from "@codemirror/search";
 import {
   defaultKeymap,
@@ -106,6 +107,19 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
             preventDefault: true,
           },
         ]),
+        // One Dark's own #282c34 would clash with the app around it.
+        Prec.highest(
+          EditorView.theme({
+            "&": { backgroundColor: "var(--background)" },
+            ".cm-gutters": {
+              backgroundColor: "var(--background)",
+              borderRight: "1px solid var(--border)",
+            },
+            ".cm-activeLine": { backgroundColor: "var(--muted)" },
+            ".cm-activeLineGutter": { backgroundColor: "var(--muted)" },
+            ".cm-panels": { backgroundColor: "var(--background)" },
+          }),
+        ),
         EditorView.theme({
           "&": {
             height: "100%",
