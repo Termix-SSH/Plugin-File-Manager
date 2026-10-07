@@ -16,12 +16,6 @@ File Manager lets you work with the files on your hosts over SFTP, and copy file
 
 <br />
 
-## Install
-
-File Manager ships with [Termix](https://github.com/Termix-SSH/Termix). Admins can turn it on or off, update it or install it again from the Plugins tab. Want to see it first? Try the [demo](https://demo.termix.site/), any username and password works.
-
-<br />
-
 ## Features
 
 - Browse, upload, download, rename, move and delete files, with sudo support
