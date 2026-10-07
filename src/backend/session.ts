@@ -280,3 +280,24 @@ export function execChannel(
       (err: Error) => callback(err, undefined as never),
     );
 }
+
+/**
+ * Opens an SFTP channel owned by the caller, separate from `session.sftp`.
+ * The caller must `end()` it.
+ */
+export function openDedicatedSftp(
+  session: SSHSession,
+): Promise<import("ssh2").SFTPWrapper> {
+  return session.channelOpener.run(
+    () =>
+      new Promise<import("ssh2").SFTPWrapper>((resolve, reject) => {
+        session.client.sftp((err, sftp) => {
+          if (err) return reject(err);
+          // Failures reach the pending requests' callbacks; an unhandled
+          // "error" event would take the whole backend down instead.
+          sftp.on("error", () => {});
+          resolve(sftp);
+        });
+      }),
+  );
+}
