@@ -67,7 +67,7 @@ function fakeSftp() {
       done();
     }),
   };
-  return { sftp: sftp as unknown as SFTPWrapper, calls, files };
+  return { sftp: sftp as unknown as SFTPWrapper, calls, files, dirs };
 }
 
 describe("trash", () => {
@@ -91,5 +91,22 @@ describe("trash", () => {
     const { sftp } = fakeSftp();
     const item = await moveToTrash(sftp, "/home/me/a.txt");
     expect(await listTrash(sftp, 7)).toEqual([item]);
+  });
+
+  it("survives making the trash folders for the first time", async () => {
+    const { sftp, dirs } = fakeSftp();
+    // Real SFTP servers refuse to make a folder that exists, with "Failure".
+    (sftp as unknown as { mkdir: unknown }).mkdir = (
+      target: string,
+      done: (e?: Error) => void,
+    ) => {
+      if (dirs.has(target)) return done(new Error("Failure"));
+      dirs.add(target);
+      done();
+    };
+
+    await expect(moveToTrash(sftp, "/home/me/a.txt")).resolves.toMatchObject({
+      name: "a.txt",
+    });
   });
 });

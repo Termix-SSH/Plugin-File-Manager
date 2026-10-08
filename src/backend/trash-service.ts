@@ -80,7 +80,12 @@ async function ensureDirectory(sftp: SFTPWrapper, target: string) {
     current =
       current === "/" ? `/${part}` : current ? `${current}/${part}` : part;
     if (await exists(sftp, current)) continue;
-    await mkdir(sftp, current);
+    try {
+      await mkdir(sftp, current);
+    } catch (error) {
+      // Another call made it first; SFTP only says "Failure".
+      if (!(await exists(sftp, current))) throw error;
+    }
   }
 }
 
