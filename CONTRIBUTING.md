@@ -10,25 +10,6 @@ npm run validate   # check manifest.json
 npm run format     # format the code with Prettier
 ```
 
-## Settings
+## Docs
 
-### User
-
-- **Simultaneous File Transfers:** how many uploads and downloads run at once
-- **Confirm before moving files to trash:** ask before a delete. Permanent deletes always ask
-
-### Host
-
-- **Enable File Manager:** show the file manager for this host
-- **Default Path:** the folder to open first
-- **SCP Legacy Mode:** use SCP for hosts without a working SFTP server
-
-## Permissions
-
-- `file-manager.use`: browse, edit and transfer files. Admins and users have it by default.
-
-## Services
-
-Provides to other plugins:
-
-- `files.sftp`: read and write files on a host
+The docs for this plugin are in [docs/](docs/) and are published at https://docs.termix.site/plugins/file-manager. Settings, permissions, services, environment variables and the API reference are made from `manifest.json` and the `@openapi` comments in the code, so keep those up to date instead of writing them by hand. See [writing docs](https://docs.termix.site/develop/docs).

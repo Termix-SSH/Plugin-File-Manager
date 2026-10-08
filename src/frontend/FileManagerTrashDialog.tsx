@@ -11,6 +11,7 @@ import {
   updateSSHTrashRetention,
   type TrashItem,
 } from "./api/ssh-file-operations-api";
+import { docsUrl } from "./docs";
 
 export function FileManagerTrashDialog({
   open,
@@ -101,7 +102,7 @@ export function FileManagerTrashDialog({
       <p className="text-xs text-muted-foreground">
         {t("fileManager.trashDescription", { days: retentionDays })}{" "}
         <a
-          href="https://docs.termix.site/features/files-and-hosts/trash"
+          href={docsUrl("", "trash")}
           target="_blank"
           rel="noreferrer"
           className="text-accent-brand hover:underline"
