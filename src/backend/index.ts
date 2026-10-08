@@ -30,6 +30,7 @@ import {
   ChannelOpenSerializer,
   execChannel,
   getSessionSftp,
+  isSessionHeldByOther,
   type PendingTOTPSession,
   type SSHSession,
 } from "./session.js";
@@ -552,6 +553,18 @@ export async function activate(ctx: PluginContext) {
       return res
         .status(400)
         .json({ error: "Missing SSH connection parameters", connectionLogs });
+    }
+
+    if (
+      isSessionHeldByOther(
+        sshSessions[sessionId],
+        pendingTOTPSessions[sessionId],
+        userId,
+      )
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Session access denied", connectionLogs });
     }
 
     if (sshSessions[sessionId]?.isConnected) {
@@ -1298,6 +1311,9 @@ export async function activate(ctx: PluginContext) {
         .status(404)
         .json({ error: "TOTP session expired. Please reconnect." });
     }
+    if (session.userId !== userId) {
+      return res.status(403).json({ error: "Session access denied" });
+    }
 
     if (Date.now() - session.createdAt > 180000) {
       delete pendingTOTPSessions[sessionId];
@@ -1429,6 +1445,9 @@ export async function activate(ctx: PluginContext) {
       return res
         .status(404)
         .json({ error: "Sign-in session expired. Please reconnect." });
+    }
+    if (session.userId !== userId) {
+      return res.status(403).json({ error: "Session access denied" });
     }
     if (!session.isBrowserSignIn) {
       return res

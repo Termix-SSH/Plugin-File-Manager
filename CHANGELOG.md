@@ -10,3 +10,7 @@
 - A trash you can restore deleted files from
 - Copy files between two hosts, with the fastest route picked for you and an integrity check
 - A side by side local and remote view in the desktop app
+
+### Fixed
+
+- Connecting can no longer end or take over a file session that belongs to another user

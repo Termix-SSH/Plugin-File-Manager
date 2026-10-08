@@ -60,6 +60,16 @@ export interface PendingTOTPSession {
   isBrowserSignIn?: boolean;
 }
 
+/** A session id held by someone else, live or waiting on a login step. */
+export function isSessionHeldByOther(
+  live: Pick<SSHSession, "userId"> | undefined,
+  pending: Pick<PendingTOTPSession, "userId"> | undefined,
+  userId: string,
+): boolean {
+  if (live?.userId && live.userId !== userId) return true;
+  return !!pending?.userId && pending.userId !== userId;
+}
+
 export function execWithSudo(
   session: SSHSession,
   command: string,
