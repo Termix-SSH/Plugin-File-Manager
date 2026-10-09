@@ -1,5 +1,5 @@
 import { useSettings } from "@termix-ssh/plugin-sdk/frontend";
-import { fileManagerHostSetting } from "./host-settings";
+import { canBrowseFiles, fileManagerHostSetting } from "./host-settings";
 import {
   useCallback,
   useEffect,
@@ -575,16 +575,7 @@ export function SftpTransferTab() {
   useEffect(() => {
     setHostsLoading(true);
     getSSHHosts()
-      .then((data) =>
-        setHosts(
-          data.filter(
-            (host) =>
-              fileManagerHostSetting(host, "enableFileManager", true) &&
-              host.connectionType !== "rdp" &&
-              host.connectionType !== "vnc",
-          ),
-        ),
-      )
+      .then((data) => setHosts(data.filter((host) => canBrowseFiles(host))))
       .catch(() => setHosts([]))
       .finally(() => setHostsLoading(false));
   }, []);

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+
+- Host pickers no longer list hosts without SSH, such as Telnet only hosts
+
 ## 1.0.0
 
 ### Added

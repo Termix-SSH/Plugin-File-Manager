@@ -1,4 +1,4 @@
-import { fileManagerHostSetting } from "../host-settings";
+import { canBrowseFiles } from "../host-settings";
 import React, {
   useCallback,
   useEffect,
@@ -230,11 +230,7 @@ export function TransferToHostDialog({
     try {
       const hosts = await getSSHHosts();
       const candidates = hosts.filter(
-        (h) =>
-          h.id !== sourceHost.id &&
-          fileManagerHostSetting(h, "enableFileManager", true) &&
-          h.connectionType !== "rdp" &&
-          h.connectionType !== "vnc",
+        (h) => h.id !== sourceHost.id && canBrowseFiles(h),
       );
       setAvailableHosts(candidates);
 

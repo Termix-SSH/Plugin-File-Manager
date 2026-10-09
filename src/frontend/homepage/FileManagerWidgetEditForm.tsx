@@ -1,4 +1,4 @@
-import { fileManagerHostSetting } from "../host-settings";
+import { canBrowseFiles } from "../host-settings";
 import { useHosts, useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { Select2 } from "@termix-ssh/plugin-sdk/ui";
 import type {
@@ -12,11 +12,7 @@ export function FileManagerWidgetEditForm({
 }: WidgetEditFormProps<FileManagerWidgetConfig>) {
   const { t } = useTranslation();
   const { hosts } = useHosts();
-  const options = hosts.filter(
-    (host) =>
-      host.enableSsh !== false &&
-      fileManagerHostSetting(host, "enableFileManager", true),
-  );
+  const options = hosts.filter((host) => canBrowseFiles(host));
 
   return (
     <div className="flex flex-col gap-1">
