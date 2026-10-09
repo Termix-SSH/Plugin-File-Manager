@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Express, Request, Response } from "express";
 import Busboy from "busboy";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
@@ -44,6 +45,46 @@ export function decodeWriteContent(
     return Buffer.from(content, encoding === "base64" ? "base64" : "utf8");
   }
   return Buffer.from(content as ArrayLike<number>);
+}
+
+/** Above this a sudo save goes through a temp file; argv caps out near 128 KB. */
+export const SUDO_INLINE_MAX_BYTES = 64 * 1024;
+
+function quoteShell(value: string): string {
+  return `'${value.replace(/'/g, "'\"'\"'")}'`;
+}
+
+/**
+ * Saves a file the user cannot write by uploading it to a private temp file
+ * and copying it over the target with sudo. cat into the existing file keeps
+ * its owner and mode. The temp file is always removed.
+ */
+export async function sudoWriteViaTempFile(
+  session: SSHSession,
+  content: Buffer,
+  targetPath: string,
+  sudoPassword: string,
+): Promise<boolean> {
+  const sftp = await getSessionSftp(session);
+  const tempPath = `/tmp/termix-save-${randomUUID()}`;
+  await new Promise<void>((resolve, reject) =>
+    sftp.writeFile(tempPath, content, { mode: 0o600, flag: "wx" }, (err) =>
+      err ? reject(err) : resolve(),
+    ),
+  );
+  try {
+    const script = `cat ${quoteShell(tempPath)} > ${quoteShell(targetPath)} && echo SUCCESS`;
+    const result = await execWithSudo(
+      session,
+      `sh -c ${quoteShell(script)}`,
+      sudoPassword,
+    );
+    return result.code === 0 && result.stdout.includes("SUCCESS");
+  } finally {
+    await new Promise<void>((resolve) =>
+      sftp.unlink(tempPath, () => resolve()),
+    );
+  }
 }
 
 export function registerFileContentRoutes(
@@ -749,13 +790,28 @@ export function registerFileContentRoutes(
                 .toLowerCase()
                 .includes("permission denied");
               if (isPermDenied && sshConn.sudoPassword) {
-                execWithSudo(
-                  sshConn,
-                  `bash -c "echo '${base64Content}' | base64 -d > '${escapedPath}' && echo SUCCESS"`,
-                  sshConn.sudoPassword,
-                )
-                  .then(({ stdout, code: sudoCode }) => {
-                    if (sudoCode === 0 && stdout.includes("SUCCESS")) {
+                const sudoPassword = sshConn.sudoPassword;
+                // Single quoted as a whole so the outer shell expands nothing
+                // in the file name.
+                const sudoWrite =
+                  contentBuffer.length <= SUDO_INLINE_MAX_BYTES
+                    ? execWithSudo(
+                        sshConn,
+                        `sh -c ${quoteShell(`echo '${base64Content}' | base64 -d > '${escapedPath}' && echo SUCCESS`)}`,
+                        sudoPassword,
+                      ).then(
+                        ({ stdout, code: sudoCode }) =>
+                          sudoCode === 0 && stdout.includes("SUCCESS"),
+                      )
+                    : sudoWriteViaTempFile(
+                        sshConn,
+                        contentBuffer,
+                        filePath,
+                        sudoPassword,
+                      );
+                sudoWrite
+                  .then((written) => {
+                    if (written) {
                       restoreOriginalMode(null, () => {
                         if (!res.headersSent) {
                           res.json({
@@ -770,11 +826,12 @@ export function registerFileContentRoutes(
                         .json({ error: "Permission denied", needsSudo: true });
                     }
                   })
-                  .catch(() => {
+                  .catch((sudoErr: Error) => {
+                    ctx.log.error("Sudo write failed:", sudoErr);
                     if (!res.headersSent) {
                       res
-                        .status(403)
-                        .json({ error: "Permission denied", needsSudo: true });
+                        .status(500)
+                        .json({ error: `Write failed: ${sudoErr.message}` });
                     }
                   });
                 return;
@@ -1473,9 +1530,11 @@ export function registerFileContentRoutes(
           flags: offset === 0 ? "w" : "r+",
           start: offset,
         });
+        // The client went away mid-chunk (a cancel): drop the partial file.
         destroyUpload = () => {
           req.unpipe(writeStream as unknown as NodeJS.WritableStream);
           writeStream.destroy();
+          sftp.unlink(fullPath, () => {});
         };
 
         const fail = (status: number, error: string) => {

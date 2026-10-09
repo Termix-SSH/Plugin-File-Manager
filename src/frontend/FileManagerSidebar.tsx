@@ -38,8 +38,6 @@ import {
   useConfirm,
 } from "@termix-ssh/plugin-sdk/ui";
 
-// ─── Interfaces ────────────────────────────────────────────────────────────────
-
 interface RecentFileData {
   id: number;
   name: string;
@@ -98,8 +96,6 @@ interface FileManagerSidebarProps {
     filesystems?: DiskFilesystem[];
   };
 }
-
-// ─── Storage meter ─────────────────────────────────────────────────────────────
 
 function StorageMeter({
   storage,
@@ -180,8 +176,6 @@ function StorageMeter({
   );
 }
 
-// ─── Component ─────────────────────────────────────────────────────────────────
-
 export function FileManagerSidebar({
   density = "comfortable",
   currentHost,
@@ -197,15 +191,12 @@ export function FileManagerSidebar({
   const { t } = useTranslation();
   const confirm = useConfirm();
 
-  // ── Quick access state (API-backed) ──────────────────────────────────────────
   const [recentItems, setRecentItems] = useState<SidebarItem[]>([]);
   const [pinnedItems, setPinnedItems] = useState<SidebarItem[]>([]);
   const [shortcuts, setShortcuts] = useState<SidebarItem[]>([]);
 
-  // ── Directory tree state ──────────────────────────────────────────────────────
   const [directoryTree, setDirectoryTree] = useState<SidebarItem[]>([]);
 
-  // ── Storage state ─────────────────────────────────────────────────────────────
   const [selectedMount, setSelectedMount] = useState<string | null>(null);
 
   /**
@@ -214,7 +205,6 @@ export function FileManagerSidebar({
    */
   const loadedFoldersRef = useRef<Set<string>>(new Set(["/"]));
 
-  // ── Context menu state ────────────────────────────────────────────────────────
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -226,10 +216,6 @@ export function FileManagerSidebar({
     isVisible: false,
     item: null,
   });
-
-  // ─── Effects ──────────────────────────────────────────────────────────────────
-
-  // ─── API: Quick access ────────────────────────────────────────────────────────
 
   const loadQuickAccessData = useCallback(async () => {
     if (!currentHost?.id) return;
@@ -276,8 +262,6 @@ export function FileManagerSidebar({
     }
   }, [currentHost?.id]);
 
-  // ─── API: Directory tree ──────────────────────────────────────────────────────
-
   const loadDirectoryTree = useCallback(
     async (attempt = 0) => {
       if (!sshSessionId) return;
@@ -315,7 +299,7 @@ export function FileManagerSidebar({
           (error as { status?: number })?.status ||
           (error as { response?: { status?: number } })?.response?.status;
         if (status === 409 && attempt < 3) {
-          // Another request was already listing "/" — retry after a short delay
+          // Another request was already listing "/", retry after a short delay
           setTimeout(() => loadDirectoryTree(attempt + 1), 600);
           return;
         }
@@ -381,7 +365,7 @@ export function FileManagerSidebar({
           (error as { status?: number })?.status ||
           (error as { response?: { status?: number } })?.response?.status;
         if (status === 409) {
-          // Another request was listing this path — retry after the lock clears
+          // Another request was listing this path, retry after the lock clears
           setTimeout(() => void loadSubdirectory(folderId, folderPath), 600);
           return false;
         }
@@ -429,8 +413,6 @@ export function FileManagerSidebar({
     }
   }, [currentPath, directoryTree, loadSubdirectory, sshSessionId]);
 
-  // ─── Quick-access mutation handlers ──────────────────────────────────────────
-
   const handleRemoveRecentFile = async (item: SidebarItem) => {
     if (!currentHost?.id) return;
     try {
@@ -440,7 +422,6 @@ export function FileManagerSidebar({
         t("fileManager.removedFromRecentFiles", { name: item.name }),
       );
     } catch (error) {
-      console.error("Failed to remove recent file:", error);
       toast.error(t("fileManager.removeFailed"));
     }
   };
@@ -452,7 +433,6 @@ export function FileManagerSidebar({
       loadQuickAccessData();
       toast.success(t("fileManager.unpinnedSuccessfully", { name: item.name }));
     } catch (error) {
-      console.error("Failed to unpin file:", error);
       toast.error(t("fileManager.unpinFailed"));
     }
   };
@@ -469,7 +449,6 @@ export function FileManagerSidebar({
       loadQuickAccessData();
       toast.success(t("fileManager.removedShortcut", { name: item.name }));
     } catch (error) {
-      console.error("Failed to remove shortcut:", error);
       toast.error(t("fileManager.removeShortcutFailed"));
     }
   };
@@ -488,12 +467,9 @@ export function FileManagerSidebar({
       loadQuickAccessData();
       toast.success(t("fileManager.clearedAllRecentFiles"));
     } catch (error) {
-      console.error("Failed to clear recent files:", error);
       toast.error(t("fileManager.clearFailed"));
     }
   };
-
-  // ─── Quick-access item click ──────────────────────────────────────────────────
 
   const handleQuickAccessClick = (item: SidebarItem) => {
     if (item.type === "recent" || item.type === "pinned") {
@@ -508,8 +484,6 @@ export function FileManagerSidebar({
       onPathChange(item.path);
     }
   };
-
-  // ─── FolderTree directory selection (onSelect callback) ──────────────────────
 
   /**
    * Called by FolderTree whenever the user selects (clicks) a tree item.
@@ -546,8 +520,6 @@ export function FileManagerSidebar({
     },
     [directoryTree, onPathChange, sshSessionId, loadSubdirectory],
   );
-
-  // ─── Context menu ─────────────────────────────────────────────────────────────
 
   const findTreeItemById = useCallback(
     (items: SidebarItem[], id: string): SidebarItem | null => {
@@ -613,8 +585,6 @@ export function FileManagerSidebar({
     };
   }, [contextMenu.isVisible, onItemContextMenu]);
 
-  // ─── Derive selected tree node + ancestors from currentPath ──────────────────
-
   const { selectedTreeId, ancestorIds } = useMemo(() => {
     if (currentPath === "/")
       return { selectedTreeId: "root", ancestorIds: new Set<string>() };
@@ -640,8 +610,6 @@ export function FileManagerSidebar({
     const id = findByPath(directoryTree, []);
     return { selectedTreeId: id, ancestorIds: new Set(ancestors) };
   }, [currentPath, directoryTree]);
-
-  // ─── Render helpers ───────────────────────────────────────────────────────────
 
   /**
    * Recursively renders directory tree items using FolderTree.Item + Content.
@@ -713,8 +681,6 @@ export function FileManagerSidebar({
   const hasQuickAccessItems =
     recentItems.length > 0 || pinnedItems.length > 0 || shortcuts.length > 0;
 
-  // ─── Render ───────────────────────────────────────────────────────────────────
-
   const storageFilesystems = diskInfo?.filesystems ?? [];
   const pathFs = mountForPath(storageFilesystems, currentPath);
   const activeStorageMount =
@@ -743,7 +709,6 @@ export function FileManagerSidebar({
     <>
       <div className="h-full flex flex-col bg-background overflow-hidden">
         <div className="flex-1 overflow-y-auto thin-scrollbar">
-          {/* ── Recent files ──────────────────────────────────────── */}
           {renderSection(t("fileManager.recent"), recentItems, (item) =>
             renderQuickAccessItem(
               item,
@@ -759,7 +724,6 @@ export function FileManagerSidebar({
             ),
           )}
 
-          {/* ── Pinned files ───────────────────────────────────────── */}
           {renderSection(t("fileManager.pinned"), pinnedItems, (item) =>
             renderQuickAccessItem(
               item,
@@ -775,7 +739,6 @@ export function FileManagerSidebar({
             ),
           )}
 
-          {/* ── Folder shortcuts ───────────────────────────────────── */}
           {renderSection(t("fileManager.folderShortcuts"), shortcuts, (item) =>
             renderQuickAccessItem(
               item,
@@ -790,7 +753,6 @@ export function FileManagerSidebar({
             ),
           )}
 
-          {/* ── Directory tree ─────────────────────────────────────── */}
           <div
             className={cn(
               hasQuickAccessItems && "border-t border-border mt-1 pt-1",
@@ -817,7 +779,7 @@ export function FileManagerSidebar({
             </div>
           </div>
 
-          {/* ── Storage — mobile only (inside scroll) ──────────────── */}
+          {/* Storage on mobile, inside the scroll area */}
           {storage && (
             <div className="md:hidden">
               <div className="border-t border-border mx-0 my-2" />
@@ -843,7 +805,7 @@ export function FileManagerSidebar({
           </button>
         )}
 
-        {/* ── Storage — desktop only (bottom of sidebar) ──────────── */}
+        {/* Storage on desktop, at the bottom */}
         {storage && (
           <div className="hidden md:flex flex-col p-3 gap-2 border-t border-border shrink-0">
             <StorageMeter
@@ -856,7 +818,7 @@ export function FileManagerSidebar({
         )}
       </div>
 
-      {/* ── Context menu (fallback when parent does not supply onItemContextMenu) */}
+      {/* Fallback context menu when the parent does not supply one */}
       {!onItemContextMenu && contextMenu.isVisible && contextMenu.item && (
         <>
           <div className="fixed inset-0 z-40" />

@@ -398,8 +398,8 @@ function FileManagerContent({
       if (sshSessionId) {
         try {
           await keepSSHAlive(sshSessionId);
-        } catch (error) {
-          console.error("SSH keepalive failed:", error);
+        } catch {
+          // The next request reconnects
         }
       }
     }, 30 * 1000);
@@ -543,7 +543,6 @@ function FileManagerContent({
         currentHost.name || `${currentHost.username}@${currentHost.ip}`;
       await logActivity("file_manager", currentHost.id, hostName);
     } catch (err) {
-      console.warn("Failed to log file manager activity:", err);
       activityLoggedRef.current = false;
     } finally {
       activityLoggingRef.current = false;
@@ -556,9 +555,6 @@ function FileManagerContent({
         enableToast: true,
         onSuccess: () => {
           clearSelection();
-        },
-        onError: (error) => {
-          console.error("Drag failed:", error);
         },
       });
     },
@@ -575,7 +571,6 @@ function FileManagerContent({
 
       if (isOutside) {
         if (draggedFiles.length === 0) {
-          console.error("No files to drag - this should not happen");
           return;
         }
 
@@ -583,9 +578,6 @@ function FileManagerContent({
           enableToast: true,
           onSuccess: () => {
             clearSelection();
-          },
-          onError: (error) => {
-            console.error("Drag failed:", error);
           },
         });
         systemDrag.handleDragEnd(e);
@@ -695,12 +687,9 @@ function FileManagerContent({
         if (!result?.requires_totp) {
           logFileManagerActivity();
         }
-      } catch (dirError: unknown) {
-        console.error("Failed to load initial directory:", dirError);
-      }
+      } catch (dirError: unknown) {}
     } catch (error: unknown) {
       const sshError = error as SSHConnectionError;
-      console.error("SSH connection failed:", error);
 
       if (sshError.connectionLogs) {
         sshError.connectionLogs.forEach((log) => {
@@ -762,7 +751,6 @@ function FileManagerContent({
   const loadDirectory = useCallback(
     async (path: string, conflictAttempt = 0): Promise<boolean> => {
       if (!sshSessionId) {
-        console.error("Cannot load directory: no SSH session ID");
         return false;
       }
       const requestId = ++directoryRequestRef.current;
@@ -861,8 +849,6 @@ function FileManagerContent({
             }
             return false;
           }
-
-          console.error("Failed to load directory:", error);
 
           const errorMessage =
             apiError.response?.data?.error || apiError.message || String(error);
@@ -1196,7 +1182,6 @@ function FileManagerContent({
       }
     } catch (error) {
       toast.error(t("fileManager.failedToUploadFile"));
-      console.error("Failed to read dropped folder:", error);
       return;
     }
 
@@ -1269,7 +1254,6 @@ function FileManagerContent({
         } catch (error) {
           controller.signal.throwIfAborted();
           failed.push(relativePath);
-          console.error(`Failed to upload ${relativePath}:`, error);
         }
       }
 
@@ -1298,7 +1282,6 @@ function FileManagerContent({
         return;
       }
       toast.error(t("fileManager.failedToUploadFile"));
-      console.error("Folder upload failed:", error);
     }
   }
 
@@ -1392,7 +1375,6 @@ function FileManagerContent({
       } else {
         toast.error(t("fileManager.failedToUploadFile"));
       }
-      console.error("Upload failed:", error);
     }
   }
 
@@ -1485,7 +1467,6 @@ function FileManagerContent({
           duration: undefined,
         });
       }
-      console.error("Download failed:", error);
     }
   }
 
@@ -1626,7 +1607,6 @@ function FileManagerContent({
         } else {
           toast.error(t("fileManager.failedToDeleteItems"));
         }
-        console.error("Delete failed:", error);
       }
     };
     if (confirmBeforeTrash) {
@@ -2106,7 +2086,6 @@ function FileManagerContent({
             }
           }
         } catch (error: unknown) {
-          console.error(`Failed to ${operation} file ${file.name}:`, error);
           const axiosError = error as {
             response?: { status?: number; data?: { error?: string } };
           };
@@ -2391,10 +2370,6 @@ function FileManagerContent({
                 );
                 successCount++;
               } catch (error: unknown) {
-                console.error(
-                  `Failed to delete copied file ${copiedFile.targetName}:`,
-                  error,
-                );
                 toast.error(
                   t("fileManager.deleteCopiedFileFailed", {
                     name: copiedFile.targetName,
@@ -2433,10 +2408,6 @@ function FileManagerContent({
                 );
                 successCount++;
               } catch (error: unknown) {
-                console.error(
-                  `Failed to move back file ${movedFile.targetName}:`,
-                  error,
-                );
                 toast.error(
                   t("fileManager.moveBackFileFailed", {
                     name: movedFile.targetName,
@@ -2475,7 +2446,6 @@ function FileManagerContent({
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error, String(error));
       toast.error(`${t("fileManager.undoOperationFailed")}: ${errorMessage}`);
-      console.error("Undo failed:", error);
     }
   }
 
@@ -2505,7 +2475,6 @@ function FileManagerContent({
       toast.success(t("fileManager.permissionsChangedSuccessfully"));
       await handleRefreshDirectory();
     } catch (error: unknown) {
-      console.error("Failed to change permissions:", error);
       toast.error(t("fileManager.failedToChangePermissions"));
       throw error;
     }
@@ -2613,7 +2582,6 @@ function FileManagerContent({
       } else {
         toast.error(t("fileManager.failedToCreateItem"));
       }
-      console.error("Create failed:", error);
     }
   }
 
@@ -2690,7 +2658,6 @@ function FileManagerContent({
       } else {
         toast.error(t("fileManager.failedToRenameItem"));
       }
-      console.error("Rename failed:", error);
     }
   }
 
@@ -2727,12 +2694,9 @@ function FileManagerContent({
           toast.success(t("fileManager.connectedSuccessfully"));
 
           logFileManagerActivity();
-        } catch (dirError: unknown) {
-          console.error("Failed to load initial directory:", dirError);
-        }
+        } catch (dirError: unknown) {}
       }
     } catch (error: unknown) {
-      console.error("TOTP verification failed:", error);
       toast.error(t("fileManager.totpVerificationFailed"));
     } finally {
       setIsLoading(false);
@@ -2775,12 +2739,9 @@ function FileManagerContent({
           toast.success(t("fileManager.connectedSuccessfully"));
 
           logFileManagerActivity();
-        } catch (dirError: unknown) {
-          console.error("Failed to load initial directory:", dirError);
-        }
+        } catch (dirError: unknown) {}
       }
     } catch (error: unknown) {
-      console.error("Browser sign-in failed:", error);
       toast.error(t("fileManager.browserSignInFailed"));
     } finally {
       setIsLoading(false);
@@ -2873,11 +2834,8 @@ function FileManagerContent({
         initialLoadDoneRef.current = true;
         toast.success(t("fileManager.connectedSuccessfully"));
         logFileManagerActivity();
-      } catch (dirError: unknown) {
-        console.error("Failed to load initial directory:", dirError);
-      }
+      } catch (dirError: unknown) {}
     } catch (error: unknown) {
-      console.error("SSH connection with credentials failed:", error);
       setAuthDialogReason("auth_failed");
       setShowAuthDialog(true);
       toast.error(
@@ -2958,11 +2916,8 @@ function FileManagerContent({
         initialLoadDoneRef.current = true;
         toast.success(t("fileManager.connectedSuccessfully"));
         logFileManagerActivity();
-      } catch (dirError: unknown) {
-        console.error("Failed to load initial directory:", dirError);
-      }
+      } catch (dirError: unknown) {}
     } catch (error: unknown) {
-      console.error("SSH connection with passphrase failed:", error);
       setShowPassphraseDialog(true);
       toast.error(t("fileManager.incorrectPassphrase"));
     } finally {
@@ -3028,7 +2983,6 @@ function FileManagerContent({
             successCount++;
           }
         } catch (error: unknown) {
-          console.error(`Failed to move file ${file.name}:`, error);
           toast.error(
             t("fileManager.moveFileFailed", { name: file.name }) +
               ": " +
@@ -3074,7 +3028,6 @@ function FileManagerContent({
         clearSelection();
       }
     } catch (error: unknown) {
-      console.error("Drag move operation failed:", error);
       toast.error(
         t("fileManager.moveOperationFailed") +
           ": " +
@@ -3138,9 +3091,6 @@ function FileManagerContent({
       if (systemDrag.isFileSystemAPISupported) {
         await systemDrag.handleDragToSystem(files, {
           enableToast: true,
-          onError: (error) => {
-            console.error("System-level drag failed:", error);
-          },
         });
       } else {
         if (files.length === 1) {
@@ -3150,7 +3100,6 @@ function FileManagerContent({
         }
       }
     } catch (error: unknown) {
-      console.error("Drag to desktop failed:", error);
       toast.error(
         t("fileManager.dragFailed") +
           ": " +
@@ -3264,7 +3213,6 @@ function FileManagerContent({
         t("fileManager.filePinnedSuccessfully", { name: file.name }),
       );
     } catch (error) {
-      console.error("Failed to pin file:", error);
       toast.error(t("fileManager.pinFileFailed"));
     }
   }
@@ -3284,7 +3232,6 @@ function FileManagerContent({
         t("fileManager.fileUnpinnedSuccessfully", { name: file.name }),
       );
     } catch (error) {
-      console.error("Failed to unpin file:", error);
       toast.error(t("fileManager.unpinFileFailed"));
     }
   }
@@ -3300,7 +3247,6 @@ function FileManagerContent({
         t("fileManager.shortcutAddedSuccessfully", { name: folderName }),
       );
     } catch (error) {
-      console.error("Failed to add shortcut:", error);
       toast.error(t("fileManager.addShortcutFailed"));
     }
   }
@@ -3315,8 +3261,8 @@ function FileManagerContent({
     try {
       await addRecentFile(currentHost.id, file.path, file.name);
       setSidebarRefreshTrigger((prev) => prev + 1);
-    } catch (error) {
-      console.error("Failed to record recent file:", error);
+    } catch {
+      // Only the recent and pinned lists, safe to skip
     }
   }
 
@@ -3339,8 +3285,8 @@ function FileManagerContent({
       await removePinnedFile(currentHost.id, file.path);
 
       setSidebarRefreshTrigger((prev) => prev + 1);
-    } catch (error) {
-      console.error("Failed to cleanup missing file:", error);
+    } catch {
+      // Only the recent and pinned lists, safe to skip
     }
   }
 
@@ -3522,7 +3468,7 @@ function FileManagerContent({
             />
           )}
 
-          {/* Sidebar — fixed overlay on mobile, static on desktop */}
+          {/* Sidebar: fixed overlay on mobile, static on desktop */}
           <div
             className={cn(
               "flex-shrink-0 h-full flex flex-col",

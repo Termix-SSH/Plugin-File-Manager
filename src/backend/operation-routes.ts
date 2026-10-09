@@ -545,11 +545,7 @@ export function registerFileOperationRoutes(
         if (useSudo && sshConn.sudoPassword) {
           execWithSudo(sshConn, deleteCommand, sshConn.sudoPassword).then(
             (result) => {
-              if (
-                result.code === 0 ||
-                (!result.stderr.includes("Permission denied") &&
-                  !result.stdout.includes("Permission denied"))
-              ) {
+              if (result.code === 0) {
                 res.json({
                   message: "Item deleted successfully",
                   path: itemPath,

@@ -7,7 +7,7 @@ export interface TransferScanSummary {
   fileCount: number;
   totalBytes: number;
   largestFileBytes: number;
-  /** Share of total bytes in likely incompressible file types (0–1). */
+  /** Share of total bytes in likely incompressible file types (0 to 1). */
   incompressibleRatio: number;
   /** Share inferred from bounded content samples, when available. */
   sampledIncompressibleRatio?: number;

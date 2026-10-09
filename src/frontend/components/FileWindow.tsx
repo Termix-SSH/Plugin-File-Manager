@@ -99,26 +99,21 @@ export function FileWindow({
   }, []);
 
   const ensureSSHConnection = async () => {
-    try {
-      const status = await getSSHStatus(sshSessionId);
+    const status = await getSSHStatus(sshSessionId);
 
-      if (!status.connected) {
-        await connectSSH(sshSessionId, {
-          hostId: sshHost.id,
-          ip: sshHost.ip,
-          port: sshHost.port,
-          username: sshHost.username,
-          password: sshHost.password,
-          sshKey: sshHost.key,
-          keyPassword: sshHost.keyPassword,
-          authType: sshHost.authType,
-          credentialId: sshHost.credentialId,
-          userId: sshHost.userId,
-        });
-      }
-    } catch (error) {
-      console.error("SSH connection check/reconnect failed:", error);
-      throw error;
+    if (!status.connected) {
+      await connectSSH(sshSessionId, {
+        hostId: sshHost.id,
+        ip: sshHost.ip,
+        port: sshHost.port,
+        username: sshHost.username,
+        password: sshHost.password,
+        sshKey: sshHost.key,
+        keyPassword: sshHost.keyPassword,
+        authType: sshHost.authType,
+        credentialId: sshHost.credentialId,
+        userId: sshHost.userId,
+      });
     }
   };
 
@@ -143,8 +138,8 @@ export function FileWindow({
             if (isDisplayableText(decoded)) {
               fileContent = decoded;
             }
-          } catch (err) {
-            console.error("Failed to decode base64 content:", err);
+          } catch {
+            // Not valid UTF-8, keep the raw content
           }
         }
 
@@ -200,8 +195,6 @@ export function FileWindow({
         const extension = file.name.split(".").pop()?.toLowerCase();
         setIsEditable(!mediaExtensions.includes(extension || ""));
       } catch (error: unknown) {
-        console.error("Failed to load file:", error);
-
         const err = error as {
           message?: string;
           isFileNotFound?: boolean;
@@ -290,7 +283,6 @@ export function FileWindow({
           file.size = contentSize;
         }
       } catch (error: unknown) {
-        console.error("Failed to load file content:", error);
         const err = error as { message?: string };
         toast.error(
           `${t("fileManager.failedToLoadFile")}: ${err.message || t("fileManager.unknownError")}`,
@@ -335,8 +327,6 @@ export function FileWindow({
 
       toast.success(t("fileManager.fileSavedSuccessfully"));
     } catch (error: unknown) {
-      console.error("Failed to save file:", error);
-
       const err = error as {
         message?: string;
         response?: { data?: { needsSudo?: boolean } };
@@ -373,8 +363,8 @@ export function FileWindow({
 
     try {
       await window.electronAPI?.closeExternalEditor?.(session.editId);
-    } catch (error) {
-      console.error("Failed to close external editor session:", error);
+    } catch {
+      // The editor may already be closed
     }
   };
 
@@ -410,7 +400,6 @@ export function FileWindow({
       };
       toast.success(t("fileManager.externalEditorOpened"));
     } catch (error: unknown) {
-      console.error("Failed to open external editor:", error);
       const err = error as { message?: string };
       toast.error(
         `${t("fileManager.failedToOpenExternalEditor")}: ${
@@ -441,7 +430,6 @@ export function FileWindow({
       setExternalEditorPath(editorPath);
       toast.success(t("fileManager.externalEditorSelected"));
     } catch (error: unknown) {
-      console.error("Failed to select external editor:", error);
       const err = error as { message?: string };
       toast.error(
         `${t("fileManager.failedToSelectExternalEditor")}: ${
@@ -465,7 +453,6 @@ export function FileWindow({
           await handleSave(newContent);
           toast.success(t("fileManager.fileAutoSaved"));
         } catch (error) {
-          console.error("Auto-save failed:", error);
           toast.error(t("fileManager.autoSaveFailed"));
         }
       }, 60000);
@@ -524,7 +511,6 @@ export function FileWindow({
         });
         return;
       }
-      console.error("Failed to download file:", error);
 
       const err = error as { message?: string };
       if (

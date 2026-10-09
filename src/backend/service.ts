@@ -8,7 +8,6 @@ import {
 } from "./sftp-promisify.js";
 
 const DEFAULT_DIR_MODE = 0o755;
-import type { SSHSession } from "./session.js";
 
 /** What other plugins get from ctx.services.get("files.sftp", {userId}). */
 export interface FilesService {
@@ -59,14 +58,7 @@ async function withServiceSftp<T>(
   );
 }
 
-export function createFilesService(
-  ctx: PluginContext,
-  deps: {
-    sshSessions: Record<string, SSHSession>;
-    verifySessionOwnership: (session: SSHSession, userId: string) => boolean;
-  },
-): FilesService {
-  void deps;
+export function createFilesService(ctx: PluginContext): FilesService {
   return {
     async list(hostId, path) {
       return withServiceSftp(ctx, hostId, async (sftp) => {

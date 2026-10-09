@@ -281,7 +281,6 @@ export function useLocalTransfers({
             : t("fileManager.localDownloadFailed"),
           message ? { description: message } : undefined,
         );
-        console.error(`Local ${direction} batch failed:`, error);
       }
     },
     [t],
@@ -365,7 +364,6 @@ export function useLocalTransfers({
                 if (!isCancelled()) {
                   failed.push(file.relativePath);
                   reason ??= describeTransferError(error);
-                  console.error(`Failed to upload ${file.localPath}:`, error);
                 }
               } finally {
                 settleTransfer(transferId, file.size);
@@ -491,7 +489,6 @@ export function useLocalTransfers({
           t("fileManager.localUnsafeNamesSkipped", { count: unsafe.length }),
           { description: unsafe.slice(0, 3).join(", ") },
         );
-        console.warn("Skipped remote items with unsafe local names:", unsafe);
       }
       if (plannedFiles.length === 0 && plannedDirs.length === 0) {
         return;
@@ -566,10 +563,6 @@ export function useLocalTransfers({
                 if (!isCancelled()) {
                   failed.push(entry.relativePath);
                   reason ??= describeTransferError(error);
-                  console.error(
-                    `Failed to download ${entry.remotePath}:`,
-                    error,
-                  );
                 }
               } finally {
                 settleTransfer(transferId, entry.size ?? 0);

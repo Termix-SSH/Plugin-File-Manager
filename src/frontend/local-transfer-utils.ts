@@ -144,7 +144,7 @@ const WINDOWS_RESERVED_NAMES =
  * segment on the destination platform (`separator` "\\" means Windows).
  *
  * A POSIX file name may legally contain "\\", ":" or end in a dot, all of
- * which Windows treats as separators, drive prefixes or strips — so a remote
+ * which Windows treats as separators, drive prefixes or strips, so a remote
  * name like "..\\outside.txt" would otherwise be normalised out of the
  * selected download folder. Anything that is not a plain name is rejected;
  * traversal ("..") and separators are rejected on every platform.
@@ -330,9 +330,9 @@ const MONTH_ABBREVIATIONS = [
 
 /**
  * Formats a local mtime the same way the backend formats remote entries
- * (`formatMtime` in src/backend/hosts/file-manager/utils.ts, i.e. `ls -l`
+ * (`formatMtime` in src/backend/utils.ts, i.e. `ls -l`
  * style): `Sep 11 16:25` for the last six months, `Sep 11  2025` before
- * that — so both panes read alike.
+ * that, so both panes read alike.
  */
 export function formatLocalModified(
   timestamp?: number,

@@ -99,8 +99,6 @@ export function DiffViewer({
       setContent1(response1.content || "");
       setContent2(response2.content || "");
     } catch (error: unknown) {
-      console.error("Failed to load files for diff:", error);
-
       const err = error as {
         message?: string;
         response?: { data?: { tooLarge?: boolean; error?: string } };
@@ -174,7 +172,6 @@ export function DiffViewer({
         });
         return;
       }
-      console.error("Failed to download file:", error);
       const err = error as { message?: string };
       toast.error(
         t("fileManager.downloadFileFailed") +

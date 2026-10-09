@@ -56,6 +56,8 @@ export interface PendingTOTPSession {
   prompts?: Array<{ prompt: string; echo: boolean }>;
   totpPromptIndex?: number;
   resolvedPassword?: string;
+  sudoPassword?: string;
+  scpLegacy?: boolean;
   totpAttempts: number;
   isBrowserSignIn?: boolean;
 }

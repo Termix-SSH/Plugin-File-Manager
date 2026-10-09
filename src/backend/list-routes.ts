@@ -81,7 +81,7 @@ export function registerFileListingRoutes(
       }
     }
 
-    // Drop concurrent requests for the same session+path — each would open
+    // Drop concurrent requests for the same session+path, each would open
     // a new SSH channel and can exceed the server's per-connection channel limit.
     const listKey = `${sessionId}:${sshPath}`;
     if (activeListRequests[listKey]) {
@@ -90,7 +90,8 @@ export function registerFileListingRoutes(
         .json({ error: "List request already in progress" });
     }
     activeListRequests[listKey] = true;
-    res.on("finish", () => {
+    // "close" also fires when the client goes away before the answer.
+    res.on("close", () => {
       delete activeListRequests[listKey];
     });
 

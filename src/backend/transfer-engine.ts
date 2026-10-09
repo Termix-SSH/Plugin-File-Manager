@@ -1476,7 +1476,7 @@ async function runFastSftpCopySegmentedParallel(
     return aggregateBytes;
   };
 
-  /** Parallel lanes share one dest file — use dest size, not summed segment deltas. */
+  /** Parallel lanes share one dest file, so use dest size, not summed segment deltas. */
   const reportDelta = (_delta: number) => {
     void refreshDestProgress(false);
   };
@@ -2518,7 +2518,7 @@ async function transferViaTar(
 
   throwIfCancelled(transferId);
   const compressStart = Date.now();
-  const compressCmd = `cd '${escapedDir}' && tar -czf '${escapedArchive}' ${escapedNames}`;
+  const compressCmd = `cd '${escapedDir}' && tar -czf '${escapedArchive}' -- ${escapedNames}`;
   const compressResult = await execCommand(deps, sourceSession, compressCmd);
   const compressMs = elapsedMs(compressStart);
   updateTransfer(transferId, { timings: { compressMs } });
@@ -2753,7 +2753,7 @@ async function transferViaItemSftp(
 
   const status: TransferStatus = failedPaths.length > 0 ? "partial" : "success";
 
-  // Move only after every file succeeded — never delete source on partial transfer
+  // Move only after every file succeeded, never delete source on partial transfer
   if (status === "success" && move) {
     await deleteSourcePathsAfterSuccess(
       deps,
@@ -3212,7 +3212,7 @@ export function retryHostTransfer(
           return;
         }
       } catch {
-        /* destination not ready — restart transfer below */
+        /* destination not ready, restart transfer below */
       }
     }
 

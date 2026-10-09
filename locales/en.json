@@ -201,7 +201,6 @@
     "confirmDeleteMultipleItems": "Are you sure you want to permanently delete {{count}} items?",
     "confirmDeleteMultipleItemsWithFolders": "Are you sure you want to permanently delete {{count}} items? This includes folders and their contents.",
     "confirmDeleteFolder": "Are you sure you want to permanently delete the folder \"{{name}}\" and all its contents?",
-    "permanentDeleteWarning": "This action cannot be undone. The item(s) will be permanently deleted from the server.",
     "moveToTrashWarning": "The item(s) will be moved to the Termix Trash and can be restored before the retention period expires.",
     "itemsMovedToTrash": "{{count}} item(s) moved to Trash",
     "trash": "Trash",
@@ -361,8 +360,6 @@
     "used": "Used",
     "of": "of",
     "toggleSidebar": "Toggle Sidebar",
-    "compactLayout": "Use compact layout",
-    "comfortableLayout": "Use comfortable layout",
     "cannotLoadPdf": "Cannot load PDF",
     "pdfLoadError": "There was an error loading this PDF file.",
     "loadingPdf": "Loading PDF viewer...",
@@ -437,13 +434,10 @@
     "noRemoteSessionConnected": "No remote session connected",
     "failedToListFiles": "Failed to list files",
     "failedToRefresh": "Failed to refresh",
-    "destinationInsideSource": "Destination cannot be inside the selected source path.",
-    "sameHostNoOp": "Source and destination are the same folder."
+    "destinationInsideSource": "Destination cannot be inside the selected source path."
   },
   "hosts": {
     "fileManager": "File Manager",
-    "fileManagerUrlCopied": "File Manager URL copied",
-    "copyFileManagerUrlAction": "Copy File Manager URL",
     "docsLink": "View docs",
     "hostNotFound": "Host not found",
     "loadingHost": "Loading host..."

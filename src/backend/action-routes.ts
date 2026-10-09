@@ -82,27 +82,21 @@ export function registerFileActionRoutes(
     const escapedSource = sourcePath.replace(/'/g, "'\"'\"'");
     const escapedTarget = targetPath.replace(/'/g, "'\"'\"'");
 
-    const copyCommand = `cp '${escapedSource}' '${escapedTarget}' && echo "COPY_SUCCESS"`;
+    const copyCommand = `cp -r '${escapedSource}' '${escapedTarget}' && echo "COPY_SUCCESS"`;
 
-    const commandTimeout = setTimeout(() => {
-      ctx.log.error(
-        `Copy command timed out after 60 seconds: ${sourcePath} -> ${targetPath} (${copyCommand})`,
-      );
-      if (!res.headersSent) {
-        res.status(500).json({
-          error: "Copy operation timed out",
-          toast: {
-            type: "error",
-            message:
-              "Copy operation timed out. SSH connection may be unstable.",
-          },
-        });
-      }
-    }, 60000);
+    // No hard timeout: a big copy can take a long time. The session stays
+    // open while it runs, and a client that goes away stops the wait.
+    let finished = false;
+    sshConn.activeOperations++;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      sshConn.activeOperations--;
+    };
 
     execChannel(sshConn, copyCommand, (err, stream) => {
       if (err) {
-        clearTimeout(commandTimeout);
+        finish();
         ctx.log.error("SSH copyItem error:", err);
         if (!res.headersSent) {
           return res.status(500).json({ error: err.message });
@@ -110,93 +104,68 @@ export function registerFileActionRoutes(
         return;
       }
 
+      res.on("close", () => {
+        if (!res.writableFinished) {
+          finish();
+          stream.close();
+        }
+      });
+
       let errorData = "";
       let stdoutData = "";
 
       stream.on("data", (data: Buffer) => {
-        const output = data.toString();
-        stdoutData += output;
-        stream.stderr.on("data", (data: Buffer) => {
-          const output = data.toString();
-          errorData += output;
-        });
+        stdoutData += data.toString();
+      });
 
-        stream.on("close", (code) => {
-          clearTimeout(commandTimeout);
+      stream.stderr.on("data", (data: Buffer) => {
+        errorData += data.toString();
+      });
 
-          if (code !== 0) {
-            const fullErrorInfo =
-              errorData || stdoutData || "No error message available";
-            ctx.log.error(
-              `SSH copyItem command failed with code ${code}: ${sourcePath} -> ${targetPath} (${copyCommand}) ${fullErrorInfo}`,
-            );
-            if (!res.headersSent) {
-              return res.status(500).json({
-                error: `Copy failed: ${fullErrorInfo}`,
-                toast: {
-                  type: "error",
-                  message: `Copy failed: ${fullErrorInfo}`,
-                },
-                debug: {
-                  sourcePath,
-                  targetPath,
-                  exitCode: code,
-                  command: copyCommand,
-                },
-              });
-            }
-            return;
-          }
+      stream.on("close", (code) => {
+        finish();
 
-          const copySuccessful =
-            stdoutData.includes("COPY_SUCCESS") || code === 0;
-
-          if (copySuccessful) {
-            ctx.log.info(
-              `Item copied successfully: ${sourcePath} -> ${targetPath} (sessionId=${sessionId}, hostId=${hostId})`,
-            );
-
-            if (!res.headersSent) {
-              res.json({
-                message: "Item copied successfully",
-                sourcePath,
-                targetPath,
-                uniqueName,
-                toast: {
-                  type: "success",
-                  message: `Successfully copied to: ${uniqueName}`,
-                },
-              });
-            }
-          } else {
-            ctx.log.warn(
-              `Copy completed but without success confirmation: ${sourcePath} -> ${targetPath} (sessionId=${sessionId}, code=${code}, stdout=${stdoutData.substring(0, 200)})`,
-            );
-
-            if (!res.headersSent) {
-              res.json({
-                message: "Copy may have completed",
-                sourcePath,
-                targetPath,
-                uniqueName,
-                toast: {
-                  type: "warning",
-                  message: `Copy completed but verification uncertain for: ${uniqueName}`,
-                },
-              });
-            }
-          }
-        });
-
-        stream.on("error", (streamErr) => {
-          clearTimeout(commandTimeout);
-          ctx.log.error("SSH copyItem stream error:", streamErr);
+        if (code !== 0 || !stdoutData.includes("COPY_SUCCESS")) {
+          const fullErrorInfo =
+            errorData || stdoutData || "No error message available";
+          ctx.log.error(
+            `SSH copyItem command failed with code ${code}: ${sourcePath} -> ${targetPath} ${fullErrorInfo}`,
+          );
           if (!res.headersSent) {
-            res
-              .status(500)
-              .json({ error: `Stream error: ${streamErr.message}` });
+            res.status(500).json({
+              error: `Copy failed: ${fullErrorInfo}`,
+              toast: {
+                type: "error",
+                message: `Copy failed: ${fullErrorInfo}`,
+              },
+            });
           }
-        });
+          return;
+        }
+
+        ctx.log.info(
+          `Item copied successfully: ${sourcePath} -> ${targetPath} (sessionId=${sessionId}, hostId=${hostId})`,
+        );
+        if (!res.headersSent) {
+          res.json({
+            message: "Item copied successfully",
+            sourcePath,
+            targetPath,
+            uniqueName,
+            toast: {
+              type: "success",
+              message: `Successfully copied to: ${uniqueName}`,
+            },
+          });
+        }
+      });
+
+      stream.on("error", (streamErr) => {
+        finish();
+        ctx.log.error("SSH copyItem stream error:", streamErr);
+        if (!res.headersSent) {
+          res.status(500).json({ error: `Stream error: ${streamErr.message}` });
+        }
       });
     });
   });
@@ -266,7 +235,7 @@ export function registerFileActionRoutes(
       });
 
       checkStream.on("close", () => {
-        if (!checkResult.includes("EXECUTABLE")) {
+        if (checkResult.trim() !== "EXECUTABLE") {
           return res.status(400).json({ error: "File is not executable" });
         }
 

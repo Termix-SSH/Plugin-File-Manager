@@ -92,9 +92,6 @@ export function AudioPreview({
                   height: 400,
                 });
               }}
-              onError={(e) => {
-                console.error("Audio playback error:", e);
-              }}
               showJumpControls={false}
               showSkipControls={false}
               showDownloadProgress={true}

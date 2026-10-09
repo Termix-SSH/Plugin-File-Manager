@@ -122,7 +122,6 @@ export function PermissionsDialog({
       await onSave(file, permissions);
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to update permissions:", error);
     } finally {
       setLoading(false);
     }

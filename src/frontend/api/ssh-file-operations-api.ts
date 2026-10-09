@@ -380,47 +380,61 @@ export async function uploadSSHFile(
         chunkSize: CHUNK_SIZE_BYTES,
       });
 
-      let bytesSent = 0;
-      for (let i = 0; i < totalChunks; i++) {
-        signal?.throwIfAborted();
-        const start = i * CHUNK_SIZE_BYTES;
-        const end = Math.min(start + CHUNK_SIZE_BYTES, file.size);
-        const chunkBlob = file.slice(start, end);
-
-        const response = await getFileManagerApiForSession(sessionId).post(
-          "/uploadFileChunk",
-          chunkBlob,
-          {
-            params: {
-              sessionId,
-              path,
-              fileName,
-              offset: start,
-              totalSize: file.size,
-            },
-            headers: { "Content-Type": "application/octet-stream" },
-            timeout: 0,
-            signal,
-          },
+      const remotePath = path.endsWith("/")
+        ? `${path}${fileName}`
+        : `${path}/${fileName}`;
+      // A cancel between chunks leaves a partial file behind; remove it.
+      const removePartial = () =>
+        deleteSSHItem(sessionId, remotePath, false, hostId, userId, true).catch(
+          () => {},
         );
+      signal?.addEventListener("abort", removePartial, { once: true });
 
-        bytesSent = end;
-        onChunkProgress?.({
-          chunkIndex: i,
-          totalChunks,
-          bytesSent,
-          totalBytes: file.size,
-        });
+      let bytesSent = 0;
+      try {
+        for (let i = 0; i < totalChunks; i++) {
+          signal?.throwIfAborted();
+          const start = i * CHUNK_SIZE_BYTES;
+          const end = Math.min(start + CHUNK_SIZE_BYTES, file.size);
+          const chunkBlob = file.slice(start, end);
 
-        if (i === totalChunks - 1) {
-          fileLogger.success("Chunked upload completed", {
-            operation: "file_upload_chunked_complete",
-            fileName,
-            fileSize: file.size,
+          const response = await getFileManagerApiForSession(sessionId).post(
+            "/uploadFileChunk",
+            chunkBlob,
+            {
+              params: {
+                sessionId,
+                path,
+                fileName,
+                offset: start,
+                totalSize: file.size,
+              },
+              headers: { "Content-Type": "application/octet-stream" },
+              timeout: 0,
+              signal,
+            },
+          );
+
+          bytesSent = end;
+          onChunkProgress?.({
+            chunkIndex: i,
             totalChunks,
+            bytesSent,
+            totalBytes: file.size,
           });
-          return response.data;
+
+          if (i === totalChunks - 1) {
+            fileLogger.success("Chunked upload completed", {
+              operation: "file_upload_chunked_complete",
+              fileName,
+              fileSize: file.size,
+              totalChunks,
+            });
+            return response.data;
+          }
         }
+      } finally {
+        signal?.removeEventListener("abort", removePartial);
       }
       return { message: "File uploaded successfully", chunked: true };
     }
@@ -704,7 +718,7 @@ export async function copySSHItem(
         userId,
       },
       {
-        timeout: 60000,
+        timeout: 0,
       },
     );
     return response.data;
@@ -929,7 +943,7 @@ export async function ensureSSHSessionForHost(
       return { state: "ready", sessionId };
     }
   } catch {
-    // not connected — fall through to connect
+    // not connected, fall through to connect
   }
 
   try {

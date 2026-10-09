@@ -13,8 +13,6 @@ import {
   flushTransferProfiles,
   setTransferProfileStore,
 } from "./transfer-tuning.js";
-
-const TRANSFER_PROFILES_KEY = "transfer-profiles";
 import {
   createConnectionLog,
   createFileLogger,
@@ -53,6 +51,8 @@ import {
 } from "./transfer-engine.js";
 import { createFilesService } from "./service.js";
 import { tables } from "./tables.js";
+
+const TRANSFER_PROFILES_KEY = "transfer-profiles";
 
 let fileLogger: FileLogger = createFileLogger(console);
 
@@ -128,8 +128,7 @@ export async function activate(ctx: PluginContext) {
   });
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  // ctx.db.define hands back an untyped table object; typed at this module's
-  // edge, the same way plugins/workspaces/src/backend/repository.ts does.
+  // ctx.db.define hands back an untyped table object.
   const table: any = await ctx.db.define(tables[0]);
   const pinnedTable: any = await ctx.db.define(tables[1]);
   const shortcutsTable: any = await ctx.db.define(tables[2]);
@@ -379,12 +378,10 @@ export async function activate(ctx: PluginContext) {
   const app = express();
   app.use(ctx.rbac.require("use") as never);
   app.use(cookieParser());
-  // uploadFileChunk streams its octet-stream body straight into SFTP; letting
-  // the JSON/urlencoded parsers run is harmless (they ignore a body they do
-  // not claim), but the raw parser only applies to that one route so a chunk
-  // isn't buffered whole in memory first.
+  // uploadFileChunk takes a raw octet-stream body. The browser sends 8 MiB
+  // chunks, which are buffered here, so the limit stays small.
   const rawBodyParser = express.raw({
-    limit: "5gb",
+    limit: "64mb",
     type: "application/octet-stream",
   });
   app.use((req, res, next) => {
@@ -998,7 +995,10 @@ export async function activate(ctx: PluginContext) {
         userId,
         hostId,
       });
-      if (sshSessions[sessionId]) sshSessions[sessionId].isConnected = false;
+      // A reconnect may already hold this id with a new client.
+      const current = sshSessions[sessionId];
+      if (!current || current.client !== client) return;
+      current.isConnected = false;
       cleanupSession(sessionId);
     });
 
@@ -1014,7 +1014,7 @@ export async function activate(ctx: PluginContext) {
         config,
         createdAt: Date.now(),
         sessionId,
-        hostId,
+        hostId: serverHostId,
         ip,
         port,
         username,
@@ -1022,6 +1022,8 @@ export async function activate(ctx: PluginContext) {
         prompts,
         totpPromptIndex: promptIndex,
         resolvedPassword: resolvedCredentials.password,
+        sudoPassword: resolvedCredentials.sudoPassword,
+        scpLegacy: resolvedScpLegacy,
         totpAttempts: 0,
         ...(isBrowserSignIn ? { isBrowserSignIn: true } : {}),
       };
@@ -1355,6 +1357,8 @@ export async function activate(ctx: PluginContext) {
           port: session.port,
           hostId: session.hostId,
           username: session.username,
+          sudoPassword: session.sudoPassword,
+          scpLegacy: session.scpLegacy,
         };
         scheduleSessionCleanup(sessionId);
 
@@ -1393,6 +1397,11 @@ export async function activate(ctx: PluginContext) {
       if (!responseSent) {
         responseSent = true;
         delete pendingTOTPSessions[sessionId];
+        try {
+          session.client.end();
+        } catch {
+          // expected
+        }
         res.status(408).json({ error: "TOTP verification timeout" });
       }
     }, 60000);
@@ -1471,6 +1480,11 @@ export async function activate(ctx: PluginContext) {
       if (!responseSent) {
         responseSent = true;
         delete pendingTOTPSessions[sessionId];
+        try {
+          session.client.end();
+        } catch {
+          // expected
+        }
         res.status(408).json({ error: "Sign-in verification timeout" });
       }
     }, 60000);
@@ -1493,6 +1507,8 @@ export async function activate(ctx: PluginContext) {
           port: session.port,
           hostId: session.hostId,
           username: session.username,
+          sudoPassword: session.sudoPassword,
+          scpLegacy: session.scpLegacy,
         };
         scheduleSessionCleanup(sessionId);
 
@@ -1728,14 +1744,14 @@ export async function activate(ctx: PluginContext) {
     const escapedArchive = archivePath.replace(/'/g, "'\"'\"'");
     const escapedTarget = targetPath.replace(/'/g, "'\"'\"'");
     const escapedDecompressed = archivePath
-      .replace(/\.gz$/, "")
+      .replace(/\.gz$/i, "")
       .replace(/'/g, "'\"'\"'");
 
     if (fileExt.endsWith(".tar.gz") || fileExt.endsWith(".tgz")) {
       extractCommand = `tar -xzf '${escapedArchive}' -C '${escapedTarget}'`;
     } else if (fileExt.endsWith(".tar.bz2") || fileExt.endsWith(".tbz2")) {
       extractCommand = `tar -xjf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar.xz")) {
+    } else if (fileExt.endsWith(".tar.xz") || fileExt.endsWith(".txz")) {
       extractCommand = `tar -xJf '${escapedArchive}' -C '${escapedTarget}'`;
     } else if (fileExt.endsWith(".tar")) {
       extractCommand = `tar -xf '${escapedArchive}' -C '${escapedTarget}'`;
@@ -1745,7 +1761,7 @@ export async function activate(ctx: PluginContext) {
       extractCommand = `gunzip -c '${escapedArchive}' > '${escapedDecompressed}'`;
     } else if (fileExt.endsWith(".bz2") && !fileExt.endsWith(".tar.bz2")) {
       extractCommand = `bunzip2 -k '${escapedArchive}'`;
-    } else if (fileExt.endsWith(".xz") && !fileExt.endsWith(".tar.xz")) {
+    } else if (fileExt.endsWith(".xz")) {
       extractCommand = `unxz -k '${escapedArchive}'`;
     } else if (fileExt.endsWith(".7z")) {
       extractCommand = `7z x '${escapedArchive}' -o'${escapedTarget}'`;
@@ -1807,6 +1823,7 @@ export async function activate(ctx: PluginContext) {
               fileExt.endsWith(".tar.bz2") ||
               fileExt.endsWith(".tbz2") ||
               fileExt.endsWith(".tar.xz") ||
+              fileExt.endsWith(".txz") ||
               fileExt.endsWith(".tar")
             ) {
               missingCmd = "tar";
@@ -2378,10 +2395,7 @@ export async function activate(ctx: PluginContext) {
 
   ctx.http.router<Router>({ bodyLimit: "1gb" }).use(app);
 
-  const service = createFilesService(ctx, {
-    sshSessions,
-    verifySessionOwnership,
-  });
+  const service = createFilesService(ctx);
   ctx.services.provide("files.sftp", service);
 
   ctx.log.info("File manager mounted at /plugin-api/file-manager");

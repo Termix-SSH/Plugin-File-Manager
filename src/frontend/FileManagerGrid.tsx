@@ -1491,7 +1491,7 @@ export function FileManagerGrid({
 
                         {!isEditing && listColumns.isVisible("modified") && (
                           <span className="text-[10px] text-muted-foreground pointer-events-none truncate">
-                            {file.modified || "—"}
+                            {file.modified || "-"}
                           </span>
                         )}
 
@@ -1499,7 +1499,7 @@ export function FileManagerGrid({
                           <span className="text-[10px] text-muted-foreground truncate pointer-events-none">
                             {file.owner
                               ? `${file.owner}${file.group ? `:${file.group}` : ""}`
-                              : "—"}
+                              : "-"}
                           </span>
                         )}
 
@@ -1509,7 +1509,7 @@ export function FileManagerGrid({
                             file.size !== undefined &&
                             file.size !== null
                               ? formatFileSize(file.size)
-                              : "—"}
+                              : "-"}
                           </span>
                         )}
 

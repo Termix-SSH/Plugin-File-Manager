@@ -117,7 +117,6 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
 
         return true;
       } catch (error: unknown) {
-        console.error("Failed to drag to desktop:", error);
         const err = error as { message?: string };
         const errorMessage = err.message || "Drag failed";
 
@@ -231,7 +230,6 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
         }, 15000);
         return true;
       } catch (error: unknown) {
-        console.error("Failed to batch drag to desktop:", error);
         const err = error as { message?: string };
         const errorMessage = err.message || "Batch drag failed";
 

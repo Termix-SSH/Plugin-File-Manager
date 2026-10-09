@@ -49,7 +49,11 @@ function setup(route = "/uploadFileChunk") {
 function sftp() {
   // Keep the SSH write pending after HTTP has received the complete body.
   const stream = new Writable({ write() {} });
-  return { stream, createWriteStream: vi.fn(() => stream) };
+  return {
+    stream,
+    createWriteStream: vi.fn(() => stream),
+    unlink: vi.fn((_path: string, done: () => void) => done()),
+  };
 }
 
 describe("chunk upload disconnects", () => {
@@ -62,6 +66,10 @@ describe("chunk upload disconnects", () => {
     expect(remote.createWriteStream).toHaveBeenCalledOnce();
     res.emit("close");
     expect(remote.stream.destroyed).toBe(true);
+    expect(remote.unlink).toHaveBeenCalledWith(
+      "/upload.bin",
+      expect.any(Function),
+    );
     remote.stream.emit("finish");
     expect(res.json).not.toHaveBeenCalled();
   });

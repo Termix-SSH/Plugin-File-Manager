@@ -771,12 +771,6 @@ export function FileViewer({
                         backgroundColor: "#000",
                       }}
                       preload="metadata"
-                      onError={(e) => {
-                        console.error(
-                          "Video playback error:",
-                          e.currentTarget.error,
-                        );
-                      }}
                       onLoadedMetadata={(e) => {
                         const video = e.currentTarget;
                         if (

@@ -113,8 +113,7 @@ export function PdfPreview({
                   height: 600,
                 });
               }}
-              onLoadError={(error) => {
-                console.error("PDF load error:", error);
+              onLoadError={() => {
                 setPdfError(true);
               }}
               loading={

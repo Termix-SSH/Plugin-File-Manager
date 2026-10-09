@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const fileManagerApiMock = vi.hoisted(() => ({
   post: vi.fn(async () => ({ data: { complete: false } })),
   postForm: vi.fn(async () => ({ data: {} })),
+  delete: vi.fn(async () => ({ data: {} })),
 }));
 
 vi.mock("../../../src/frontend/api/client", () => ({
@@ -41,6 +42,37 @@ describe("chunked SSH file uploads", () => {
   beforeEach(() => {
     fileManagerApiMock.post.mockClear();
     fileManagerApiMock.postForm.mockClear();
+  });
+
+  it("removes the partial remote file when cancelled between chunks", async () => {
+    const controller = new AbortController();
+    fileManagerApiMock.post.mockImplementationOnce(async () => {
+      controller.abort();
+      return { data: { complete: false } };
+    });
+    const file = {
+      size: 1.5 * 1024 * 1024 * 1024 + 1,
+      slice: vi.fn(() => new Blob(["chunk"])),
+    } as unknown as File;
+
+    await expect(
+      uploadSSHFile(
+        "session-1",
+        "/uploads",
+        "archive.img",
+        file,
+        undefined,
+        undefined,
+        undefined,
+        controller.signal,
+      ),
+    ).rejects.toThrow();
+    expect(fileManagerApiMock.delete).toHaveBeenCalledWith("/deleteItem", {
+      data: expect.objectContaining({
+        path: "/uploads/archive.img",
+        permanent: true,
+      }),
+    });
   });
 
   it("sends raw chunks with the byte offset expected by the server", async () => {
