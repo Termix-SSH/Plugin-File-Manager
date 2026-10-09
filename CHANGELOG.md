@@ -5,6 +5,7 @@
 ### Fixed
 
 - Host pickers no longer list hosts without SSH, such as Telnet only hosts
+- The copy and move to host dialog no longer shows two arrows on each dropdown
 
 ## 1.0.0
 

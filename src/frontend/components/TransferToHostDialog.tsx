@@ -738,7 +738,6 @@ export function TransferToHostDialog({
                     </option>
                   ))}
                 </Select2>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
               </div>
               {selectedHost && (
                 <p
@@ -969,7 +968,6 @@ export function TransferToHostDialog({
                         {t("transfer.methodItemSftp")}
                       </option>
                     </Select2>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
                   </div>
                   <p className="text-[10px] text-muted-foreground">
                     {methodPreference === "auto"
@@ -997,7 +995,6 @@ export function TransferToHostDialog({
                         </option>
                       ))}
                     </Select2>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
                   </div>
                   <p className="text-[10px] text-muted-foreground">
                     {t("transfer.parallelSegmentsHint")}
