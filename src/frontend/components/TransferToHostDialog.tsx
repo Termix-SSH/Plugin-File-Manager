@@ -672,17 +672,15 @@ export function TransferToHostDialog({
     <InlineView
       open={open}
       onOpenChange={onOpenChange}
+      icon={<ArrowRightLeft className="size-4" />}
       title={
-        <>
-          <ArrowRightLeft className="size-4 text-accent-brand" />
-          {move
-            ? files.length > 1
-              ? t("transfer.moveItemsToHost", { count: files.length })
-              : t("transfer.moveToHost")
-            : files.length > 1
-              ? t("transfer.copyItemsToHost", { count: files.length })
-              : t("transfer.copyToHost")}
-        </>
+        move
+          ? files.length > 1
+            ? t("transfer.moveItemsToHost", { count: files.length })
+            : t("transfer.moveToHost")
+          : files.length > 1
+            ? t("transfer.copyItemsToHost", { count: files.length })
+            : t("transfer.copyToHost")
       }
       footer={
         <FormFooter

@@ -64,12 +64,8 @@ export function CompressDialog({
     <InlineView
       open={open}
       onOpenChange={onOpenChange}
-      title={
-        <>
-          <Package className="size-4 text-accent-brand" />
-          {t("fileManager.compressFiles")}
-        </>
-      }
+      icon={<Package className="size-4" />}
+      title={t("fileManager.compressFiles")}
       footer={
         <FormFooter
           onCancel={() => onOpenChange(false)}

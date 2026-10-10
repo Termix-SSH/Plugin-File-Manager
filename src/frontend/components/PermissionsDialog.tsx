@@ -165,12 +165,8 @@ export function PermissionsDialog({
     <InlineView
       open={open}
       onOpenChange={onOpenChange}
-      title={
-        <>
-          <Lock className="size-4 text-accent-brand" />
-          {t("fileManager.changePermissions")}
-        </>
-      }
+      icon={<Lock className="size-4" />}
+      title={t("fileManager.changePermissions")}
       footer={
         <FormFooter
           onCancel={() => onOpenChange(false)}
