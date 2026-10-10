@@ -262,9 +262,9 @@ export function DraggableWindow({
     <div
       ref={windowRef}
       className={cn(
-        "absolute bg-[#0d0e0c] border border-border rounded-none shadow-2xl",
+        "absolute bg-[#0d0e0c] rounded-none shadow-2xl",
         "select-none overflow-hidden flex flex-col",
-        isMaximized ? "inset-0" : "",
+        isMaximized ? "inset-0" : "border border-border",
       )}
       style={{
         left: isMaximized ? 0 : position.x,
