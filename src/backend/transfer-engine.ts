@@ -11,7 +11,6 @@ import {
   joinPath,
   normalizeSftpPath,
   pathsOverlap,
-  sftpPathToLocalPath,
   type TransferPlatform,
 } from "./transfer-paths.js";
 import {
@@ -52,7 +51,6 @@ import {
 } from "./transfer-errors.js";
 import {
   escapeShell,
-  isLocalSshEndpoint,
   isPermissionError,
   isRootOnlyPath,
 } from "./transfer-host-utils.js";
@@ -1666,25 +1664,6 @@ async function runFastSftpCopySegmentedParallel(
   return handles;
 }
 
-function promisifyFastGet(
-  sftp: SFTPWrapper,
-  remotePath: string,
-  localPath: string,
-  opts: {
-    concurrency?: number;
-    chunkSize?: number;
-    fileSize?: number;
-    step?: (totalTransferred: number, chunk: number, total: number) => void;
-  },
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    sftp.fastGet(remotePath, localPath, opts, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
 async function pipelinedSftpFile(
   sourceSftp: SFTPWrapper,
   destSftp: SFTPWrapper,
@@ -1884,56 +1863,6 @@ async function pipelinedSftpFile(
   return stats;
 }
 
-/** Source SFTP → local filesystem (skips SFTP write when dest SSH target is this host). */
-async function pipelinedSftpToLocalFile(
-  sourceSftp: SFTPWrapper,
-  sourcePath: string,
-  destPath: string,
-  options: PipelinedXferOptions = {},
-): Promise<PipelinedXferStats> {
-  let fileSize = options.fileSize ?? 0;
-  const stats = createEmptyXferStats();
-  stats.destWriteKind = "local";
-
-  if (!fileSize) {
-    const srcHandle = await promisifySftpOpen(
-      sourceSftp,
-      sourcePath,
-      SFTP_OPEN_READ,
-      0o666,
-    );
-    try {
-      const fstats = await promisifySftpFstat(sourceSftp, srcHandle);
-      fileSize = fstats.size;
-    } finally {
-      await promisifySftpClose(sourceSftp, srcHandle).catch(() => {});
-    }
-  }
-  if (fileSize <= 0) return stats;
-
-  stats.bytes = fileSize;
-  const localPath = sftpPathToLocalPath(destPath);
-  const progress = createThrottledProgress(options.onProgress);
-  const transferStart = Date.now();
-
-  await promisifyFastGet(sourceSftp, sourcePath, localPath, {
-    concurrency: options.pipelineConcurrency ?? SFTP_XFER_CONCURRENCY,
-    chunkSize: SFTP_XFER_CHUNK_SIZE,
-    fileSize,
-    step: (_total, chunk) => {
-      if (options.shouldAbort?.()) {
-        throw new TransferCancelledError();
-      }
-      progress.add(chunk);
-    },
-  });
-
-  progress.flush();
-  stats.sourceReadSpanMs = elapsedMs(transferStart);
-  stats.destWriteSpanMs = stats.sourceReadSpanMs;
-  return stats;
-}
-
 async function transferFileData(
   sourceSftp: SFTPWrapper,
   destSftp: SFTPWrapper,
@@ -1978,20 +1907,15 @@ async function transferFileData(
     `Selected adaptive transfer tuning: ${transferId} (fileSize=${fileSize}, parallelSegmentCount=${tuning.parallelSegmentCount}, pipelineConcurrency=${tuning.pipelineConcurrency}, explicitParallelOverride=${parallelSegmentCount !== undefined})`,
   );
   try {
-    const stats = isLocalSshEndpoint(destSession.ip)
-      ? await pipelinedSftpToLocalFile(
-          sourceSftp,
-          sourcePath,
-          destPath,
-          pipeOptions,
-        )
-      : await pipelinedSftpFile(
-          sourceSftp,
-          destSftp,
-          sourcePath,
-          destPath,
-          pipeOptions,
-        );
+    // Always over SFTP: a host on this machine's address can still be a
+    // container, VM or another user, so its files are not this disk's files.
+    const stats = await pipelinedSftpFile(
+      sourceSftp,
+      destSftp,
+      sourcePath,
+      destPath,
+      pipeOptions,
+    );
     if (shouldProfile && reconnect?.profileKey) {
       recordTransferProfile(reconnect.profileKey, {
         bytes: stats.bytes,
