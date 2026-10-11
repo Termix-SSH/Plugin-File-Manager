@@ -106,8 +106,10 @@
     "localHideHidden": "Скриване на скрити файлове",
     "localRevealInFileManager": "Показване в системния файлов мениджър",
     "localCannotOpenFolder": "Папката не може да бъде отворена",
-    "localItemCount": "{{count}} елемента",
-    "localSelectedCount": "{{count}} избрани",
+    "localItemCount_one": "{{count}} елемент",
+    "localItemCount_other": "{{count}} елемента",
+    "localSelectedCount_one": "{{count}} избран",
+    "localSelectedCount_other": "{{count}} избрани",
     "back": "Назад",
     "forward": "Напред",
     "up": "Нагоре",
@@ -403,10 +405,6 @@
     "move": "Преместване",
     "copy": "Копиране",
     "upload": "Качване",
-    "itemsSelected": {
-      "one": "Избран е {{count}} елемент",
-      "other": "Избрани са {{count}} елемента"
-    },
     "itemsSelected_one": "Избран е {{count}} елемент",
     "itemsSelected_other": "Избрани са {{count}} елемента",
     "ready": "Готово",
@@ -424,21 +422,13 @@
     "editPermissions": "Редактиране на разрешения",
     "createNewFolder": "Създаване на нова папка",
     "deleteSelectedItems": "Изтриване на избраните елементи",
-    "deleteConfirm": {
-      "one": "Изтриване на {{count}} избран елемент?",
-      "other": "Изтриване на {{count}} избрани елемента?"
-    },
-    "deleteConfirm_one": "Изтриване на {{count}} избран елемент?",
-    "deleteConfirm_other": "Изтриване на {{count}} избрани елемента?",
+    "deleteConfirm_one": "Да се изтрие избраният {{count}} елемент?",
+    "deleteConfirm_other": "Да се изтрият избраните {{count}} елемента?",
     "cancel": "Отказ",
     "save": "Запазване",
     "folderCreated": "Папката е създадена",
     "itemRenamed": "Елементът е преименуван",
     "actionFailed": "Действието е неуспешно",
-    "itemsDeleted": {
-      "one": "Изтрит е {{count}} елемент",
-      "other": "Изтрити са {{count}} елемента"
-    },
     "itemsDeleted_one": "Изтрит е {{count}} елемент",
     "itemsDeleted_other": "Изтрити са {{count}} елемента",
     "deleteFailed": "Изтриването е неуспешно",

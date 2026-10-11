@@ -106,8 +106,10 @@
     "localHideHidden": "Απόκρυψη κρυφών αρχείων",
     "localRevealInFileManager": "Εμφάνιση στο διαχειριστή αρχείων του συστήματος",
     "localCannotOpenFolder": "Αδυναμία ανοίγματος φακέλου",
-    "localItemCount": "{{count}} αντικείμενα",
-    "localSelectedCount": "{{count}} επιλεγμένα",
+    "localItemCount_one": "{{count}} στοιχείο",
+    "localItemCount_other": "{{count}} στοιχεία",
+    "localSelectedCount_one": "{{count}} επιλεγμένο",
+    "localSelectedCount_other": "{{count}} επιλεγμένα",
     "back": "Πίσω",
     "forward": "Εμπρός",
     "up": "Πάνω",
@@ -403,12 +405,8 @@
     "move": "Μετακίνηση",
     "copy": "Αντιγραφή",
     "upload": "Ανέβασμα",
-    "itemsSelected": {
-      "one": "Επιλέχθηκε {{count}} στοιχείο",
-      "other": "Επιλέχθηκαν {{count}} στοιχεία"
-    },
-    "itemsSelected_one": "Επιλέχθηκε {{count}} στοιχείο",
-    "itemsSelected_other": "Επιλέχθηκαν {{count}} στοιχεία",
+    "itemsSelected_one": "{{count}} στοιχείο επιλεγμένο",
+    "itemsSelected_other": "{{count}} στοιχεία επιλεγμένα",
     "ready": "Έτοιμο",
     "loadingHosts": "Φόρτωση hosts...",
     "name": "Όνομα",
@@ -424,10 +422,6 @@
     "editPermissions": "Επεξεργασία Εξουσιοδοτήσεων",
     "createNewFolder": "Δημιουργία Νέου Φακέλου",
     "deleteSelectedItems": "Διαγραφή Επιλεγμένων Στοιχείων",
-    "deleteConfirm": {
-      "one": "Διαγραφή {{count}} επιλεγμένου στοιχείου;",
-      "other": "Διαγραφή {{count}} επιλεγμένων στοιχείων;"
-    },
     "deleteConfirm_one": "Διαγραφή {{count}} επιλεγμένου στοιχείου;",
     "deleteConfirm_other": "Διαγραφή {{count}} επιλεγμένων στοιχείων;",
     "cancel": "Ακύρωση",
@@ -435,10 +429,6 @@
     "folderCreated": "Ο φάκελος δημιουργήθηκε",
     "itemRenamed": "Το στοιχείο μετονομάστηκε",
     "actionFailed": "Η ενέργεια απέτυχε",
-    "itemsDeleted": {
-      "one": "{{count}} στοιχείο διαγράφηκε",
-      "other": "{{count}} στοιχεία διαγράφηκαν"
-    },
     "itemsDeleted_one": "{{count}} στοιχείο διαγράφηκε",
     "itemsDeleted_other": "{{count}} στοιχεία διαγράφηκαν",
     "deleteFailed": "Η διαγραφή απέτυχε",

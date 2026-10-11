@@ -106,8 +106,10 @@
     "localHideHidden": "छिपी हुई फ़ाइलें छुपाएँ",
     "localRevealInFileManager": "सिस्टम फ़ाइल मैनेजर में दिखाएँ",
     "localCannotOpenFolder": "फ़ोल्डर नहीं खोला जा सकता",
-    "localItemCount": "{{count}} आइटम",
-    "localSelectedCount": "{{count}} चयनित",
+    "localItemCount_one": "{{count}} आइटम",
+    "localItemCount_other": "{{count}} आइटम",
+    "localSelectedCount_one": "{{count}} चयनित",
+    "localSelectedCount_other": "{{count}} चयनित",
     "back": "पीछे",
     "forward": "आगे",
     "up": "ऊपर",
@@ -403,10 +405,6 @@
     "move": "स्थानांतरित करें",
     "copy": "प्रतिलिपि बनाएं",
     "upload": "अपलोड करें",
-    "itemsSelected": {
-      "one": "{{count}} आइटम चयनित",
-      "other": "{{count}} आइटम चयनित"
-    },
     "itemsSelected_one": "{{count}} आइटम चयनित",
     "itemsSelected_other": "{{count}} आइटम चयनित",
     "ready": "तैयार",
@@ -424,21 +422,13 @@
     "editPermissions": "अनुमतियां संपादित करें",
     "createNewFolder": "नई फ़ोल्डर बनाएं",
     "deleteSelectedItems": "चयनित आइटम हटाएं",
-    "deleteConfirm": {
-      "one": "{{count}} चयनित आइटम हटाएं?",
-      "other": "{{count}} चयनित आइटम हटाएं?"
-    },
-    "deleteConfirm_one": "{{count}} चयनित आइटम हटाएं?",
-    "deleteConfirm_other": "{{count}} चयनित आइटम हटाएं?",
+    "deleteConfirm_one": "{{count}} चयनित आइटम को हटाएं?",
+    "deleteConfirm_other": "{{count}} चयनित आइटम को हटाएं?",
     "cancel": "रद्द करें",
     "save": "सहेजें",
     "folderCreated": "फ़ोल्डर बनाया गया",
     "itemRenamed": "आइटम का नाम बदल दिया गया",
     "actionFailed": "कार्रवाई विफल",
-    "itemsDeleted": {
-      "one": "{{count}} आइटम हटाया गया",
-      "other": "{{count}} आइटम हटाए गए"
-    },
     "itemsDeleted_one": "{{count}} आइटम हटाया गया",
     "itemsDeleted_other": "{{count}} आइटम हटाए गए",
     "deleteFailed": "हटाना विफल",

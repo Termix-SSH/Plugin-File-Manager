@@ -106,8 +106,8 @@
     "localHideHidden": "Sembunyikan file tersembunyi",
     "localRevealInFileManager": "Tampilkan di pengelola file sistem",
     "localCannotOpenFolder": "Tidak dapat membuka folder",
-    "localItemCount": "forms: { other: \"{{count}} item\" }",
-    "localSelectedCount": "forms: { other: \"{{count}} dipilih\" }",
+    "localItemCount_other": "{{count}} item",
+    "localSelectedCount_other": "{{count}} dipilih",
     "back": "Kembali",
     "forward": "Maju",
     "up": "Atas",
@@ -401,9 +401,6 @@
     "move": "Pindahkan",
     "copy": "Salin",
     "upload": "Unggah",
-    "itemsSelected": {
-      "other": "{{count}} item dipilih"
-    },
     "itemsSelected_other": "{{count}} item dipilih",
     "ready": "Siap",
     "loadingHosts": "Memuat host...",
@@ -420,18 +417,12 @@
     "editPermissions": "Edit Izin",
     "createNewFolder": "Buat Folder Baru",
     "deleteSelectedItems": "Hapus Item yang Dipilih",
-    "deleteConfirm": {
-      "other": "Hapus {{count}} item yang dipilih?"
-    },
     "deleteConfirm_other": "Hapus {{count}} item yang dipilih?",
     "cancel": "Batal",
     "save": "Simpan",
     "folderCreated": "Folder dibuat",
     "itemRenamed": "Item diubah namanya",
     "actionFailed": "Tindakan gagal",
-    "itemsDeleted": {
-      "other": "{{count}} item dihapus"
-    },
     "itemsDeleted_other": "{{count}} item dihapus",
     "deleteFailed": "Penghapusan gagal",
     "permissionsUpdated": "Izin diperbarui",

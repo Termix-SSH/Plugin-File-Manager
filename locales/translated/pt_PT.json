@@ -106,8 +106,12 @@
     "localHideHidden": "Ocultar ficheiros ocultos",
     "localRevealInFileManager": "Mostrar no gestor de ficheiros do sistema",
     "localCannotOpenFolder": "Não foi possível abrir a pasta",
-    "localItemCount": "{{count}} itens",
-    "localSelectedCount": "{{count}} selecionados",
+    "localItemCount_one": "{{count}} item",
+    "localItemCount_many": "{{count}} itens",
+    "localItemCount_other": "{{count}} itens",
+    "localSelectedCount_one": "{{count}} selecionado",
+    "localSelectedCount_many": "{{count}} selecionados",
+    "localSelectedCount_other": "{{count}} selecionados",
     "back": "Voltar",
     "forward": "Avançar",
     "up": "Subir",
@@ -405,11 +409,6 @@
     "move": "Mover",
     "copy": "Copiar",
     "upload": "Carregar",
-    "itemsSelected": {
-      "one": "{{count}} item selecionado",
-      "many": "{{count}} itens selecionados",
-      "other": "{{count}} itens selecionados"
-    },
     "itemsSelected_one": "{{count}} item selecionado",
     "itemsSelected_many": "{{count}} itens selecionados",
     "itemsSelected_other": "{{count}} itens selecionados",
@@ -428,11 +427,6 @@
     "editPermissions": "Editar Permissões",
     "createNewFolder": "Criar Nova Pasta",
     "deleteSelectedItems": "Eliminar Itens Selecionados",
-    "deleteConfirm": {
-      "one": "Eliminar {{count}} item selecionado?",
-      "many": "Eliminar {{count}} itens selecionados?",
-      "other": "Eliminar {{count}} itens selecionados?"
-    },
     "deleteConfirm_one": "Eliminar {{count}} item selecionado?",
     "deleteConfirm_many": "Eliminar {{count}} itens selecionados?",
     "deleteConfirm_other": "Eliminar {{count}} itens selecionados?",
@@ -441,11 +435,6 @@
     "folderCreated": "Pasta criada",
     "itemRenamed": "Item renomeado",
     "actionFailed": "Ação falhou",
-    "itemsDeleted": {
-      "one": "{{count}} item eliminado",
-      "many": "{{count}} itens eliminados",
-      "other": "{{count}} itens eliminados"
-    },
     "itemsDeleted_one": "{{count}} item eliminado",
     "itemsDeleted_many": "{{count}} itens eliminados",
     "itemsDeleted_other": "{{count}} itens eliminados",

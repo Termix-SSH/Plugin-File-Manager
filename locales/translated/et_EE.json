@@ -106,8 +106,10 @@
     "localHideHidden": "Peida peidetud failid",
     "localRevealInFileManager": "Kuva süsteemi failihalduris",
     "localCannotOpenFolder": "Kausta avamine ei õnnestu",
-    "localItemCount": "{{count}} elementi",
-    "localSelectedCount": "{{count}} valitud",
+    "localItemCount_one": "{{count}} üksus",
+    "localItemCount_other": "{{count}} üksust",
+    "localSelectedCount_one": "{{count}} valitud",
+    "localSelectedCount_other": "{{count}} valitud",
     "back": "Tagasi",
     "forward": "Edasi",
     "up": "Üles",
@@ -403,10 +405,6 @@
     "move": "Liiguta",
     "copy": "Kopeeri",
     "upload": "Laadi üles",
-    "itemsSelected": {
-      "one": "{{count}} üksus valitud",
-      "other": "{{count}} üksust valitud"
-    },
     "itemsSelected_one": "{{count}} üksus valitud",
     "itemsSelected_other": "{{count}} üksust valitud",
     "ready": "Valmis",
@@ -424,10 +422,6 @@
     "editPermissions": "Muuda õigusi",
     "createNewFolder": "Loo uus kaust",
     "deleteSelectedItems": "Kustuta valitud üksused",
-    "deleteConfirm": {
-      "one": "Kas kustutada {{count}} valitud üksus?",
-      "other": "Kas kustutada {{count}} valitud üksust?"
-    },
     "deleteConfirm_one": "Kas kustutada {{count}} valitud üksus?",
     "deleteConfirm_other": "Kas kustutada {{count}} valitud üksust?",
     "cancel": "Tühista",
@@ -435,10 +429,6 @@
     "folderCreated": "Kaust loodud",
     "itemRenamed": "Üksus ümber nimetatud",
     "actionFailed": "Tegevus ebaõnnestus",
-    "itemsDeleted": {
-      "one": "{{count}} üksus kustutatud",
-      "other": "{{count}} üksust kustutatud"
-    },
     "itemsDeleted_one": "{{count}} üksus kustutatud",
     "itemsDeleted_other": "{{count}} üksust kustutatud",
     "deleteFailed": "Kustutamine ebaõnnestus",

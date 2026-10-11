@@ -106,8 +106,10 @@
     "localHideHidden": "Piilota piilotetut tiedostot",
     "localRevealInFileManager": "Näytä järjestelmän tiedostonhallinnassa",
     "localCannotOpenFolder": "Kansiota ei voi avata",
-    "localItemCount": "{{count}} kohdetta",
-    "localSelectedCount": "{{count}} valittu",
+    "localItemCount_one": "{{count}} kohde",
+    "localItemCount_other": "{{count}} kohdetta",
+    "localSelectedCount_one": "{{count}} valittu",
+    "localSelectedCount_other": "{{count}} valittua",
     "back": "Takaisin",
     "forward": "Eteenpäin",
     "up": "Ylös",
@@ -403,10 +405,6 @@
     "move": "Siirrä",
     "copy": "Kopioi",
     "upload": "Lataa",
-    "itemsSelected": {
-      "one": "{{count}} kohde valittu",
-      "other": "{{count}} kohdetta valittu"
-    },
     "itemsSelected_one": "{{count}} kohde valittu",
     "itemsSelected_other": "{{count}} kohdetta valittu",
     "ready": "Valmis",
@@ -424,21 +422,13 @@
     "editPermissions": "Muokkaa oikeuksia",
     "createNewFolder": "Luo uusi kansio",
     "deleteSelectedItems": "Poista valitut kohteet",
-    "deleteConfirm": {
-      "one": "Poistetaanko {{count}} valittu kohde?",
-      "other": "Poistetaanko {{count}} valittua kohdetta?"
-    },
-    "deleteConfirm_one": "Poistetaanko {{count}} valittu kohde?",
-    "deleteConfirm_other": "Poistetaanko {{count}} valittua kohdetta?",
+    "deleteConfirm_one": "Haluatko poistaa {{count}} valitun kohteen?",
+    "deleteConfirm_other": "Haluatko poistaa {{count}} valittua kohdetta?",
     "cancel": "Peruuta",
     "save": "Tallenna",
     "folderCreated": "Kansio luotu",
     "itemRenamed": "Kohde nimetty uudelleen",
     "actionFailed": "Toiminto epäonnistui",
-    "itemsDeleted": {
-      "one": "{{count}} kohde poistettu",
-      "other": "{{count}} kohdetta poistettu"
-    },
     "itemsDeleted_one": "{{count}} kohde poistettu",
     "itemsDeleted_other": "{{count}} kohdetta poistettu",
     "deleteFailed": "Poisto epäonnistui",

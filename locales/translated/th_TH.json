@@ -106,8 +106,8 @@
     "localHideHidden": "ซ่อนไฟล์ที่ซ่อนอยู่",
     "localRevealInFileManager": "แสดงในโปรแกรมจัดการไฟล์ของระบบ",
     "localCannotOpenFolder": "ไม่สามารถเปิดโฟลเดอร์ได้",
-    "localItemCount": "{{count}} รายการ",
-    "localSelectedCount": "เลือก {{count}} รายการ",
+    "localItemCount_other": "{{count}} รายการ",
+    "localSelectedCount_other": "เลือก {{count}} รายการ",
     "back": "ย้อนกลับ",
     "forward": "ไปข้างหน้า",
     "up": "ขึ้นหนึ่งระดับ",
@@ -401,10 +401,7 @@
     "move": "ย้าย",
     "copy": "คัดลอก",
     "upload": "อัปโหลด",
-    "itemsSelected": {
-      "other": "เลือก {{count}} รายการ"
-    },
-    "itemsSelected_other": "เลือก {{count}} รายการ",
+    "itemsSelected_other": "เลือก {{count}} รายการแล้ว",
     "ready": "พร้อมใช้งาน",
     "loadingHosts": "กำลังโหลดโฮสต์...",
     "name": "ชื่อ",
@@ -420,18 +417,12 @@
     "editPermissions": "แก้ไขสิทธิ์",
     "createNewFolder": "สร้างโฟลเดอร์ใหม่",
     "deleteSelectedItems": "ลบรายการที่เลือก",
-    "deleteConfirm": {
-      "other": "ต้องการลบ {{count}} รายการที่เลือกหรือไม่?"
-    },
-    "deleteConfirm_other": "ต้องการลบ {{count}} รายการที่เลือกหรือไม่?",
+    "deleteConfirm_other": "ต้องการลบรายการที่เลือก {{count}} รายการหรือไม่?",
     "cancel": "ยกเลิก",
     "save": "บันทึก",
     "folderCreated": "สร้างโฟลเดอร์แล้ว",
     "itemRenamed": "เปลี่ยนชื่อรายการแล้ว",
     "actionFailed": "การดำเนินการล้มเหลว",
-    "itemsDeleted": {
-      "other": "ลบ {{count}} รายการแล้ว"
-    },
     "itemsDeleted_other": "ลบ {{count}} รายการแล้ว",
     "deleteFailed": "การลบล้มเหลว",
     "permissionsUpdated": "อัปเดตสิทธิ์แล้ว",

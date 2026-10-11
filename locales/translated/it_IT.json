@@ -106,8 +106,12 @@
     "localHideHidden": "Nascondi file nascosti",
     "localRevealInFileManager": "Mostra nel file manager di sistema",
     "localCannotOpenFolder": "Impossibile aprire la cartella",
-    "localItemCount": "Elementi: {{count}}",
-    "localSelectedCount": "Selezionati: {{count}}",
+    "localItemCount_one": "{{count}} elemento",
+    "localItemCount_many": "{{count}} elementi",
+    "localItemCount_other": "{{count}} elementi",
+    "localSelectedCount_one": "{{count}} selezionato",
+    "localSelectedCount_many": "{{count}} selezionati",
+    "localSelectedCount_other": "{{count}} selezionati",
     "back": "Indietro",
     "forward": "Avanti",
     "up": "Su",
@@ -405,11 +409,6 @@
     "move": "Sposta",
     "copy": "Copia",
     "upload": "Carica",
-    "itemsSelected": {
-      "one": "{{count}} elemento selezionato",
-      "many": "{{count}} elementi selezionati",
-      "other": "{{count}} elementi selezionati"
-    },
     "itemsSelected_one": "{{count}} elemento selezionato",
     "itemsSelected_many": "{{count}} elementi selezionati",
     "itemsSelected_other": "{{count}} elementi selezionati",
@@ -428,11 +427,6 @@
     "editPermissions": "Modifica permessi",
     "createNewFolder": "Crea nuova cartella",
     "deleteSelectedItems": "Elimina elementi selezionati",
-    "deleteConfirm": {
-      "one": "Eliminare {{count}} elemento selezionato?",
-      "many": "Eliminare {{count}} elementi selezionati?",
-      "other": "Eliminare {{count}} elementi selezionati?"
-    },
     "deleteConfirm_one": "Eliminare {{count}} elemento selezionato?",
     "deleteConfirm_many": "Eliminare {{count}} elementi selezionati?",
     "deleteConfirm_other": "Eliminare {{count}} elementi selezionati?",
@@ -441,11 +435,6 @@
     "folderCreated": "Cartella creata",
     "itemRenamed": "Elemento rinominato",
     "actionFailed": "Azione non riuscita",
-    "itemsDeleted": {
-      "one": "{{count}} elemento eliminato",
-      "many": "{{count}} elementi eliminati",
-      "other": "{{count}} elementi eliminati"
-    },
     "itemsDeleted_one": "{{count}} elemento eliminato",
     "itemsDeleted_many": "{{count}} elementi eliminati",
     "itemsDeleted_other": "{{count}} elementi eliminati",

@@ -106,8 +106,10 @@
     "localHideHidden": "Dölj dolda filer",
     "localRevealInFileManager": "Visa i systemets filhanterare",
     "localCannotOpenFolder": "Kan inte öppna mappen",
-    "localItemCount": "{{count}} objekt",
-    "localSelectedCount": "{{count}} valda",
+    "localItemCount_one": "{{count}} objekt",
+    "localItemCount_other": "{{count}} objekt",
+    "localSelectedCount_one": "{{count}} markerad",
+    "localSelectedCount_other": "{{count}} markerade",
     "back": "Tillbaka",
     "forward": "Framåt",
     "up": "Upp",
@@ -403,10 +405,6 @@
     "move": "Flytta",
     "copy": "Kopiera",
     "upload": "Ladda upp",
-    "itemsSelected": {
-      "one": "{{count}} objekt valt",
-      "other": "{{count}} objekt valda"
-    },
     "itemsSelected_one": "{{count}} objekt valt",
     "itemsSelected_other": "{{count}} objekt valda",
     "ready": "Redo",
@@ -424,21 +422,13 @@
     "editPermissions": "Redigera behörigheter",
     "createNewFolder": "Skapa ny mapp",
     "deleteSelectedItems": "Ta bort valda objekt",
-    "deleteConfirm": {
-      "one": "Ta bort {{count}} valt objekt?",
-      "other": "Ta bort {{count}} valda objekt?"
-    },
-    "deleteConfirm_one": "Ta bort {{count}} valt objekt?",
-    "deleteConfirm_other": "Ta bort {{count}} valda objekt?",
+    "deleteConfirm_one": "Ta bort det valda objektet?",
+    "deleteConfirm_other": "Ta bort de {{count}} valda objekten?",
     "cancel": "Avbryt",
     "save": "Spara",
     "folderCreated": "Mappen skapad",
     "itemRenamed": "Objektet bytte namn",
     "actionFailed": "Åtgärden misslyckades",
-    "itemsDeleted": {
-      "one": "{{count}} objekt borttaget",
-      "other": "{{count}} objekt borttagna"
-    },
     "itemsDeleted_one": "{{count}} objekt borttaget",
     "itemsDeleted_other": "{{count}} objekt borttagna",
     "deleteFailed": "Borttagning misslyckades",

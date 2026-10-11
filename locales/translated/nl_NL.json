@@ -106,8 +106,10 @@
     "localHideHidden": "Verborgen bestanden verbergen",
     "localRevealInFileManager": "Tonen in systeembestandsbeheer",
     "localCannotOpenFolder": "Kan map niet openen",
-    "localItemCount": "{{count}} items",
-    "localSelectedCount": "Geselecteerd: {{count}}",
+    "localItemCount_one": "{{count}} bestand",
+    "localItemCount_other": "{{count}} bestanden",
+    "localSelectedCount_one": "{{count}} geselecteerd",
+    "localSelectedCount_other": "{{count}} geselecteerd",
     "back": "Terug",
     "forward": "Vooruit",
     "up": "Omhoog",
@@ -403,10 +405,6 @@
     "move": "Verplaatsen",
     "copy": "Kopiëren",
     "upload": "Uploaden",
-    "itemsSelected": {
-      "one": "{{count}} item geselecteerd",
-      "other": "{{count}} items geselecteerd"
-    },
     "itemsSelected_one": "{{count}} item geselecteerd",
     "itemsSelected_other": "{{count}} items geselecteerd",
     "ready": "Klaar",
@@ -424,10 +422,6 @@
     "editPermissions": "Machtigingen bewerken",
     "createNewFolder": "Nieuwe map maken",
     "deleteSelectedItems": "Geselecteerde items verwijderen",
-    "deleteConfirm": {
-      "one": "{{count}} geselecteerd item verwijderen?",
-      "other": "{{count}} geselecteerde items verwijderen?"
-    },
     "deleteConfirm_one": "{{count}} geselecteerd item verwijderen?",
     "deleteConfirm_other": "{{count}} geselecteerde items verwijderen?",
     "cancel": "Annuleren",
@@ -435,10 +429,6 @@
     "folderCreated": "Map aangemaakt",
     "itemRenamed": "Item hernoemd",
     "actionFailed": "Actie mislukt",
-    "itemsDeleted": {
-      "one": "{{count}} item verwijderd",
-      "other": "{{count}} items verwijderd"
-    },
     "itemsDeleted_one": "{{count}} item verwijderd",
     "itemsDeleted_other": "{{count}} items verwijderd",
     "deleteFailed": "Verwijderen mislukt",

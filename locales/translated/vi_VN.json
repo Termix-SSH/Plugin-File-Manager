@@ -106,8 +106,8 @@
     "localHideHidden": "Ẩn tệp ẩn",
     "localRevealInFileManager": "Hiện trong trình quản lý tệp hệ thống",
     "localCannotOpenFolder": "Không thể mở thư mục",
-    "localItemCount": "{{count}} mục",
-    "localSelectedCount": "Đã chọn {{count}} mục",
+    "localItemCount_other": "{{count}} mục",
+    "localSelectedCount_other": "{{count}} mục đã chọn",
     "back": "Quay lại",
     "forward": "Tiến tới",
     "up": "Lên trên",
@@ -401,10 +401,7 @@
     "move": "Di chuyển",
     "copy": "Sao chép",
     "upload": "Tải lên",
-    "itemsSelected": {
-      "other": "Đã chọn {{count}} mục"
-    },
-    "itemsSelected_other": "Đã chọn {{count}} mục",
+    "itemsSelected_other": "{{count}} mục đã chọn",
     "ready": "Sẵn sàng",
     "loadingHosts": "Đang tải máy chủ...",
     "name": "Tên",
@@ -420,19 +417,13 @@
     "editPermissions": "Chỉnh sửa quyền",
     "createNewFolder": "Tạo thư mục mới",
     "deleteSelectedItems": "Xóa các mục đã chọn",
-    "deleteConfirm": {
-      "other": "Xóa {{count}} mục đã chọn?"
-    },
     "deleteConfirm_other": "Xóa {{count}} mục đã chọn?",
     "cancel": "Hủy",
     "save": "Lưu",
     "folderCreated": "Đã tạo thư mục",
     "itemRenamed": "Đã đổi tên mục",
     "actionFailed": "Hành động thất bại",
-    "itemsDeleted": {
-      "other": "Đã xóa {{count}} mục"
-    },
-    "itemsDeleted_other": "Đã xóa {{count}} mục",
+    "itemsDeleted_other": "{{count}} mục đã xóa",
     "deleteFailed": "Xóa thất bại",
     "permissionsUpdated": "Đã cập nhật quyền",
     "noRemoteSessionConnected": "Không có phiên từ xa nào được kết nối",

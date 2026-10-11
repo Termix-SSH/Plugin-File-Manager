@@ -106,8 +106,8 @@
     "localHideHidden": "隐藏隐藏文件",
     "localRevealInFileManager": "在系统文件管理器中显示",
     "localCannotOpenFolder": "无法打开文件夹",
-    "localItemCount": "{{count}} 个项目",
-    "localSelectedCount": "已选择 {{count}} 个",
+    "localItemCount_other": "{{count}} 个项目",
+    "localSelectedCount_other": "已选择 {{count}} 项",
     "back": "后退",
     "forward": "前进",
     "up": "上级",
@@ -401,9 +401,6 @@
     "move": "移动",
     "copy": "复制",
     "upload": "上传",
-    "itemsSelected": {
-      "other": "已选择 {{count}} 个项目"
-    },
     "itemsSelected_other": "已选择 {{count}} 个项目",
     "ready": "就绪",
     "loadingHosts": "正在加载主机...",
@@ -420,18 +417,12 @@
     "editPermissions": "编辑权限",
     "createNewFolder": "新建文件夹",
     "deleteSelectedItems": "删除所选项目",
-    "deleteConfirm": {
-      "other": "删除 {{count}} 个所选项目？"
-    },
-    "deleteConfirm_other": "删除 {{count}} 个所选项目？",
+    "deleteConfirm_other": "删除 {{count}} 个已选项目？",
     "cancel": "取消",
     "save": "保存",
     "folderCreated": "文件夹已创建",
     "itemRenamed": "项目已重命名",
     "actionFailed": "操作失败",
-    "itemsDeleted": {
-      "other": "已删除 {{count}} 个项目"
-    },
     "itemsDeleted_other": "已删除 {{count}} 个项目",
     "deleteFailed": "删除失败",
     "permissionsUpdated": "权限已更新",

@@ -106,8 +106,10 @@
     "localHideHidden": "Versteckte Dateien ausblenden",
     "localRevealInFileManager": "Im Systemdateimanager anzeigen",
     "localCannotOpenFolder": "Ordner kann nicht geöffnet werden",
-    "localItemCount": "{{count}} Elemente",
-    "localSelectedCount": "{{count}} ausgewählt",
+    "localItemCount_one": "{{count}} Element",
+    "localItemCount_other": "{{count}} Elemente",
+    "localSelectedCount_one": "{{count}} ausgewählt",
+    "localSelectedCount_other": "{{count}} ausgewählt",
     "back": "Zurück",
     "forward": "Vorwärts",
     "up": "Nach oben",
@@ -403,10 +405,6 @@
     "move": "Verschieben",
     "copy": "Kopieren",
     "upload": "Hochladen",
-    "itemsSelected": {
-      "one": "{{count}} Element ausgewählt",
-      "other": "{{count}} Elemente ausgewählt"
-    },
     "itemsSelected_one": "{{count}} Element ausgewählt",
     "itemsSelected_other": "{{count}} Elemente ausgewählt",
     "ready": "Bereit",
@@ -424,10 +422,6 @@
     "editPermissions": "Berechtigungen bearbeiten",
     "createNewFolder": "Neuen Ordner erstellen",
     "deleteSelectedItems": "Ausgewählte Elemente löschen",
-    "deleteConfirm": {
-      "one": "{{count}} ausgewähltes Element löschen?",
-      "other": "{{count}} ausgewählte Elemente löschen?"
-    },
     "deleteConfirm_one": "{{count}} ausgewähltes Element löschen?",
     "deleteConfirm_other": "{{count}} ausgewählte Elemente löschen?",
     "cancel": "Abbrechen",
@@ -435,10 +429,6 @@
     "folderCreated": "Ordner erstellt",
     "itemRenamed": "Element umbenannt",
     "actionFailed": "Aktion fehlgeschlagen",
-    "itemsDeleted": {
-      "one": "{{count}} Element gelöscht",
-      "other": "{{count}} Elemente gelöscht"
-    },
     "itemsDeleted_one": "{{count}} Element gelöscht",
     "itemsDeleted_other": "{{count}} Elemente gelöscht",
     "deleteFailed": "Löschen fehlgeschlagen",

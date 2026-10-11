@@ -106,8 +106,12 @@
     "localHideHidden": "Ocultar arquivos ocultos",
     "localRevealInFileManager": "Mostrar no gerenciador de arquivos do sistema",
     "localCannotOpenFolder": "Não foi possível abrir a pasta",
-    "localItemCount": "{{count}} itens",
-    "localSelectedCount": "{{count}} selecionados",
+    "localItemCount_one": "{{count}} item",
+    "localItemCount_many": "{{count}} itens",
+    "localItemCount_other": "{{count}} itens",
+    "localSelectedCount_one": "{{count}} selecionado",
+    "localSelectedCount_many": "{{count}} selecionados",
+    "localSelectedCount_other": "{{count}} selecionados",
     "back": "Voltar",
     "forward": "Avançar",
     "up": "Subir",
@@ -405,11 +409,6 @@
     "move": "Mover",
     "copy": "Copiar",
     "upload": "Enviar",
-    "itemsSelected": {
-      "one": "{{count}} item selecionado",
-      "many": "{{count}} itens selecionados",
-      "other": "{{count}} itens selecionados"
-    },
     "itemsSelected_one": "{{count}} item selecionado",
     "itemsSelected_many": "{{count}} itens selecionados",
     "itemsSelected_other": "{{count}} itens selecionados",
@@ -428,11 +427,6 @@
     "editPermissions": "Editar Permissões",
     "createNewFolder": "Criar Nova Pasta",
     "deleteSelectedItems": "Excluir Itens Selecionados",
-    "deleteConfirm": {
-      "one": "Excluir {{count}} item selecionado?",
-      "many": "Excluir {{count}} itens selecionados?",
-      "other": "Excluir {{count}} itens selecionados?"
-    },
     "deleteConfirm_one": "Excluir {{count}} item selecionado?",
     "deleteConfirm_many": "Excluir {{count}} itens selecionados?",
     "deleteConfirm_other": "Excluir {{count}} itens selecionados?",
@@ -441,11 +435,6 @@
     "folderCreated": "Pasta criada",
     "itemRenamed": "Item renomeado",
     "actionFailed": "Ação falhou",
-    "itemsDeleted": {
-      "one": "{{count}} item excluído",
-      "many": "{{count}} itens excluídos",
-      "other": "{{count}} itens excluídos"
-    },
     "itemsDeleted_one": "{{count}} item excluído",
     "itemsDeleted_many": "{{count}} itens excluídos",
     "itemsDeleted_other": "{{count}} itens excluídos",

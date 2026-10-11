@@ -106,8 +106,10 @@
     "localHideHidden": "Skjul skjulte filer",
     "localRevealInFileManager": "Vis i systemets filhåndtering",
     "localCannotOpenFolder": "Kan ikke åbne mappe",
-    "localItemCount": "forms: { \"one\": \"1 element\", \"other\": \"{{count}} elementer\" }",
-    "localSelectedCount": "forms: { \"one\": \"1 valgt\", \"other\": \"{{count}} valgt\" }",
+    "localItemCount_one": "{{count}} element",
+    "localItemCount_other": "{{count}} elementer",
+    "localSelectedCount_one": "{{count}} valgt",
+    "localSelectedCount_other": "{{count}} valgt",
     "back": "Tilbage",
     "forward": "Fremad",
     "up": "Op",
@@ -403,10 +405,6 @@
     "move": "Flyt",
     "copy": "Kopier",
     "upload": "Upload",
-    "itemsSelected": {
-      "one": "{{count}} element valgt",
-      "other": "{{count}} elementer valgt"
-    },
     "itemsSelected_one": "{{count}} element valgt",
     "itemsSelected_other": "{{count}} elementer valgt",
     "ready": "Klar",
@@ -424,10 +422,6 @@
     "editPermissions": "Rediger tilladelser",
     "createNewFolder": "Opret ny mappe",
     "deleteSelectedItems": "Slet valgte elementer",
-    "deleteConfirm": {
-      "one": "Slet {{count}} valgt element?",
-      "other": "Slet {{count}} valgte elementer?"
-    },
     "deleteConfirm_one": "Slet {{count}} valgt element?",
     "deleteConfirm_other": "Slet {{count}} valgte elementer?",
     "cancel": "Annuller",
@@ -435,10 +429,6 @@
     "folderCreated": "Mappe oprettet",
     "itemRenamed": "Element omdøbt",
     "actionFailed": "Handling mislykkedes",
-    "itemsDeleted": {
-      "one": "{{count}} element slettet",
-      "other": "{{count}} elementer slettet"
-    },
     "itemsDeleted_one": "{{count}} element slettet",
     "itemsDeleted_other": "{{count}} elementer slettet",
     "deleteFailed": "Sletning mislykkedes",

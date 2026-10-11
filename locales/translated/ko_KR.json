@@ -106,8 +106,8 @@
     "localHideHidden": "숨김 파일 숨기기",
     "localRevealInFileManager": "시스템 파일 관리자에서 표시",
     "localCannotOpenFolder": "폴더를 열 수 없습니다",
-    "localItemCount": "{{count}}개 항목",
-    "localSelectedCount": "{{count}}개 선택됨",
+    "localItemCount_other": "{{count}}개 항목",
+    "localSelectedCount_other": "{{count}}개 선택됨",
     "back": "뒤로",
     "forward": "앞으로",
     "up": "위로",
@@ -401,9 +401,6 @@
     "move": "이동",
     "copy": "복사",
     "upload": "업로드",
-    "itemsSelected": {
-      "other": "{{count}}개 항목 선택됨"
-    },
     "itemsSelected_other": "{{count}}개 항목 선택됨",
     "ready": "준비 완료",
     "loadingHosts": "호스트 로딩 중...",
@@ -420,19 +417,13 @@
     "editPermissions": "권한 편집",
     "createNewFolder": "새 폴더 만들기",
     "deleteSelectedItems": "선택한 항목 삭제",
-    "deleteConfirm": {
-      "other": "선택한 {{count}}개 항목을 삭제하시겠습니까?"
-    },
     "deleteConfirm_other": "선택한 {{count}}개 항목을 삭제하시겠습니까?",
     "cancel": "취소",
     "save": "저장",
     "folderCreated": "폴더가 생성되었습니다",
     "itemRenamed": "항목 이름이 변경되었습니다",
     "actionFailed": "작업 실패",
-    "itemsDeleted": {
-      "other": "{{count}}개 항목이 삭제되었습니다"
-    },
-    "itemsDeleted_other": "{{count}}개 항목이 삭제되었습니다",
+    "itemsDeleted_other": "{{count}}개 항목 삭제됨",
     "deleteFailed": "삭제 실패",
     "permissionsUpdated": "권한이 업데이트되었습니다",
     "noRemoteSessionConnected": "연결된 원격 세션이 없습니다",

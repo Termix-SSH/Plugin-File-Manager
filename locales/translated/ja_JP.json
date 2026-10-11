@@ -106,8 +106,8 @@
     "localHideHidden": "隠しファイルを非表示",
     "localRevealInFileManager": "システムファイルマネージャーで表示",
     "localCannotOpenFolder": "フォルダを開けません",
-    "localItemCount": "{{count}} 個のアイテム",
-    "localSelectedCount": "{{count}} 個選択中",
+    "localItemCount_other": "{{count}} 件のアイテム",
+    "localSelectedCount_other": "{{count}} 件選択中",
     "back": "戻る",
     "forward": "進む",
     "up": "上へ",
@@ -401,10 +401,7 @@
     "move": "移動",
     "copy": "コピー",
     "upload": "アップロード",
-    "itemsSelected": {
-      "other": "{{count}} 件のアイテムが選択されています"
-    },
-    "itemsSelected_other": "{{count}} 件のアイテムが選択されています",
+    "itemsSelected_other": "{{count}} 件のアイテムを選択中",
     "ready": "準備完了",
     "loadingHosts": "ホストを読み込み中...",
     "name": "名前",
@@ -420,19 +417,13 @@
     "editPermissions": "権限を編集",
     "createNewFolder": "新しいフォルダを作成",
     "deleteSelectedItems": "選択したアイテムを削除",
-    "deleteConfirm": {
-      "other": "選択した {{count}} 件のアイテムを削除しますか？"
-    },
     "deleteConfirm_other": "選択した {{count}} 件のアイテムを削除しますか？",
     "cancel": "キャンセル",
     "save": "保存",
     "folderCreated": "フォルダが作成されました",
     "itemRenamed": "アイテムの名前が変更されました",
     "actionFailed": "操作に失敗しました",
-    "itemsDeleted": {
-      "other": "{{count}} 件のアイテムが削除されました"
-    },
-    "itemsDeleted_other": "{{count}} 件のアイテムが削除されました",
+    "itemsDeleted_other": "{{count}} 件のアイテムを削除しました",
     "deleteFailed": "削除に失敗しました",
     "permissionsUpdated": "権限が更新されました",
     "noRemoteSessionConnected": "リモートセッションが接続されていません",

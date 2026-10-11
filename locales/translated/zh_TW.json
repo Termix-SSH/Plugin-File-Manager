@@ -106,8 +106,8 @@
     "localHideHidden": "隱藏隱藏檔案",
     "localRevealInFileManager": "在系統檔案管理員中顯示",
     "localCannotOpenFolder": "無法開啟資料夾",
-    "localItemCount": "{{count}} 個項目",
-    "localSelectedCount": "已選取 {{count}} 個",
+    "localItemCount_other": "{{count}} 個項目",
+    "localSelectedCount_other": "已選取 {{count}} 個",
     "back": "上一頁",
     "forward": "下一頁",
     "up": "上一層",
@@ -401,9 +401,6 @@
     "move": "移動",
     "copy": "複製",
     "upload": "上傳",
-    "itemsSelected": {
-      "other": "已選取 {{count}} 個項目"
-    },
     "itemsSelected_other": "已選取 {{count}} 個項目",
     "ready": "就緒",
     "loadingHosts": "正在載入主機...",
@@ -420,18 +417,12 @@
     "editPermissions": "編輯權限",
     "createNewFolder": "建立新資料夾",
     "deleteSelectedItems": "刪除已選取的項目",
-    "deleteConfirm": {
-      "other": "要刪除 {{count}} 個已選取的項目嗎？"
-    },
     "deleteConfirm_other": "要刪除 {{count}} 個已選取的項目嗎？",
     "cancel": "取消",
     "save": "儲存",
     "folderCreated": "資料夾已建立",
     "itemRenamed": "項目已重新命名",
     "actionFailed": "操作失敗",
-    "itemsDeleted": {
-      "other": "已刪除 {{count}} 個項目"
-    },
     "itemsDeleted_other": "已刪除 {{count}} 個項目",
     "deleteFailed": "刪除失敗",
     "permissionsUpdated": "權限已更新",

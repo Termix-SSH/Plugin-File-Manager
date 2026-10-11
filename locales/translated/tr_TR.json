@@ -106,8 +106,10 @@
     "localHideHidden": "Gizli dosyaları gizle",
     "localRevealInFileManager": "Sistem dosya yöneticisinde göster",
     "localCannotOpenFolder": "Klasör açılamıyor",
-    "localItemCount": "{{count}} öğe",
-    "localSelectedCount": "{{count}} seçili",
+    "localItemCount_one": "{{count}} öğe",
+    "localItemCount_other": "{{count}} öğe",
+    "localSelectedCount_one": "{{count}} seçili",
+    "localSelectedCount_other": "{{count}} seçili",
     "back": "Geri",
     "forward": "İleri",
     "up": "Yukarı",
@@ -403,10 +405,6 @@
     "move": "Taşı",
     "copy": "Kopyala",
     "upload": "Yükle",
-    "itemsSelected": {
-      "one": "{{count}} öğe seçildi",
-      "other": "{{count}} öğe seçildi"
-    },
     "itemsSelected_one": "{{count}} öğe seçildi",
     "itemsSelected_other": "{{count}} öğe seçildi",
     "ready": "Hazır",
@@ -424,21 +422,13 @@
     "editPermissions": "İzinleri Düzenle",
     "createNewFolder": "Yeni Klasör Oluştur",
     "deleteSelectedItems": "Seçili Öğeleri Sil",
-    "deleteConfirm": {
-      "one": "Seçili {{count}} öğe silinsin mi?",
-      "other": "Seçili {{count}} öğe silinsin mi?"
-    },
-    "deleteConfirm_one": "Seçili {{count}} öğe silinsin mi?",
-    "deleteConfirm_other": "Seçili {{count}} öğe silinsin mi?",
+    "deleteConfirm_one": "{{count}} seçili öğe silinsin mi?",
+    "deleteConfirm_other": "{{count}} seçili öğe silinsin mi?",
     "cancel": "İptal",
     "save": "Kaydet",
     "folderCreated": "Klasör oluşturuldu",
     "itemRenamed": "Öğe yeniden adlandırıldı",
     "actionFailed": "İşlem başarısız oldu",
-    "itemsDeleted": {
-      "one": "{{count}} öğe silindi",
-      "other": "{{count}} öğe silindi"
-    },
     "itemsDeleted_one": "{{count}} öğe silindi",
     "itemsDeleted_other": "{{count}} öğe silindi",
     "deleteFailed": "Silme başarısız oldu",

@@ -106,8 +106,8 @@
     "localHideHidden": "Sembunyikan fail tersembunyi",
     "localRevealInFileManager": "Tunjukkan dalam pengurusan fail sistem",
     "localCannotOpenFolder": "Tidak boleh membuka folder",
-    "localItemCount": "{{count}} item",
-    "localSelectedCount": "{{count}} dipilih",
+    "localItemCount_other": "{{count}} item",
+    "localSelectedCount_other": "{{count}} dipilih",
     "back": "Kembali",
     "forward": "Maju",
     "up": "Naik",
@@ -401,9 +401,6 @@
     "move": "Pindah",
     "copy": "Salin",
     "upload": "Muat Naik",
-    "itemsSelected": {
-      "other": "{{count}} item dipilih"
-    },
     "itemsSelected_other": "{{count}} item dipilih",
     "ready": "Sedia",
     "loadingHosts": "Memuatkan hos...",
@@ -420,18 +417,12 @@
     "editPermissions": "Sunting Kebenaran",
     "createNewFolder": "Cipta Folder Baharu",
     "deleteSelectedItems": "Padam Item yang Dipilih",
-    "deleteConfirm": {
-      "other": "Padam {{count}} item yang dipilih?"
-    },
     "deleteConfirm_other": "Padam {{count}} item yang dipilih?",
     "cancel": "Batal",
     "save": "Simpan",
     "folderCreated": "Folder dicipta",
     "itemRenamed": "Item dinamakan semula",
     "actionFailed": "Tindakan gagal",
-    "itemsDeleted": {
-      "other": "{{count}} item dipadam"
-    },
     "itemsDeleted_other": "{{count}} item dipadam",
     "deleteFailed": "Padaman gagal",
     "permissionsUpdated": "Kebenaran dikemas kini",
