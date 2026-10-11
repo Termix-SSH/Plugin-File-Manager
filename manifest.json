@@ -48,19 +48,13 @@
         "id": "files",
         "titleKey": "nav.files",
         "icon": "FolderSearch",
-        "openFrom": [
-          "host-context-menu",
-          "palette"
-        ]
+        "openFrom": ["host-context-menu", "palette"]
       },
       {
         "id": "sftp",
         "titleKey": "nav.sftp",
         "icon": "ArrowLeftRight",
-        "openFrom": [
-          "host-context-menu",
-          "palette"
-        ]
+        "openFrom": ["host-context-menu", "palette"]
       }
     ],
     "actions": [
@@ -82,10 +76,7 @@
         "name": "use",
         "titleKey": "permissions.use.title",
         "descriptionKey": "permissions.use.description",
-        "defaultRoles": [
-          "admin",
-          "user"
-        ]
+        "defaultRoles": ["admin", "user"]
       }
     ],
     "settings": {
@@ -146,16 +137,8 @@
         "viewMode": "list"
       }
     },
-    "uses": [
-      "homepage.widgets",
-      "host-metrics.disk",
-      "terminal.open"
-    ]
+    "uses": ["homepage.widgets", "host-metrics.disk", "terminal.open"]
   },
   "locales": "locales",
-  "platforms": [
-    "linux",
-    "win32",
-    "darwin"
-  ]
+  "platforms": ["linux", "win32", "darwin"]
 }
