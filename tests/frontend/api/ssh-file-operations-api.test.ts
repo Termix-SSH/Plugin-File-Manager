@@ -34,9 +34,38 @@ vi.mock("../../../src/frontend/lib/file-content-request-cache", () => ({
 }));
 
 import {
+  connectSSH,
   downloadSSHFileStream,
   uploadSSHFile,
 } from "../../../src/frontend/api/ssh-file-operations-api";
+import { setSessionOrigin } from "../../../src/frontend/api/client";
+import { resolveConnectionOrigin } from "@termix-ssh/plugin-sdk/ui";
+
+describe("connectSSH origin", () => {
+  it("connects where the host or the desktop default says", async () => {
+    vi.mocked(resolveConnectionOrigin).mockResolvedValueOnce("remote");
+    fileManagerApiMock.post.mockClear();
+
+    await connectSSH("7", {
+      hostId: 7,
+      syncId: "sync-7",
+      ip: "10.0.0.7",
+      port: 22,
+      username: "root",
+      connectionOrigin: null,
+    });
+
+    expect(resolveConnectionOrigin).toHaveBeenCalledWith({
+      connectionOrigin: null,
+    });
+    expect(setSessionOrigin).toHaveBeenCalledWith("7", "remote");
+    const body = (
+      fileManagerApiMock.post.mock.calls[0] as unknown[]
+    )[1] as Record<string, unknown>;
+    expect(body.syncId).toBe("sync-7");
+    expect(body).not.toHaveProperty("connectionOrigin");
+  });
+});
 
 describe("chunked SSH file uploads", () => {
   beforeEach(() => {

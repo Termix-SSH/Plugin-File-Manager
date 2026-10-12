@@ -102,12 +102,19 @@ export async function connectSSH(
     socks5Password?: string;
     socks5ProxyChain?: unknown;
     jumpHosts?: Array<{ hostId: number }>;
+    /** The host's own choice; unset follows the desktop default. */
+    connectionOrigin?: "local" | "remote" | null;
   },
 ): Promise<SSHConnectResult> {
+  const { connectionOrigin, ...body } = config;
+  setSessionOrigin(
+    sessionId,
+    await resolveConnectionOrigin({ connectionOrigin }),
+  );
   try {
     const response = await getFileManagerApiForSession(sessionId).post(
       "/connect",
-      { sessionId, ...config },
+      { sessionId, ...body },
       { timeout: 120000 },
     );
     return response.data;
@@ -932,10 +939,10 @@ export async function ensureSSHSessionForHost(
   host: SSHHost,
 ): Promise<EnsureSSHSessionResult> {
   const sessionId = host.id.toString();
-  const origin = await resolveConnectionOrigin({
-    connectionOrigin: host.connectionOrigin,
-  });
-  setSessionOrigin(sessionId, origin);
+  setSessionOrigin(
+    sessionId,
+    await resolveConnectionOrigin({ connectionOrigin: host.connectionOrigin }),
+  );
 
   try {
     const status = await getSSHStatus(sessionId);
@@ -961,6 +968,7 @@ export async function ensureSSHSessionForHost(
       userId: host.userId,
       forceKeyboardInteractive: host.forceKeyboardInteractive,
       jumpHosts: host.jumpHosts,
+      connectionOrigin: host.connectionOrigin,
       useSocks5: host.useSocks5,
       socks5Host: host.socks5Host,
       socks5Port: host.socks5Port,

@@ -616,6 +616,8 @@ function FileManagerContent({
 
       const result = await connectSSH(sessionId, {
         hostId: currentHost.id,
+        connectionOrigin: currentHost.connectionOrigin,
+        syncId: currentHost.syncId ?? null,
         ip: currentHost.ip,
         port: currentHost.port,
         username: currentHost.username,
@@ -1708,6 +1710,8 @@ function FileManagerContent({
       if (!status.connected) {
         const result = await connectSSH(currentSessionId, {
           hostId: currentHost.id,
+          connectionOrigin: currentHost.connectionOrigin,
+          syncId: currentHost.syncId ?? null,
           ip: currentHost.ip,
           port: currentHost.port,
           username: currentHost.username,
@@ -2488,6 +2492,8 @@ function FileManagerContent({
     if (!status.connected) {
       await connectSSH(sshSessionId, {
         hostId: currentHost.id,
+        connectionOrigin: currentHost.connectionOrigin,
+        syncId: currentHost.syncId ?? null,
         ip: currentHost.ip,
         port: currentHost.port,
         username: currentHost.username,
@@ -2777,6 +2783,8 @@ function FileManagerContent({
 
       const result = await connectSSH(sessionId, {
         hostId: currentHost.id,
+        connectionOrigin: currentHost.connectionOrigin,
+        syncId: currentHost.syncId ?? null,
         ip: currentHost.ip,
         port: currentHost.port,
         username: currentHost.username,
@@ -2864,6 +2872,8 @@ function FileManagerContent({
 
       const result = await connectSSH(sessionId, {
         hostId: currentHost.id,
+        connectionOrigin: currentHost.connectionOrigin,
+        syncId: currentHost.syncId ?? null,
         ip: currentHost.ip,
         port: currentHost.port,
         username: currentHost.username,

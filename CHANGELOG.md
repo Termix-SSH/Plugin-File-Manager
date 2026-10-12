@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+### Fixed
+
+- On the desktop app, the file manager now connects from the server when the host or the desktop is set to start connections there, like the terminal does
+
 ## 1.0.1
 
 ### Changed

@@ -52,6 +52,8 @@ export function DiffViewer({
       if (!status.connected) {
         await connectSSH(sshSessionId, {
           hostId: sshHost.id,
+          connectionOrigin: sshHost.connectionOrigin,
+          syncId: sshHost.syncId ?? null,
           ip: sshHost.ip,
           port: sshHost.port,
           username: sshHost.username,
@@ -66,6 +68,8 @@ export function DiffViewer({
     } catch {
       await connectSSH(sshSessionId, {
         hostId: sshHost.id,
+        connectionOrigin: sshHost.connectionOrigin,
+        syncId: sshHost.syncId ?? null,
         ip: sshHost.ip,
         port: sshHost.port,
         username: sshHost.username,
