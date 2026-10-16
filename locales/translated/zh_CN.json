@@ -537,7 +537,8 @@
     "metricsHopDestLocalWrite": "服务器 → 目标（本地）：{{throughput}}"
   },
   "plugin": {
-    "name": "文件管理器"
+    "name": "文件管理器",
+    "description": "通过 SFTP 浏览、编辑和移动文件，支持在服务器之间直接传输。"
   },
   "common": {
     "remove": "移除",
