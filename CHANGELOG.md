@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3
+
+### Changed
+
+- Sorting moved out of the New menu into its own Sort By button
+
 ## 1.0.2
 
 ### Fixed
