@@ -537,7 +537,8 @@
     "metricsHopDestLocalWrite": "伺服器 → 目的地（本機）：{{throughput}}"
   },
   "plugin": {
-    "name": "檔案管理器"
+    "name": "檔案管理器",
+    "description": "透過 SFTP 瀏覽、編輯和移動檔案，支援在伺服器之間直接傳輸。"
   },
   "common": {
     "remove": "移除",

@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → dest (local): {{throughput}}"
   },
   "plugin": {
-    "name": "File Manager"
+    "name": "File Manager",
+    "description": "Browse, edit and move files over SFTP, including straight from one server to another."
   },
   "common": {
     "remove": "Remove",
