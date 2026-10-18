@@ -392,9 +392,12 @@ export function FileManagerGrid({
   const handleEditKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       handleEditConfirm();
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       handleEditCancel();
     }
   };
@@ -1675,9 +1678,12 @@ function CreateIntentGridItem({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       commit(inputName.trim());
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       if (doneRef.current) return;
       doneRef.current = true;
       onCancel?.();
@@ -1757,9 +1763,12 @@ function CreateIntentListItem({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       commit(inputName.trim());
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       if (doneRef.current) return;
       doneRef.current = true;
       onCancel?.();

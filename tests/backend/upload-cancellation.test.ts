@@ -114,6 +114,12 @@ describe("multipart upload disconnects", () => {
     const remote = {
       ...sftp(),
       unlink: vi.fn((_path, callback) => callback(null)),
+      // Multipart uploads use pipelined SFTP writes (open/write/close).
+      open: vi.fn((_p: string, _f: string, cb: (e: null, h: Buffer) => void) =>
+        cb(null, Buffer.from("h")),
+      ),
+      write: vi.fn(),
+      close: vi.fn((_h: Buffer, cb: () => void) => cb()),
     };
     getSessionSftp.mockResolvedValue(remote);
     const { req, res, start } = setup("/uploadFileStream");
@@ -138,11 +144,15 @@ describe("multipart upload disconnects", () => {
       ].join("\r\n"),
     );
     await new Promise<void>((resolve) => setImmediate(resolve));
-    expect(remote.createWriteStream).toHaveBeenCalledWith("/a.txt");
+    expect(remote.open).toHaveBeenCalledWith(
+      "/a.txt",
+      "w",
+      expect.any(Function),
+    );
     req.emit("close");
-    expect(remote.stream.destroyed).toBe(false);
+    expect(remote.close).not.toHaveBeenCalled();
     res.emit("close");
-    expect(remote.stream.destroyed).toBe(true);
+    expect(remote.close).toHaveBeenCalled();
     expect(remote.unlink).toHaveBeenCalledWith("/a.txt", expect.any(Function));
     expect(res.json).not.toHaveBeenCalled();
   });

@@ -73,6 +73,8 @@
     "newFolder": "New Folder",
     "rename": "Rename",
     "uploading": "Uploading...",
+    "externalEditorTextOnly": "Only text files can be opened externally, because saves are written back as text.",
+    "uploadFilesDone": "{{done}} / {{total}} files",
     "uploadingFile": "Uploading {{name}}...",
     "uploadingChunk": "Uploading {{name}}: {{percent}}% (part {{chunk}} of {{total}})",
     "fileName": "File Name",

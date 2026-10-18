@@ -22,6 +22,7 @@ import {
 } from "./components/WindowManager.tsx";
 import { FileWindow } from "./components/FileWindow.tsx";
 import { DownloadProgressToast } from "./components/DownloadProgressToast.tsx";
+import { UploadProgressToast } from "./components/UploadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
@@ -57,6 +58,8 @@ import { copyToClipboard } from "@termix-ssh/plugin-sdk/ui";
 import {
   listSSHFiles,
   readSSHFile,
+  writeSSHFile,
+  downloadSSHFile,
   resolveSSHPath,
   uploadSSHFile,
   createSSHFile,
@@ -1189,15 +1192,47 @@ function FileManagerContent({
 
     if (files.length === 0 && emptyDirs.length === 0) return;
 
+    await uploadBatch(files, emptyDirs);
+  }
+
+  async function uploadBatch(
+    files: { file: File; relativePath: string }[],
+    emptyDirs: string[],
+  ) {
     const controller = new AbortController();
-    const cancel = {
-      label: t("fileManager.cancel"),
-      onClick: () => controller.abort(),
+    const totalBytes = files.reduce((n, f) => n + f.file.size, 0);
+    const toastId = toast.loading(null, { duration: Infinity });
+    const sent = new Map<string, number>();
+    let doneFiles = 0;
+    let lastLoaded = 0;
+    let lastTime = Date.now();
+    let mbPerSec: number | undefined;
+
+    const render = () => {
+      if (controller.signal.aborted) return;
+      let loaded = 0;
+      for (const v of sent.values()) loaded += v;
+      const now = Date.now();
+      if (now - lastTime >= 500) {
+        mbPerSec =
+          ((loaded - lastLoaded) / (now - lastTime) / 1024 / 1024) * 1000;
+        lastLoaded = loaded;
+        lastTime = now;
+      }
+      toast.loading(
+        <UploadProgressToast
+          t={t}
+          doneFiles={doneFiles}
+          totalFiles={files.length}
+          loaded={loaded}
+          total={totalBytes}
+          mbPerSec={mbPerSec}
+          onCancel={() => controller.abort()}
+        />,
+        { id: toastId, duration: Infinity },
+      );
     };
-    const progressToast = toast.loading(
-      t("fileManager.uploadingFolderFiles", { count: files.length }),
-      { duration: Infinity, cancel },
-    );
+    render();
 
     const failed: string[] = [];
 
@@ -1235,35 +1270,46 @@ function FileManagerContent({
         );
       }
 
-      for (const { file, relativePath } of files) {
-        controller.signal.throwIfAborted();
-        const dirPart = relativePath.includes("/")
-          ? relativePath.substring(0, relativePath.lastIndexOf("/"))
-          : "";
-        const uploadPath = dirPart ? `${base}${dirPart}/` : currentPath;
-
-        try {
-          await uploadSSHFile(
-            sshSessionId,
-            uploadPath,
-            file.name,
-            file,
-            currentHost?.id,
-            undefined,
-            undefined,
-            controller.signal,
-          );
-        } catch (error) {
+      const ticker = setInterval(render, 500);
+      try {
+        await runWithConcurrency(files, 4, async ({ file, relativePath }) => {
           controller.signal.throwIfAborted();
-          failed.push(relativePath);
-        }
+          const dirPart = relativePath.includes("/")
+            ? relativePath.substring(0, relativePath.lastIndexOf("/"))
+            : "";
+          const uploadPath = dirPart ? `${base}${dirPart}/` : base;
+
+          try {
+            await uploadSSHFile(
+              sshSessionId,
+              uploadPath,
+              file.name,
+              file,
+              currentHost?.id,
+              undefined,
+              (p) => sent.set(relativePath, p.bytesSent),
+              controller.signal,
+            );
+            sent.set(relativePath, file.size);
+          } catch (error) {
+            controller.signal.throwIfAborted();
+            failed.push(relativePath);
+          }
+          doneFiles++;
+        });
+      } finally {
+        clearInterval(ticker);
       }
 
       controller.signal.throwIfAborted();
-      toast.dismiss(progressToast);
+      toast.dismiss(toastId);
       if (failed.length === 0) {
         toast.success(
-          t("fileManager.uploadedFolderFiles", { count: files.length }),
+          files.length === 1 && emptyDirs.length === 0
+            ? t("fileManager.fileUploadedSuccessfully", {
+                name: files[0].file.name,
+              })
+            : t("fileManager.uploadedFolderFiles", { count: files.length }),
         );
       } else if (failed.length === files.length) {
         toast.error(t("fileManager.failedToUploadFile"));
@@ -1277,13 +1323,22 @@ function FileManagerContent({
       }
       handleRefreshDirectory();
     } catch (error) {
-      toast.dismiss(progressToast);
+      toast.dismiss(toastId);
       if (controller.signal.aborted) {
         toast.info(t("fileManager.localTransferCancelled"));
         handleRefreshDirectory();
         return;
       }
-      toast.error(t("fileManager.failedToUploadFile"));
+      const message = error instanceof Error ? error.message : "";
+      toast.error(
+        message.includes("connection") || message.includes("established")
+          ? t("fileManager.sshConnectionFailed", {
+              name: currentHost?.name,
+              ip: currentHost?.ip,
+              port: currentHost?.port,
+            })
+          : t("fileManager.failedToUploadFile"),
+      );
     }
   }
 
@@ -1293,91 +1348,10 @@ function FileManagerContent({
       return;
     }
 
-    await runWithConcurrency(Array.from(fileList), 3, handleUploadFile);
-  }
-
-  async function handleUploadFile(file: File) {
-    if (!sshSessionId) return;
-
-    const controller = new AbortController();
-    const cancel = {
-      label: t("fileManager.cancel"),
-      onClick: () => controller.abort(),
-    };
-    const progressToast = toast.loading(
-      t("fileManager.uploadingFile", {
-        name: file.name,
-        size: formatFileSize(file.size),
-      }),
-      { duration: Infinity, cancel },
+    await uploadBatch(
+      Array.from(fileList).map((file) => ({ file, relativePath: file.name })),
+      [],
     );
-
-    const updateProgress = (p: {
-      chunkIndex: number;
-      totalChunks: number;
-      bytesSent: number;
-      totalBytes: number;
-    }) => {
-      if (controller.signal.aborted) return;
-      const percent = Math.min(
-        100,
-        Math.round((p.bytesSent / p.totalBytes) * 100),
-      );
-      toast.loading(
-        t("fileManager.uploadingChunk", {
-          name: file.name,
-          percent,
-          chunk: p.chunkIndex + 1,
-          total: p.totalChunks,
-        }),
-        { id: progressToast, duration: Infinity, cancel },
-      );
-    };
-
-    try {
-      await ensureSSHConnection();
-
-      await uploadSSHFile(
-        sshSessionId,
-        currentPath,
-        file.name,
-        file,
-        currentHost?.id,
-        undefined,
-        updateProgress,
-        controller.signal,
-      );
-      controller.signal.throwIfAborted();
-
-      toast.dismiss(progressToast);
-
-      toast.success(
-        t("fileManager.fileUploadedSuccessfully", { name: file.name }),
-      );
-      handleRefreshDirectory();
-    } catch (error: unknown) {
-      toast.dismiss(progressToast);
-      if (controller.signal.aborted) {
-        toast.info(t("fileManager.localTransferCancelled"));
-        handleRefreshDirectory();
-        return;
-      }
-      const uploadErr = error instanceof Error ? error : null;
-      if (
-        uploadErr?.message?.includes("connection") ||
-        uploadErr?.message?.includes("established")
-      ) {
-        toast.error(
-          t("fileManager.sshConnectionFailed", {
-            name: currentHost?.name,
-            ip: currentHost?.ip,
-            port: currentHost?.port,
-          }),
-        );
-      } else {
-        toast.error(t("fileManager.failedToUploadFile"));
-      }
-    }
   }
 
   async function handleDownloadFile(file: FileItem) {
@@ -1828,6 +1802,115 @@ function FileManagerContent({
     });
   }
 
+  // Open editor sessions by remote path. Saves are chained per path (across
+  // reopen) so an older queued save can never land after a newer one.
+  const externalEditsRef = useRef(
+    new Map<string, { editId: string; unsubscribe?: () => void }>(),
+  );
+  const externalSavesRef = useRef(new Map<string, Promise<void>>());
+  const externalOpenTokensRef = useRef(new Map<string, number>());
+  const externalMountedRef = useRef(true);
+
+  useEffect(() => {
+    externalMountedRef.current = true;
+    const edits = externalEditsRef.current;
+    return () => {
+      externalMountedRef.current = false;
+      for (const edit of edits.values()) {
+        edit.unsubscribe?.();
+        void window.electronAPI?.closeExternalEditor?.(edit.editId);
+      }
+      edits.clear();
+    };
+  }, []);
+
+  async function handleOpenExternally(file: FileItem) {
+    const api = window.electronAPI;
+    if (!api?.isElectron) {
+      toast.error(t("fileManager.externalEditorDesktopOnly"));
+      return;
+    }
+    const tokens = externalOpenTokensRef.current;
+    const token = (tokens.get(file.path) ?? 0) + 1;
+    tokens.set(file.path, token);
+    // A newer open of this path, or unmounting, makes this request stale.
+    const isStale = () =>
+      !externalMountedRef.current || tokens.get(file.path) !== token;
+    try {
+      if (!(await confirmLargeFileOpen(file))) return;
+      await ensureSSHConnection();
+      // Let saves from a previous session finish before reading the file back.
+      await externalSavesRef.current.get(file.path);
+      const data = await downloadSSHFile(sshSessionId!, file.path);
+      // Saves come back as UTF-8 text, so binary files would be corrupted.
+      let text: string;
+      try {
+        const bytes = Uint8Array.from(atob(data.content), (c) =>
+          c.charCodeAt(0),
+        );
+        text = new TextDecoder("utf-8", {
+          fatal: true,
+          ignoreBOM: true,
+        }).decode(bytes);
+      } catch {
+        toast.error(t("fileManager.externalEditorTextOnly"));
+        return;
+      }
+      const editorPath = await api
+        .getSetting?.("fileManager.externalEditorPath")
+        .catch(() => "");
+      if (isStale()) return;
+      const result = await api.openExternalEditor({
+        fileName: file.name,
+        content: text,
+        encoding: "utf8",
+        editorPath:
+          typeof editorPath === "string" && editorPath ? editorPath : null,
+      });
+      if (!result.success || !result.editId) {
+        throw new Error(result.error || "Failed to open external editor");
+      }
+      if (isStale()) {
+        void api.closeExternalEditor?.(result.editId);
+        return;
+      }
+      const previous = externalEditsRef.current.get(file.path);
+      if (previous) {
+        previous.unsubscribe?.();
+        void api.closeExternalEditor?.(previous.editId);
+        externalEditsRef.current.delete(file.path);
+      }
+      const sessionId = sshSessionId!;
+      const saves = externalSavesRef.current;
+      const unsubscribe = api.onExternalEditorSaved?.((payload) => {
+        if (payload.editId !== result.editId) return;
+        const next = (saves.get(file.path) ?? Promise.resolve()).then(() =>
+          writeSSHFile(sessionId, file.path, payload.content).then(
+            () => void toast.success(t("fileManager.fileSavedSuccessfully")),
+            (error: {
+              message?: string;
+              response?: { data?: { needsSudo?: boolean } };
+            }) =>
+              void toast.error(
+                error.response?.data?.needsSudo
+                  ? t("fileManager.permissionDenied")
+                  : `${t("fileManager.failedToSaveFile")}: ${error.message || t("fileManager.unknownError")}`,
+              ),
+          ),
+        );
+        saves.set(file.path, next);
+      });
+      externalEditsRef.current.set(file.path, {
+        editId: result.editId,
+        unsubscribe,
+      });
+      toast.success(t("fileManager.externalEditorOpened"));
+    } catch (error) {
+      toast.error(
+        `${t("fileManager.failedToOpenExternalEditor")}: ${error instanceof Error && error.message ? error.message : t("fileManager.unknownError")}`,
+      );
+    }
+  }
   async function handleFileOpen(file: FileItem) {
     if (file.type === "directory") {
       markAdaptiveResourceUsed("network", "directory-list");
@@ -3618,6 +3701,7 @@ function FileManagerContent({
                     .forEach(handleDownloadFile)
                 }
                 onPreview={handleFileOpen}
+                onOpenExternally={handleOpenExternally}
                 onRename={handleRenameFile}
                 onCopy={handleCopyFiles}
                 onCut={handleCutFiles}

@@ -1,3 +1,4 @@
+import { pipelineWriteToSftp } from "./sftp-pipelined-write.js";
 import { randomUUID } from "node:crypto";
 import type { Express, Request, Response } from "express";
 import Busboy from "busboy";
@@ -1372,9 +1373,9 @@ export function registerFileContentRoutes(
               fileStream.resume();
               return;
             }
-            const writeStream = sftp.createWriteStream(fullPath);
+            const upload = pipelineWriteToSftp(sftp, fullPath, fileStream);
             const removePartialFile = () => {
-              writeStream.destroy();
+              upload.abort();
               sftp.unlink(fullPath, (err) => {
                 if (err) {
                   ctx.log.error(
@@ -1386,60 +1387,31 @@ export function registerFileContentRoutes(
             };
             destroyUpload = removePartialFile;
 
-            writeStream.on("error", (err) => {
-              ctx.log.error("SFTP write stream error during upload:", err);
-              if (!resolved && !requestAborted) {
+            upload.done.then(
+              () => {
+                if (resolved || requestAborted) return;
                 resolved = true;
-                res
-                  .status(500)
-                  .json({ error: `Upload failed: ${err.message}` });
-              }
-            });
-
-            const completeUpload = () => {
-              if (resolved || requestAborted) return;
-              resolved = true;
-              ctx.log.info(
-                `Streaming file upload completed: ${sessionId} (${fullPath}, duration=${Date.now() - uploadStartTime}ms)`,
-              );
-              res.json({
-                message: "File uploaded successfully",
-                path: fullPath,
-                toast: {
-                  type: "success",
-                  message: `File uploaded: ${fullPath}`,
-                },
-              });
-            };
-
-            let sourceEnded = false;
-            fileStream.on("end", () => {
-              sourceEnded = true;
-            });
-            writeStream.on("finish", completeUpload);
-            // ssh2's SFTP WriteStream destroys itself inside _final (autoClose),
-            // and a Writable destroyed before its final callback never emits
-            // 'finish' on current Node. 'close' fires once the handle has been
-            // closed after the last write was acknowledged, so it is the
-            // completion signal that reliably arrives -- but only trust it
-            // when the whole body was consumed and nothing aborted the upload.
-            writeStream.on("close", () => {
-              if (sourceEnded) completeUpload();
-            });
-
-            fileStream.on("error", (err) => {
-              ctx.log.error("File read stream error during upload:", err);
-              writeStream.destroy();
-              if (!resolved && !requestAborted) {
-                resolved = true;
-                res
-                  .status(500)
-                  .json({ error: `Upload stream error: ${err.message}` });
-              }
-            });
-
-            (fileStream as NodeJS.ReadableStream).pipe(
-              writeStream as unknown as NodeJS.WritableStream,
+                ctx.log.info(
+                  `Streaming file upload completed: ${sessionId} (${fullPath}, duration=${Date.now() - uploadStartTime}ms)`,
+                );
+                res.json({
+                  message: "File uploaded successfully",
+                  path: fullPath,
+                  toast: {
+                    type: "success",
+                    message: `File uploaded: ${fullPath}`,
+                  },
+                });
+              },
+              (err: Error) => {
+                ctx.log.error("SFTP write error during upload:", err);
+                if (!resolved && !requestAborted) {
+                  resolved = true;
+                  res
+                    .status(500)
+                    .json({ error: `Upload failed: ${err.message}` });
+                }
+              },
             );
           })
           .catch((err: Error) => {
