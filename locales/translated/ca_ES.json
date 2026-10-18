@@ -619,7 +619,8 @@
     "metricsHopDestLocalWrite": "Servidor → dest (local): {{throughput}}"
   },
   "plugin": {
-    "name": "Gestor de fitxers"
+    "name": "Gestor de fitxers",
+    "description": "Navega, edita i mou fitxers a través de SFTP, fins i tot directament d'un servidor a un altre."
   },
   "common": {
     "remove": "Elimina",

@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → dest (lokal): {{throughput}}"
   },
   "plugin": {
-    "name": "Filhåndtering"
+    "name": "Filhåndtering",
+    "description": "Gennemse, rediger og flyt filer via SFTP, herunder direkte fra den ene server til den anden."
   },
   "common": {
     "remove": "Fjern",

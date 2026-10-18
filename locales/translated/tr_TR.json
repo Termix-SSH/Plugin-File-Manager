@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Sunucu → hedef (yerel): {{throughput}}"
   },
   "plugin": {
-    "name": "Dosya Yöneticisi"
+    "name": "Dosya Yöneticisi",
+    "description": "SFTP üzerinden dosyaları görüntüleyin, düzenleyin ve taşıyın; bunları doğrudan bir sunucudan diğerine bile taşıyın."
   },
   "common": {
     "remove": "Kaldır",

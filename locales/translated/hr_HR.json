@@ -619,7 +619,8 @@
     "metricsHopDestLocalWrite": "Poslužitelj → odredište (lokalno): {{throughput}}"
   },
   "plugin": {
-    "name": "Upravitelj datoteka"
+    "name": "Upravitelj datoteka",
+    "description": "Pregledavajte, uređujte i pomičite datoteke putem SFTP-a, uključujući izravno s jednog poslužitelja na drugi."
   },
   "common": {
     "remove": "Ukloni",

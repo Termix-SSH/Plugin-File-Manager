@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → mål (lokal): {{throughput}}"
   },
   "plugin": {
-    "name": "Filhanterare"
+    "name": "Filhanterare",
+    "description": "Bläddra, redigera och flytta filer via SFTP, även direkt från en server till en annan."
   },
   "common": {
     "remove": "Ta bort",

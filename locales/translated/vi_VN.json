@@ -537,7 +537,8 @@
     "metricsHopDestLocalWrite": "Máy chủ → đích (cục bộ): {{throughput}}"
   },
   "plugin": {
-    "name": "Trình quản lý tệp"
+    "name": "Trình quản lý tệp",
+    "description": "Duyệt, chỉnh sửa và di chuyển tệp qua SFTP, bao gồm cả việc chuyển trực tiếp từ máy chủ này sang máy chủ khác."
   },
   "common": {
     "remove": "Xóa",

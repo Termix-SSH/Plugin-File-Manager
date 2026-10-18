@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → sihtkoht (lokaalne): {{throughput}}"
   },
   "plugin": {
-    "name": "Failihaldur"
+    "name": "Failihaldur",
+    "description": "Sirvi, muuda ja liiguta faile SFTP kaudu, ka otse ühelt serverilt teisele."
   },
   "common": {
     "remove": "Eemalda",

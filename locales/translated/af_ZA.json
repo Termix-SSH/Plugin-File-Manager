@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Bediener → bestemming (plaaslik): {{throughput}}"
   },
   "plugin": {
-    "name": "Lêerbestuurder"
+    "name": "Lêerbestuurder",
+    "description": "Blader, redigeer en verskuif lêers oor SFTP, insluitend direk van die een bediener na ’n ander."
   },
   "common": {
     "remove": "Verwyder",

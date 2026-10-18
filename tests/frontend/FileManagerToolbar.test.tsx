@@ -99,3 +99,33 @@ describe("file search shortcut", () => {
     expect(input).not.toHaveFocus();
   });
 });
+
+describe("toolbar menus", () => {
+  const open = (name: string) =>
+    fireEvent.pointerDown(screen.getByRole("button", { name }), {
+      button: 0,
+      ctrlKey: false,
+    });
+
+  it("keeps New to creating files and folders", async () => {
+    toolbar();
+    open("fileManager.new");
+    expect(
+      await screen.findByRole("menuitem", { name: "fileManager.newFolder" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("menuitemradio", { name: "fileManager.sortByName" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sorts from its own button", async () => {
+    toolbar();
+    open("fileManager.sortBy");
+    fireEvent.click(
+      await screen.findByRole("menuitemradio", {
+        name: "fileManager.sortBySize",
+      }),
+    );
+    expect(props.setSortBy).toHaveBeenCalledWith("size");
+  });
+});

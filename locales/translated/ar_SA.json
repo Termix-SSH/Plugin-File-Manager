@@ -742,7 +742,8 @@
     "metricsHopDestLocalWrite": "الخادم → الوجهة (محلي): {{throughput}}"
   },
   "plugin": {
-    "name": "مدير الملفات"
+    "name": "مدير الملفات",
+    "description": "تصفح الملفات وتعديلها ونقلها عبر SFTP، بما في ذلك النقل المباشر من خادم إلى آخر."
   },
   "common": {
     "remove": "إزالة",

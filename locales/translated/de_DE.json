@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → Ziel (lokal): {{throughput}}"
   },
   "plugin": {
-    "name": "Dateimanager"
+    "name": "Dateimanager",
+    "description": "Durchsuchen, bearbeiten und verschieben Sie Dateien über SFTP, auch direkt von einem Server zu einem anderen."
   },
   "common": {
     "remove": "Entfernen",

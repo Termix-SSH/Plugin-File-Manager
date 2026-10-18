@@ -619,7 +619,8 @@
     "metricsHopDestLocalWrite": "Serveur → dest (local) : {{throughput}}"
   },
   "plugin": {
-    "name": "Gestionnaire de fichiers"
+    "name": "Gestionnaire de fichiers",
+    "description": "Parcourez, modifiez et déplacez des fichiers via SFTP, y compris directement d'un serveur à un autre."
   },
   "common": {
     "remove": "Supprimer",

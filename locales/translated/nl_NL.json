@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Server → bestemming (lokaal): {{throughput}}"
   },
   "plugin": {
-    "name": "Bestandsbeheer"
+    "name": "Bestandsbeheer",
+    "description": "Blader, bewerk en verplaats bestanden via SFTP, ook direct van de ene server naar de andere."
   },
   "common": {
     "remove": "Verwijderen",

@@ -660,7 +660,8 @@
     "metricsHopDestLocalWrite": "Server → cíl (lokálně): {{throughput}}"
   },
   "plugin": {
-    "name": "Správce souborů"
+    "name": "Správce souborů",
+    "description": "Procházejte, upravujte a přesouvejte soubory přes SFTP, včetně přímého přenosu z jednoho serveru na druhý."
   },
   "common": {
     "remove": "Odstranit",

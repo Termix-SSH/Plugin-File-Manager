@@ -578,7 +578,8 @@
     "metricsHopDestLocalWrite": "Palvelin → kohde (paikallinen): {{throughput}}"
   },
   "plugin": {
-    "name": "Tiedostonhallinta"
+    "name": "Tiedostonhallinta",
+    "description": "Selaa, muokkaa ja siirrä tiedostoja SFTP:n kautta, myös suoraan toiselta palvelimelta toiselle."
   },
   "common": {
     "remove": "Poista",

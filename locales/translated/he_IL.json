@@ -619,7 +619,8 @@
     "metricsHopDestLocalWrite": "שרת → יעד (מקומי): {{throughput}}"
   },
   "plugin": {
-    "name": "מנהל קבצים"
+    "name": "מנהל קבצים",
+    "description": "דפדוף, עריכה והעברת קבצים באמצעות SFTP, כולל העברה ישירה משרת אחד לאחר."
   },
   "common": {
     "remove": "הסר",

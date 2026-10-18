@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowUp,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -19,7 +20,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -413,6 +413,53 @@ export function FileManagerToolbar({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
+                title={t("fileManager.sortBy")}
+                aria-label={t("fileManager.sortBy")}
+              >
+                <ArrowUpDown className="size-3.5" />
+                <span className="hidden md:inline">
+                  {t("fileManager.sortBy")}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-44 bg-card"
+              onCloseAutoFocus={(e) => e.preventDefault()}
+            >
+              <DropdownMenuRadioGroup
+                value={sortBy}
+                onValueChange={(value) => setSortBy(value as SortBy)}
+              >
+                <DropdownMenuRadioItem value="name">
+                  {t("fileManager.sortByName")}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="modified">
+                  {t("fileManager.sortByDate")}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="size">
+                  {t("fileManager.sortBySize")}
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={sortOrder}
+                onValueChange={(value) => setSortOrder(value as SortOrder)}
+              >
+                <DropdownMenuRadioItem value="asc">
+                  {t("fileManager.ascending")}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="desc">
+                  {t("fileManager.descending")}
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
                 className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40"
               >
                 <Plus className="size-3.5" />
@@ -442,36 +489,6 @@ export function FileManagerToolbar({
                 <FilePlus className="size-4 text-muted-foreground" />
                 {t("fileManager.newFile")}
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="py-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
-                {t("fileManager.sortBy")}
-              </DropdownMenuLabel>
-              <DropdownMenuRadioGroup
-                value={sortBy}
-                onValueChange={(value) => setSortBy(value as SortBy)}
-              >
-                <DropdownMenuRadioItem value="name">
-                  {t("fileManager.sortByName")}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="modified">
-                  {t("fileManager.sortByDate")}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="size">
-                  {t("fileManager.sortBySize")}
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup
-                value={sortOrder}
-                onValueChange={(value) => setSortOrder(value as SortOrder)}
-              >
-                <DropdownMenuRadioItem value="asc">
-                  {t("fileManager.ascending")}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="desc">
-                  {t("fileManager.descending")}
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

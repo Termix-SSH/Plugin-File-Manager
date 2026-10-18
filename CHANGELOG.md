@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3
+
+### Changed
+
+- Sorting moved out of the New menu into its own Sort By button
+- The plugin name and description show in your language
+
 ## 1.0.2
 
 ### Fixed
