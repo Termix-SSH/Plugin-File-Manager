@@ -54,10 +54,10 @@ export function UploadProgressToast({
           {formatFileSize(loaded)} / {formatFileSize(total)}
         </span>
         <span
-          className={`shrink-0 tabular-nums ${speed ? "font-medium text-foreground" : "invisible"}`}
+          className={`min-w-16 shrink-0 text-right tabular-nums ${speed ? "font-medium text-foreground" : "invisible"}`}
           aria-hidden={!speed}
         >
-          {speed || "0 MB/s"}
+          {speed || "\u00A0"}
         </span>
       </div>
     </div>

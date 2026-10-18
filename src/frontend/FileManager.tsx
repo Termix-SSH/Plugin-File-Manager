@@ -111,7 +111,11 @@ import type {
   PendingSudoOperation,
   SSHConnectionError,
 } from "./file-manager-types.ts";
-import { formatFileSize, runWithConcurrency } from "./file-manager-utils.ts";
+import {
+  base64ToBytes,
+  formatFileSize,
+  runWithConcurrency,
+} from "./file-manager-utils.ts";
 import {
   invalidateCachedFileList,
   peekCachedFileList,
@@ -1845,9 +1849,7 @@ function FileManagerContent({
       // Saves come back as UTF-8 text, so binary files would be corrupted.
       let text: string;
       try {
-        const bytes = Uint8Array.from(atob(data.content), (c) =>
-          c.charCodeAt(0),
-        );
+        const bytes = base64ToBytes(data.content);
         text = new TextDecoder("utf-8", {
           fatal: true,
           ignoreBOM: true,
