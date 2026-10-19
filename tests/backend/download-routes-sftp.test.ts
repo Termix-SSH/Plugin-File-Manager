@@ -117,7 +117,8 @@ it("keeps the session channel responsive while a cancelled download's close is u
     await once(res, "data");
     res.destroy();
     await vi.waitFor(() => expect(unansweredCloses).toBe(1));
-    expect(sftpChannels).toBe(2);
+    // browsing channel + shared download channel (stat) + the big file's own
+    expect(sftpChannels).toBe(3);
 
     const answered = new Promise<void>((resolve, reject) =>
       shared.stat("/", (err) => (err ? reject(err) : resolve())),

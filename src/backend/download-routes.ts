@@ -16,6 +16,56 @@ import {
  * reading the rest of the file, minutes later for a large one.
  */
 const CANCELLED_CLOSE_GRACE_MS = 2000;
+/** Files below this size are read over the session's shared download channel. */
+const DEDICATED_CHANNEL_MIN_BYTES = 8 * 1024 * 1024;
+
+/**
+ * One long-lived SFTP channel per session for small downloads. Opening a
+ * channel per file costs a round trip or more and servers cap them (~10), so
+ * batch downloads of small files were bound by that. It is separate from
+ * session.sftp, so a stalled download does not queue browsing behind it on
+ * the channel (the SSH connection itself is still shared).
+ */
+const bulkChannels = new WeakMap<SSHSession, Promise<SFTPWrapper>>();
+
+function evictBulkChannel(
+  session: SSHSession,
+  channel: Promise<SFTPWrapper> | undefined,
+) {
+  // Only the cached channel may be dropped, never a newer replacement.
+  if (channel && bulkChannels.get(session) === channel)
+    bulkChannels.delete(session);
+}
+
+function getBulkChannel(session: SSHSession): Promise<SFTPWrapper> {
+  let channel = bulkChannels.get(session);
+  if (!channel) {
+    const opened: Promise<SFTPWrapper> = openDedicatedSftp(session).then(
+      (sftp) => {
+        sftp.once("close", () => evictBulkChannel(session, opened));
+        return sftp;
+      },
+    );
+    channel = opened;
+    bulkChannels.set(session, opened);
+    // A failed open must not be cached.
+    opened.catch(() => evictBulkChannel(session, opened));
+  }
+  return channel;
+}
+
+/**
+ * Ends a stalled download channel and uncaches it right away (so the next
+ * download opens a fresh one) unless a newer channel already replaced it.
+ */
+function discardBulkChannel(
+  session: SSHSession,
+  channel: Promise<SFTPWrapper> | undefined,
+  sftp: SFTPWrapper,
+) {
+  evictBulkChannel(session, channel);
+  sftp.end();
+}
 
 type FileDownloadRoutesDeps = {
   ctx: PluginContext;
@@ -296,20 +346,20 @@ export function registerFileDownloadRoutes(
       return;
     }
 
-    // A download gets its own channel so that a server stalling on it (e.g.
-    // on the CLOSE of a cancelled file) cannot block browsing on session.sftp.
+    // Small files share one download channel (see getBulkChannel). Big files
+    // get their own so a server stalling on one (e.g. on the CLOSE of a
+    // cancelled file) cannot hold up the small ones. Normally neither uses
+    // session.sftp, which stays free for browsing; it is only the fallback
+    // when no download channel can be opened.
     let release = () => {};
+    let bulk: SFTPWrapper | undefined;
+    let bulkPromise: Promise<SFTPWrapper> | undefined;
     try {
       let sftp: SFTPWrapper;
       try {
-        const dedicated = await openDedicatedSftp(sshConn);
-        sftp = dedicated;
-        let released = false;
-        release = () => {
-          if (released) return;
-          released = true;
-          dedicated.end();
-        };
+        bulkPromise = getBulkChannel(sshConn);
+        bulk = await bulkPromise;
+        sftp = bulk;
       } catch (err) {
         ctx.log.warn(
           `Could not open a download SFTP channel, using the session's: ${sessionId} (${(err as Error).message})`,
@@ -324,8 +374,25 @@ export function registerFileDownloadRoutes(
       );
 
       if (!stats.isFile()) {
-        release();
         return res.status(400).json({ error: "Cannot download directories" });
+      }
+
+      if (stats.size >= DEDICATED_CHANNEL_MIN_BYTES && !res.destroyed) {
+        try {
+          const dedicated = await openDedicatedSftp(sshConn);
+          sftp = dedicated;
+          bulk = undefined;
+          let released = false;
+          release = () => {
+            if (released) return;
+            released = true;
+            dedicated.end();
+          };
+        } catch (err) {
+          ctx.log.warn(
+            `Could not open a download SFTP channel, using the session's: ${sessionId} (${(err as Error).message})`,
+          );
+        }
       }
 
       res.setHeader("Content-Length", String(stats.size));
@@ -338,7 +405,13 @@ export function registerFileDownloadRoutes(
       readStream.on("close", release);
       res.on("close", () => {
         readStream.destroy();
-        setTimeout(release, CANCELLED_CLOSE_GRACE_MS).unref();
+        setTimeout(() => {
+          release();
+          // Still unfinished: the server is not answering this cancelled
+          // file, so retire the shared channel rather than let it jam.
+          if (bulk && !readStream.closed)
+            discardBulkChannel(sshConn, bulkPromise, bulk);
+        }, CANCELLED_CLOSE_GRACE_MS).unref();
       });
       readStream.on("error", (err) => {
         if (!res.headersSent) {
