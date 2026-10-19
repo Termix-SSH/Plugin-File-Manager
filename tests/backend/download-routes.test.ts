@@ -150,6 +150,22 @@ describe("stream download route", () => {
     expect(bulk.end).not.toHaveBeenCalled();
   });
 
+  it("keeps the shared channel after normal downloads, even once the grace timer passes", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const { res, makeRes, start, bulk, client } = setup();
+    await start();
+    expect(await drain(res)).toBe(5);
+    // A finished response also emits "close", which arms the grace timer.
+    vi.advanceTimersByTime(5000);
+    expect(bulk.end).not.toHaveBeenCalled();
+    const next = makeRes();
+    await start(next);
+    expect(await drain(next)).toBe(5);
+    vi.advanceTimersByTime(5000);
+    expect(bulk.end).not.toHaveBeenCalled();
+    expect(client.sftp).toHaveBeenCalledOnce();
+  });
+
   it("keeps the shared channel and closes the handle when a small download is cancelled", async () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     const { res, start, bulk, shared, client } = setup();

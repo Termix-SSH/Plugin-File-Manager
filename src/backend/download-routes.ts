@@ -351,6 +351,8 @@ export function registerFileDownloadRoutes(
     // cancelled file) cannot hold up the small ones. Normally neither uses
     // session.sftp, which stays free for browsing; it is only the fallback
     // when no download channel can be opened.
+    // Only a dedicated channel has something to release; a shared download
+    // channel outlives the request, so for those this stays a no-op.
     let release = () => {};
     let bulk: SFTPWrapper | undefined;
     let bulkPromise: Promise<SFTPWrapper> | undefined;
@@ -407,8 +409,9 @@ export function registerFileDownloadRoutes(
         readStream.destroy();
         setTimeout(() => {
           release();
-          // Still unfinished: the server is not answering this cancelled
-          // file, so retire the shared channel rather than let it jam.
+          // `closed` is true once the stream finished, so a normal download
+          // never gets here. Still open: the server is not answering this
+          // cancelled file, so retire the shared channel rather than let it jam.
           if (bulk && !readStream.closed)
             discardBulkChannel(sshConn, bulkPromise, bulk);
         }, CANCELLED_CLOSE_GRACE_MS).unref();
