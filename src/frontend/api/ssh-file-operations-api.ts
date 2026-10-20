@@ -612,6 +612,40 @@ export async function deleteSSHItem(
   }
 }
 
+export interface TrashBatchResult {
+  path: string;
+  error?: string;
+}
+
+/** Moves paths to the trash in one request; each path reports on its own. */
+export async function trashSSHItems(
+  sessionId: string,
+  paths: string[],
+): Promise<TrashBatchResult[]> {
+  try {
+    const response = await getFileManagerApiForSession(sessionId).post(
+      "/deleteItems",
+      { sessionId, paths },
+    );
+    for (const p of paths) invalidateCachedFileContent(sessionId, p);
+    // The server drops duplicate paths, so match by path, not position.
+    const byPath = new Map<string, TrashBatchResult>(
+      (response.data.results as TrashBatchResult[]).map((r) => [r.path, r]),
+    );
+    return paths.map(
+      (p) => byPath.get(p) ?? { path: p, error: "No result from server" },
+    );
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.data?.trashUnavailable === true
+    ) {
+      throw error;
+    }
+    handleApiError(error, "delete SSH items");
+  }
+}
+
 export interface TrashItem {
   id: string;
   name: string;

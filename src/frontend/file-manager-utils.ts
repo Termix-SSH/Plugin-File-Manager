@@ -46,3 +46,72 @@ export function base64ToBytes(b64: string): Uint8Array {
   }
   return out;
 }
+
+/**
+ * Sends `items` to `trash` in batches, `limit` batches at a time. `trash`
+ * returns one entry per item in order; an entry with `error` failed on its own
+ * and the rest carry on. A thrown batch (or an abort) stops new batches, waits
+ * for those running, and leaves the untouched items out of `done`, so `done`
+ * is exact when this returns.
+ */
+export async function trashInBatches<T>(
+  items: T[],
+  size: number,
+  limit: number,
+  trash: (batch: T[]) => Promise<Array<{ error?: string }>>,
+  opts: {
+    signal?: AbortSignal;
+    onProgress?: (finished: number) => void;
+    /** Items of a batch the server confirmed trashed, as each batch returns. */
+    onBatchDone?: (trashed: T[]) => void;
+  } = {},
+): Promise<{
+  done: Set<T>;
+  failed: Set<T>;
+  itemError?: string;
+  thrown?: unknown;
+}> {
+  const batches: T[][] = [];
+  for (let i = 0; i < items.length; i += size)
+    batches.push(items.slice(i, i + size));
+  const done = new Set<T>();
+  const failed = new Set<T>();
+  let finished = 0;
+  let itemError: string | undefined;
+  let thrown: unknown;
+  await runWithConcurrency(batches, limit, async (batch) => {
+    if (thrown !== undefined || opts.signal?.aborted) return;
+    try {
+      const results = await trash(batch);
+      const trashed: T[] = [];
+      batch.forEach((item, i) => {
+        const error = results[i]?.error;
+        if (error === undefined && results[i]) {
+          done.add(item);
+          trashed.push(item);
+        } else {
+          failed.add(item);
+          itemError ??= error ?? "No result";
+        }
+      });
+      opts.onBatchDone?.(trashed);
+    } catch (error) {
+      thrown = error ?? new Error("Batch failed");
+      return;
+    }
+    finished += batch.length;
+    opts.onProgress?.(finished);
+  });
+  return { done, failed, itemError, thrown };
+}
+
+/** Resolves once no delete is running, including ones started while waiting. */
+export async function waitForDeletes(ref: {
+  current: Promise<unknown>;
+}): Promise<void> {
+  let seen: Promise<unknown>;
+  do {
+    seen = ref.current;
+    await seen;
+  } while (seen !== ref.current);
+}

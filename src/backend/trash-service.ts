@@ -204,6 +204,33 @@ export async function moveToTrash(
   return publicItem(item);
 }
 
+// Results keep input order; a failing item never affects the others.
+export async function moveManyToTrash(
+  sftp: SFTPWrapper,
+  paths: string[],
+  concurrency: number,
+): Promise<Array<{ path: string; item?: TrashItem; error?: string }>> {
+  const results: Array<{ path: string; item?: TrashItem; error?: string }> =
+    paths.map((p) => ({ path: p }));
+  let next = 0;
+  await Promise.all(
+    Array.from(
+      { length: Math.min(Math.max(1, concurrency), paths.length) },
+      async () => {
+        while (next < paths.length) {
+          const i = next++;
+          try {
+            results[i].item = await moveToTrash(sftp, paths[i]);
+          } catch (error) {
+            results[i].error = (error as Error).message;
+          }
+        }
+      },
+    ),
+  );
+  return results;
+}
+
 export async function listTrash(
   sftp: SFTPWrapper,
   retentionDays: number,

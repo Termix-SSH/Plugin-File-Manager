@@ -86,6 +86,8 @@ interface DragState {
 interface FileManagerGridProps {
   files: FileItem[];
   selectedFiles: FileItem[];
+  /** Paths being moved to the trash: shown dimmed and not interactive. */
+  deletingPaths?: ReadonlySet<string>;
   onFileOpen: (file: FileItem) => void;
   onFileIntent?: (file: FileItem) => void;
   onSelectionChange: (files: FileItem[]) => void;
@@ -225,6 +227,7 @@ const getFileIcon = (
 export function FileManagerGrid({
   files,
   selectedFiles,
+  deletingPaths,
   onFileOpen,
   onFileIntent,
   onSelectionChange,
@@ -1233,6 +1236,8 @@ export function FileManagerGrid({
                                 dragState.files.some(
                                   (f) => f.path === file.path,
                                 ) && "opacity-50",
+                                deletingPaths?.has(file.path) &&
+                                  "opacity-40 pointer-events-none",
                               )}
                               title={file.name}
                               onClick={(e) => handleFileClick(file, e)}
@@ -1439,6 +1444,8 @@ export function FileManagerGrid({
                             "bg-accent-brand/20 border-accent-brand border-dashed",
                           dragState.files.some((f) => f.path === file.path) &&
                             "opacity-50",
+                          deletingPaths?.has(file.path) &&
+                            "opacity-40 pointer-events-none",
                         )}
                         onClick={(e) => handleFileClick(file, e)}
                         onContextMenu={(e) => {

@@ -68,6 +68,7 @@ import {
   createSSHFolder,
   deleteSSHItem,
   copySSHItem,
+  trashSSHItems,
   renameSSHItem,
   moveSSHItem,
   connectSSH,
@@ -116,6 +117,8 @@ import type {
 import {
   base64ToBytes,
   formatFileSize,
+  trashInBatches,
+  waitForDeletes,
   runWithConcurrency,
 } from "./file-manager-utils.ts";
 import {
@@ -131,6 +134,9 @@ import {
   restoreItems,
 } from "./optimistic-file-list";
 
+/** Paths per trash request, and requests in flight (backend adds its own pool). */
+const TRASH_BATCH_SIZE = 200;
+const TRASH_BATCHES_IN_FLIGHT = 3;
 const LOCAL_PANE_OPEN_STORAGE_KEY = "termix:file-manager:local-pane:open";
 const SIDEBAR_OPEN_STORAGE_KEY = "termix:file-manager:sidebar:open";
 const LOCAL_PANE_WIDTH_STORAGE_KEY = "termix:file-manager:local-pane:width";
@@ -171,6 +177,7 @@ function FileManagerContent({
       ".",
   );
   const currentPathRef = useRef(currentPath);
+  const pendingDeleteRef = useRef<Promise<unknown>>(Promise.resolve());
   currentPathRef.current = currentPath;
   const lastSuccessfulPathRef = useRef(
     initialPath ||
@@ -352,6 +359,14 @@ function FileManagerContent({
   const [transferMove, setTransferMove] = useState(false);
 
   const [sudoDialogOpen, setSudoDialogOpen] = useState(false);
+  const [deletingPaths, setDeletingPaths] = useState<ReadonlySet<string>>(
+    new Set(),
+  );
+  const deletingPathsRef = useRef<ReadonlySet<string>>(new Set());
+  const updateDeletingPaths = (next: ReadonlySet<string>) => {
+    deletingPathsRef.current = next;
+    setDeletingPaths(next);
+  };
   const [pendingSudoOperation, setPendingSudoOperation] =
     useState<PendingSudoOperation | null>(null);
 
@@ -1097,7 +1112,9 @@ function FileManagerContent({
   const handleLocalFilesDrop = useCallback(
     (localPaths: string[], targetDir?: FileItem) => {
       const remoteDir = targetDir?.path ?? currentPathRef.current;
-      void localTransfers.uploadLocalPaths(localPaths, remoteDir);
+      void waitForDeletes(pendingDeleteRef).then(() =>
+        localTransfers.uploadLocalPaths(localPaths, remoteDir),
+      );
     },
     [localTransfers],
   );
@@ -1164,7 +1181,6 @@ function FileManagerContent({
       toast.error(t("fileManager.noSSHConnection"));
       return;
     }
-
     const files: { file: File; relativePath: string }[] = [];
     const emptyDirs: string[] = [];
 
@@ -1214,6 +1230,7 @@ function FileManagerContent({
     }
 
     if (files.length === 0 && emptyDirs.length === 0) return;
+    await waitForDeletes(pendingDeleteRef);
 
     await uploadBatch(files, emptyDirs);
   }
@@ -1370,9 +1387,10 @@ function FileManagerContent({
       toast.error(t("fileManager.noSSHConnection"));
       return;
     }
-
+    const dropped = Array.from(fileList);
+    await waitForDeletes(pendingDeleteRef);
     await uploadBatch(
-      Array.from(fileList).map((file) => ({ file, relativePath: file.name })),
+      dropped.map((file) => ({ file, relativePath: file.name })),
       [],
     );
   }
@@ -1470,6 +1488,8 @@ function FileManagerContent({
   }
 
   async function handleDeleteFiles(files: FileItem[]) {
+    // Rows already being trashed can't be deleted again.
+    files = files.filter((file) => !deletingPathsRef.current.has(file.path));
     if (!sshSessionId || files.length === 0) return;
 
     let confirmMessage: string;
@@ -1500,33 +1520,105 @@ function FileManagerContent({
     const moveToTrash = async () => {
       const operationPath = currentPath;
       const operationSession = sshSessionId;
-      const deletedPaths = new Set(files.map((file) => file.path));
-      commitFilesForPath(
-        operationSession,
-        operationPath,
-        removePaths(
-          filesForPath(operationSession, operationPath),
-          deletedPaths,
-        ),
+      // A selected folder already takes its selected children with it.
+      const targets = files.filter(
+        (file) =>
+          !files.some(
+            (other) =>
+              other.type === "directory" &&
+              file.path.startsWith(other.path.replace(/\/+$/, "") + "/"),
+          ),
+      );
+      // Rows stay on screen, dimmed, until the server confirms each batch, so
+      // the list shows what is still being deleted.
+      const targetPaths = new Set(targets.map((file) => file.path));
+      updateDeletingPaths(
+        new Set([...deletingPathsRef.current, ...targetPaths]),
       );
       clearSelection();
-      let completed = 0;
+      // Uploads wait for this, so a file re-uploaded under a name still being
+      // trashed can't be trashed too.
+      let release!: () => void;
+      const mine = Promise.all([
+        pendingDeleteRef.current,
+        new Promise<void>((resolve) => (release = resolve)),
+      ]);
+      pendingDeleteRef.current = mine;
+      const controller = new AbortController();
+      const progressToast = toast.loading(
+        t("fileManager.movingToTrash", { done: 0, total: targets.length }),
+        {
+          duration: Infinity,
+          cancel: {
+            label: t("fileManager.cancel"),
+            onClick: () => controller.abort(),
+          },
+        },
+      );
+      let remaining = targets;
       try {
         await ensureSSHConnection();
 
-        for (const file of files) {
-          await deleteSSHItem(
-            sshSessionId,
-            file.path,
-            file.type === "directory",
-            currentHost?.id,
-            currentHost?.userId?.toString(),
+        const { done, itemError, thrown } = await trashInBatches(
+          targets,
+          TRASH_BATCH_SIZE,
+          TRASH_BATCHES_IN_FLIGHT,
+          async (batch) =>
+            await trashSSHItems(
+              sshSessionId,
+              batch.map((file) => file.path),
+            ),
+          {
+            signal: controller.signal,
+            onBatchDone: (trashed) =>
+              commitFilesForPath(
+                operationSession,
+                operationPath,
+                removePaths(
+                  filesForPath(operationSession, operationPath),
+                  new Set(trashed.map((file) => file.path)),
+                ),
+              ),
+            onProgress: (finished) =>
+              !controller.signal.aborted &&
+              toast.loading(
+                t("fileManager.movingToTrash", {
+                  done: finished,
+                  total: targets.length,
+                }),
+                {
+                  id: progressToast,
+                  duration: Infinity,
+                  cancel: {
+                    label: t("fileManager.cancel"),
+                    onClick: () => controller.abort(),
+                  },
+                },
+              ),
+          },
+        );
+        remaining = targets.filter((file) => !done.has(file));
+        if (thrown !== undefined && !controller.signal.aborted) throw thrown;
+        // Cancel wins over a failed item: never offer permanent delete for
+        // files the user chose to keep.
+        if (controller.signal.aborted && remaining.length > 0) {
+          toast.info(t("fileManager.localTransferCancelled"));
+          commitFilesForPath(
+            operationSession,
+            operationPath,
+            restoreItems(
+              filesForPath(operationSession, operationPath),
+              remaining,
+            ),
           );
-          completed += 1;
+          handleRefreshDirectory();
+          return;
         }
+        if (itemError !== undefined)
+          throw { response: { data: { trashUnavailable: true } } };
 
         toast.success(
-          t("fileManager.itemsMovedToTrash", { count: files.length }),
+          t("fileManager.itemsMovedToTrash", { count: targets.length }),
         );
         if (
           sshSessionIdRef.current === operationSession &&
@@ -1542,7 +1634,7 @@ function FileManagerContent({
           operationPath,
           restoreItems(
             filesForPath(operationSession, operationPath),
-            files.slice(completed),
+            remaining,
           ),
         );
         const axiosError = error as {
@@ -1555,7 +1647,7 @@ function FileManagerContent({
         if (axiosError.response?.data?.needsSudo) {
           setPendingSudoOperation({
             type: "delete",
-            files: files.slice(completed),
+            files: remaining,
           });
           setSudoDialogOpen(true);
           return;
@@ -1567,7 +1659,7 @@ function FileManagerContent({
             title: t("fileManager.trashUnavailableConfirm"),
           }))
         ) {
-          for (const file of files.slice(completed)) {
+          for (const file of remaining) {
             await deleteSSHItem(
               sshSessionId,
               file.path,
@@ -1579,7 +1671,7 @@ function FileManagerContent({
           }
           toast.success(
             t("fileManager.itemsDeletedSuccessfully", {
-              count: files.length - completed,
+              count: remaining.length,
             }),
           );
           handleRefreshDirectory();
@@ -1606,6 +1698,14 @@ function FileManagerContent({
         } else {
           toast.error(t("fileManager.failedToDeleteItems"));
         }
+      } finally {
+        toast.dismiss(progressToast);
+        updateDeletingPaths(
+          new Set(
+            [...deletingPathsRef.current].filter((p) => !targetPaths.has(p)),
+          ),
+        );
+        release();
       }
     };
     if (confirmBeforeTrash) {
@@ -2155,6 +2255,7 @@ function FileManagerContent({
 
   async function handlePasteFiles() {
     if (!clipboard || !sshSessionId) return;
+    await waitForDeletes(pendingDeleteRef);
 
     if (
       clipboard.sourceHostId !== null &&
@@ -3661,6 +3762,7 @@ function FileManagerContent({
               <FileManagerGrid
                 files={filteredFiles}
                 selectedFiles={selectedFiles}
+                deletingPaths={deletingPaths}
                 onFileOpen={handleFileOpen}
                 onFileIntent={prefetchFileIntent}
                 onSelectionChange={setSelection}
