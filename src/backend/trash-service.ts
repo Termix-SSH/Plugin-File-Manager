@@ -204,11 +204,13 @@ export async function moveToTrash(
   return publicItem(item);
 }
 
-// Results keep input order; a failing item never affects the others.
+// Results keep input order; a failing item never affects the others. Once
+// shouldStop() is true no further item is started; those report "Cancelled".
 export async function moveManyToTrash(
   sftp: SFTPWrapper,
   paths: string[],
   concurrency: number,
+  shouldStop: () => boolean = () => false,
 ): Promise<Array<{ path: string; item?: TrashItem; error?: string }>> {
   const results: Array<{ path: string; item?: TrashItem; error?: string }> =
     paths.map((p) => ({ path: p }));
@@ -219,6 +221,10 @@ export async function moveManyToTrash(
       async () => {
         while (next < paths.length) {
           const i = next++;
+          if (shouldStop()) {
+            results[i].error = "Cancelled";
+            continue;
+          }
           try {
             results[i].item = await moveToTrash(sftp, paths[i]);
           } catch (error) {

@@ -5,7 +5,7 @@ export interface DeleteCommand {
   commandWithSuccess: string;
 }
 
-function quotePosixPath(path: string): string {
+export function quotePosixPath(path: string): string {
   return `'${path.replace(/'/g, "'\"'\"'")}'`;
 }
 

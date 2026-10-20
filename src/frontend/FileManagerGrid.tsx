@@ -958,7 +958,7 @@ export function FileManagerGrid({
         case "A":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            onSelectionChange([...files]);
+            onSelectionChange(files.filter((f) => !deletingPaths?.has(f.path)));
           }
           break;
         case "c":

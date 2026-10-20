@@ -47,18 +47,24 @@ export function base64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+/** What the server reports for items it skipped because the user cancelled. */
+const CANCELLED = "Cancelled";
+
 /**
  * Sends `items` to `trash` in batches, `limit` batches at a time. `trash`
  * returns one entry per item in order; an entry with `error` failed on its own
  * and the rest carry on. A thrown batch (or an abort) stops new batches, waits
- * for those running, and leaves the untouched items out of `done`, so `done`
- * is exact when this returns.
+ * for those running, and leaves the untouched items out of `done` and
+ * `failed`, so both are exact when this returns. Items of a batch that threw
+ * count as failed; items the server skipped on Cancel count as neither.
  */
 export async function trashInBatches<T>(
   items: T[],
   size: number,
   limit: number,
-  trash: (batch: T[]) => Promise<Array<{ error?: string }>>,
+  trash: (
+    batch: T[],
+  ) => Promise<Array<{ error?: string; needsSudo?: boolean }>>,
   opts: {
     signal?: AbortSignal;
     onProgress?: (finished: number) => void;
@@ -68,6 +74,7 @@ export async function trashInBatches<T>(
 ): Promise<{
   done: Set<T>;
   failed: Set<T>;
+  needsSudo: Set<T>;
   itemError?: string;
   thrown?: unknown;
 }> {
@@ -76,6 +83,7 @@ export async function trashInBatches<T>(
     batches.push(items.slice(i, i + size));
   const done = new Set<T>();
   const failed = new Set<T>();
+  const needsSudo = new Set<T>();
   let finished = 0;
   let itemError: string | undefined;
   let thrown: unknown;
@@ -89,20 +97,22 @@ export async function trashInBatches<T>(
         if (error === undefined && results[i]) {
           done.add(item);
           trashed.push(item);
-        } else {
+        } else if (error !== CANCELLED) {
           failed.add(item);
+          if (results[i]?.needsSudo) needsSudo.add(item);
           itemError ??= error ?? "No result";
         }
       });
       opts.onBatchDone?.(trashed);
     } catch (error) {
       thrown = error ?? new Error("Batch failed");
+      for (const item of batch) failed.add(item);
       return;
     }
     finished += batch.length;
     opts.onProgress?.(finished);
   });
-  return { done, failed, itemError, thrown };
+  return { done, failed, needsSudo, itemError, thrown };
 }
 
 /** Resolves once no delete is running, including ones started while waiting. */
