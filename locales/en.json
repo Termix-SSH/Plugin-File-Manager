@@ -2,7 +2,8 @@
   "nav": {
     "files": "Files",
     "sftp": "SFTP",
-    "openFileManager": "Open File Manager"
+    "openFileManager": "Open File Manager",
+    "togglePanel": "Files panel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Legacy Mode"
+      },
+      "showPanel": {
+        "label": "Show files panel in terminals",
+        "description": "Let the files panel open beside this host's SSH terminal."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirm before moving files to trash",
         "description": "Ask before moving remote files to trash. Permanent deletion still requires confirmation."
+      },
+      "companionAutoOpen": {
+        "label": "Open the files panel with new terminals",
+        "description": "Show the files panel beside every SSH terminal when it opens. You can still open and close it from the button on the right edge."
+      },
+      "companionSide": {
+        "label": "Files panel side",
+        "description": "Where the files panel sits next to a terminal.",
+        "right": "Right",
+        "left": "Left",
+        "bottom": "Bottom"
+      },
+      "companionSize": {
+        "label": "Files panel size",
+        "description": "Width in pixels, or height when it is at the bottom. You can also drag its edge."
+      },
+      "companionEdgeButton": {
+        "label": "Show the panel button",
+        "description": "Show a small button on the right edge of a terminal that opens the files panel."
+      },
+      "companionFollowTerminal": {
+        "label": "Follow the terminal folder",
+        "description": "Move the files panel to the folder your terminal is in. You can switch this off in the panel."
+      },
+      "companionSyncInterval": {
+        "label": "Folder check interval",
+        "description": "How often, in seconds, the files panel checks which folder the terminal is in."
+      },
+      "companionHistorySize": {
+        "label": "Folder history size",
+        "description": "How many folders the files panel remembers for each host."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "New Folder",
     "rename": "Rename",
     "uploading": "Uploading...",
+    "externalEditorTextOnly": "Only text files can be opened externally, because saves are written back as text.",
+    "uploadFilesDone": "{{done}} / {{total}} files",
     "uploadingFile": "Uploading {{name}}...",
     "uploadingChunk": "Uploading {{name}}: {{percent}}% (part {{chunk}} of {{total}})",
     "fileName": "File Name",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Remove",
     "clear": "Clear"
+  },
+  "companion": {
+    "history": "History",
+    "historyEmpty": "No folders yet",
+    "frequent": "Frequent",
+    "recent": "Recent",
+    "clearHistory": "Clear history",
+    "follow": "Follow terminal",
+    "syncNow": "Go to the terminal folder",
+    "cdTerminal": "Change the terminal to this folder",
+    "terminalAt": "Terminal:"
   }
 }

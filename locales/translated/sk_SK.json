@@ -2,7 +2,8 @@
   "nav": {
     "files": "Súbory",
     "sftp": "SFTP",
-    "openFileManager": "Otvoriť správcu súborov"
+    "openFileManager": "Otvoriť správcu súborov",
+    "togglePanel": "Panel súborov"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Režim SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Zobraziť panel súborov v termináloch",
+        "description": "Nechajte panel súborov otvorený vedľa SSH terminálu tohto hostiteľa."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Potvrdiť pred presunutím súborov do koša",
         "description": "Opýtať sa pred presunutím vzdialených súborov do koša. Trvalé vymazanie si stále vyžaduje potvrdenie."
+      },
+      "companionAutoOpen": {
+        "label": "Otvoriť panel súborov s novými terminálmi",
+        "description": "Zobraziť panel súborov vedľa každého SSH terminálu pri jeho otvorení. Stále ho môžete otvárať a zatvárať pomocou tlačidla na pravom okraji."
+      },
+      "companionSide": {
+        "label": "Poloha panela súborov",
+        "description": "Kde sa nachádza panel súborov vedľa terminálu.",
+        "right": "Vpravo",
+        "left": "Vľavo",
+        "bottom": "Dole"
+      },
+      "companionSize": {
+        "label": "Veľkosť panela súborov",
+        "description": "Šírka v pixeloch, alebo výška, keď je umiestnený dole. Môžete tiež pretiahnuť jeho okraj."
+      },
+      "companionEdgeButton": {
+        "label": "Zobraziť tlačidlo panela",
+        "description": "Zobraziť malé tlačidlo na pravom okraji terminálu, ktoré otvorí panel súborov."
+      },
+      "companionFollowTerminal": {
+        "label": "Sledovať priečinok terminálu",
+        "description": "Presuňte panel súborov do priečinka, v ktorom sa nachádza váš terminál. Túto funkciu môžete vypnúť v paneli."
+      },
+      "companionSyncInterval": {
+        "label": "Interval kontroly priečinka",
+        "description": "Ako často (v sekundách) panel súborov kontroluje, v ktorom priečinku sa nachádza terminál."
+      },
+      "companionHistorySize": {
+        "label": "Veľkosť histórie priečinkov",
+        "description": "Koľko priečinkov si panel súborov pamätá pre každého hostiteľa."
       }
     }
   },
@@ -77,6 +113,8 @@
     "newFolder": "Nový priečinok",
     "rename": "Premenovať",
     "uploading": "Nahrávanie...",
+    "externalEditorTextOnly": "Externé otvorenie je možné len pre textové súbory, pretože zmeny sa ukladajú späť ako text.",
+    "uploadFilesDone": "{{done}} / {{total}} súborov",
     "uploadingFile": "Nahrávanie {{name}}...",
     "uploadingChunk": "Nahrávanie {{name}}: {{percent}}% (časť {{chunk}} z {{total}})",
     "fileName": "Názov súboru",
@@ -660,10 +698,22 @@
     "metricsHopDestLocalWrite": "Server → cieľ (lokálne): {{throughput}}"
   },
   "plugin": {
-    "name": "Správca súborov"
+    "name": "Správca súborov",
+    "description": "Prezeranie, úprava a presúvanie súborov cez SFTP, vrátane priameho presunu z jedného servera na druhý."
   },
   "common": {
     "remove": "Odstrániť",
     "clear": "Vymazať"
+  },
+  "companion": {
+    "history": "História",
+    "historyEmpty": "Zatiaľ žiadne priečinky",
+    "frequent": "Časté",
+    "recent": "Nedávne",
+    "clearHistory": "Vymazať históriu",
+    "follow": "Sledovať terminál",
+    "syncNow": "Prejsť do priečinka terminálu",
+    "cdTerminal": "Zmeniť priečinok terminálu na tento",
+    "terminalAt": "Terminál:"
   }
 }

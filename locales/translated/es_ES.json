@@ -2,7 +2,8 @@
   "nav": {
     "files": "Archivos",
     "sftp": "SFTP",
-    "openFileManager": "Abrir gestor de archivos"
+    "openFileManager": "Abrir gestor de archivos",
+    "togglePanel": "Panel de archivos"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Modo SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Mostrar el panel de archivos en las terminales",
+        "description": "Permitir que el panel de archivos se abra junto a la terminal SSH de este host."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirmar antes de mover archivos a la papelera",
         "description": "Preguntar antes de mover archivos remotos a la papelera. La eliminación permanente sigue requiriendo confirmación."
+      },
+      "companionAutoOpen": {
+        "label": "Abrir el panel de archivos con nuevas terminales",
+        "description": "Mostrar el panel de archivos junto a cada terminal SSH al abrirla. Aún puedes abrirlo y cerrarlo desde el botón en el borde derecho."
+      },
+      "companionSide": {
+        "label": "Posición del panel de archivos",
+        "description": "Dónde se sitúa el panel de archivos junto a una terminal.",
+        "right": "Derecha",
+        "left": "Izquierda",
+        "bottom": "Abajo"
+      },
+      "companionSize": {
+        "label": "Tamaño del panel de archivos",
+        "description": "Ancho en píxeles, o altura cuando está en la parte inferior. También puedes arrastrar su borde."
+      },
+      "companionEdgeButton": {
+        "label": "Mostrar el botón del panel",
+        "description": "Mostrar un pequeño botón en el borde derecho de una terminal que abre el panel de archivos."
+      },
+      "companionFollowTerminal": {
+        "label": "Seguir la carpeta de la terminal",
+        "description": "Mover el panel de archivos a la carpeta en la que se encuentra la terminal. Puedes desactivar esto en el panel."
+      },
+      "companionSyncInterval": {
+        "label": "Intervalo de comprobación de carpetas",
+        "description": "Con qué frecuencia, en segundos, el panel de archivos comprueba en qué carpeta se encuentra la terminal."
+      },
+      "companionHistorySize": {
+        "label": "Tamaño del historial de carpetas",
+        "description": "Cuántas carpetas recuerda el panel de archivos para cada host."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Nueva carpeta",
     "rename": "Renombrar",
     "uploading": "Subiendo...",
+    "externalEditorTextOnly": "Solo se pueden abrir archivos de texto externamente, porque los guardados se escriben de nuevo como texto.",
+    "uploadFilesDone": "{{done}} / {{total}} archivos",
     "uploadingFile": "Subiendo {{name}}...",
     "uploadingChunk": "Subiendo {{name}}: {{percent}}% (parte {{chunk}} de {{total}})",
     "fileName": "Nombre del archivo",
@@ -619,10 +657,22 @@
     "metricsHopDestLocalWrite": "Servidor → destino (local): {{throughput}}"
   },
   "plugin": {
-    "name": "Gestor de archivos"
+    "name": "Gestor de archivos",
+    "description": "Explora, edita y mueve archivos a través de SFTP, incluso directamente de un servidor a otro."
   },
   "common": {
     "remove": "Eliminar",
     "clear": "Borrar"
+  },
+  "companion": {
+    "history": "Historial",
+    "historyEmpty": "Aún no hay carpetas",
+    "frequent": "Frecuentes",
+    "recent": "Recientes",
+    "clearHistory": "Borrar historial",
+    "follow": "Seguir terminal",
+    "syncNow": "Ir a la carpeta de la terminal",
+    "cdTerminal": "Cambiar la terminal a esta carpeta",
+    "terminalAt": "Terminal:"
   }
 }

@@ -2,7 +2,8 @@
   "nav": {
     "files": "File",
     "sftp": "SFTP",
-    "openFileManager": "Buka Pengelola File"
+    "openFileManager": "Buka Pengelola File",
+    "togglePanel": "Panel file"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Mode Legacy SCP"
+      },
+      "showPanel": {
+        "label": "Tampilkan panel file di terminal",
+        "description": "Biarkan panel file terbuka di samping terminal SSH host ini."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Konfirmasi sebelum memindahkan file ke tempat sampah",
         "description": "Tanya sebelum memindahkan file remote ke tempat sampah. Penghapusan permanen tetap memerlukan konfirmasi."
+      },
+      "companionAutoOpen": {
+        "label": "Buka panel file bersama terminal baru",
+        "description": "Tampilkan panel file di samping setiap terminal SSH saat dibuka. Anda masih bisa membukanya dan menutupnya dari tombol di tepi kanan."
+      },
+      "companionSide": {
+        "label": "Posisi panel file",
+        "description": "Di mana panel file berada di samping terminal.",
+        "right": "Kanan",
+        "left": "Kiri",
+        "bottom": "Bawah"
+      },
+      "companionSize": {
+        "label": "Ukuran panel file",
+        "description": "Lebar dalam piksel, atau tinggi saat berada di bawah. Anda juga bisa menyeret tepinya."
+      },
+      "companionEdgeButton": {
+        "label": "Tampilkan tombol panel",
+        "description": "Tampilkan tombol kecil di tepi kanan terminal yang membuka panel file."
+      },
+      "companionFollowTerminal": {
+        "label": "Ikuti folder terminal",
+        "description": "Pindahkan panel file ke folder tempat terminal Anda berada. Anda bisa menonaktifkan ini di panel."
+      },
+      "companionSyncInterval": {
+        "label": "Interval pengecekan folder",
+        "description": "Seberapa sering, dalam detik, panel file memeriksa folder tempat terminal berada."
+      },
+      "companionHistorySize": {
+        "label": "Ukuran riwayat folder",
+        "description": "Berapa banyak folder yang diingat oleh panel file untuk setiap host."
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "Folder Baru",
     "rename": "Ubah Nama",
     "uploading": "Mengunggah...",
+    "externalEditorTextOnly": "Hanya file teks yang bisa dibuka secara eksternal, karena penyimpanan ditulis kembali sebagai teks.",
+    "uploadFilesDone": "{{done}} / {{total}} file",
     "uploadingFile": "Mengunggah {{name}}...",
     "uploadingChunk": "Mengunggah {{name}}: {{percent}}% (bagian {{chunk}} dari {{total}})",
     "fileName": "Nama File",
@@ -537,10 +575,22 @@
     "metricsHopDestLocalWrite": "Server → tujuan (lokal): {{throughput}}"
   },
   "plugin": {
-    "name": "File Manager"
+    "name": "File Manager",
+    "description": "Jelajahi, edit, dan pindahkan file melalui SFTP, termasuk langsung dari satu server ke server lain."
   },
   "common": {
     "remove": "Hapus",
     "clear": "Bersihkan"
+  },
+  "companion": {
+    "history": "Riwayat",
+    "historyEmpty": "Belum ada folder",
+    "frequent": "Sering",
+    "recent": "Terbaru",
+    "clearHistory": "Hapus riwayat",
+    "follow": "Ikuti terminal",
+    "syncNow": "Pergi ke folder terminal",
+    "cdTerminal": "Ubah terminal ke folder ini",
+    "terminalAt": "Terminal:"
   }
 }

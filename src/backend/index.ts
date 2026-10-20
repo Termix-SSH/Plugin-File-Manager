@@ -51,6 +51,7 @@ import {
 } from "./transfer-engine.js";
 import { createFilesService } from "./service.js";
 import { tables } from "./tables.js";
+import { registerLocalDesktop } from "./local-desktop.js";
 
 const TRANSFER_PROFILES_KEY = "transfer-profiles";
 
@@ -2392,6 +2393,8 @@ export async function activate(ctx: PluginContext) {
         .json({ error: "Transfer not found or not retryable" });
     res.json({ ok: true, transferId });
   });
+
+  registerLocalDesktop(app, ctx);
 
   ctx.http.router<Router>({ bodyLimit: "1gb" }).use(app);
 

@@ -2,7 +2,8 @@
   "nav": {
     "files": "Ficheiros",
     "sftp": "SFTP",
-    "openFileManager": "Abrir Gestor de Ficheiros"
+    "openFileManager": "Abrir Gestor de Ficheiros",
+    "togglePanel": "Painel de ficheiros"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Modo SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Mostrar painel de ficheiros nos terminais",
+        "description": "Permitir que o painel de ficheiros abra ao lado do terminal SSH deste host."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirmar antes de mover ficheiros para o lixo",
         "description": "Pedir confirmação antes de mover ficheiros remotos para o lixo. A eliminação permanente continua a exigir confirmação."
+      },
+      "companionAutoOpen": {
+        "label": "Abrir o painel de ficheiros com novos terminais",
+        "description": "Mostrar o painel de ficheiros ao lado de cada terminal SSH quando este abre. Pode ainda abri-lo e fechá-lo através do botão na borda direita."
+      },
+      "companionSide": {
+        "label": "Lado do painel de ficheiros",
+        "description": "Onde o painel de ficheiros fica junto a um terminal.",
+        "right": "Direita",
+        "left": "Esquerda",
+        "bottom": "Inferior"
+      },
+      "companionSize": {
+        "label": "Tamanho do painel de ficheiros",
+        "description": "Largura em píxeis, ou altura quando está na parte inferior. Também pode arrastar a sua borda."
+      },
+      "companionEdgeButton": {
+        "label": "Mostrar o botão do painel",
+        "description": "Mostrar um pequeno botão na borda direita de um terminal que abre o painel de ficheiros."
+      },
+      "companionFollowTerminal": {
+        "label": "Seguir a pasta do terminal",
+        "description": "Mover o painel de ficheiros para a pasta em que o terminal se encontra. Pode desativar esta opção no painel."
+      },
+      "companionSyncInterval": {
+        "label": "Intervalo de verificação da pasta",
+        "description": "Com que frequência, em segundos, o painel de ficheiros verifica em que pasta o terminal se encontra."
+      },
+      "companionHistorySize": {
+        "label": "Tamanho do histórico de pastas",
+        "description": "Quantas pastas o painel de ficheiros memoriza para cada host."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Nova Pasta",
     "rename": "Renomear",
     "uploading": "A carregar...",
+    "externalEditorTextOnly": "Apenas ficheiros de texto podem ser abertos externamente, porque as gravações são escritas de volta como texto.",
+    "uploadFilesDone": "{{done}} / {{total}} ficheiros",
     "uploadingFile": "A carregar {{name}}...",
     "uploadingChunk": "A carregar {{name}}: {{percent}}% (parte {{chunk}} de {{total}})",
     "fileName": "Nome do Ficheiro",
@@ -619,10 +657,22 @@
     "metricsHopDestLocalWrite": "Servidor → destino (local): {{throughput}}"
   },
   "plugin": {
-    "name": "Gestor de Ficheiros"
+    "name": "Gestor de Ficheiros",
+    "description": "Navegar, editar e mover ficheiros via SFTP, incluindo diretamente de um servidor para outro."
   },
   "common": {
     "remove": "Remover",
     "clear": "Limpar"
+  },
+  "companion": {
+    "history": "Histórico",
+    "historyEmpty": "Ainda sem pastas",
+    "frequent": "Frequentes",
+    "recent": "Recentes",
+    "clearHistory": "Limpar histórico",
+    "follow": "Seguir terminal",
+    "syncNow": "Ir para a pasta do terminal",
+    "cdTerminal": "Mudar o terminal para esta pasta",
+    "terminalAt": "Terminal:"
   }
 }

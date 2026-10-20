@@ -267,7 +267,9 @@ export function FileManagerGrid({
 
   const compact = density === "compact";
   const LIST_ROW_H = compact ? 29 : 41;
-  const GRID_ROW_H = compact ? 76 : 112;
+  // One fixed row stride (cell plus gap) so the spacing never depends on
+  // what a row happens to contain or when it was measured.
+  const GRID_ROW_H = compact ? 84 : 112;
   const LIST_HEADER_H = compact ? 25 : 33;
   const CONTENT_PAD = compact ? 8 : 16;
   const GRID_GAP = compact ? 8 : 16;
@@ -392,9 +394,12 @@ export function FileManagerGrid({
   const handleEditKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       handleEditConfirm();
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       handleEditCancel();
     }
   };
@@ -1196,19 +1201,17 @@ export function FileManagerGrid({
                     <div
                       key={vRow.key}
                       data-index={vRow.index}
-                      ref={gridVirtualizer.measureElement}
                       className="absolute top-0 left-0 w-full"
                       style={{
+                        height: GRID_ROW_H,
                         transform: `translateY(${vRow.start}px)`,
                       }}
                     >
                       <div
-                        className={cn(
-                          "grid",
-                          compact ? "gap-2 pb-2" : "gap-3 pb-3",
-                        )}
+                        className={cn("grid", compact ? "gap-2" : "gap-3")}
                         style={{
                           gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
+                          gridAutoRows: GRID_ROW_H - GRID_GAP,
                         }}
                       >
                         {rowFiles.map((file) => {
@@ -1221,7 +1224,7 @@ export function FileManagerGrid({
                               data-file-path={file.path}
                               draggable={true}
                               className={cn(
-                                "group flex flex-col items-center rounded-none border border-transparent transition-colors cursor-pointer hover:bg-muted/50 select-none",
+                                "group flex flex-col items-center overflow-hidden rounded-none border border-border/40 bg-card/30 transition-colors cursor-pointer hover:bg-muted/50 hover:border-border select-none",
                                 compact ? "p-1.5" : "p-2",
                                 isSelected &&
                                   "bg-accent-brand/10 hover:bg-accent-brand/10 border-accent-brand/30",
@@ -1675,9 +1678,12 @@ function CreateIntentGridItem({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       commit(inputName.trim());
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       if (doneRef.current) return;
       doneRef.current = true;
       onCancel?.();
@@ -1757,9 +1763,12 @@ function CreateIntentListItem({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      // Stop the global grid Enter-to-open shortcut firing after the input unmounts.
+      e.stopPropagation();
       commit(inputName.trim());
     } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       if (doneRef.current) return;
       doneRef.current = true;
       onCancel?.();

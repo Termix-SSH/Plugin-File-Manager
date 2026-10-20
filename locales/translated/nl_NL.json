@@ -2,7 +2,8 @@
   "nav": {
     "files": "Bestanden",
     "sftp": "SFTP",
-    "openFileManager": "Bestandsbeheer openen"
+    "openFileManager": "Bestandsbeheer openen",
+    "togglePanel": "Bestandenpaneel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Legacy-modus"
+      },
+      "showPanel": {
+        "label": "Bestandenpaneel tonen in terminals",
+        "description": "Laat het bestandenpaneel open naast de SSH-terminal van deze host."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bevestigen voordat bestanden naar prullenbak worden verplaatst",
         "description": "Vragen voordat externe bestanden naar de prullenbak worden verplaatst. Permanente verwijdering vereist nog steeds bevestiging."
+      },
+      "companionAutoOpen": {
+        "label": "Bestandenpaneel openen bij nieuwe terminals",
+        "description": "Toon het bestandenpaneel naast elke SSH-terminal wanneer deze wordt geopend. Je kunt het paneel nog steeds openen en sluiten via de knop aan de rechterkant."
+      },
+      "companionSide": {
+        "label": "Positie bestandenpaneel",
+        "description": "Waar het bestandenpaneel naast een terminal wordt weergegeven.",
+        "right": "Rechts",
+        "left": "Links",
+        "bottom": "Onder"
+      },
+      "companionSize": {
+        "label": "Grootte bestandenpaneel",
+        "description": "Breedte in pixels, of hoogte wanneer het paneel onderaan staat. Je kunt de rand ook verslepen."
+      },
+      "companionEdgeButton": {
+        "label": "Paneelknop tonen",
+        "description": "Toon een kleine knop aan de rechterkant van een terminal die het bestandenpaneel opent."
+      },
+      "companionFollowTerminal": {
+        "label": "Terminalmap volgen",
+        "description": "Verplaats het bestandenpaneel naar de map waarin je terminal zich bevindt. Je kunt dit uitschakelen in het paneel."
+      },
+      "companionSyncInterval": {
+        "label": "Interval mapcontrole",
+        "description": "Hoe vaak, in seconden, het bestandenpaneel controleert in welke map de terminal zich bevindt."
+      },
+      "companionHistorySize": {
+        "label": "Grootte mapgeschiedenis",
+        "description": "Hoeveel mappen het bestandenpaneel voor elke host onthoudt."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Nieuwe map",
     "rename": "Hernoemen",
     "uploading": "Uploaden...",
+    "externalEditorTextOnly": "Alleen tekstbestanden kunnen extern worden geopend, omdat wijzigingen als tekst worden opgeslagen.",
+    "uploadFilesDone": "{{done}} / {{total}} bestanden",
     "uploadingFile": "{{name}} uploaden...",
     "uploadingChunk": "{{name}} uploaden: {{percent}}% (deel {{chunk}} van {{total}})",
     "fileName": "Bestandsnaam",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Verwijderen",
     "clear": "Wissen"
+  },
+  "companion": {
+    "history": "Geschiedenis",
+    "historyEmpty": "Nog geen mappen",
+    "frequent": "Vaak gebruikt",
+    "recent": "Recent",
+    "clearHistory": "Geschiedenis wissen",
+    "follow": "Terminal volgen",
+    "syncNow": "Ga naar de terminalmap",
+    "cdTerminal": "Zet de terminal op deze map",
+    "terminalAt": "Terminal:"
   }
 }

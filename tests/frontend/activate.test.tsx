@@ -61,11 +61,13 @@ describe(`${manifest.id} activate`, () => {
     rendered = await renderWithApp(plugin, { manifest, locales });
     expect(rendered.registered.actions().sort()).toEqual([
       "file-manager.openFromTab",
+      "file-manager.togglePanel",
       "files.openEditor",
       "files.openHost",
     ]);
-    expect(rendered.registered.slot("tab.menu")).toEqual([
+    expect(rendered.registered.slot("tab.menu").sort()).toEqual([
       "file-manager.openFromTab",
+      "file-manager.togglePanel",
     ]);
   });
 

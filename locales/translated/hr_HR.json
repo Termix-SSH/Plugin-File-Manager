@@ -2,7 +2,8 @@
   "nav": {
     "files": "Datoteke",
     "sftp": "SFTP",
-    "openFileManager": "Otvori upravitelj datoteka"
+    "openFileManager": "Otvori upravitelj datoteka",
+    "togglePanel": "Panel datoteka"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Legacy način"
+      },
+      "showPanel": {
+        "label": "Prikaži panel datoteka u terminalima",
+        "description": "Otvori panel datoteka uz SSH terminal ovog hosta."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Potvrdi prije premještanja datoteka u smeće",
         "description": "Pitaj za potvrdu prije premještanja udaljenih datoteka u smeće. Trajno brisanje i dalje zahtijeva potvrdu."
+      },
+      "companionAutoOpen": {
+        "label": "Otvori panel datoteka s novim terminalima",
+        "description": "Prikaži panel datoteka uz svaki SSH terminal pri otvaranju. I dalje ga možete otvoriti i zatvoriti pomoću gumba na desnoj rubnoj liniji."
+      },
+      "companionSide": {
+        "label": "Položaj panela datoteka",
+        "description": "Gdje se panel datoteka nalazi uz terminal.",
+        "right": "Desno",
+        "left": "Lijevo",
+        "bottom": "Dolje"
+      },
+      "companionSize": {
+        "label": "Veličina panela datoteka",
+        "description": "Širina u pikselima, ili visina kada je na dnu. Rub također možete povući mišem."
+      },
+      "companionEdgeButton": {
+        "label": "Prikaži gumb za panel",
+        "description": "Prikaži mali gumb na desnom rubu terminala koji otvara panel datoteka."
+      },
+      "companionFollowTerminal": {
+        "label": "Prati mapu terminala",
+        "description": "Premjesti panel datoteka u mapu u kojoj se nalazi terminal. Ovo možete isključiti izravno u panelu."
+      },
+      "companionSyncInterval": {
+        "label": "Interval provjere mape",
+        "description": "Koliko često, u sekundama, panel datoteka provjerava u kojoj se mapi nalazi terminal."
+      },
+      "companionHistorySize": {
+        "label": "Veličina povijesti mapa",
+        "description": "Koliko mapa panel datoteka pamti za svaki host."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Nova mapa",
     "rename": "Preimenuj",
     "uploading": "Učitavanje...",
+    "externalEditorTextOnly": "Samo tekstualne datoteke mogu se otvoriti vanjski, jer se spremanja zapisuju natrag kao tekst.",
+    "uploadFilesDone": "{{done}} / {{total}} datoteka",
     "uploadingFile": "Učitavanje {{name}}...",
     "uploadingChunk": "Učitavanje {{name}}: {{percent}}% (dio {{chunk}} od {{total}})",
     "fileName": "Naziv datoteke",
@@ -625,5 +663,16 @@
   "common": {
     "remove": "Ukloni",
     "clear": "Očisti"
+  },
+  "companion": {
+    "history": "Povijest",
+    "historyEmpty": "Još nema mapa",
+    "frequent": "Česte",
+    "recent": "Nedavne",
+    "clearHistory": "Izbriši povijest",
+    "follow": "Prati terminal",
+    "syncNow": "Idi u mapu terminala",
+    "cdTerminal": "Promijeni terminal na ovu mapu",
+    "terminalAt": "Terminal:"
   }
 }

@@ -13,7 +13,7 @@ import {
   LOCAL_FILES_DRAG_MIME,
   REMOTE_FILES_DRAG_MIME,
 } from "../../src/frontend/local-transfer-utils";
-import type { LocalFileEntry } from "@termix-ssh/plugin-sdk/frontend";
+import type { LocalFileEntry } from "../../src/frontend/local-types";
 
 // jsdom has no layout, so render every row instead of a virtual window.
 vi.mock("@tanstack/react-virtual", () => ({
@@ -48,6 +48,20 @@ vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       opts?.count !== undefined ? `${key}:${opts.count}` : key,
   }),
+}));
+
+const clientHolder = vi.hoisted(() => ({
+  client: null as null | {
+    get: (url: string) => Promise<{ data: unknown }>;
+    post: (
+      url: string,
+      body: Record<string, unknown>,
+    ) => Promise<{ data: unknown }>;
+  },
+}));
+vi.mock("../../src/frontend/api/client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../src/frontend/api/client")>()),
+  fileManagerApi: () => clientHolder.client,
 }));
 
 const HOME = "/Users/max";
@@ -97,24 +111,58 @@ function installElectronApi() {
         platform: "darwin",
       })),
       list,
-      mkdir: vi.fn(),
-      createFile: vi.fn(async () => ({ success: true as const, path: "" })),
-      rename: vi.fn(async () => ({ success: true as const, path: "" })),
-      trash: vi.fn(async () => ({
+      mkdir: vi.fn(async (..._a: unknown[]) => ({
+        success: true as const,
+        path: "",
+      })),
+      createFile: vi.fn(async (..._a: unknown[]) => ({
+        success: true as const,
+        path: "",
+      })),
+      rename: vi.fn(async (..._a: unknown[]) => ({
+        success: true as const,
+        path: "",
+      })),
+      trash: vi.fn(async (..._a: unknown[]) => ({
         success: true as const,
         trashed: 1,
         failed: [],
       })),
-      ensureDir: vi.fn(),
-      walk: vi.fn(),
-      reveal: vi.fn(),
-      open: vi.fn(),
+      ensureDir: vi.fn(async (..._a: unknown[]) => ({
+        success: true as const,
+        path: "",
+      })),
+      walk: vi.fn(async (..._a: unknown[]) => ({ success: true as const })),
+      reveal: vi.fn(async (..._a: unknown[]) => ({ success: true as const })),
+      open: vi.fn(async (..._a: unknown[]) => ({ success: true as const })),
     },
     localTransfer: {
       upload: vi.fn(),
       download: vi.fn(),
       cancel: vi.fn(),
       onProgress: vi.fn(() => () => {}),
+    },
+  };
+  const routes: Record<
+    string,
+    (body: Record<string, unknown>) => Promise<unknown>
+  > = {
+    list: (b) => api.localFs.list(b.path as string),
+    mkdir: (b) => api.localFs.mkdir(b.parent, b.name),
+    "create-file": (b) =>
+      api.localFs.createFile(b.parent as string, b.name as string),
+    rename: (b) => api.localFs.rename(b.path as string, b.name as string),
+    trash: (b) => api.localFs.trash(b.paths as string[]),
+    "ensure-dir": (b) => api.localFs.ensureDir(b.path, b.root),
+    walk: (b) => api.localFs.walk(b.paths),
+    reveal: (b) => api.localFs.reveal(b.path),
+    open: (b) => api.localFs.open(b.path),
+  };
+  clientHolder.client = {
+    get: async () => ({ data: await api.localFs.home() }),
+    post: async (url, body) => {
+      const route = url.replace("/local/", "");
+      return { data: await routes[route](body) };
     },
   };
   (window as unknown as { electronAPI: unknown }).electronAPI = api;

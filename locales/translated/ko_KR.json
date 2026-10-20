@@ -2,7 +2,8 @@
   "nav": {
     "files": "파일",
     "sftp": "SFTP",
-    "openFileManager": "파일 관리자 열기"
+    "openFileManager": "파일 관리자 열기",
+    "togglePanel": "파일 패널"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP 레거시 모드"
+      },
+      "showPanel": {
+        "label": "터미널에서 파일 패널 표시",
+        "description": "이 호스트의 SSH 터미널 옆에 파일 패널을 열도록 합니다."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "파일을 휴지통으로 이동하기 전 확인",
         "description": "원격 파일을 휴지통으로 이동하기 전에 확인합니다. 영구 삭제는 여전히 확인이 필요합니다."
+      },
+      "companionAutoOpen": {
+        "label": "새 터미널과 함께 파일 패널 열기",
+        "description": "SSH 터미널이 열릴 때마다 옆에 파일 패널을 표시합니다. 오른쪽 가장자리의 버튼에서 언제든지 열거나 닫을 수 있습니다."
+      },
+      "companionSide": {
+        "label": "파일 패널 위치",
+        "description": "터미널 옆에 파일 패널이 표시되는 위치입니다.",
+        "right": "오른쪽",
+        "left": "왼쪽",
+        "bottom": "아래쪽"
+      },
+      "companionSize": {
+        "label": "파일 패널 크기",
+        "description": "픽셀 단위의 너비 또는 아래쪽 위치일 때의 높이입니다. 가장자리를 드래그하여 조정할 수도 있습니다."
+      },
+      "companionEdgeButton": {
+        "label": "패널 버튼 표시",
+        "description": "터미널 오른쪽 가장자리에 파일 패널을 여는 작은 버튼을 표시합니다."
+      },
+      "companionFollowTerminal": {
+        "label": "터미널 폴더 따라가기",
+        "description": "터미널이 있는 폴더로 파일 패널을 이동합니다. 패널에서 이 기능을 끌 수 있습니다."
+      },
+      "companionSyncInterval": {
+        "label": "폴더 확인 간격",
+        "description": "파일 패널이 터미널의 현재 폴더를 확인하는 빈도(초)입니다."
+      },
+      "companionHistorySize": {
+        "label": "폴더 기록 크기",
+        "description": "각 호스트별로 파일 패널이 기억하는 폴더 수입니다."
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "새 폴더",
     "rename": "이름 바꾸기",
     "uploading": "업로드 중...",
+    "externalEditorTextOnly": "저장된 내용이 텍스트로 다시 기록되므로 텍스트 파일만 외부에서 열 수 있습니다.",
+    "uploadFilesDone": "{{done}} / {{total}}개 파일",
     "uploadingFile": "{{name}} 업로드 중...",
     "uploadingChunk": "{{name}} 업로드 중: {{percent}}% ({{total}} 중 {{chunk}}번째 부분)",
     "fileName": "파일 이름",
@@ -537,10 +575,22 @@
     "metricsHopDestLocalWrite": "서버 → 대상 (로컬): {{throughput}}"
   },
   "plugin": {
-    "name": "파일 관리자"
+    "name": "파일 관리자",
+    "description": "SFTP를 통해 파일을 탐색, 편집 및 이동합니다. 서버 간 직접 전송도 지원합니다."
   },
   "common": {
     "remove": "제거",
     "clear": "지우기"
+  },
+  "companion": {
+    "history": "기록",
+    "historyEmpty": "아직 폴더가 없습니다",
+    "frequent": "자주 사용",
+    "recent": "최근 사용",
+    "clearHistory": "기록 지우기",
+    "follow": "터미널 따라가기",
+    "syncNow": "터미널 폴더로 이동",
+    "cdTerminal": "터미널을 이 폴더로 변경",
+    "terminalAt": "터미널:"
   }
 }

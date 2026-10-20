@@ -2,7 +2,8 @@
   "nav": {
     "files": "File",
     "sftp": "SFTP",
-    "openFileManager": "Apri File Manager"
+    "openFileManager": "Apri File Manager",
+    "togglePanel": "Pannello file"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Modalità SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Mostra il pannello file nei terminal",
+        "description": "Consenti al pannello file di aprirsi accanto al terminale SSH di questo host."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Conferma prima di spostare i file nel cestino",
         "description": "Chiedi conferma prima di spostare i file remoti nel cestino. La cancellazione permanente richiede comunque conferma."
+      },
+      "companionAutoOpen": {
+        "label": "Apri il pannello file con i nuovi terminal",
+        "description": "Mostra il pannello file accanto a ogni terminale SSH quando si apre. Puoi comunque aprirlo e chiuderlo dal pulsante sul bordo destro."
+      },
+      "companionSide": {
+        "label": "Posizione del pannello file",
+        "description": "Dove si trova il pannello file accanto a un terminale.",
+        "right": "Destra",
+        "left": "Sinistra",
+        "bottom": "In basso"
+      },
+      "companionSize": {
+        "label": "Dimensione del pannello file",
+        "description": "Larghezza in pixel, o altezza quando è in basso. Puoi anche trascinare il suo bordo."
+      },
+      "companionEdgeButton": {
+        "label": "Mostra il pulsante del pannello",
+        "description": "Mostra un piccolo pulsante sul bordo destro di un terminale che apre il pannello file."
+      },
+      "companionFollowTerminal": {
+        "label": "Segui la cartella del terminale",
+        "description": "Sposta il pannello file nella cartella in cui si trova il terminale. Puoi disabilitare questa opzione nel pannello."
+      },
+      "companionSyncInterval": {
+        "label": "Intervallo di controllo della cartella",
+        "description": "Con quale frequenza, in secondi, il pannello file controlla in quale cartella si trova il terminale."
+      },
+      "companionHistorySize": {
+        "label": "Dimensione della cronologia delle cartelle",
+        "description": "Quante cartelle il pannello file ricorda per ogni host."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Nuova cartella",
     "rename": "Rinomina",
     "uploading": "Caricamento...",
+    "externalEditorTextOnly": "Solo i file di testo possono essere aperti esternamente, perché i salvataggi vengono scritti come testo.",
+    "uploadFilesDone": "{{done}} / {{total}} file",
     "uploadingFile": "Caricamento di {{name}}...",
     "uploadingChunk": "Caricamento di {{name}}: {{percent}}% (parte {{chunk}} di {{total}})",
     "fileName": "Nome file",
@@ -619,10 +657,22 @@
     "metricsHopDestLocalWrite": "Server → dest (locale): {{throughput}}"
   },
   "plugin": {
-    "name": "File Manager"
+    "name": "File Manager",
+    "description": "Sfoglia, modifica e sposta file tramite SFTP, anche direttamente da un server all'altro."
   },
   "common": {
     "remove": "Rimuovi",
     "clear": "Cancella"
+  },
+  "companion": {
+    "history": "Cronologia",
+    "historyEmpty": "Nessuna cartella ancora",
+    "frequent": "Frequenti",
+    "recent": "Recenti",
+    "clearHistory": "Cancella cronologia",
+    "follow": "Segui il terminale",
+    "syncNow": "Vai alla cartella del terminale",
+    "cdTerminal": "Cambia il terminale a questa cartella",
+    "terminalAt": "Terminale:"
   }
 }

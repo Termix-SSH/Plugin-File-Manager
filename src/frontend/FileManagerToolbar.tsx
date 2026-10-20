@@ -70,6 +70,8 @@ type FileManagerToolbarProps = {
   /** Desktop directories sidebar (mobile uses the overlay instead). */
   sidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  /** Side panel layout: path on its own line, icon only buttons, wrapping. */
+  compact?: boolean;
 };
 
 function Breadcrumb({
@@ -77,10 +79,19 @@ function Breadcrumb({
   navigateTo,
   t,
 }: Pick<FileManagerToolbarProps, "currentPath" | "navigateTo" | "t">) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Long paths keep the current folder in view.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [currentPath]);
   return (
     <>
       <Folder className="size-3.5 text-accent-brand shrink-0" />
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none text-xs whitespace-nowrap">
+      <div
+        ref={scrollRef}
+        className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto scrollbar-none text-xs whitespace-nowrap"
+      >
         {currentPath.split("/").map((part, i, arr) => (
           <React.Fragment key={i}>
             {part === "" && i === 0 ? (
@@ -228,6 +239,7 @@ export function FileManagerToolbar({
   onToggleLocalPane,
   sidebarOpen = true,
   onToggleSidebar,
+  compact = false,
 }: FileManagerToolbarProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -268,29 +280,35 @@ export function FileManagerToolbar({
   }, []);
 
   return (
-    <div className="flex shrink-0 flex-col gap-2 border-b border-border px-3 py-2">
-      <div className="flex w-full flex-row items-center gap-2">
+    <div
+      className={`flex shrink-0 flex-col gap-2 border-b border-border ${compact ? "px-2 py-1.5" : "px-3 py-2"}`}
+    >
+      <div
+        className={`flex w-full flex-row items-center gap-2 ${compact ? "flex-wrap" : ""}`}
+      >
         <div className="flex shrink-0 items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              // Below md the sidebar is an overlay; above it, a persisted
-              // show/hide of the directories panel.
-              const isDesktop =
-                typeof window !== "undefined" &&
-                window.matchMedia("(min-width: 768px)").matches;
-              if (isDesktop && onToggleSidebar) onToggleSidebar();
-              else setMobileSidebarOpen((open) => !open);
-            }}
-            className={
-              sidebarOpen ? "" : "md:bg-accent-brand/10 md:text-accent-brand"
-            }
-            title={t("fileManager.toggleSidebar")}
-            aria-pressed={!sidebarOpen}
-          >
-            <Layout className="size-4" />
-          </Button>
+          {!compact && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                // Below md the sidebar is an overlay; above it, a persisted
+                // show/hide of the directories panel.
+                const isDesktop =
+                  typeof window !== "undefined" &&
+                  window.matchMedia("(min-width: 768px)").matches;
+                if (isDesktop && onToggleSidebar) onToggleSidebar();
+                else setMobileSidebarOpen((open) => !open);
+              }}
+              className={
+                sidebarOpen ? "" : "md:bg-accent-brand/10 md:text-accent-brand"
+              }
+              title={t("fileManager.toggleSidebar")}
+              aria-pressed={!sidebarOpen}
+            >
+              <Layout className="size-4" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -326,10 +344,16 @@ export function FileManagerToolbar({
           currentPath={currentPath}
           navigateTo={navigateTo}
           t={t}
-          className="hidden h-8 min-w-0 flex-1 items-center gap-2 overflow-hidden border border-border px-2.5 md:flex"
+          className={
+            compact
+              ? "order-last flex h-8 w-full basis-full min-w-0 items-center gap-2 overflow-hidden border border-border px-2.5"
+              : "hidden h-8 min-w-0 flex-1 items-center gap-2 overflow-hidden border border-border px-2.5 md:flex"
+          }
         />
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div
+          className={`flex items-center gap-2 ${compact ? "min-w-0 flex-1 flex-wrap justify-end" : "shrink-0"}`}
+        >
           {selectedFiles.length > 0 && (
             <div className="flex items-center gap-1 border border-accent-brand/30 bg-accent-brand/10 pl-2 pr-1">
               <span className="text-[10px] tabular-nums text-accent-brand">
@@ -361,7 +385,7 @@ export function FileManagerToolbar({
             value={searchQuery}
             onChange={setSearchQuery}
             placeholder={t("fileManager.searchFiles")}
-            className="w-28 md:w-44"
+            className={compact ? "min-w-24 flex-1" : "w-28 md:w-44"}
           />
 
           {showLocalPaneToggle && (
@@ -402,11 +426,12 @@ export function FileManagerToolbar({
           <Button
             variant="outline"
             onClick={() => uploadInputRef.current?.click()}
-            className="hidden md:flex"
+            className={compact ? "flex" : "hidden md:flex"}
             title={t("fileManager.upload")}
+            aria-label={t("fileManager.upload")}
           >
             <Upload className="size-3.5" />
-            {t("fileManager.upload")}
+            {!compact && t("fileManager.upload")}
           </Button>
 
           <DropdownMenu>
@@ -417,9 +442,11 @@ export function FileManagerToolbar({
                 aria-label={t("fileManager.sortBy")}
               >
                 <ArrowUpDown className="size-3.5" />
-                <span className="hidden md:inline">
-                  {t("fileManager.sortBy")}
-                </span>
+                {!compact && (
+                  <span className="hidden md:inline">
+                    {t("fileManager.sortBy")}
+                  </span>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -460,10 +487,12 @@ export function FileManagerToolbar({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
+                title={t("fileManager.new")}
+                aria-label={t("fileManager.new")}
                 className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40"
               >
                 <Plus className="size-3.5" />
-                {t("fileManager.new")}
+                {!compact && t("fileManager.new")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -494,7 +523,9 @@ export function FileManagerToolbar({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:hidden">
+      <div
+        className={`flex items-center gap-2 md:hidden ${compact ? "hidden" : ""}`}
+      >
         <PathBar
           currentPath={currentPath}
           navigateTo={navigateTo}

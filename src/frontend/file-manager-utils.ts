@@ -33,3 +33,16 @@ export async function runWithConcurrency<T>(
     }),
   );
 }
+
+/** Decodes base64 in slices so no full-size binary string is ever built. */
+export function base64ToBytes(b64: string): Uint8Array {
+  const SLICE = 3 * 1024 * 1024; // multiple of 4 chars per slice stays aligned
+  const pad = b64.endsWith("==") ? 2 : b64.endsWith("=") ? 1 : 0;
+  const out = new Uint8Array(Math.floor((b64.length * 3) / 4) - pad);
+  let offset = 0;
+  for (let i = 0; i < b64.length; i += SLICE) {
+    const bin = atob(b64.slice(i, i + SLICE));
+    for (let j = 0; j < bin.length; j++) out[offset++] = bin.charCodeAt(j);
+  }
+  return out;
+}

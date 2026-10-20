@@ -1,7 +1,7 @@
 /** One of this plugin's host settings, from the host payload. */
 export function fileManagerHostSetting<T>(
   host: object | null | undefined,
-  key: "enableFileManager" | "defaultPath" | "scpLegacy",
+  key: "enableFileManager" | "defaultPath" | "scpLegacy" | "showPanel",
   fallback: T,
 ): T {
   const settings = (

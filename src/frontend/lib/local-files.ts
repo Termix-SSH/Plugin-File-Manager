@@ -1,28 +1,19 @@
-// Thin, typed access to the desktop app's local filesystem bridge
-// (electron/local-files.cjs via preload.js). Everything here resolves to
-// "unavailable" outside Electron so callers can feature-detect cheaply.
+// Access to the desktop app's own disk, served by this plugin's backend on
+// the embedded backend (/local/* routes). Everything here is refused outside
+// the desktop app so callers can feature-detect cheaply.
 
+import { isElectron } from "@termix-ssh/plugin-sdk/ui";
+import { fileManagerApi } from "../api/client";
 import type {
   LocalDirectoryListing,
   LocalFsHomeInfo,
   LocalFsResult,
   LocalTrashResult,
   LocalWalkResult,
-} from "@termix-ssh/plugin-sdk/frontend";
-import { isElectron } from "@termix-ssh/plugin-sdk/ui";
+} from "../local-types";
 
 export function isLocalFileBrowserAvailable(): boolean {
-  if (!isElectron()) return false;
-  const api = window.electronAPI;
-  return !!api?.localFs && !!api?.localTransfer;
-}
-
-function requireLocalFs() {
-  const api = window.electronAPI?.localFs;
-  if (!api) {
-    throw new Error("Local file access is only available in the desktop app");
-  }
-  return api;
+  return isElectron();
 }
 
 function unwrap<T>(result: LocalFsResult<T>): T {
@@ -38,48 +29,67 @@ function unwrap<T>(result: LocalFsResult<T>): T {
   return result;
 }
 
+async function call<T>(
+  route: string,
+  body?: Record<string, unknown>,
+): Promise<T> {
+  if (!isLocalFileBrowserAvailable()) {
+    throw new Error("Local file access is only available in the desktop app");
+  }
+  const api = fileManagerApi();
+  const response = body
+    ? await api.post<LocalFsResult<T>>(`/local/${route}`, body)
+    : await api.get<LocalFsResult<T>>(`/local/${route}`);
+  return unwrap(response.data);
+}
+
 export async function getLocalHome(): Promise<LocalFsHomeInfo> {
-  return unwrap(await requireLocalFs().home());
+  return call("home");
 }
 
 export async function listLocalDirectory(
   dirPath: string,
 ): Promise<LocalDirectoryListing> {
-  return unwrap(await requireLocalFs().list(dirPath));
+  return call("list", { path: dirPath });
 }
 
 export async function createLocalFolder(
   parentPath: string,
   name: string,
 ): Promise<string> {
-  return unwrap(await requireLocalFs().mkdir(parentPath, name)).path;
+  return (await call<{ path: string }>("mkdir", { parent: parentPath, name }))
+    .path;
 }
 
 export async function createLocalFile(
   parentPath: string,
   name: string,
 ): Promise<string> {
-  return unwrap(await requireLocalFs().createFile(parentPath, name)).path;
+  return (
+    await call<{ path: string }>("create-file", { parent: parentPath, name })
+  ).path;
 }
 
 export async function renameLocalEntry(
   oldPath: string,
   newName: string,
 ): Promise<string> {
-  return unwrap(await requireLocalFs().rename(oldPath, newName)).path;
+  return (
+    await call<{ path: string }>("rename", { path: oldPath, name: newName })
+  ).path;
 }
 
 /** Moves entries to the OS trash; resolves with per-path failures, if any. */
 export async function trashLocalPaths(
   paths: string[],
 ): Promise<LocalTrashResult> {
-  return unwrap(await requireLocalFs().trash(paths));
+  return call("trash", { paths });
 }
 
 /** Subset of `paths` that already exist on disk. */
 export async function localPathsExist(paths: string[]): Promise<string[]> {
   if (paths.length === 0) return [];
-  return unwrap(await requireLocalFs().exists(paths)).existing;
+  return (await call<{ existing: string[] }>("exists", { paths })).existing;
 }
 
 /** Creates `dirPath` (and parents). With `rootPath`, refuses anything outside it. */
@@ -87,19 +97,24 @@ export async function ensureLocalDirectory(
   dirPath: string,
   rootPath?: string,
 ): Promise<string> {
-  return unwrap(await requireLocalFs().ensureDir(dirPath, rootPath)).path;
+  return (
+    await call<{ path: string }>("ensure-dir", {
+      path: dirPath,
+      root: rootPath,
+    })
+  ).path;
 }
 
 export async function walkLocalPaths(
   paths: string[],
 ): Promise<LocalWalkResult> {
-  return unwrap(await requireLocalFs().walk(paths));
+  return call("walk", { paths });
 }
 
 export async function revealLocalPath(targetPath: string): Promise<void> {
-  unwrap(await requireLocalFs().reveal(targetPath));
+  await call("reveal", { path: targetPath });
 }
 
 export async function openLocalPath(targetPath: string): Promise<void> {
-  unwrap(await requireLocalFs().open(targetPath));
+  await call("open", { path: targetPath });
 }

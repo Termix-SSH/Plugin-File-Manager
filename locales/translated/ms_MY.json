@@ -2,7 +2,8 @@
   "nav": {
     "files": "Fail",
     "sftp": "SFTP",
-    "openFileManager": "Buka Pengurus Fail"
+    "openFileManager": "Buka Pengurus Fail",
+    "togglePanel": "Panel fail"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Mod Warisan SCP"
+      },
+      "showPanel": {
+        "label": "Paparkan panel fail dalam terminal",
+        "description": "Biarkan panel fail dibuka di sebelah terminal SSH hos ini."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Sahkan sebelum memindahkan fail ke tong kitar",
         "description": "Tanya sebelum memindahkan fail jauh ke tong kitar. Pemadaman kekal masih memerlukan pengesahan."
+      },
+      "companionAutoOpen": {
+        "label": "Buka panel fail dengan terminal baharu",
+        "description": "Paparkan panel fail di sebelah setiap terminal SSH apabila ia dibuka. Anda masih boleh membukanya dan menutupnya daripada butang di tepi kanan."
+      },
+      "companionSide": {
+        "label": "Sisi panel fail",
+        "description": "Di mana panel fail diletakkan di sebelah terminal.",
+        "right": "Kanan",
+        "left": "Kiri",
+        "bottom": "Bawah"
+      },
+      "companionSize": {
+        "label": "Saiz panel fail",
+        "description": "Lebar dalam piksel, atau tinggi apabila ia berada di bahagian bawah. Anda juga boleh menyeret tepinya."
+      },
+      "companionEdgeButton": {
+        "label": "Paparkan butang panel",
+        "description": "Paparkan butang kecil di tepi kanan terminal yang membuka panel fail."
+      },
+      "companionFollowTerminal": {
+        "label": "Ikuti folder terminal",
+        "description": "Pindahkan panel fail ke folder tempat terminal anda berada. Anda boleh mematikan ini dalam panel."
+      },
+      "companionSyncInterval": {
+        "label": "Selang semakan folder",
+        "description": "Seberapa kerap, dalam saat, panel fail menyemak folder mana yang terminal berada."
+      },
+      "companionHistorySize": {
+        "label": "Saiz sejarah folder",
+        "description": "Berapa banyak folder yang diingati oleh panel fail untuk setiap hos."
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "Folder Baharu",
     "rename": "Namakan Semula",
     "uploading": "Memuat naik...",
+    "externalEditorTextOnly": "Hanya fail teks boleh dibuka secara luaran, kerana simpanan ditulis semula sebagai teks.",
+    "uploadFilesDone": "{{done}} / {{total}} fail",
     "uploadingFile": "Memuat naik {{name}}...",
     "uploadingChunk": "Memuat naik {{name}}: {{percent}}% (bahagian {{chunk}} daripada {{total}})",
     "fileName": "Nama Fail",
@@ -537,10 +575,22 @@
     "metricsHopDestLocalWrite": "Pelayan → destinasi (tempatan): {{throughput}}"
   },
   "plugin": {
-    "name": "Pengurus Fail"
+    "name": "Pengurus Fail",
+    "description": "Layari, sunting dan alihkan fail melalui SFTP, termasuk terus dari satu pelayan ke pelayan lain."
   },
   "common": {
     "remove": "Alih keluar",
     "clear": "Kosongkan"
+  },
+  "companion": {
+    "history": "Sejarah",
+    "historyEmpty": "Tiada folder lagi",
+    "frequent": "Sering",
+    "recent": "Terbaru",
+    "clearHistory": "Kosongkan sejarah",
+    "follow": "Ikuti terminal",
+    "syncNow": "Pergi ke folder terminal",
+    "cdTerminal": "Tukar terminal ke folder ini",
+    "terminalAt": "Terminal:"
   }
 }

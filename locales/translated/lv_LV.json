@@ -2,7 +2,8 @@
   "nav": {
     "files": "Faili",
     "sftp": "SFTP",
-    "openFileManager": "Atvērt failu pārvaldnieku"
+    "openFileManager": "Atvērt failu pārvaldnieku",
+    "togglePanel": "Failu panelis"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP vecā režīma režīms"
+      },
+      "showPanel": {
+        "label": "Rādīt failu paneli termināļos",
+        "description": "Ļauj failu panelim atvērties blakus šī resursa SSH terminālim."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Apstiprināt pirms failu pārvietošanas uz atkritni",
         "description": "Jautājiet pirms tālvadības failu pārvietošanas uz atkritni. Pastāvīga dzēšana joprojām prasa apstiprinājumu."
+      },
+      "companionAutoOpen": {
+        "label": "Atvērt failu paneli kopā ar jauniem termināļiem",
+        "description": "Rādīt failu paneli blakus katram SSH terminālim, kad tas tiek atvērts. To joprojām var atvērt un aizvērt, izmantojot pogu labajā malā."
+      },
+      "companionSide": {
+        "label": "Failu panela novietojums",
+        "description": "Kur failu panelis atrodas blakus terminālim.",
+        "right": "Labajā pusē",
+        "left": "Kreisajā pusē",
+        "bottom": "Apakšā"
+      },
+      "companionSize": {
+        "label": "Failu panela izmērs",
+        "description": "Platums pikseļos vai augstums, ja tas atrodas apakšā. Varat arī vilkt tā malu."
+      },
+      "companionEdgeButton": {
+        "label": "Rādīt panela pogu",
+        "description": "Rādīt mazu pogu termināļa labajā malā, kas atver failu paneli."
+      },
+      "companionFollowTerminal": {
+        "label": "Sekot termināļa mapēm",
+        "description": "Pārvietot failu paneli uz mapi, kurā atrodas terminālis. Šo iespēju varat izslēgt pašā panelī."
+      },
+      "companionSyncInterval": {
+        "label": "Mapes pārbaudes intervāls",
+        "description": "Cik bieži (sekundēs) failu panelis pārbauda, kurā mapē atrodas terminālis."
+      },
+      "companionHistorySize": {
+        "label": "Mapju vēstures izmērs",
+        "description": "Cik daudz mapju failu panelis atceras katram resursam."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Jauna mape",
     "rename": "Pārsaukt",
     "uploading": "Augšupielādē...",
+    "externalEditorTextOnly": "Ārēji var atvērt tikai teksta failus, jo saglabātie dati tiek rakstīti atpakaļ kā teksts.",
+    "uploadFilesDone": "{{done}} / {{total}} faili",
     "uploadingFile": "Augšupielādē {{name}}...",
     "uploadingChunk": "Augšupielādē {{name}}: {{percent}}% (daļa {{chunk}} no {{total}})",
     "fileName": "Faila nosaukums",
@@ -619,10 +657,22 @@
     "metricsHopDestLocalWrite": "Serveris → galamērķis (lokāli): {{throughput}}"
   },
   "plugin": {
-    "name": "Failu pārvaldnieks"
+    "name": "Failu pārvaldnieks",
+    "description": "Pārlūkojiet, rediģējiet un pārvietojiet failus, izmantojot SFTP, tostarp tieši no viena servera uz otru."
   },
   "common": {
     "remove": "Noņemt",
     "clear": "Notīrīt"
+  },
+  "companion": {
+    "history": "Vēsture",
+    "historyEmpty": "Vēl nav mapju",
+    "frequent": "Bieži lietotas",
+    "recent": "Nesenās",
+    "clearHistory": "Notīrīt vēsturi",
+    "follow": "Sekot terminālim",
+    "syncNow": "Doties uz termināļa mapi",
+    "cdTerminal": "Mainīt termināļa mapi uz šo",
+    "terminalAt": "Terminālis:"
   }
 }

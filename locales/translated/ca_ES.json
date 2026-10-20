@@ -2,7 +2,8 @@
   "nav": {
     "files": "Fitxers",
     "sftp": "SFTP",
-    "openFileManager": "Obre el gestor de fitxers"
+    "openFileManager": "Obre el gestor de fitxers",
+    "togglePanel": "Panell de fitxers"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Mode SCP llegat"
+      },
+      "showPanel": {
+        "label": "Mostra el panell de fitxers als terminals",
+        "description": "Permet que el panell de fitxers s'obri al costat del terminal SSH d'aquest amfitrió."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirma abans de moure fitxers a la paperera",
         "description": "Demana confirmació abans de moure fitxers remots a la paperera. La supressió permanent continua requerint confirmació."
+      },
+      "companionAutoOpen": {
+        "label": "Obre el panell de fitxers amb els nous terminals",
+        "description": "Mostra el panell de fitxers al costat de cada terminal SSH quan s'obre. Sempre el pots obrir i tancar des del botó del costat dret."
+      },
+      "companionSide": {
+        "label": "Posició del panell de fitxers",
+        "description": "On es troba el panell de fitxers al costat d'un terminal.",
+        "right": "Dreta",
+        "left": "Esquerra",
+        "bottom": "Inferior"
+      },
+      "companionSize": {
+        "label": "Mida del panell de fitxers",
+        "description": "Amplada en píxels, o alçada quan està a la part inferior. També pots arrossegar-ne el vora."
+      },
+      "companionEdgeButton": {
+        "label": "Mostra el botó del panell",
+        "description": "Mostra un petit botó al costat dret d'un terminal que obre el panell de fitxers."
+      },
+      "companionFollowTerminal": {
+        "label": "Segueix la carpeta del terminal",
+        "description": "Mou el panell de fitxers a la carpeta on es troba el terminal. Pots desactivar-ho des del panell."
+      },
+      "companionSyncInterval": {
+        "label": "Interval de comprovació de carpetes",
+        "description": "Amb quina freqüència, en segons, el panell de fitxers comprova en quina carpeta es troba el terminal."
+      },
+      "companionHistorySize": {
+        "label": "Mida de l'historial de carpetes",
+        "description": "Quantes carpetes recorda el panell de fitxers per a cada amfitrió."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Carpeta nova",
     "rename": "Canvia el nom",
     "uploading": "Pujant...",
+    "externalEditorTextOnly": "Només es poden obrir fitxers de text externament, perquè les desades s'escriuen de nou com a text.",
+    "uploadFilesDone": "{{done}} / {{total}} fitxers",
     "uploadingFile": "Pujant {{name}}...",
     "uploadingChunk": "Pujant {{name}}: {{percent}}% (part {{chunk}} de {{total}})",
     "fileName": "Nom del fitxer",
@@ -625,5 +663,16 @@
   "common": {
     "remove": "Elimina",
     "clear": "Neteja"
+  },
+  "companion": {
+    "history": "Historial",
+    "historyEmpty": "Encara no hi ha carpetes",
+    "frequent": "Freqüents",
+    "recent": "Recents",
+    "clearHistory": "Esborra l'historial",
+    "follow": "Segueix el terminal",
+    "syncNow": "Vés a la carpeta del terminal",
+    "cdTerminal": "Canvia el terminal a aquesta carpeta",
+    "terminalAt": "Terminal:"
   }
 }

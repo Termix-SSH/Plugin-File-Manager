@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { DownloadProgressToast } from "./DownloadProgressToast";
 import type { SSHHost } from "../host-types";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
+import { fileManagerApi } from "../api/client";
+import { subscribeLocalEvents } from "../lib/local-events";
 
 interface FileItem {
   name: string;
@@ -364,7 +366,9 @@ export function FileWindow({
     externalEditorRef.current = null;
 
     try {
-      await window.electronAPI?.closeExternalEditor?.(session.editId);
+      await fileManagerApi().post("/local/editor/close", {
+        editId: session.editId,
+      });
     } catch {
       // The editor may already be closed
     }
@@ -378,23 +382,26 @@ export function FileWindow({
 
     try {
       await closeExternalEditor();
-      const result = await window.electronAPI.openExternalEditor({
+      const { data: result } = await fileManagerApi().post<{
+        success: boolean;
+        editId?: string;
+        error?: string;
+      }>("/local/editor/open", {
         fileName: file.name,
         content: pendingContent || content,
         encoding: "utf8",
-        editorPath: externalEditorPath || null,
       });
 
       if (!result.success || !result.editId) {
         throw new Error(result.error || "Failed to open external editor");
       }
 
-      const unsubscribe = window.electronAPI.onExternalEditorSaved?.(
-        (payload) => {
-          if (payload.editId !== result.editId) return;
-          void handleSave(payload.content);
-        },
-      );
+      const unsubscribe = subscribeLocalEvents((event) => {
+        if (event.type !== "editor-saved" || event.editId !== result.editId) {
+          return;
+        }
+        void handleSave(String(event.content));
+      });
 
       externalEditorRef.current = {
         editId: result.editId,

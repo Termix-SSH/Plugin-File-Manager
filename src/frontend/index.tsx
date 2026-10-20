@@ -1,6 +1,11 @@
 import { fileManagerHostSetting } from "./host-settings";
 import type { ComponentType } from "react";
-import { FolderOpen, FolderSearch, ArrowLeftRight } from "lucide-react";
+import {
+  FolderOpen,
+  FolderSearch,
+  ArrowLeftRight,
+  PanelRight,
+} from "lucide-react";
 import {
   invokeAction,
   type PluginHostRecord,
@@ -14,6 +19,10 @@ import {
   type WidgetDefinition,
 } from "./homepage/homepage.js";
 import { FileManager } from "./FileManager.tsx";
+import {
+  FilesCompanion,
+  useFilesCompanionDefaults,
+} from "./FilesCompanion.tsx";
 import FileManagerApp from "./FileManagerApp.tsx";
 import { SftpTransferTab } from "./SftpTransferTab.tsx";
 import { FileManagerWidget } from "./homepage/FileManagerWidget.tsx";
@@ -70,14 +79,8 @@ function openEditorAction(
   app.tabs.openTab(host, "files", { data: { initialFilePath: filePath } });
 }
 
-/** Where this plugin serves the streaming routes the desktop app calls. */
-const TRANSFER_API_PATH = "/plugin-api/file-manager";
-
 export function activate(app: TermixApp): void {
   setFileManagerApp(app);
-  if (typeof window !== "undefined") {
-    void window.electronAPI?.localTransfer?.setApiPath?.(TRANSFER_API_PATH);
-  }
   app.onDispose(() => setFileManagerApp(null));
   app.registerTab("files", FilesTab as unknown as ComponentType<TabProps>, {
     icon: FolderSearch,
@@ -91,6 +94,18 @@ export function activate(app: TermixApp): void {
     // The activity log still records "file_manager" (matching the backend's
     // stored string), so recent-activity entries resolve to this tab.
     activityTypes: ["file_manager"],
+  });
+
+  app.registerCompanion("files", FilesCompanion, {
+    icon: FolderSearch,
+    titleKey: "nav.files",
+    order: 10,
+    tabTypes: ["terminal"],
+    when: (_tab, host) =>
+      !!host?.enableSsh &&
+      fileManagerHostSetting(host, "enableFileManager", true) &&
+      fileManagerHostSetting(host, "showPanel", true),
+    useDefaults: useFilesCompanionDefaults,
   });
 
   app.registerTab("sftp", SftpTab as unknown as ComponentType<TabProps>, {
@@ -147,6 +162,19 @@ export function activate(app: TermixApp): void {
     (
       handle as { openFileManager?: () => void } | null
     )?.openFileManager?.()) as never);
+  app.registerAction("file-manager.togglePanel", ((
+    handle: unknown,
+    tab: unknown,
+  ) => app.toggleCompanion(tab as never, "files")) as never);
+  app.registerSlotContribution("tab.menu", {
+    actionId: "file-manager.togglePanel",
+    titleKey: "nav.togglePanel",
+    icon: PanelRight,
+    kind: "button",
+    order: 5,
+    when: (context) =>
+      (context.tab as { type?: string } | null)?.type === "terminal",
+  });
   app.registerSlotContribution("tab.menu", {
     actionId: "file-manager.openFromTab",
     titleKey: "nav.openFileManager",

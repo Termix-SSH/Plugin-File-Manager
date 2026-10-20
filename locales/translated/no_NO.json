@@ -2,7 +2,8 @@
   "nav": {
     "files": "Filer",
     "sftp": "SFTP",
-    "openFileManager": "Åpne filbehandler"
+    "openFileManager": "Åpne filbehandler",
+    "togglePanel": "Filpanel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP-tilbakekompatibilitet"
+      },
+      "showPanel": {
+        "label": "Vis filpanelet i terminaler",
+        "description": "La filpanelet åpne ved siden av SSH-terminalen for denne verten."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bekreft før filer flyttes til papirkurven",
         "description": "Spør før fjernfiler flyttes til papirkurven. Permanent sletting krever fortsatt bekreftelse."
+      },
+      "companionAutoOpen": {
+        "label": "Åpne filpanelet med nye terminaler",
+        "description": "Vis filpanelet ved siden av hver SSH-terminal når den åpnes. Du kan fortsatt åpne og lukke det fra knappen på høyre kant."
+      },
+      "companionSide": {
+        "label": "Plassering av filpanel",
+        "description": "Hvor filpanelet vises i forhold til terminalen.",
+        "right": "Høyre",
+        "left": "Venstre",
+        "bottom": "Bunn"
+      },
+      "companionSize": {
+        "label": "Størrelse på filpanel",
+        "description": "Bredde i piksler, eller høyde når det er plassert nederst. Du kan også dra i kanten for å endre størrelse."
+      },
+      "companionEdgeButton": {
+        "label": "Vis panelknapp",
+        "description": "Vis en liten knapp på høyre kant av terminalen som åpner filpanelet."
+      },
+      "companionFollowTerminal": {
+        "label": "Følg terminalmappen",
+        "description": "Flytt filpanelet til mappen terminalen befinner seg i. Du kan slå dette av i panelet."
+      },
+      "companionSyncInterval": {
+        "label": "Intervall for mappeoppdatering",
+        "description": "Hvor ofte, i sekunder, filpanelet sjekker hvilken mappe terminalen befinner seg i."
+      },
+      "companionHistorySize": {
+        "label": "Størrelse på mappehistorikk",
+        "description": "Hvor mange mapper filpanelet husker for hver vert."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Ny mappe",
     "rename": "Gi nytt navn",
     "uploading": "Laster opp...",
+    "externalEditorTextOnly": "Kun tekstfiler kan åpnes eksternt, fordi lagring skjer som tekst.",
+    "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Laster opp {{name}}...",
     "uploadingChunk": "Laster opp {{name}}: {{percent}}% (del {{chunk}} av {{total}})",
     "fileName": "Filnavn",
@@ -578,10 +616,22 @@
     "metricsHopDestLocalWrite": "Server → dest (lokal): {{throughput}}"
   },
   "plugin": {
-    "name": "Filbehandler"
+    "name": "Filbehandler",
+    "description": "Bla gjennom, rediger og flytt filer via SFTP, inkludert direkte fra én server til en annen."
   },
   "common": {
     "remove": "Fjern",
     "clear": "Tøm"
+  },
+  "companion": {
+    "history": "Historikk",
+    "historyEmpty": "Ingen mapper ennå",
+    "frequent": "Ofte brukte",
+    "recent": "Nylige",
+    "clearHistory": "Tøm historikk",
+    "follow": "Følg terminal",
+    "syncNow": "Gå til terminalmappen",
+    "cdTerminal": "Endre terminalen til denne mappen",
+    "terminalAt": "Terminal:"
   }
 }

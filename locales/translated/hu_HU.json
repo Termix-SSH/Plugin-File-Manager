@@ -2,7 +2,8 @@
   "nav": {
     "files": "Fájlok",
     "sftp": "SFTP",
-    "openFileManager": "Fájlkezelő megnyitása"
+    "openFileManager": "Fájlkezelő megnyitása",
+    "togglePanel": "Fájlok panel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP régi mód"
+      },
+      "showPanel": {
+        "label": "Fájlok panel megjelenítése a terminálokban",
+        "description": "A fájlok panel nyitva marad ezen a hoszon a SSH terminál mellett."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Megerősítés a fájlok kukába helyezése előtt",
         "description": "Kérdezzen rá a távoli fájlok kukába helyezése előtt. A végleges törléshez továbbra is szükséges a megerősítés."
+      },
+      "companionAutoOpen": {
+        "label": "Fájlok panel megnyitása az új terminálokkal",
+        "description": "A fájlok panel megjelenítése minden SSH terminál mellett megnyitásakor. A jobb szélen található gombbal továbbra is megnyithatja és bezárhatja."
+      },
+      "companionSide": {
+        "label": "Fájlok panel oldala",
+        "description": "Ahol a fájlok panel a terminál mellett helyezkedik el.",
+        "right": "Jobb",
+        "left": "Bal",
+        "bottom": "Alsó"
+      },
+      "companionSize": {
+        "label": "Fájlok panel mérete",
+        "description": "Szélesség pixelben, vagy magasság, ha alul van. A szélét húzva is módosíthatja."
+      },
+      "companionEdgeButton": {
+        "label": "Panel gomb megjelenítése",
+        "description": "Egy kis gomb megjelenítése a terminál jobb szélén, amely megnyitja a fájlok panelt."
+      },
+      "companionFollowTerminal": {
+        "label": "Kövesse a terminál mappáját",
+        "description": "A fájlok panel áthelyezése arra a mappára, ahol a terminál tartózkodik. Ezt a panelben kikapcsolhatja."
+      },
+      "companionSyncInterval": {
+        "label": "Mappa ellenőrzési intervallum",
+        "description": "Hányszor másodpercenként ellenőrzi a fájlok panel, hogy melyik mappában van a terminál."
+      },
+      "companionHistorySize": {
+        "label": "Mappa előzmények mérete",
+        "description": "Hány mappát emlékezik meg a fájlok panel minden hoszhoz."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Új mappa",
     "rename": "Átnevezés",
     "uploading": "Feltöltés...",
+    "externalEditorTextOnly": "Csak szöveges fájlok nyithatók meg külsőleg, mert a mentések szövegként íródnak vissza.",
+    "uploadFilesDone": "{{done}} / {{total}} fájl",
     "uploadingFile": "{{name}} feltöltése...",
     "uploadingChunk": "{{name}} feltöltése: {{percent}}% ({{chunk}}/{{total}} rész)",
     "fileName": "Fájlnév",
@@ -578,10 +616,22 @@
     "metricsHopDestLocalWrite": "Szerver → cél (helyi): {{throughput}}"
   },
   "plugin": {
-    "name": "Fájlkezelő"
+    "name": "Fájlkezelő",
+    "description": "Fájlok böngészése, szerkesztése és mozgatása SFTP-n keresztül, közvetlenül egyik szerverről a másikra is."
   },
   "common": {
     "remove": "Eltávolítás",
     "clear": "Törlés"
+  },
+  "companion": {
+    "history": "Előzmények",
+    "historyEmpty": "Még nincsenek mappák",
+    "frequent": "Gyakori",
+    "recent": "Legutóbbi",
+    "clearHistory": "Előzmények törlése",
+    "follow": "Terminál követése",
+    "syncNow": "Ugrás a terminál mappájába",
+    "cdTerminal": "Terminál átváltása erre a mappára",
+    "terminalAt": "Terminál:"
   }
 }

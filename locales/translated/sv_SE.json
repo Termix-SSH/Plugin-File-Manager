@@ -2,7 +2,8 @@
   "nav": {
     "files": "Filer",
     "sftp": "SFTP",
-    "openFileManager": "Öppna filhanteraren"
+    "openFileManager": "Öppna filhanteraren",
+    "togglePanel": "Filsfält"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Legacy-läge"
+      },
+      "showPanel": {
+        "label": "Visa filsfältet i terminaler",
+        "description": "Låt filsfältet öppnas bredvid SSH-terminalen för denna värd."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bekräfta innan filer flyttas till papperskorgen",
         "description": "Fråga innan fjärrfiler flyttas till papperskorgen. Permanent radering kräver fortfarande bekräftelse."
+      },
+      "companionAutoOpen": {
+        "label": "Öppna filsfältet med nya terminaler",
+        "description": "Visa filsfältet bredvid varje SSH-terminal när den öppnas. Du kan fortfarande öppna och stänga det med knappen på höger kant."
+      },
+      "companionSide": {
+        "label": "Placering för filsfältet",
+        "description": "Var filsfältet visas bredvid en terminal.",
+        "right": "Höger",
+        "left": "Vänster",
+        "bottom": "Botten"
+      },
+      "companionSize": {
+        "label": "Storlek på filsfältet",
+        "description": "Bredd i pixlar, eller höjd när det visas längst ner. Du kan också dra i kanten för att ändra storlek."
+      },
+      "companionEdgeButton": {
+        "label": "Visa panelknappen",
+        "description": "Visa en liten knapp på höger kant av en terminal som öppnar filsfältet."
+      },
+      "companionFollowTerminal": {
+        "label": "Följ terminalens mapp",
+        "description": "Flytta filsfältet till mappen som terminalen befinner sig i. Du kan stänga av detta i panelen."
+      },
+      "companionSyncInterval": {
+        "label": "Intervall för mappkontroll",
+        "description": "Hur ofta, i sekunder, filsfältet kontrollerar vilken mapp terminalen befinner sig i."
+      },
+      "companionHistorySize": {
+        "label": "Storlek på mapphistorik",
+        "description": "Hur många mappar filsfältet kommer ihåg för varje värd."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Ny mapp",
     "rename": "Byt namn",
     "uploading": "Laddar upp...",
+    "externalEditorTextOnly": "Endast textfiler kan öppnas externt, eftersom sparade ändringar skrivs tillbaka som text.",
+    "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Laddar upp {{name}}...",
     "uploadingChunk": "Laddar upp {{name}}: {{percent}}% (del {{chunk}} av {{total}})",
     "fileName": "Filnamn",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Ta bort",
     "clear": "Rensa"
+  },
+  "companion": {
+    "history": "Historik",
+    "historyEmpty": "Inga mappar ännu",
+    "frequent": "Vanliga",
+    "recent": "Senaste",
+    "clearHistory": "Rensa historik",
+    "follow": "Följ terminalen",
+    "syncNow": "Gå till terminalens mapp",
+    "cdTerminal": "Ändra terminalen till denna mapp",
+    "terminalAt": "Terminal:"
   }
 }

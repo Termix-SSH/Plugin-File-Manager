@@ -2,7 +2,8 @@
   "nav": {
     "files": "Soubory",
     "sftp": "SFTP",
-    "openFileManager": "Otevřít správce souborů"
+    "openFileManager": "Otevřít správce souborů",
+    "togglePanel": "Panel souborů"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Režim SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Zobrazit panel souborů v terminálech",
+        "description": "Umožní otevření panelu souborů vedle SSH terminálu tohoto hostitele."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Potvrdit před přesunutím souborů do koše",
         "description": "Zeptat se před přesunutím vzdálených souborů do koše. Trvalé smazání stále vyžaduje potvrzení."
+      },
+      "companionAutoOpen": {
+        "label": "Otevírat panel souborů s novými terminály",
+        "description": "Zobrazit panel souborů vedle každého SSH terminálu při jeho otevření. Panel můžete stále otevírat a zavírat pomocí tlačítka na pravém okraji."
+      },
+      "companionSide": {
+        "label": "Poloha panelu souborů",
+        "description": "Kde se panel souborů zobrazuje vedle terminálu.",
+        "right": "Vpravo",
+        "left": "Vlevo",
+        "bottom": "Dole"
+      },
+      "companionSize": {
+        "label": "Velikost panelu souborů",
+        "description": "Šířka v pixelech, nebo výška, pokud je panel dole. Okraj můžete také přetahovat."
+      },
+      "companionEdgeButton": {
+        "label": "Zobrazit tlačítko panelu",
+        "description": "Zobrazit malé tlačítko na pravém okraji terminálu, které otevře panel souborů."
+      },
+      "companionFollowTerminal": {
+        "label": "Sledovat složku terminálu",
+        "description": "Přesunout panel souborů do složky, ve které se nachází terminál. Toto chování můžete vypnout přímo v panelu."
+      },
+      "companionSyncInterval": {
+        "label": "Interval kontroly složky",
+        "description": "Jak často (v sekundách) panel souborů kontroluje, ve které složce se terminál nachází."
+      },
+      "companionHistorySize": {
+        "label": "Velikost historie složek",
+        "description": "Kolik složek si panel souborů pamatuje pro každého hostitele."
       }
     }
   },
@@ -77,6 +113,8 @@
     "newFolder": "Nová složka",
     "rename": "Přejmenovat",
     "uploading": "Nahrávání...",
+    "externalEditorTextOnly": "Externě lze otevřít pouze textové soubory, protože změny se ukládají zpět jako text.",
+    "uploadFilesDone": "{{done}} / {{total}} souborů",
     "uploadingFile": "Nahrávání {{name}}...",
     "uploadingChunk": "Nahrávání {{name}}: {{percent}}% (část {{chunk}} z {{total}})",
     "fileName": "Název souboru",
@@ -666,5 +704,16 @@
   "common": {
     "remove": "Odstranit",
     "clear": "Vymazat"
+  },
+  "companion": {
+    "history": "Historie",
+    "historyEmpty": "Zatím žádné složky",
+    "frequent": "Časté",
+    "recent": "Nedávné",
+    "clearHistory": "Vymazat historii",
+    "follow": "Sledovat terminál",
+    "syncNow": "Přejít do složky terminálu",
+    "cdTerminal": "Přepnout terminál do této složky",
+    "terminalAt": "Terminál:"
   }
 }

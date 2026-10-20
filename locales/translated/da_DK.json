@@ -2,7 +2,8 @@
   "nav": {
     "files": "Filer",
     "sftp": "SFTP",
-    "openFileManager": "Åbn filhåndtering"
+    "openFileManager": "Åbn filhåndtering",
+    "togglePanel": "Filer-panel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Legacy-tilstand"
+      },
+      "showPanel": {
+        "label": "Vis filer-panel i terminaler",
+        "description": "Lad filer-panelet åbne ved siden af SSH-terminalen for denne vært."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bekræft, før filer flyttes til papirkurven",
         "description": "Spørg, før fjernfiler flyttes til papirkurven. Permanent sletning kræver stadig bekræftelse."
+      },
+      "companionAutoOpen": {
+        "label": "Åbn filer-panelet med nye terminaler",
+        "description": "Vis filer-panelet ved siden af hver SSH-terminal, når den åbnes. Du kan stadig åbne og lukke det via knappen på højre kant."
+      },
+      "companionSide": {
+        "label": "Placering af filer-panel",
+        "description": "Hvor filer-panelet sidder i forhold til en terminal.",
+        "right": "Højre",
+        "left": "Venstre",
+        "bottom": "Nederst"
+      },
+      "companionSize": {
+        "label": "Størrelse på filer-panel",
+        "description": "Bredde i pixels, eller højde, når det er placeret nederst. Du kan også trække i kanten for at ændre størrelsen."
+      },
+      "companionEdgeButton": {
+        "label": "Vis panel-knap",
+        "description": "Vis en lille knap på højre kant af en terminal, der åbner filer-panelet."
+      },
+      "companionFollowTerminal": {
+        "label": "Følg terminalens mappe",
+        "description": "Flyt filer-panelet til den mappe, din terminal befinder sig i. Du kan slå dette fra i panelet."
+      },
+      "companionSyncInterval": {
+        "label": "Interval for mappekontrol",
+        "description": "Hvor ofte (i sekunder) filer-panelet tjekker, hvilken mappe terminalen befinder sig i."
+      },
+      "companionHistorySize": {
+        "label": "Størrelse på mappehistorik",
+        "description": "Hvor mange mapper filer-panelet husker for hver vært."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Ny mappe",
     "rename": "Omdøb",
     "uploading": "Uploader...",
+    "externalEditorTextOnly": "Kun tekstfiler kan åbnes eksternt, da gemninger skrives tilbage som tekst.",
+    "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Uploader {{name}}...",
     "uploadingChunk": "Uploader {{name}}: {{percent}}% (del {{chunk}} af {{total}})",
     "fileName": "Filnavn",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Fjern",
     "clear": "Ryd"
+  },
+  "companion": {
+    "history": "Historik",
+    "historyEmpty": "Ingen mapper endnu",
+    "frequent": "Hyppige",
+    "recent": "Seneste",
+    "clearHistory": "Ryd historik",
+    "follow": "Følg terminal",
+    "syncNow": "Gå til terminalens mappe",
+    "cdTerminal": "Skift terminal til denne mappe",
+    "terminalAt": "Terminal:"
   }
 }

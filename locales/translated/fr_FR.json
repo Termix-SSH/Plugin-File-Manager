@@ -2,7 +2,8 @@
   "nav": {
     "files": "Fichiers",
     "sftp": "SFTP",
-    "openFileManager": "Ouvrir le gestionnaire de fichiers"
+    "openFileManager": "Ouvrir le gestionnaire de fichiers",
+    "togglePanel": "Panneau de fichiers"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Mode SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Afficher le panneau de fichiers dans les terminaux",
+        "description": "Permet d'ouvrir le panneau de fichiers à côté du terminal SSH de cet hôte."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirmer avant de déplacer les fichiers vers la corbeille",
         "description": "Demander confirmation avant de déplacer les fichiers distants vers la corbeille. La suppression définitive nécessite toujours une confirmation."
+      },
+      "companionAutoOpen": {
+        "label": "Ouvrir le panneau de fichiers avec les nouveaux terminaux",
+        "description": "Affiche le panneau de fichiers à côté de chaque terminal SSH à son ouverture. Vous pouvez toujours l'ouvrir et le fermer via le bouton sur le bord droit."
+      },
+      "companionSide": {
+        "label": "Position du panneau de fichiers",
+        "description": "Emplacement du panneau de fichiers par rapport au terminal.",
+        "right": "Droite",
+        "left": "Gauche",
+        "bottom": "Bas"
+      },
+      "companionSize": {
+        "label": "Taille du panneau de fichiers",
+        "description": "Largeur en pixels, ou hauteur lorsqu'il est en bas. Vous pouvez également redimensionner en faisant glisser son bord."
+      },
+      "companionEdgeButton": {
+        "label": "Afficher le bouton du panneau",
+        "description": "Affiche un petit bouton sur le bord droit d'un terminal pour ouvrir le panneau de fichiers."
+      },
+      "companionFollowTerminal": {
+        "label": "Suivre le dossier du terminal",
+        "description": "Déplace le panneau de fichiers vers le dossier dans lequel se trouve le terminal. Vous pouvez désactiver cette option dans le panneau."
+      },
+      "companionSyncInterval": {
+        "label": "Intervalle de vérification du dossier",
+        "description": "Fréquence en secondes à laquelle le panneau de fichiers vérifie le dossier actuel du terminal."
+      },
+      "companionHistorySize": {
+        "label": "Taille de l'historique des dossiers",
+        "description": "Nombre de dossiers que le panneau de fichiers mémorise pour chaque hôte."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Nouveau dossier",
     "rename": "Renommer",
     "uploading": "Téléversement...",
+    "externalEditorTextOnly": "Seuls les fichiers texte peuvent être ouverts dans un éditeur externe, car les sauvegardes sont réécrites en tant que texte.",
+    "uploadFilesDone": "{{done}} / {{total}} fichiers",
     "uploadingFile": "Téléversement de {{name}}...",
     "uploadingChunk": "Téléversement de {{name}} : {{percent}}% (partie {{chunk}} sur {{total}})",
     "fileName": "Nom du fichier",
@@ -625,5 +663,16 @@
   "common": {
     "remove": "Supprimer",
     "clear": "Effacer"
+  },
+  "companion": {
+    "history": "Historique",
+    "historyEmpty": "Aucun dossier pour le moment",
+    "frequent": "Fréquents",
+    "recent": "Récents",
+    "clearHistory": "Effacer l'historique",
+    "follow": "Suivre le terminal",
+    "syncNow": "Aller au dossier du terminal",
+    "cdTerminal": "Changer le dossier du terminal vers celui-ci",
+    "terminalAt": "Terminal :"
   }
 }

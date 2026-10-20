@@ -2,7 +2,8 @@
   "nav": {
     "files": "Dosyalar",
     "sftp": "SFTP",
-    "openFileManager": "Dosya Yöneticisini Aç"
+    "openFileManager": "Dosya Yöneticisini Aç",
+    "togglePanel": "Dosyalar paneli"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Eski Mod"
+      },
+      "showPanel": {
+        "label": "Terminallerde dosyalar panelini göster",
+        "description": "Bu ana bilgisayarın SSH terminalinin yanında dosyalar panelinin açılmasına izin ver."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Dosyaları çöp kutusuna taşımadan önce onayla",
         "description": "Uzak dosyaları çöp kutusuna taşımadan önce sor. Kalıcı silme işlemi yine de onay gerektirir."
+      },
+      "companionAutoOpen": {
+        "label": "Yeni terminallerle dosyalar panelini aç",
+        "description": "Bir SSH terminali açıldığında yanında dosyalar panelini göster. Sağ kenardaki düğmeden açıp kapatmaya devam edebilirsiniz."
+      },
+      "companionSide": {
+        "label": "Dosyalar paneli konumu",
+        "description": "Dosyalar panelinin bir terminalin yanında nerede duracağı.",
+        "right": "Sağ",
+        "left": "Sol",
+        "bottom": "Alt"
+      },
+      "companionSize": {
+        "label": "Dosyalar paneli boyutu",
+        "description": "Piksel cinsinden genişlik veya altta olduğunda yükseklik. Kenarını sürükleyerek de ayarlayabilirsiniz."
+      },
+      "companionEdgeButton": {
+        "label": "Panel düğmesini göster",
+        "description": "Dosyalar panelini açan küçük bir düğmeyi terminalin sağ kenarında göster."
+      },
+      "companionFollowTerminal": {
+        "label": "Terminal klasörünü takip et",
+        "description": "Dosyalar panelini terminalin bulunduğu klasöre taşı. Bunu panelden kapatabilirsiniz."
+      },
+      "companionSyncInterval": {
+        "label": "Klasör kontrol aralığı",
+        "description": "Dosyalar panelinin terminalin hangi klasörde olduğunu kaç saniyede bir kontrol edeceği."
+      },
+      "companionHistorySize": {
+        "label": "Klasör geçmişi boyutu",
+        "description": "Dosyalar panelinin her ana bilgisayar için kaç klasörü hatırlayacağı."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Yeni Klasör",
     "rename": "Yeniden Adlandır",
     "uploading": "Yükleniyor...",
+    "externalEditorTextOnly": "Sadece metin dosyaları harici olarak açılabilir, çünkü kaydetme işlemleri metin olarak geri yazılır.",
+    "uploadFilesDone": "{{done}} / {{total}} dosya",
     "uploadingFile": "{{name}} yükleniyor...",
     "uploadingChunk": "{{name}} yükleniyor: {{percent}}% ({{total}} parçadan {{chunk}}. parça)",
     "fileName": "Dosya Adı",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Kaldır",
     "clear": "Temizle"
+  },
+  "companion": {
+    "history": "Geçmiş",
+    "historyEmpty": "Henüz klasör yok",
+    "frequent": "Sık Kullanılan",
+    "recent": "Son Kullanılan",
+    "clearHistory": "Geçmişi temizle",
+    "follow": "Terminali takip et",
+    "syncNow": "Terminal klasörüne git",
+    "cdTerminal": "Terminali bu klasöre değiştir",
+    "terminalAt": "Terminal:"
   }
 }

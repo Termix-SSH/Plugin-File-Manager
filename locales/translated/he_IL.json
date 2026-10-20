@@ -2,7 +2,8 @@
   "nav": {
     "files": "קבצים",
     "sftp": "SFTP",
-    "openFileManager": "פתח מנהל קבצים"
+    "openFileManager": "פתח מנהל קבצים",
+    "togglePanel": "לוח קבצים"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "מצב תאימות לאחור של SCP"
+      },
+      "showPanel": {
+        "label": "הצג לוח קבצים בטרמינלים",
+        "description": "אפשר ללוח הקבצים להיפתח ליד הטרמינל של SSH עבור מארח זה."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "אשר לפני העברת קבצים לפח",
         "description": "בקש אישור לפני העברת קבצים מרוחקים לפח. מחיקה קבועה עדיין דורשת אישור."
+      },
+      "companionAutoOpen": {
+        "label": "פתח את לוח הקבצים עם טרמינלים חדשים",
+        "description": "הצג את לוח הקבצים ליד כל טרמינל של SSH כשהוא נפתח. עדיין ניתן לפתוח ולסגור אותו באמצעות הכפתור בקצה הימני."
+      },
+      "companionSide": {
+        "label": "צד של לוח הקבצים",
+        "description": "איפה לוח הקבצים ממוקם ליד הטרמינל.",
+        "right": "ימין",
+        "left": "שמאל",
+        "bottom": "תחתון"
+      },
+      "companionSize": {
+        "label": "גודל לוח הקבצים",
+        "description": "רוחב בפיקסלים, או גובה כשהוא בתחתית. ניתן גם לגרור את הקצה שלו."
+      },
+      "companionEdgeButton": {
+        "label": "הצג את כפתור הלוח",
+        "description": "הצג כפתור קטן בקצה הימני של הטרמינל שפותח את לוח הקבצים."
+      },
+      "companionFollowTerminal": {
+        "label": "עקוב אחר תיקיית הטרמינל",
+        "description": "העבר את לוח הקבצים לתיקייה שבה נמצא הטרמינל. ניתן לכבות זאת בלוח עצמו."
+      },
+      "companionSyncInterval": {
+        "label": "מרווח בדיקת תיקייה",
+        "description": "כמה פעמים, בשניות, לוח הקבצים בודק באיזו תיקייה נמצא הטרמינל."
+      },
+      "companionHistorySize": {
+        "label": "גודל היסטוריית תיקיות",
+        "description": "כמה תיקיות לוח הקבצים זוכר עבור כל מארח."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "תיקייה חדשה",
     "rename": "שנה שם",
     "uploading": "מעלה...",
+    "externalEditorTextOnly": "רק קבצי טקסט ניתן לפתוח בחיצוני, כי שמירות נכתבות חזרה כטקסט.",
+    "uploadFilesDone": "{{done}} / {{total}} קבצים",
     "uploadingFile": "מעלה את {{name}}...",
     "uploadingChunk": "מעלה את {{name}}: {{percent}}% (חלק {{chunk}} מתוך {{total}})",
     "fileName": "שם קובץ",
@@ -625,5 +663,16 @@
   "common": {
     "remove": "הסר",
     "clear": "נקה"
+  },
+  "companion": {
+    "history": "היסטוריה",
+    "historyEmpty": "אין תיקיות עדיין",
+    "frequent": "נפוץ",
+    "recent": "אחרון",
+    "clearHistory": "נקה היסטוריה",
+    "follow": "עקוב אחר הטרמינל",
+    "syncNow": "עבור לתיקיית הטרמינל",
+    "cdTerminal": "שנה את הטרמינל לתיקייה זו",
+    "terminalAt": "טרמינל:"
   }
 }

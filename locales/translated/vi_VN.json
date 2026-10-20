@@ -2,7 +2,8 @@
   "nav": {
     "files": "Tệp tin",
     "sftp": "SFTP",
-    "openFileManager": "Mở Trình quản lý tệp"
+    "openFileManager": "Mở Trình quản lý tệp",
+    "togglePanel": "Bảng điều khiển tệp"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Chế độ SCP cũ"
+      },
+      "showPanel": {
+        "label": "Hiển thị bảng điều khiển tệp trong terminal",
+        "description": "Cho phép bảng điều khiển tệp mở bên cạnh terminal SSH của máy chủ này."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Xác nhận trước khi di chuyển tệp vào thùng rác",
         "description": "Yêu cầu xác nhận trước khi di chuyển tệp từ xa vào thùng rác. Việc xóa vĩnh viễn vẫn cần xác nhận."
+      },
+      "companionAutoOpen": {
+        "label": "Mở bảng điều khiển tệp cùng với terminal mới",
+        "description": "Hiển thị bảng điều khiển tệp bên cạnh mọi terminal SSH khi nó mở. Bạn vẫn có thể mở và đóng nó từ nút ở cạnh phải."
+      },
+      "companionSide": {
+        "label": "Vị trí bảng điều khiển tệp",
+        "description": "Nơi bảng điều khiển tệp nằm cạnh terminal.",
+        "right": "Phải",
+        "left": "Trái",
+        "bottom": "Dưới"
+      },
+      "companionSize": {
+        "label": "Kích thước bảng điều khiển tệp",
+        "description": "Chiều rộng tính bằng pixel, hoặc chiều cao khi nó ở dưới cùng. Bạn cũng có thể kéo cạnh của nó."
+      },
+      "companionEdgeButton": {
+        "label": "Hiển thị nút bảng điều khiển",
+        "description": "Hiển thị một nút nhỏ ở cạnh phải của terminal để mở bảng điều khiển tệp."
+      },
+      "companionFollowTerminal": {
+        "label": "Theo dõi thư mục của terminal",
+        "description": "Di chuyển bảng điều khiển tệp đến thư mục mà terminal đang ở. Bạn có thể tắt tính năng này trong bảng điều khiển."
+      },
+      "companionSyncInterval": {
+        "label": "Khoảng thời gian kiểm tra thư mục",
+        "description": "Tần suất (tính bằng giây) mà bảng điều khiển tệp kiểm tra thư mục hiện tại của terminal."
+      },
+      "companionHistorySize": {
+        "label": "Kích thước lịch sử thư mục",
+        "description": "Số lượng thư mục mà bảng điều khiển tệp ghi nhớ cho mỗi máy chủ."
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "Thư mục mới",
     "rename": "Đổi tên",
     "uploading": "Đang tải lên...",
+    "externalEditorTextOnly": "Chỉ các tệp văn bản mới có thể được mở bên ngoài, vì dữ liệu lưu lại sẽ được ghi dưới dạng văn bản.",
+    "uploadFilesDone": "{{done}} / {{total}} tệp",
     "uploadingFile": "Đang tải lên {{name}}...",
     "uploadingChunk": "Đang tải lên {{name}}: {{percent}}% (phần {{chunk}} trong tổng số {{total}})",
     "fileName": "Tên tệp",
@@ -543,5 +581,16 @@
   "common": {
     "remove": "Xóa",
     "clear": "Xóa sạch"
+  },
+  "companion": {
+    "history": "Lịch sử",
+    "historyEmpty": "Chưa có thư mục nào",
+    "frequent": "Thường xuyên",
+    "recent": "Gần đây",
+    "clearHistory": "Xóa lịch sử",
+    "follow": "Theo dõi terminal",
+    "syncNow": "Đi đến thư mục của terminal",
+    "cdTerminal": "Thay đổi terminal sang thư mục này",
+    "terminalAt": "Terminal:"
   }
 }

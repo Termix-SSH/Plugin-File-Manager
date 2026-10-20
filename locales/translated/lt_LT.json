@@ -2,7 +2,8 @@
   "nav": {
     "files": "Failai",
     "sftp": "SFTP",
-    "openFileManager": "Atidaryti failų tvarkyklę"
+    "openFileManager": "Atidaryti failų tvarkyklę",
+    "togglePanel": "Failų skydelis"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP paveldėtas režimas"
+      },
+      "showPanel": {
+        "label": "Rodyti failų skydelį terminaluose",
+        "description": "Leisti failų skydeliui atsiverti šio serverio SSH terminalo šone."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Patvirtinti prieš perkėlus failus į šiukšlinę",
         "description": "Klausti prieš perkėlus nuotolinius failus į šiukšlinę. Galutinis ištrynimas vis tiek reikalauja patvirtinimo."
+      },
+      "companionAutoOpen": {
+        "label": "Atidaryti failų skydelį su naujais terminalais",
+        "description": "Rodyti failų skydelį šalia kiekvieno SSH terminalo, kai jis atsiveria. Visada galite jį atidaryti ir uždaryti mygtuku dešiniajame krašte."
+      },
+      "companionSide": {
+        "label": "Failų skydelio padėtis",
+        "description": "Kur failų skydelis yra šalia terminalo.",
+        "right": "Dešinėje",
+        "left": "Kairėje",
+        "bottom": "Apačioje"
+      },
+      "companionSize": {
+        "label": "Failų skydelio dydis",
+        "description": "Plotis pikseliais arba aukštis, kai skydelis yra apačioje. Taip pat galite vilkti jo kraštą."
+      },
+      "companionEdgeButton": {
+        "label": "Rodyti skydelio mygtuką",
+        "description": "Rodyti mažą mygtuką terminalo dešiniajame krašte, kuris atidaro failų skydelį."
+      },
+      "companionFollowTerminal": {
+        "label": "Sekti terminalo aplanką",
+        "description": "Perkelti failų skydelį į aplanką, kuriame yra terminalas. Tai galite išjungti pačiame skydelyje."
+      },
+      "companionSyncInterval": {
+        "label": "Aplanko tikrinimo intervalas",
+        "description": "Kiekvienas kiek sekundžių failų skydelis tikrina, kuriame aplanke yra terminalas."
+      },
+      "companionHistorySize": {
+        "label": "Aplankų istorijos dydis",
+        "description": "Kiek aplankų failų skydelis prisimena kiekvienam serveriui."
       }
     }
   },
@@ -77,6 +113,8 @@
     "newFolder": "Naujas aplankas",
     "rename": "Pervadinti",
     "uploading": "Įkeliamas...",
+    "externalEditorTextOnly": "Išoriniu redaktoriumi galima atidaryti tik tekstinius failus, nes įrašymai atnaujinami kaip tekstas.",
+    "uploadFilesDone": "{{done}} / {{total}} failų",
     "uploadingFile": "Įkeliamas {{name}}...",
     "uploadingChunk": "Įkeliamas {{name}}: {{percent}}% (dalys {{chunk}} iš {{total}})",
     "fileName": "Failo pavadinimas",
@@ -660,10 +698,22 @@
     "metricsHopDestLocalWrite": "Serveris → paskirtis (vietinis): {{throughput}}"
   },
   "plugin": {
-    "name": "Failų tvarkytuvė"
+    "name": "Failų tvarkytuvė",
+    "description": "Naršykite, redaguokite ir perkelti failus per SFTP, įskaitant tiesiogiai iš vieno serverio į kitą."
   },
   "common": {
     "remove": "Pašalinti",
     "clear": "Išvalyti"
+  },
+  "companion": {
+    "history": "Istorija",
+    "historyEmpty": "Dar nėra jokių aplankų",
+    "frequent": "Dažnai lankomi",
+    "recent": "Neseniai lankyti",
+    "clearHistory": "Išvalyti istoriją",
+    "follow": "Sekti terminalą",
+    "syncNow": "Eiti į terminalo aplanką",
+    "cdTerminal": "Pakeisti terminalo aplanką į šį",
+    "terminalAt": "Terminalas:"
   }
 }

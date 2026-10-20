@@ -2,7 +2,8 @@
   "nav": {
     "files": "文件",
     "sftp": "SFTP",
-    "openFileManager": "打开文件管理器"
+    "openFileManager": "打开文件管理器",
+    "togglePanel": "文件面板"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP 兼容模式"
+      },
+      "showPanel": {
+        "label": "在终端中显示文件面板",
+        "description": "让文件面板在此主机的 SSH 终端旁打开。"
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "将文件移至回收站前确认",
         "description": "在将远程文件移至回收站前进行询问。永久删除仍需要确认。"
+      },
+      "companionAutoOpen": {
+        "label": "新终端打开时显示文件面板",
+        "description": "每次 SSH 终端打开时，都在其旁显示文件面板。您仍可通过右侧边缘的按钮打开或关闭它。"
+      },
+      "companionSide": {
+        "label": "文件面板位置",
+        "description": "文件面板相对于终端的位置。",
+        "right": "右侧",
+        "left": "左侧",
+        "bottom": "底部"
+      },
+      "companionSize": {
+        "label": "文件面板大小",
+        "description": "宽度（像素），位于底部时为高度。您也可以拖动其边缘调整大小。"
+      },
+      "companionEdgeButton": {
+        "label": "显示面板按钮",
+        "description": "在终端右侧边缘显示一个小按钮，用于打开文件面板。"
+      },
+      "companionFollowTerminal": {
+        "label": "跟随终端目录",
+        "description": "将文件面板切换到终端当前所在的目录。您可以在面板中关闭此功能。"
+      },
+      "companionSyncInterval": {
+        "label": "目录检查间隔",
+        "description": "文件面板检查终端当前目录的频率（秒）。"
+      },
+      "companionHistorySize": {
+        "label": "目录历史记录大小",
+        "description": "文件面板为每个主机记住的目录数量。"
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "新建文件夹",
     "rename": "重命名",
     "uploading": "正在上传...",
+    "externalEditorTextOnly": "仅文本文件可以外部打开，因为保存时会以文本形式写回。",
+    "uploadFilesDone": "{{done}} / {{total}} 个文件",
     "uploadingFile": "正在上传 {{name}}...",
     "uploadingChunk": "正在上传 {{name}}：{{percent}}%（第 {{chunk}} 部分，共 {{total}} 部分）",
     "fileName": "文件名",
@@ -543,5 +581,16 @@
   "common": {
     "remove": "移除",
     "clear": "清除"
+  },
+  "companion": {
+    "history": "历史记录",
+    "historyEmpty": "暂无目录",
+    "frequent": "常用",
+    "recent": "最近",
+    "clearHistory": "清除历史记录",
+    "follow": "跟随终端",
+    "syncNow": "转到终端目录",
+    "cdTerminal": "将终端切换到该目录",
+    "terminalAt": "终端："
   }
 }

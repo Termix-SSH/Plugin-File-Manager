@@ -2,7 +2,8 @@
   "nav": {
     "files": "ファイル",
     "sftp": "SFTP",
-    "openFileManager": "ファイルマネージャーを開く"
+    "openFileManager": "ファイルマネージャーを開く",
+    "togglePanel": "ファイルパネル"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCPレガシーモード"
+      },
+      "showPanel": {
+        "label": "ターミナルでファイルパネルを表示",
+        "description": "このホストの SSH ターミナルの横にファイルパネルを開きます。"
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "ファイルをゴミ箱に移動する前に確認する",
         "description": "リモートファイルをゴミ箱に移動する前に確認を求めます。恒久的な削除は依然として確認が必要です。"
+      },
+      "companionAutoOpen": {
+        "label": "新しいターミナルでファイルパネルを開く",
+        "description": "SSH ターミナルを開いたとき、常にその横にファイルパネルを表示します。右端のボタンからいつでも開閉できます。"
+      },
+      "companionSide": {
+        "label": "ファイルパネルの位置",
+        "description": "ターミナルの横にファイルパネルを表示する位置です。",
+        "right": "右",
+        "left": "左",
+        "bottom": "下"
+      },
+      "companionSize": {
+        "label": "ファイルパネルのサイズ",
+        "description": "ピクセル単位の幅、または下部に配置した場合は高さです。エッジをドラッグして調整することもできます。"
+      },
+      "companionEdgeButton": {
+        "label": "パネルボタンを表示",
+        "description": "ターミナルの右端に、ファイルパネルを開く小さなボタンを表示します。"
+      },
+      "companionFollowTerminal": {
+        "label": "ターミナルのフォルダに従う",
+        "description": "ターミナルが現在いるフォルダにファイルパネルを移動させます。パネル内からこの機能をオフにすることもできます。"
+      },
+      "companionSyncInterval": {
+        "label": "フォルダチェック間隔",
+        "description": "ファイルパネルがターミナルの現在のフォルダを確認する頻度（秒）です。"
+      },
+      "companionHistorySize": {
+        "label": "フォルダ履歴のサイズ",
+        "description": "各ホストごとにファイルパネルが記憶するフォルダの数です。"
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "新規フォルダ",
     "rename": "名前を変更",
     "uploading": "アップロード中...",
+    "externalEditorTextOnly": "保存はテキストとして書き込まれるため、テキストファイルのみ外部で開くことができます。",
+    "uploadFilesDone": "{{done}} / {{total}} ファイル",
     "uploadingFile": "{{name}} をアップロード中...",
     "uploadingChunk": "{{name}} のアップロード中: {{percent}}% ({{total}} 件中 {{chunk}} 件目)",
     "fileName": "ファイル名",
@@ -537,10 +575,22 @@
     "metricsHopDestLocalWrite": "サーバー → 宛先（ローカル）: {{throughput}}"
   },
   "plugin": {
-    "name": "ファイルマネージャー"
+    "name": "ファイルマネージャー",
+    "description": "SFTP を介してファイルを閲覧、編集、移動します。サーバー間での直接操作も可能です。"
   },
   "common": {
     "remove": "削除",
     "clear": "クリア"
+  },
+  "companion": {
+    "history": "履歴",
+    "historyEmpty": "まだフォルダがありません",
+    "frequent": "よく使う",
+    "recent": "最近",
+    "clearHistory": "履歴をクリア",
+    "follow": "ターミナルに従う",
+    "syncNow": "ターミナルのフォルダに移動",
+    "cdTerminal": "ターミナルをこのフォルダに変更",
+    "terminalAt": "ターミナル:"
   }
 }

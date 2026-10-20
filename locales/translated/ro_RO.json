@@ -2,7 +2,8 @@
   "nav": {
     "files": "Fișiere",
     "sftp": "SFTP",
-    "openFileManager": "Deschide Managerul de Fișiere"
+    "openFileManager": "Deschide Managerul de Fișiere",
+    "togglePanel": "Panoul de fișiere"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Mod SCP Legacy"
+      },
+      "showPanel": {
+        "label": "Afișează panoul de fișiere în terminale",
+        "description": "Permite deschiderea panoului de fișiere lângă terminalul SSH al acestui gazdă."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Confirmă înainte de a muta fișierele la coșul de gunoi",
         "description": "Solicită confirmare înainte de a muta fișierele remote la coșul de gunoi. Ștergerea permanentă necesită totuși confirmare."
+      },
+      "companionAutoOpen": {
+        "label": "Deschide panoul de fișiere cu terminalele noi",
+        "description": "Afișează panoul de fișiere lângă fiecare terminal SSH când se deschide. Îl poți deschide și închide oricând din butonul de pe marginea dreaptă."
+      },
+      "companionSide": {
+        "label": "Poziția panoului de fișiere",
+        "description": "Unde se află panoul de fișiere lângă un terminal.",
+        "right": "Dreapta",
+        "left": "Stânga",
+        "bottom": "Jos"
+      },
+      "companionSize": {
+        "label": "Dimensiunea panoului de fișiere",
+        "description": "Lățimea în pixeli, sau înălțimea când este poziționat jos. Poți ajusta și trăgând de marginea sa."
+      },
+      "companionEdgeButton": {
+        "label": "Afișează butonul panoului",
+        "description": "Afișează un buton mic pe marginea dreaptă a unui terminal care deschide panoul de fișiere."
+      },
+      "companionFollowTerminal": {
+        "label": "Urmărește folderul terminalului",
+        "description": "Mută panoul de fișiere în folderul în care se află terminalul. Poți dezactiva această opțiune din panou."
+      },
+      "companionSyncInterval": {
+        "label": "Interval de verificare a folderului",
+        "description": "La câte secunde verifică panoul de fișiere în ce folder se află terminalul."
+      },
+      "companionHistorySize": {
+        "label": "Dimensiunea istoricului de foldere",
+        "description": "Câte foldere își amintește panoul de fișiere pentru fiecare gazdă."
       }
     }
   },
@@ -75,6 +111,8 @@
     "newFolder": "Dosar nou",
     "rename": "Redenumește",
     "uploading": "Se încarcă...",
+    "externalEditorTextOnly": "Doar fișierele text pot fi deschise extern, deoarece salvările sunt scrise înapoi ca text.",
+    "uploadFilesDone": "{{done}} / {{total}} fișiere",
     "uploadingFile": "Se încarcă {{name}}...",
     "uploadingChunk": "Se încarcă {{name}}: {{percent}}% (partea {{chunk}} din {{total}})",
     "fileName": "Nume fișier",
@@ -619,10 +657,22 @@
     "metricsHopDestLocalWrite": "Server → dest (local): {{throughput}}"
   },
   "plugin": {
-    "name": "Manager de fișiere"
+    "name": "Manager de fișiere",
+    "description": "Navighează, editează și mută fișiere prin SFTP, inclusiv direct de pe un server pe altul."
   },
   "common": {
     "remove": "Elimină",
     "clear": "Șterge"
+  },
+  "companion": {
+    "history": "Istoric",
+    "historyEmpty": "Niciun folder încă",
+    "frequent": "Frecvente",
+    "recent": "Recente",
+    "clearHistory": "Șterge istoricul",
+    "follow": "Urmărește terminalul",
+    "syncNow": "Mergi la folderul terminalului",
+    "cdTerminal": "Schimbă terminalul în acest folder",
+    "terminalAt": "Terminal:"
   }
 }

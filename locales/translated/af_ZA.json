@@ -2,7 +2,8 @@
   "nav": {
     "files": "Lêers",
     "sftp": "SFTP",
-    "openFileManager": "Maak Lêerbestuurder Oop"
+    "openFileManager": "Maak Lêerbestuurder Oop",
+    "togglePanel": "Lêe-paneel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP Ouerweergawe-modus"
+      },
+      "showPanel": {
+        "label": "Wys lêe-paneel in terminale",
+        "description": "Laat die lêe-paneel oopmaak langs hierdie gasheer se SSH-terminal."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bevestig voor lêers na die prulblik geskuif word",
         "description": "Vra voor afgeleë lêers na die prulblik geskuif word. Permanente verwydering vereis steeds bevestiging."
+      },
+      "companionAutoOpen": {
+        "label": "Maak die lêe-paneel oop met nuwe terminale",
+        "description": "Wys die lêe-paneel langs elke SSH-terminal wanneer dit oopmaak. Jy kan dit steeds oopmaak en sluit vanaf die knoppie aan die regterkant."
+      },
+      "companionSide": {
+        "label": "Lêe-paneel se kant",
+        "description": "Waar die lêe-paneel langs 'n terminal sit.",
+        "right": "Regs",
+        "left": "Links",
+        "bottom": "Onder"
+      },
+      "companionSize": {
+        "label": "Lêe-paneel se grootte",
+        "description": "Wydte in pixels, of hoogte wanneer dit onder is. Jy kan ook die rand sleep."
+      },
+      "companionEdgeButton": {
+        "label": "Wys die paneel-knoppie",
+        "description": "Wys 'n klein knoppie aan die regterkant van 'n terminal wat die lêe-paneel oopmaak."
+      },
+      "companionFollowTerminal": {
+        "label": "Volg die terminal se gids",
+        "description": "Skuif die lêe-paneel na die gids waar jou terminal is. Jy kan dit in die paneel afskakel."
+      },
+      "companionSyncInterval": {
+        "label": "Gidskontrole-interval",
+        "description": "Hoe dikwels, in sekondes, die lêe-paneel kontroleer watter gids die terminal in is."
+      },
+      "companionHistorySize": {
+        "label": "Gidsgeskiedenis-grootte",
+        "description": "Hoeveel gidse die lêe-paneel vir elke gasheer onthou."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Nuwe Gids",
     "rename": "Hernoem",
     "uploading": "Laai op...",
+    "externalEditorTextOnly": "Slegs tekslêers kan eksterne oopgemaak word, aangesien stoorwerk as teks teruggeskryf word.",
+    "uploadFilesDone": "{{done}} / {{total}} lêers",
     "uploadingFile": "Laai {{name}} op...",
     "uploadingChunk": "Laai {{name}} op: {{percent}}% (deel {{chunk}} van {{total}})",
     "fileName": "Lêernaam",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Verwyder",
     "clear": "Vee uit"
+  },
+  "companion": {
+    "history": "Geskiedenis",
+    "historyEmpty": "Nog geen gidse nie",
+    "frequent": "Gereeld",
+    "recent": "Onlangs",
+    "clearHistory": "Vee geskiedenis uit",
+    "follow": "Volg terminal",
+    "syncNow": "Gaan na die terminal se gids",
+    "cdTerminal": "Verander die terminal na hierdie gids",
+    "terminalAt": "Terminal:"
   }
 }

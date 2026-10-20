@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { Kbd, KbdKey, KbdSeparator } from "@termix-ssh/plugin-sdk/ui";
-import type { LocalFileEntry } from "@termix-ssh/plugin-sdk/frontend";
+import type { LocalFileEntry } from "./local-types";
 
 const VIEWPORT_PADDING = 16;
 

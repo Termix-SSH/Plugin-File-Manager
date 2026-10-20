@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "../host-types";
-import type { LocalWalkResult } from "@termix-ssh/plugin-sdk/frontend";
+import type { LocalWalkResult } from "../local-types";
 import { useSettings } from "@termix-ssh/plugin-sdk/frontend";
 import {
   cancelLocalTransfer,

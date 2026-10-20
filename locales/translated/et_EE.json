@@ -2,7 +2,8 @@
   "nav": {
     "files": "Failid",
     "sftp": "SFTP",
-    "openFileManager": "Ava failihaldur"
+    "openFileManager": "Ava failihaldur",
+    "togglePanel": "Failide paneel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP legacy-režiim"
+      },
+      "showPanel": {
+        "label": "Kuva failide paneel terminaalides",
+        "description": "Luba failide paneel avada selle hosti SSH terminali kõrval."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Kinnita enne failide prügikasti viimist",
         "description": "Küsi kinnitust enne kaugfailide prügikasti viimist. Püsiv kustutamine nõuab ikka kinnitust."
+      },
+      "companionAutoOpen": {
+        "label": "Ava failide paneel koos uute terminaalidega",
+        "description": "Kuva failide paneel iga SSH terminali kõrval selle avamisel. Sina saad selle ikka nupust paremal serval avada ja sulgeda."
+      },
+      "companionSide": {
+        "label": "Failide paneeli asukoht",
+        "description": "Kus failide paneel terminali kõrval asub.",
+        "right": "Paremal",
+        "left": "Vasakul",
+        "bottom": "All"
+      },
+      "companionSize": {
+        "label": "Failide paneeli suurus",
+        "description": "Laius pikslites või kõrgus, kui see on all. Saad ka selle serva lohisedades muuta."
+      },
+      "companionEdgeButton": {
+        "label": "Kuva paneeli nupp",
+        "description": "Kuva terminali paremal serval väike nupp, mis avab failide paneeli."
+      },
+      "companionFollowTerminal": {
+        "label": "Jälgi terminali kausta",
+        "description": "Liiguta failide paneel kausta, kus terminal hetkel on. Seda saad paneelis välja lülitada."
+      },
+      "companionSyncInterval": {
+        "label": "Kausta kontrolli sagedus",
+        "description": "Kui tihti sekundites failide paneel kontrollib, millises kaustas terminal on."
+      },
+      "companionHistorySize": {
+        "label": "Kausta ajaloo suurus",
+        "description": "Kui palju kaustu failide paneel igale hostile mäletab."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Uus kaust",
     "rename": "Nimeta ümber",
     "uploading": "Üleslaadimine...",
+    "externalEditorTextOnly": "Väliselt saab avada ainult tekstifaile, kuna salvestused kirjutatakse tagasi tekstina.",
+    "uploadFilesDone": "{{done}} / {{total}} faili",
     "uploadingFile": "Laaditakse üles faili {{name}}...",
     "uploadingChunk": "Laaditakse üles faili {{name}}: {{percent}}% (osa {{chunk}} / {{total}})",
     "fileName": "Faili nimi",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Eemalda",
     "clear": "Tühjenda"
+  },
+  "companion": {
+    "history": "Ajalugu",
+    "historyEmpty": "Kaustu veel ei ole",
+    "frequent": "Sagedased",
+    "recent": "Viimased",
+    "clearHistory": "Kustuta ajalugu",
+    "follow": "Jälgi terminali",
+    "syncNow": "Mine terminali kausta",
+    "cdTerminal": "Muuda terminal sellele kaustale",
+    "terminalAt": "Terminal:"
   }
 }

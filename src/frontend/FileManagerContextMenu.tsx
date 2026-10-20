@@ -20,6 +20,7 @@ import {
   FileArchive,
   ArrowRightLeft,
   Link,
+  ExternalLink,
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { Kbd, KbdKey, KbdSeparator } from "@termix-ssh/plugin-sdk/ui";
@@ -56,6 +57,7 @@ interface ContextMenuProps {
   onRefresh?: () => void;
   onPaste?: () => void;
   onPreview?: (file: FileItem) => void;
+  onOpenExternally?: (file: FileItem) => void;
   hasClipboard?: boolean;
   onDragToDesktop?: () => void;
   onOpenTerminal?: (path: string) => void;
@@ -100,6 +102,7 @@ export function FileManagerContextMenu({
   onRefresh,
   onPaste,
   onPreview,
+  onOpenExternally,
   hasClipboard = false,
   onDragToDesktop,
   onOpenTerminal,
@@ -254,6 +257,14 @@ export function FileManagerContextMenu({
       });
     }
 
+    if (hasFiles && onOpenExternally) {
+      menuItems.push({
+        icon: <ExternalLink className="size-3.5" />,
+        label: t("fileManager.openExternalEditor"),
+        action: () => onOpenExternally(files[0]),
+        disabled: !isSingleFile || files[0].type !== "file",
+      });
+    }
     if (hasFiles && onDownload) {
       menuItems.push({
         icon: <Download className="size-3.5" />,

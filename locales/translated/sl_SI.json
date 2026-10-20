@@ -2,7 +2,8 @@
   "nav": {
     "files": "Datoteke",
     "sftp": "SFTP",
-    "openFileManager": "Odpri upravitelja datotek"
+    "openFileManager": "Odpri upravitelja datotek",
+    "togglePanel": "Vzornik datotek"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP način za starejše različice"
+      },
+      "showPanel": {
+        "label": "Prikaži vzornik datotek v terminalih",
+        "description": "Dovoli odpiranje vzornika datotek ob SSH terminalu tega gostitelja."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Potrdi pred premikom datotek v smeti",
         "description": "Vprašaj pred premikom oddaljenih datotek v smeti. Trajno brisanje še vedno zahteva potrditev."
+      },
+      "companionAutoOpen": {
+        "label": "Odpri vzornik datotek z novimi terminali",
+        "description": "Prikaži vzornik datotek ob vsakem SSH terminalu ob odpiranju. Gumb na desnem robu lahko še vedno uporabite za odpiranje in zapiranje."
+      },
+      "companionSide": {
+        "label": "Stran vzornika datotek",
+        "description": "Kje se vzornik datotek nahaja ob terminalu.",
+        "right": "Desno",
+        "left": "Levo",
+        "bottom": "Spodaj"
+      },
+      "companionSize": {
+        "label": "Velikost vzornika datotek",
+        "description": "Širina v slikovnih točkah ali višina, ko je na dnu. Rob lahko tudi povlečete."
+      },
+      "companionEdgeButton": {
+        "label": "Prikaži gumb za vzornik",
+        "description": "Prikaži majhen gumb na desnem robu terminala, ki odpre vzornik datotek."
+      },
+      "companionFollowTerminal": {
+        "label": "Sledi mapi terminala",
+        "description": "Premakni vzornik datotek v mapo, v kateri se nahaja terminal. To lahko izklopite v vzorniku."
+      },
+      "companionSyncInterval": {
+        "label": "Interval preverjanja map",
+        "description": "Kako pogosto (v sekundah) vzornik datotek preverja, v kateri mapi se nahaja terminal."
+      },
+      "companionHistorySize": {
+        "label": "Velikost zgodovine map",
+        "description": "Koliko map si vzornik datotek zapomni za vsakega gostitelja."
       }
     }
   },
@@ -77,6 +113,8 @@
     "newFolder": "Nova mapa",
     "rename": "Preimenuj",
     "uploading": "Nalaganje...",
+    "externalEditorTextOnly": "Zunanje lahko odprete le besedilne datoteke, ker se shranjevanje vrne kot besedilo.",
+    "uploadFilesDone": "{{done}} / {{total}} datotek",
     "uploadingFile": "Nalaganje {{name}}...",
     "uploadingChunk": "Nalaganje {{name}}: {{percent}}% (del {{chunk}} od {{total}})",
     "fileName": "Ime datoteke",
@@ -660,10 +698,22 @@
     "metricsHopDestLocalWrite": "Strežnik → cilj (lokalno): {{throughput}}"
   },
   "plugin": {
-    "name": "Upravitelj datotek"
+    "name": "Upravitelj datotek",
+    "description": "Brskanje, urejanje in premikanje datotek prek SFTP, vključno z neposrednim prenosom med strežniki."
   },
   "common": {
     "remove": "Odstrani",
     "clear": "Počisti"
+  },
+  "companion": {
+    "history": "Zgodovina",
+    "historyEmpty": "Še ni map",
+    "frequent": "Pogoste",
+    "recent": "Nedavne",
+    "clearHistory": "Izbriši zgodovino",
+    "follow": "Sledi terminalu",
+    "syncNow": "Pojdi v mapo terminala",
+    "cdTerminal": "Spremeni terminal v to mapo",
+    "terminalAt": "Terminal:"
   }
 }

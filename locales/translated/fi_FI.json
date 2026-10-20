@@ -2,7 +2,8 @@
   "nav": {
     "files": "Tiedostot",
     "sftp": "SFTP",
-    "openFileManager": "Avaa tiedostonhallinta"
+    "openFileManager": "Avaa tiedostonhallinta",
+    "togglePanel": "Tiedostopaneeli"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP-perinteinen tila"
+      },
+      "showPanel": {
+        "label": "Näytä tiedostopaneeli terminaaleissa",
+        "description": "Avaa tiedostopaneeli tämän isäntäpalvelimen SSH-terminaalin viereen."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Vahvista ennen tiedostojen siirtämistä roskakoriin",
         "description": "Kysy vahvistus ennen etätiestojen siirtämistä roskakoriin. Pysyvä poisto vaatii edelleen vahvistuksen."
+      },
+      "companionAutoOpen": {
+        "label": "Avaa tiedostopaneeli uusien terminaaleiden kanssa",
+        "description": "Näytä tiedostopaneeli jokaisen SSH-terminaalin vieressä sen avautuessa. Voit silti avata ja sulkea sen oikean reunan painikkeesta."
+      },
+      "companionSide": {
+        "label": "Tiedostopaneelin sijainti",
+        "description": "Missä tiedostopaneeli sijaitsee terminaalin vieressä.",
+        "right": "Oikealla",
+        "left": "Vasemmalla",
+        "bottom": "Alareunassa"
+      },
+      "companionSize": {
+        "label": "Tiedostopaneelin koko",
+        "description": "Leveys pikseleinä tai korkeus, kun se on alareunassa. Voit myös vetää sen reunaa."
+      },
+      "companionEdgeButton": {
+        "label": "Näytä paneelin painike",
+        "description": "Näytä pieni painike terminaalin oikeassa reunassa, joka avaa tiedostopaneelin."
+      },
+      "companionFollowTerminal": {
+        "label": "Seuraa terminaalin kansiota",
+        "description": "Siirrä tiedostopaneeli samaan kansioon, jossa terminaali on. Voit kytkeä tämän pois päältä paneelista."
+      },
+      "companionSyncInterval": {
+        "label": "Kansion tarkistusväli",
+        "description": "Kuinka usein sekunneissa tiedostopaneeli tarkistaa, missä kansiossa terminaali on."
+      },
+      "companionHistorySize": {
+        "label": "Kansioiden historian koko",
+        "description": "Kuinka monta kansiota tiedostopaneeli muistaa jokaiselle isäntäpalvelimelle."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Uusi kansio",
     "rename": "Nimeä uudelleen",
     "uploading": "Ladataan...",
+    "externalEditorTextOnly": "Vain tekstitiedostoja voidaan avata ulkoisesti, koska tallennukset kirjoitetaan takaisin tekstinä.",
+    "uploadFilesDone": "{{done}} / {{total}} tiedostoa",
     "uploadingFile": "Ladataan {{name}}...",
     "uploadingChunk": "Ladataan {{name}}: {{percent}} % (osa {{chunk}} / {{total}})",
     "fileName": "Tiedostonimi",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Poista",
     "clear": "Tyhjennä"
+  },
+  "companion": {
+    "history": "Historia",
+    "historyEmpty": "Ei kansiota vielä",
+    "frequent": "Usein käytetyt",
+    "recent": "Viimeisimmät",
+    "clearHistory": "Tyhjennä historia",
+    "follow": "Seuraa terminaalia",
+    "syncNow": "Siirry terminaalin kansioon",
+    "cdTerminal": "Vaihda terminaali tähän kansioon",
+    "terminalAt": "Terminaali:"
   }
 }

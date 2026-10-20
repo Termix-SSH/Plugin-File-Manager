@@ -9,6 +9,12 @@ export interface FileManagerProps {
   onOpenTerminalTab?: (path?: string) => void;
   /** When false, pause keepalive while the tab stays mounted in the background. */
   isVisible?: boolean;
+  /** Narrow layout for a side panel: no folder sidebar and no local pane. */
+  compact?: boolean;
+  /** Moves the view here whenever it changes. */
+  externalPath?: { path: string; nonce: number };
+  /** Called with every folder the view lands in. */
+  onPathChange?: (path: string) => void;
 }
 
 type ConnectionLogPayload = Omit<LogEntry, "id" | "timestamp">;

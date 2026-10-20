@@ -2,7 +2,8 @@
   "nav": {
     "files": "Dateien",
     "sftp": "SFTP",
-    "openFileManager": "Dateimanager öffnen"
+    "openFileManager": "Dateimanager öffnen",
+    "togglePanel": "Dateipanel"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP-Legacy-Modus"
+      },
+      "showPanel": {
+        "label": "Dateipanel in Terminals anzeigen",
+        "description": "Das Dateipanel neben dem SSH-Terminal dieses Hosts öffnen."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Bestätigung vor dem Verschieben in den Papierkorb",
         "description": "Vor dem Verschieben von Remote-Dateien in den Papierkorb nachfragen. Eine endgültige Löschung erfordert weiterhin eine Bestätigung."
+      },
+      "companionAutoOpen": {
+        "label": "Dateipanel mit neuen Terminals öffnen",
+        "description": "Das Dateipanel neben jedem SSH-Terminal anzeigen, wenn es geöffnet wird. Du kannst es weiterhin über die Schaltfläche am rechten Rand öffnen und schließen."
+      },
+      "companionSide": {
+        "label": "Position des Dateipanel",
+        "description": "Wo das Dateipanel neben einem Terminal angezeigt wird.",
+        "right": "Rechts",
+        "left": "Links",
+        "bottom": "Unten"
+      },
+      "companionSize": {
+        "label": "Größe des Dateipanel",
+        "description": "Breite in Pixeln, oder Höhe, wenn es unten angezeigt wird. Du kannst auch den Rand ziehen."
+      },
+      "companionEdgeButton": {
+        "label": "Panel-Schaltfläche anzeigen",
+        "description": "Eine kleine Schaltfläche am rechten Rand eines Terminals anzeigen, die das Dateipanel öffnet."
+      },
+      "companionFollowTerminal": {
+        "label": "Terminal-Ordner folgen",
+        "description": "Das Dateipanel zum Ordner bewegen, in dem sich das Terminal befindet. Du kannst dies im Panel deaktivieren."
+      },
+      "companionSyncInterval": {
+        "label": "Ordner-Prüfintervall",
+        "description": "Wie oft in Sekunden das Dateipanel prüft, in welchem Ordner sich das Terminal befindet."
+      },
+      "companionHistorySize": {
+        "label": "Größe des Ordnerverlaufs",
+        "description": "Wie viele Ordner das Dateipanel für jeden Host speichert."
       }
     }
   },
@@ -73,6 +109,8 @@
     "newFolder": "Neuer Ordner",
     "rename": "Umbenennen",
     "uploading": "Wird hochgeladen...",
+    "externalEditorTextOnly": "Nur Textdateien können extern geöffnet werden, da Speicherungen als Text zurückgeschrieben werden.",
+    "uploadFilesDone": "{{done}} / {{total}} Dateien",
     "uploadingFile": "{{name}} wird hochgeladen...",
     "uploadingChunk": "{{name}} wird hochgeladen: {{percent}}% (Teil {{chunk}} von {{total}})",
     "fileName": "Dateiname",
@@ -584,5 +622,16 @@
   "common": {
     "remove": "Entfernen",
     "clear": "Leeren"
+  },
+  "companion": {
+    "history": "Verlauf",
+    "historyEmpty": "Noch keine Ordner",
+    "frequent": "Häufig",
+    "recent": "Kürzlich",
+    "clearHistory": "Verlauf löschen",
+    "follow": "Terminal folgen",
+    "syncNow": "Zum Terminal-Ordner wechseln",
+    "cdTerminal": "Terminal in diesen Ordner wechseln",
+    "terminalAt": "Terminal:"
   }
 }

@@ -1,7 +1,7 @@
 {
   "id": "file-manager",
   "name": "File Manager",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Browse, edit and move files over SFTP, including straight from one server to another.",
   "author": {
     "name": "Termix"
@@ -18,11 +18,12 @@
     "Preview images, PDFs, audio and video",
     "A trash you can restore deleted files from",
     "Copy files between two hosts, with the fastest route picked for you and an integrity check",
+    "A files panel beside any SSH terminal that follows its folder, with a history of your folders",
     "A side by side local and remote view in the desktop app"
   ],
   "engine": {
-    "termix": ">=26.10.0",
-    "api": "^1.2"
+    "termix": ">=26.10.3",
+    "api": "^1.9"
   },
   "capabilities": [
     "hosts:read",
@@ -34,7 +35,8 @@
     "ui:surface",
     "events:core",
     "kv:own",
-    "users:impersonate"
+    "users:impersonate",
+    "desktop:local"
   ],
   "provides": [
     {
@@ -97,6 +99,75 @@
           "labelKey": "settings.user.confirmBeforeTrash.label",
           "descriptionKey": "settings.user.confirmBeforeTrash.description",
           "default": true
+        },
+        {
+          "key": "companionAutoOpen",
+          "type": "boolean",
+          "labelKey": "settings.user.companionAutoOpen.label",
+          "descriptionKey": "settings.user.companionAutoOpen.description",
+          "default": false
+        },
+        {
+          "key": "companionSide",
+          "type": "select",
+          "labelKey": "settings.user.companionSide.label",
+          "descriptionKey": "settings.user.companionSide.description",
+          "default": "right",
+          "options": [
+            {
+              "value": "right",
+              "labelKey": "settings.user.companionSide.right"
+            },
+            {
+              "value": "left",
+              "labelKey": "settings.user.companionSide.left"
+            },
+            {
+              "value": "bottom",
+              "labelKey": "settings.user.companionSide.bottom"
+            }
+          ]
+        },
+        {
+          "key": "companionSize",
+          "type": "number",
+          "labelKey": "settings.user.companionSize.label",
+          "descriptionKey": "settings.user.companionSize.description",
+          "min": 240,
+          "max": 900,
+          "default": 380
+        },
+        {
+          "key": "companionEdgeButton",
+          "type": "boolean",
+          "labelKey": "settings.user.companionEdgeButton.label",
+          "descriptionKey": "settings.user.companionEdgeButton.description",
+          "default": true
+        },
+        {
+          "key": "companionFollowTerminal",
+          "type": "boolean",
+          "labelKey": "settings.user.companionFollowTerminal.label",
+          "descriptionKey": "settings.user.companionFollowTerminal.description",
+          "default": true
+        },
+        {
+          "key": "companionSyncInterval",
+          "type": "number",
+          "labelKey": "settings.user.companionSyncInterval.label",
+          "descriptionKey": "settings.user.companionSyncInterval.description",
+          "min": 1,
+          "max": 30,
+          "default": 3
+        },
+        {
+          "key": "companionHistorySize",
+          "type": "number",
+          "labelKey": "settings.user.companionHistorySize.label",
+          "descriptionKey": "settings.user.companionHistorySize.description",
+          "min": 5,
+          "max": 100,
+          "default": 20
         }
       ],
       "host": {
@@ -117,6 +188,14 @@
             "key": "scpLegacy",
             "type": "boolean",
             "labelKey": "settings.host.scpLegacy.label",
+            "requires": "enableFileManager"
+          },
+          {
+            "key": "showPanel",
+            "type": "boolean",
+            "labelKey": "settings.host.showPanel.label",
+            "descriptionKey": "settings.host.showPanel.description",
+            "default": true,
             "requires": "enableFileManager"
           }
         ]

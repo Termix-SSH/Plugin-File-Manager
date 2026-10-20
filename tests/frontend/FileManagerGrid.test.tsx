@@ -89,6 +89,27 @@ describe("remote file rename", () => {
     rerender(<FileManagerGrid {...props} />);
     expect(screen.getByText(file.modified!)).toBeInTheDocument();
   });
+
+  it("does not open the file when Enter confirms a rename", () => {
+    vi.spyOn(HTMLElement.prototype, "offsetParent", "get").mockReturnValue(
+      document.body,
+    );
+    const onFileOpen = vi.fn();
+    const onRename = vi.fn();
+    render(
+      <FileManagerGrid
+        {...props}
+        onFileOpen={onFileOpen}
+        editingFile={file}
+        onRename={onRename}
+      />,
+    );
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "renamed.txt" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onRename).toHaveBeenCalledWith(file, "renamed.txt");
+    expect(onFileOpen).not.toHaveBeenCalled();
+  });
 });
 
 describe("external file drops", () => {

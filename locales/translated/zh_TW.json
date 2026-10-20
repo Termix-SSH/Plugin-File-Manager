@@ -2,7 +2,8 @@
   "nav": {
     "files": "檔案",
     "sftp": "SFTP",
-    "openFileManager": "開啟檔案管理員"
+    "openFileManager": "開啟檔案管理員",
+    "togglePanel": "檔案面板"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "SCP 傳統模式"
+      },
+      "showPanel": {
+        "label": "在終端機中顯示檔案面板",
+        "description": "讓檔案面板在此主機的 SSH 終端機旁開啟。"
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "將檔案移至垃圾桶前確認",
         "description": "在將遠端檔案移至垃圾桶前詢問。永久刪除仍需確認。"
+      },
+      "companionAutoOpen": {
+        "label": "開啟新終端機時顯示檔案面板",
+        "description": "每次開啟 SSH 終端機時，在其旁顯示檔案面板。您仍可以點擊右側邊緣的按鈕來開啟或關閉它。"
+      },
+      "companionSide": {
+        "label": "檔案面板位置",
+        "description": "檔案面板相對於終端機的位置。",
+        "right": "右側",
+        "left": "左側",
+        "bottom": "底部"
+      },
+      "companionSize": {
+        "label": "檔案面板大小",
+        "description": "以像素為單位的寬度，若位於底部則為高度。您也可以拖曳其邊緣來調整。"
+      },
+      "companionEdgeButton": {
+        "label": "顯示面板按鈕",
+        "description": "在終端機的右側邊緣顯示一個小按鈕，用於開啟檔案面板。"
+      },
+      "companionFollowTerminal": {
+        "label": "跟隨終端機所在資料夾",
+        "description": "將檔案面板移動至終端機目前所在的資料夾。您可以在面板中關閉此功能。"
+      },
+      "companionSyncInterval": {
+        "label": "資料夾檢查間隔",
+        "description": "檔案面板檢查終端機所在資料夾的頻率（以秒為單位）。"
+      },
+      "companionHistorySize": {
+        "label": "資料夾歷史記錄數量",
+        "description": "檔案面板為每個主機記住多少個資料夾。"
       }
     }
   },
@@ -71,6 +107,8 @@
     "newFolder": "新增資料夾",
     "rename": "重新命名",
     "uploading": "正在上傳...",
+    "externalEditorTextOnly": "只有文字檔案可以外部開啟，因為儲存時會以文字格式寫回。",
+    "uploadFilesDone": "{{done}} / {{total}} 個檔案",
     "uploadingFile": "正在上傳 {{name}}...",
     "uploadingChunk": "正在上傳 {{name}}：{{percent}}%（第 {{chunk}} 部分，共 {{total}} 部分）",
     "fileName": "檔案名稱",
@@ -543,5 +581,16 @@
   "common": {
     "remove": "移除",
     "clear": "清除"
+  },
+  "companion": {
+    "history": "歷史記錄",
+    "historyEmpty": "尚無資料夾",
+    "frequent": "常用",
+    "recent": "最近",
+    "clearHistory": "清除歷史記錄",
+    "follow": "跟隨終端機",
+    "syncNow": "前往終端機所在資料夾",
+    "cdTerminal": "將終端機切換至此資料夾",
+    "terminalAt": "終端機："
   }
 }

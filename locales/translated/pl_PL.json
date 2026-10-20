@@ -2,7 +2,8 @@
   "nav": {
     "files": "Pliki",
     "sftp": "SFTP",
-    "openFileManager": "Otwórz menedżer plików"
+    "openFileManager": "Otwórz menedżer plików",
+    "togglePanel": "Panel plików"
   },
   "permissions": {
     "use": {
@@ -21,6 +22,10 @@
       },
       "scpLegacy": {
         "label": "Tryb zgodności SCP"
+      },
+      "showPanel": {
+        "label": "Pokaż panel plików w terminalach",
+        "description": "Otwieraj panel plików obok terminala SSH tego hosta."
       }
     },
     "user": {
@@ -31,6 +36,37 @@
       "confirmBeforeTrash": {
         "label": "Potwierdź przed przeniesieniem plików do kosza",
         "description": "Pytaj przed przeniesieniem zdalnych plików do kosza. Trwałe usunięcie nadal wymaga potwierdzenia."
+      },
+      "companionAutoOpen": {
+        "label": "Otwieraj panel plików z nowymi terminalami",
+        "description": "Pokazuj panel plików obok każdego terminala SSH po jego otwarciu. Możesz go nadal otwierać i zamykać za pomocą przycisku na prawej krawędzi."
+      },
+      "companionSide": {
+        "label": "Położenie panelu plików",
+        "description": "Gdzie panel plików znajduje się obok terminala.",
+        "right": "Prawa",
+        "left": "Lewa",
+        "bottom": "Dolna"
+      },
+      "companionSize": {
+        "label": "Rozmiar panelu plików",
+        "description": "Szerokość w pikselach lub wysokość, gdy panel jest u dołu. Możesz też przeciągnąć jego krawędź."
+      },
+      "companionEdgeButton": {
+        "label": "Pokaż przycisk panelu",
+        "description": "Pokazuj mały przycisk na prawej krawędzi terminala, który otwiera panel plików."
+      },
+      "companionFollowTerminal": {
+        "label": "Śledź folder terminala",
+        "description": "Przenoś panel plików do folderu, w którym znajduje się terminal. Możesz to wyłączyć w panelu."
+      },
+      "companionSyncInterval": {
+        "label": "Interwał sprawdzania folderu",
+        "description": "Jak często (w sekundach) panel plików sprawdza, w którym folderze znajduje się terminal."
+      },
+      "companionHistorySize": {
+        "label": "Rozmiar historii folderów",
+        "description": "Ile folderów panel plików zapamiętuje dla każdego hosta."
       }
     }
   },
@@ -77,6 +113,8 @@
     "newFolder": "Nowy katalog",
     "rename": "Zmień nazwę",
     "uploading": "Przesyłanie...",
+    "externalEditorTextOnly": "Tylko pliki tekstowe można otwierać zewnętrznie, ponieważ zapisywane są one jako tekst.",
+    "uploadFilesDone": "{{done}} / {{total}} plików",
     "uploadingFile": "Przesyłanie {{name}}...",
     "uploadingChunk": "Przesyłanie {{name}}: {{percent}}% (część {{chunk}} z {{total}})",
     "fileName": "Nazwa pliku",
@@ -660,10 +698,22 @@
     "metricsHopDestLocalWrite": "Serwer → cel (lokalnie): {{throughput}}"
   },
   "plugin": {
-    "name": "Menedżer plików"
+    "name": "Menedżer plików",
+    "description": "Przeglądaj, edytuj i przenoś pliki przez SFTP, w tym bezpośrednio z jednego serwera na drugi."
   },
   "common": {
     "remove": "Usuń",
     "clear": "Wyczyść"
+  },
+  "companion": {
+    "history": "Historia",
+    "historyEmpty": "Brak folderów",
+    "frequent": "Częste",
+    "recent": "Ostatnie",
+    "clearHistory": "Wyczyść historię",
+    "follow": "Śledź terminal",
+    "syncNow": "Przejdź do folderu terminala",
+    "cdTerminal": "Zmień folder terminala na ten",
+    "terminalAt": "Terminal:"
   }
 }
