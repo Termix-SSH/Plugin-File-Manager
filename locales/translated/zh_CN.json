@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "确定要永久删除文件夹“{{name}}”及其所有内容吗？",
     "moveToTrashWarning": "项目将被移动到 Termix 回收站，并可在保留期过期前恢复。",
     "itemsMovedToTrash_other": "已将 {{count}} 个项目移至废纸篓",
+    "deletingItems": "正在删除：{{done}} / {{total}}。请等待操作完成后再进行粘贴或上传。",
+    "movingToTrash": "正在移至回收站：{{done}} / {{total}}。请等待操作完成后再进行粘贴或上传。",
     "trash": "回收站",
     "trashDescription": "在此主机上，已删除的项目将保留 {{days}} 天。",
     "trashLoadFailed": "加载回收站失败",

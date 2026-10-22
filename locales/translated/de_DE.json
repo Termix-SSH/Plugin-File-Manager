@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Die Elemente werden in den Termix-Papierkorb verschoben und können vor Ablauf der Aufbewahrungsfrist wiederhergestellt werden.",
     "itemsMovedToTrash_one": "{{count}} Element in den Papierkorb verschoben",
     "itemsMovedToTrash_other": "{{count}} Elemente in den Papierkorb verschoben",
+    "deletingItems": "Löschen: {{done}} / {{total}}. Bitte warten Sie, bis der Vorgang abgeschlossen ist, bevor Sie Inhalte einfügen oder hochladen.",
+    "movingToTrash": "In den Papierkorb verschieben: {{done}} / {{total}}. Bitte warten Sie, bis der Vorgang abgeschlossen ist, bevor Sie Inhalte einfügen oder hochladen.",
     "trash": "Papierkorb",
     "trashDescription": "Gelöschte Elemente werden auf diesem Host für {{days}} Tag(e) aufbewahrt.",
     "trashLoadFailed": "Papierkorb konnte nicht geladen werden",

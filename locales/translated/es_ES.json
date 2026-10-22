@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} elemento movido a la Papelera",
     "itemsMovedToTrash_many": "{{count}} elementos movidos a la Papelera",
     "itemsMovedToTrash_other": "{{count}} elementos movidos a la Papelera",
+    "deletingItems": "Eliminando: {{done}} / {{total}}. Espera a que termine antes de pegar o subir archivos.",
+    "movingToTrash": "Moviendo a la papelera: {{done}} / {{total}}. Espera a que termine antes de pegar o subir archivos.",
     "trash": "Papelera",
     "trashDescription": "Los elementos eliminados se conservan durante {{days}} día(s) en este host.",
     "trashLoadFailed": "No se ha podido cargar la Papelera",

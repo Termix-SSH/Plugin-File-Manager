@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Elementerne vil blive flyttet til Termix Papirkurv og kan gendannes, før opbevaringsperioden udløber.",
     "itemsMovedToTrash_one": "{{count}} element flyttet til Papirkurv",
     "itemsMovedToTrash_other": "{{count}} elementer flyttet til Papirkurv",
+    "deletingItems": "Sletter: {{done}} / {{total}}. Vent til det er færdigt, før du indsætter eller uploader.",
+    "movingToTrash": "Flytter til Papirkurv: {{done}} / {{total}}. Vent til det er færdigt, før du indsætter eller uploader.",
     "trash": "Papirkurv",
     "trashDescription": "Slettede elementer gemmes i {{days}} dag(e) på denne vært.",
     "trashLoadFailed": "Kunne ikke indlæse Papirkurv",

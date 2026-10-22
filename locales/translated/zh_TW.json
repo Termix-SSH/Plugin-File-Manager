@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "確定要永久刪除資料夾「{{name}}」及其所有內容嗎？",
     "moveToTrashWarning": "項目將被移至 Termix 垃圾桶，並可在保留期限屆滿前還原。",
     "itemsMovedToTrash_other": "已將 {{count}} 個項目移至垃圾桶",
+    "deletingItems": "正在刪除：{{done}} / {{total}}。請等待完成後再貼上或上傳檔案。",
+    "movingToTrash": "正在移至垃圾桶：{{done}} / {{total}}。請等待完成後再貼上或上傳檔案。",
     "trash": "垃圾桶",
     "trashDescription": "在此主機上，已刪除的項目將保留 {{days}} 天。",
     "trashLoadFailed": "載入垃圾桶失敗",

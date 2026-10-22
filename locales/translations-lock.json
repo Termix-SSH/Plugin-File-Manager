@@ -200,6 +200,8 @@
   "fileManager.confirmDeleteFolder": "68b74b60e9a1",
   "fileManager.moveToTrashWarning": "5a5072d38c36",
   "fileManager.itemsMovedToTrash": "a9afef0f3bc7",
+  "fileManager.deletingItems": "923884138103",
+  "fileManager.movingToTrash": "52f8fb351f5e",
   "fileManager.trash": "e3bf62bb7f5a",
   "fileManager.trashDescription": "d28ebed69e9e",
   "fileManager.trashLoadFailed": "82aaa3040d3a",

@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Objektet/objekten flyttas till Termix-papperskorgen och kan återställas innan behållstiden löper ut.",
     "itemsMovedToTrash_one": "{{count}} objekt flyttat till Papperskorgen",
     "itemsMovedToTrash_other": "{{count}} objekt flyttade till Papperskorgen",
+    "deletingItems": "Raderar: {{done}} / {{total}}. Vänta tills det är klart innan du klistrar in eller laddar upp.",
+    "movingToTrash": "Flyttar till papperskorgen: {{done}} / {{total}}. Vänta tills det är klart innan du klistrar in eller laddar upp.",
     "trash": "Papperskorg",
     "trashDescription": "Raderade objekt behålls i {{days}} dag(ar) på denna värd.",
     "trashLoadFailed": "Kunde inte ladda Papperskorgen",

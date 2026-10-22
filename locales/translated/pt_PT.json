@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} item movido para o Lixo",
     "itemsMovedToTrash_many": "{{count}} itens movidos para o Lixo",
     "itemsMovedToTrash_other": "{{count}} itens movidos para o Lixo",
+    "deletingItems": "A eliminar: {{done}} / {{total}}. Aguarde até terminar antes de colar ou carregar ficheiros.",
+    "movingToTrash": "A mover para a Lixeira: {{done}} / {{total}}. Aguarde até terminar antes de colar ou carregar ficheiros.",
     "trash": "Lixo",
     "trashDescription": "Os itens eliminados são mantidos por {{days}} dia(s) neste host.",
     "trashLoadFailed": "Falha ao carregar a Lixeira",

@@ -9,10 +9,12 @@ import {
 } from "./session.js";
 import { ensureDirectoryTreeSftp } from "./transfer-sftp-dir.js";
 import { buildDeleteCommand } from "./operation-commands.js";
+import { removePermanently } from "./permanent-delete.js";
 import {
   emptyTrash,
   listTrash,
   moveToTrash,
+  moveManyToTrash,
   permanentlyDeleteTrashItem,
   restoreTrashItem,
 } from "./trash-service.js";
@@ -26,6 +28,11 @@ type FileOperationRoutesDeps = {
 const TRASH_RETENTION_DAYS_KEY = "trashRetentionDays";
 
 const TRASH_PURGE_INTERVAL_MS = 60 * 60 * 1000;
+// 100 moves in flight finished with no failures on the test host; 16 leaves
+// headroom for servers that cap in-flight SFTP requests.
+const TRASH_BATCH_CONCURRENCY = 16;
+const MAX_TRASH_BATCH = 500;
+const CANCELLED_OP_TTL_MS = 10 * 60 * 1000;
 
 export function registerFileOperationRoutes(
   app: Express,
@@ -45,6 +52,15 @@ export function registerFileOperationRoutes(
   // Deleting used to purge expired trash first, reading every trash entry
   // before answering. Do it after the response, at most hourly per session.
   const lastPurge = new WeakMap<SSHSession, number>();
+  // Delete operations the user cancelled: batches still queued stop starting
+  // items, so Cancel does not leave hundreds of requests running.
+  const cancelledOps = new Map<string, number>();
+  const opKey = (session: SSHSession, req: Request) => {
+    const opId = req.body?.opId;
+    return typeof opId === "string" && opId
+      ? `${session.userId}:${req.body?.sessionId}:${opId}`
+      : null;
+  };
   const purgeExpiredTrash = (session: SSHSession, sftp: SFTPWrapper) => {
     const now = Date.now();
     if (now - (lastPurge.get(session) ?? 0) < TRASH_PURGE_INTERVAL_MS) return;
@@ -642,6 +658,89 @@ export function registerFileOperationRoutes(
     };
 
     await executeDelete(false);
+  });
+
+  /**
+   * @openapi
+   * /plugin-api/file-manager/deleteItems:
+   *   post:
+   *     summary: Move many files or directories to the trash
+   *     description: Moves up to 500 paths per call to the trash, or deletes them permanently when permanent is true. Each path succeeds or fails on its own and is reported in results.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Per-path results, in request order. }
+   *       400: { description: Bad session or paths. }
+   *       403: { description: The session belongs to someone else. }
+   */
+  app.post("/deleteItems", async (req, res) => {
+    const session = await ownedSession(req, res);
+    if (!session) return;
+    const paths: unknown = req.body?.paths;
+    if (
+      !Array.isArray(paths) ||
+      paths.length === 0 ||
+      paths.length > MAX_TRASH_BATCH ||
+      !paths.every((p) => typeof p === "string" && p)
+    ) {
+      return res.status(400).json({
+        error: `paths must be 1 to ${MAX_TRASH_BATCH} non-empty strings`,
+      });
+    }
+    const unique = [...new Set(paths as string[])];
+    const key = opKey(session, req);
+    const shouldStop = () => (key ? cancelledOps.has(key) : false);
+    const dirs = new Set<unknown>(
+      Array.isArray(req.body?.directories) ? req.body.directories : [],
+    );
+    if (req.body?.permanent === true) {
+      return res.json({
+        results: await removePermanently(
+          session,
+          unique.map((p) => ({ path: p, isDirectory: dirs.has(p) })),
+          shouldStop,
+        ),
+      });
+    }
+    try {
+      const sftp = await getSessionSftp(session);
+      const results = await moveManyToTrash(
+        sftp,
+        unique,
+        TRASH_BATCH_CONCURRENCY,
+        shouldStop,
+      );
+      purgeExpiredTrash(session, sftp);
+      res.json({ results });
+    } catch (error) {
+      res
+        .status(409)
+        .json({ error: (error as Error).message, trashUnavailable: true });
+    }
+  });
+
+  /**
+   * @openapi
+   * /plugin-api/file-manager/deleteItems/cancel:
+   *   post:
+   *     summary: Stop a bulk delete from starting more items
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: The operation will start no further items. }
+   *       400: { description: Bad session or operation id. }
+   *       403: { description: The session belongs to someone else. }
+   */
+  app.post("/deleteItems/cancel", async (req, res) => {
+    const session = await ownedSession(req, res);
+    if (!session) return;
+    const key = opKey(session, req);
+    if (!key) return res.status(400).json({ error: "opId is required" });
+    const now = Date.now();
+    for (const [k, at] of cancelledOps)
+      if (now - at > CANCELLED_OP_TTL_MS) cancelledOps.delete(k);
+    cancelledOps.set(key, now);
+    res.json({ ok: true });
   });
 
   /**

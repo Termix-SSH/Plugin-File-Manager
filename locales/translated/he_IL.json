@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "פריט אחד הועבר לפח",
     "itemsMovedToTrash_two": "{{count}} פריטים הועברו לפח",
     "itemsMovedToTrash_other": "{{count}} פריטים הועברו לפח",
+    "deletingItems": "מחק: {{done}} / {{total}}. המתן עד לסיום לפני הדבקה או העלאה.",
+    "movingToTrash": "העברה לאשפה: {{done}} / {{total}}. המתן עד לסיום לפני הדבקה או העלאה.",
     "trash": "פח",
     "trashDescription": "פריטים שנמחקו נשמרים למשך {{days}} יום/ים במארח זה.",
     "trashLoadFailed": "טעינת הפח נכשלה",

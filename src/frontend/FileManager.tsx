@@ -68,6 +68,8 @@ import {
   createSSHFolder,
   deleteSSHItem,
   copySSHItem,
+  trashSSHItems,
+  cancelDeleteItems,
   renameSSHItem,
   moveSSHItem,
   connectSSH,
@@ -116,6 +118,8 @@ import type {
 import {
   base64ToBytes,
   formatFileSize,
+  trashInBatches,
+  waitForDeletes,
   runWithConcurrency,
 } from "./file-manager-utils.ts";
 import {
@@ -131,6 +135,9 @@ import {
   restoreItems,
 } from "./optimistic-file-list";
 
+/** Paths per trash request, and requests in flight (backend adds its own pool). */
+const TRASH_BATCH_SIZE = 200;
+const TRASH_BATCHES_IN_FLIGHT = 3;
 const LOCAL_PANE_OPEN_STORAGE_KEY = "termix:file-manager:local-pane:open";
 const SIDEBAR_OPEN_STORAGE_KEY = "termix:file-manager:sidebar:open";
 const LOCAL_PANE_WIDTH_STORAGE_KEY = "termix:file-manager:local-pane:width";
@@ -171,6 +178,7 @@ function FileManagerContent({
       ".",
   );
   const currentPathRef = useRef(currentPath);
+  const pendingDeleteRef = useRef<Promise<unknown>>(Promise.resolve());
   currentPathRef.current = currentPath;
   const lastSuccessfulPathRef = useRef(
     initialPath ||
@@ -352,6 +360,14 @@ function FileManagerContent({
   const [transferMove, setTransferMove] = useState(false);
 
   const [sudoDialogOpen, setSudoDialogOpen] = useState(false);
+  const [deletingPaths, setDeletingPaths] = useState<ReadonlySet<string>>(
+    new Set(),
+  );
+  const deletingPathsRef = useRef<ReadonlySet<string>>(new Set());
+  const updateDeletingPaths = (next: ReadonlySet<string>) => {
+    deletingPathsRef.current = next;
+    setDeletingPaths(next);
+  };
   const [pendingSudoOperation, setPendingSudoOperation] =
     useState<PendingSudoOperation | null>(null);
 
@@ -1097,7 +1113,9 @@ function FileManagerContent({
   const handleLocalFilesDrop = useCallback(
     (localPaths: string[], targetDir?: FileItem) => {
       const remoteDir = targetDir?.path ?? currentPathRef.current;
-      void localTransfers.uploadLocalPaths(localPaths, remoteDir);
+      void waitForDeletes(pendingDeleteRef).then(() =>
+        localTransfers.uploadLocalPaths(localPaths, remoteDir),
+      );
     },
     [localTransfers],
   );
@@ -1164,7 +1182,6 @@ function FileManagerContent({
       toast.error(t("fileManager.noSSHConnection"));
       return;
     }
-
     const files: { file: File; relativePath: string }[] = [];
     const emptyDirs: string[] = [];
 
@@ -1214,6 +1231,7 @@ function FileManagerContent({
     }
 
     if (files.length === 0 && emptyDirs.length === 0) return;
+    await waitForDeletes(pendingDeleteRef);
 
     await uploadBatch(files, emptyDirs);
   }
@@ -1370,9 +1388,10 @@ function FileManagerContent({
       toast.error(t("fileManager.noSSHConnection"));
       return;
     }
-
+    const dropped = Array.from(fileList);
+    await waitForDeletes(pendingDeleteRef);
     await uploadBatch(
-      Array.from(fileList).map((file) => ({ file, relativePath: file.name })),
+      dropped.map((file) => ({ file, relativePath: file.name })),
       [],
     );
   }
@@ -1469,7 +1488,228 @@ function FileManagerContent({
     }
   }
 
+  type BulkDeleteOutcome = {
+    targets: FileItem[];
+    done: Set<FileItem>;
+    failed: Set<FileItem>;
+    needsSudo: Set<FileItem>;
+    itemError?: string;
+    thrown?: unknown;
+    cancelled: boolean;
+  };
+
+  /**
+   * Deletes in batches while the rows stay on screen, dimmed, until the server
+   * confirms each batch. Cancel also tells the server to stop starting items.
+   */
+  async function bulkDelete(
+    items: FileItem[],
+    permanent: boolean,
+  ): Promise<BulkDeleteOutcome> {
+    const operationPath = currentPath;
+    const operationSession = sshSessionId;
+    // A selected folder already takes its selected children with it.
+    const targets = items.filter(
+      (file) =>
+        !items.some(
+          (other) =>
+            other.type === "directory" &&
+            file.path.startsWith(other.path.replace(/\/+$/, "") + "/"),
+        ),
+    );
+    const targetPaths = new Set(targets.map((file) => file.path));
+    updateDeletingPaths(new Set([...deletingPathsRef.current, ...targetPaths]));
+    clearSelection();
+    const controller = new AbortController();
+    const opId = crypto.randomUUID();
+    const labelKey = permanent
+      ? "fileManager.deletingItems"
+      : "fileManager.movingToTrash";
+    const cancel = {
+      label: t("fileManager.cancel"),
+      onClick: () => {
+        controller.abort();
+        void cancelDeleteItems(operationSession, opId);
+      },
+    };
+    const progressToast = toast.loading(
+      t(labelKey, { done: 0, total: targets.length }),
+      { duration: Infinity, cancel },
+    );
+    try {
+      await ensureSSHConnection();
+      const result = await trashInBatches(
+        targets,
+        TRASH_BATCH_SIZE,
+        TRASH_BATCHES_IN_FLIGHT,
+        (batch) =>
+          trashSSHItems(
+            operationSession,
+            batch.map((file) => file.path),
+            {
+              permanent,
+              opId,
+              directories: batch
+                .filter((file) => file.type === "directory")
+                .map((file) => file.path),
+            },
+          ),
+        {
+          signal: controller.signal,
+          onBatchDone: (confirmed) =>
+            commitFilesForPath(
+              operationSession,
+              operationPath,
+              removePaths(
+                filesForPath(operationSession, operationPath),
+                new Set(confirmed.map((file) => file.path)),
+              ),
+            ),
+          onProgress: (finished) =>
+            !controller.signal.aborted &&
+            toast.loading(
+              t(labelKey, { done: finished, total: targets.length }),
+              {
+                id: progressToast,
+                duration: Infinity,
+                cancel,
+              },
+            ),
+        },
+      );
+      return { targets, ...result, cancelled: controller.signal.aborted };
+    } catch (error) {
+      return {
+        targets,
+        done: new Set(),
+        failed: new Set(),
+        needsSudo: new Set(),
+        thrown: error,
+        cancelled: false,
+      };
+    } finally {
+      toast.dismiss(progressToast);
+      updateDeletingPaths(
+        new Set(
+          [...deletingPathsRef.current].filter((p) => !targetPaths.has(p)),
+        ),
+      );
+    }
+  }
+
+  /**
+   * Uploads, pastes and moves wait for this, so a file re-uploaded under a name
+   * still being deleted can't be deleted too. Held through any fallback prompt.
+   */
+  // Resolved when the sudo dialog is submitted or dismissed, so the delete
+  // barrier stays held while the user decides.
+  const sudoWaitRef = useRef<(() => void) | null>(null);
+  function dismissSudo() {
+    setPendingSudoOperation(null);
+    sudoWaitRef.current?.();
+    sudoWaitRef.current = null;
+  }
+
+  function holdDeletes(): () => void {
+    let release!: () => void;
+    pendingDeleteRef.current = Promise.all([
+      pendingDeleteRef.current,
+      new Promise<void>((resolve) => (release = resolve)),
+    ]);
+    return release;
+  }
+
+  /** Reports a bulk delete and asks only about items the server actually failed. */
+  async function afterBulkDelete(
+    outcome: BulkDeleteOutcome,
+    permanent: boolean,
+  ): Promise<void> {
+    const refresh = () => handleRefreshDirectory();
+    if (outcome.done.size > 0 && !outcome.cancelled) {
+      toast.success(
+        t(
+          permanent
+            ? "fileManager.itemsDeletedSuccessfully"
+            : "fileManager.itemsMovedToTrash",
+          { count: outcome.done.size },
+        ),
+      );
+    }
+    if (outcome.cancelled) {
+      toast.info(t("fileManager.localTransferCancelled"));
+      refresh();
+      return;
+    }
+    const thrown = outcome.thrown as
+      | {
+          response?: {
+            data?: { trashUnavailable?: boolean; error?: string };
+            status?: number;
+          };
+          message?: string;
+        }
+      | undefined;
+    const trashUnavailable = thrown?.response?.data?.trashUnavailable === true;
+    if (thrown && !trashUnavailable) {
+      refresh();
+      if (
+        thrown.response?.status === 403 ||
+        thrown.response?.data?.error
+          ?.toLowerCase()
+          .includes("permission denied")
+      ) {
+        toast.error(t("fileManager.permissionDenied"));
+      } else if (
+        thrown.message?.includes("connection") ||
+        thrown.message?.includes("established")
+      ) {
+        toast.error(
+          t("fileManager.sshConnectionFailed", {
+            name: currentHost?.name,
+            ip: currentHost?.ip,
+            port: currentHost?.port,
+          }),
+        );
+      } else {
+        toast.error(t("fileManager.failedToDeleteItems"));
+      }
+      return;
+    }
+    // Only items the server tried and failed: batches never started stay put.
+    const failed = [...outcome.failed];
+    if (failed.length === 0) {
+      refresh();
+      return;
+    }
+    if (permanent) {
+      if (outcome.needsSudo.size > 0) {
+        setPendingSudoOperation({
+          type: "delete",
+          files: [...outcome.needsSudo],
+        });
+        const answered = new Promise<void>((resolve) => {
+          sudoWaitRef.current = resolve;
+        });
+        setSudoDialogOpen(true);
+        refresh();
+        await answered;
+        return;
+      }
+      toast.error(t("fileManager.failedToDeleteItems"));
+      refresh();
+      return;
+    }
+    if (await confirm({ title: t("fileManager.trashUnavailableConfirm") })) {
+      await afterBulkDelete(await bulkDelete(failed, true), true);
+      return;
+    }
+    refresh();
+    toast.error(t("fileManager.failedToDeleteItems"));
+  }
+
   async function handleDeleteFiles(files: FileItem[]) {
+    // Rows already being trashed can't be deleted again.
+    files = files.filter((file) => !deletingPathsRef.current.has(file.path));
     if (!sshSessionId || files.length === 0) return;
 
     let confirmMessage: string;
@@ -1498,114 +1738,11 @@ function FileManagerContent({
     const fullMessage = `${confirmMessage}\n\n${t("fileManager.moveToTrashWarning")}`;
 
     const moveToTrash = async () => {
-      const operationPath = currentPath;
-      const operationSession = sshSessionId;
-      const deletedPaths = new Set(files.map((file) => file.path));
-      commitFilesForPath(
-        operationSession,
-        operationPath,
-        removePaths(
-          filesForPath(operationSession, operationPath),
-          deletedPaths,
-        ),
-      );
-      clearSelection();
-      let completed = 0;
+      const release = holdDeletes();
       try {
-        await ensureSSHConnection();
-
-        for (const file of files) {
-          await deleteSSHItem(
-            sshSessionId,
-            file.path,
-            file.type === "directory",
-            currentHost?.id,
-            currentHost?.userId?.toString(),
-          );
-          completed += 1;
-        }
-
-        toast.success(
-          t("fileManager.itemsMovedToTrash", { count: files.length }),
-        );
-        if (
-          sshSessionIdRef.current === operationSession &&
-          currentPathRef.current === operationPath
-        ) {
-          handleRefreshDirectory();
-        } else {
-          invalidateCachedFileList(operationSession, operationPath);
-        }
-      } catch (error: unknown) {
-        commitFilesForPath(
-          operationSession,
-          operationPath,
-          restoreItems(
-            filesForPath(operationSession, operationPath),
-            files.slice(completed),
-          ),
-        );
-        const axiosError = error as {
-          response?: {
-            data?: { needsSudo?: boolean; error?: string };
-            status?: number;
-          };
-          message?: string;
-        };
-        if (axiosError.response?.data?.needsSudo) {
-          setPendingSudoOperation({
-            type: "delete",
-            files: files.slice(completed),
-          });
-          setSudoDialogOpen(true);
-          return;
-        }
-        if (
-          (axiosError.response?.data as { trashUnavailable?: boolean })
-            ?.trashUnavailable &&
-          (await confirm({
-            title: t("fileManager.trashUnavailableConfirm"),
-          }))
-        ) {
-          for (const file of files.slice(completed)) {
-            await deleteSSHItem(
-              sshSessionId,
-              file.path,
-              file.type === "directory",
-              currentHost?.id,
-              currentHost?.userId?.toString(),
-              true,
-            );
-          }
-          toast.success(
-            t("fileManager.itemsDeletedSuccessfully", {
-              count: files.length - completed,
-            }),
-          );
-          handleRefreshDirectory();
-          return;
-        }
-        if (
-          axiosError.response?.status === 403 ||
-          axiosError.response?.data?.error
-            ?.toLowerCase()
-            .includes("permission denied")
-        ) {
-          toast.error(t("fileManager.permissionDenied"));
-        } else if (
-          axiosError.message?.includes("connection") ||
-          axiosError.message?.includes("established")
-        ) {
-          toast.error(
-            t("fileManager.sshConnectionFailed", {
-              name: currentHost?.name,
-              ip: currentHost?.ip,
-              port: currentHost?.port,
-            }),
-          );
-        } else {
-          toast.error(t("fileManager.failedToDeleteItems"));
-        }
+        await afterBulkDelete(await bulkDelete(files, false), false);
+      } finally {
+        release();
       }
     };
     if (confirmBeforeTrash) {
@@ -1626,32 +1763,26 @@ function FileManagerContent({
       setSudoDialogOpen(false);
 
       if (pendingSudoOperation.type === "delete") {
-        for (const file of pendingSudoOperation.files) {
-          await deleteSSHItem(
-            sshSessionId,
-            file.path,
-            file.type === "directory",
-            currentHost?.id,
-            currentHost?.userId?.toString(),
-          );
+        const sudoFiles = pendingSudoOperation.files;
+        // Take the new barrier before the old one is released.
+        const release = holdDeletes();
+        dismissSudo();
+        try {
+          await afterBulkDelete(await bulkDelete(sudoFiles, true), true);
+        } finally {
+          release();
         }
-        toast.success(
-          t("fileManager.itemsDeletedSuccessfully", {
-            count: pendingSudoOperation.files.length,
-          }),
-        );
-        handleRefreshDirectory();
-        clearSelection();
+        return;
       } else if (pendingSudoOperation.type === "navigate") {
         const success = await loadDirectory(pendingSudoOperation.path);
         if (success) {
           setCurrentPath(pendingSudoOperation.path);
-          setPendingSudoOperation(null);
+          dismissSudo();
         }
         return;
       }
 
-      setPendingSudoOperation(null);
+      dismissSudo();
     } catch (error: unknown) {
       const axiosError = error as {
         response?: { data?: { needsSudo?: boolean; sudoFailed?: boolean } };
@@ -1665,7 +1796,7 @@ function FileManagerContent({
       }
 
       toast.error(axiosError.message || t("fileManager.sudoOperationFailed"));
-      setPendingSudoOperation(null);
+      dismissSudo();
     }
   }
 
@@ -2155,6 +2286,7 @@ function FileManagerContent({
 
   async function handlePasteFiles() {
     if (!clipboard || !sshSessionId) return;
+    await waitForDeletes(pendingDeleteRef);
 
     if (
       clipboard.sourceHostId !== null &&
@@ -2457,6 +2589,7 @@ function FileManagerContent({
   }
 
   async function handleUndo() {
+    await waitForDeletes(pendingDeleteRef);
     if (undoHistory.length === 0) {
       toast.info(t("fileManager.noUndoableActions"));
       return;
@@ -2627,6 +2760,7 @@ function FileManagerContent({
 
   async function handleConfirmCreate(name: string) {
     if (!createIntent || !sshSessionId) return;
+    await waitForDeletes(pendingDeleteRef);
 
     const operationPath = currentPath;
     const operationSession = sshSessionId;
@@ -2708,6 +2842,7 @@ function FileManagerContent({
 
   async function handleRenameConfirm(file: FileItem, newName: string) {
     if (!sshSessionId) return;
+    await waitForDeletes(pendingDeleteRef);
 
     const operationPath = currentPath;
     const operationSession = sshSessionId;
@@ -3079,6 +3214,7 @@ function FileManagerContent({
     targetFolder: FileItem,
   ) {
     if (!sshSessionId || targetFolder.type !== "directory") return;
+    await waitForDeletes(pendingDeleteRef);
 
     try {
       await ensureSSHConnection();
@@ -3661,6 +3797,7 @@ function FileManagerContent({
               <FileManagerGrid
                 files={filteredFiles}
                 selectedFiles={selectedFiles}
+                deletingPaths={deletingPaths}
                 onFileOpen={handleFileOpen}
                 onFileIntent={prefetchFileIntent}
                 onSelectionChange={setSelection}
@@ -3833,7 +3970,9 @@ function FileManagerContent({
         handleSavePermissions={handleSavePermissions}
         sudoDialogOpen={sudoDialogOpen}
         setSudoDialogOpen={setSudoDialogOpen}
-        setPendingSudoOperation={setPendingSudoOperation}
+        setPendingSudoOperation={(op) =>
+          op ? setPendingSudoOperation(op) : dismissSudo()
+        }
         handleSudoPasswordSubmit={handleSudoPasswordSubmit}
       />
       <ConnectionLogPanel

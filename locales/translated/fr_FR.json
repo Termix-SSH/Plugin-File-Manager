@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} élément déplacé vers la Corbeille",
     "itemsMovedToTrash_many": "{{count}} éléments déplacés vers la Corbeille",
     "itemsMovedToTrash_other": "{{count}} éléments déplacés vers la Corbeille",
+    "deletingItems": "Suppression : {{done}} / {{total}}. Attendez la fin de l'opération avant de coller ou de télécharger des fichiers.",
+    "movingToTrash": "Déplacement vers la corbeille : {{done}} / {{total}}. Attendez la fin de l'opération avant de coller ou de télécharger des fichiers.",
     "trash": "Corbeille",
     "trashDescription": "Les éléments supprimés sont conservés pendant {{days}} jour(s) sur cet hôte.",
     "trashLoadFailed": "Échec du chargement de la corbeille",

@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Kohteet siirretään Termixin roskakoriin, ja ne voidaan palauttaa ennen säilytysajan päättymistä.",
     "itemsMovedToTrash_one": "{{count}} kohde siirretty roskakoriin",
     "itemsMovedToTrash_other": "{{count}} kohdetta siirretty roskakoriin",
+    "deletingItems": "Poistetaan: {{done}} / {{total}}. Odota, kunnes toimenpide on valmis, ennen kuin liität tai lataat tiedostoja.",
+    "movingToTrash": "Siirretään roskakoriin: {{done}} / {{total}}. Odota, kunnes toimenpide on valmis, ennen kuin liität tai lataat tiedostoja.",
     "trash": "Roskakori",
     "trashDescription": "Poistetut kohteet säilytetään tässä isäntäpalvelimessa {{days}} päivän ajan.",
     "trashLoadFailed": "Roskakorven lataaminen epäonnistui",

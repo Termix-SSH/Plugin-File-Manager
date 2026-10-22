@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Element(id) liigutatakse Termix prügikasti ja saab taastada enne säilitusaja aegumist.",
     "itemsMovedToTrash_one": "{{count}} üksus Prügikasti liigutatud",
     "itemsMovedToTrash_other": "{{count}} üksust Prügikasti liigutatud",
+    "deletingItems": "Kustutamine: {{done}} / {{total}}. Oota, kuni protsess on lõpule jõudnud, enne kui midagi kleebid või üles laadid.",
+    "movingToTrash": "Prügikasti viimine: {{done}} / {{total}}. Oota, kuni protsess on lõpule jõudnud, enne kui midagi kleebid või üles laadid.",
     "trash": "Prügikast",
     "trashDescription": "Kustutatud üksusi hoitakse sellel hostil {{days}} päeva.",
     "trashLoadFailed": "Prügikasti laadimine ebaõnnestus",

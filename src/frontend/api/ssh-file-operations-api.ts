@@ -612,6 +612,57 @@ export async function deleteSSHItem(
   }
 }
 
+export interface TrashBatchResult {
+  path: string;
+  error?: string;
+  needsSudo?: boolean;
+}
+
+/** Moves paths to the trash (or deletes them permanently) in one request. */
+export async function trashSSHItems(
+  sessionId: string,
+  paths: string[],
+  opts: {
+    permanent?: boolean;
+    opId?: string;
+    /** Paths that are directories; other permanent deletes never recurse. */
+    directories?: string[];
+  } = {},
+): Promise<TrashBatchResult[]> {
+  try {
+    const response = await getFileManagerApiForSession(sessionId).post(
+      "/deleteItems",
+      { sessionId, paths, ...opts },
+    );
+    for (const p of paths) invalidateCachedFileContent(sessionId, p);
+    // The server drops duplicate paths, so match by path, not position.
+    const byPath = new Map<string, TrashBatchResult>(
+      (response.data.results as TrashBatchResult[]).map((r) => [r.path, r]),
+    );
+    return paths.map(
+      (p) => byPath.get(p) ?? { path: p, error: "No result from server" },
+    );
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.data?.trashUnavailable === true
+    ) {
+      throw error;
+    }
+    handleApiError(error, "delete SSH items");
+  }
+}
+
+/** Tells the server to stop starting items for a bulk delete. */
+export async function cancelDeleteItems(
+  sessionId: string,
+  opId: string,
+): Promise<void> {
+  await getFileManagerApiForSession(sessionId)
+    .post("/deleteItems/cancel", { sessionId, opId })
+    .catch(() => undefined);
+}
+
 export interface TrashItem {
   id: string;
   name: string;

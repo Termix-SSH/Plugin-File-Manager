@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "フォルダ「{{name}}」とそのすべての内容を完全に削除してもよろしいですか？",
     "moveToTrashWarning": "アイテムはTermixのゴミ箱に移動され、保持期間が経過する前に復元できます。",
     "itemsMovedToTrash_other": "{{count}} 個のアイテムをゴミ箱に移動しました",
+    "deletingItems": "削除中: {{done}} / {{total}}。貼り付けやアップロードする前に完了を待ってください。",
+    "movingToTrash": "ゴミ箱へ移動中: {{done}} / {{total}}。貼り付けやアップロードする前に完了を待ってください。",
     "trash": "ゴミ箱",
     "trashDescription": "削除されたアイテムは、このホストで {{days}} 日間保持されます。",
     "trashLoadFailed": "ゴミ箱の読み込みに失敗しました",

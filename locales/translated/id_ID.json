@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "Apakah Anda yakin ingin menghapus folder \"{{name}}\" dan semua isinya secara permanen?",
     "moveToTrashWarning": "Item akan dipindahkan ke Sampah Termix dan dapat dipulihkan sebelum masa retensi berakhir.",
     "itemsMovedToTrash_other": "{{count}} item dipindahkan ke Sampah",
+    "deletingItems": "Menghapus: {{done}} / {{total}}. Tunggu hingga selesai sebelum menempel atau mengunggah.",
+    "movingToTrash": "Memindahkan ke Sampah: {{done}} / {{total}}. Tunggu hingga selesai sebelum menempel atau mengunggah.",
     "trash": "Sampah",
     "trashDescription": "Item yang dihapus disimpan selama {{days}} hari di host ini.",
     "trashLoadFailed": "Gagal memuat Sampah",

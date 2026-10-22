@@ -316,6 +316,8 @@
     "itemsMovedToTrash_few": "{{count}} elementy przeniesione do Kosza",
     "itemsMovedToTrash_many": "{{count}} elementów przeniesionych do Kosza",
     "itemsMovedToTrash_other": "{{count}} elementów przeniesionych do Kosza",
+    "deletingItems": "Usuwanie: {{done}} / {{total}}. Poczekaj, aż operacja się zakończy, zanim wkleisz lub prześlesz pliki.",
+    "movingToTrash": "Przenoszenie do Kosza: {{done}} / {{total}}. Poczekaj, aż operacja się zakończy, zanim wkleisz lub prześlesz pliki.",
     "trash": "Kosz",
     "trashDescription": "Usunięte elementy są przechowywane przez {{days}} dni na tym hoście.",
     "trashLoadFailed": "Nie udało się załadować Kosza",

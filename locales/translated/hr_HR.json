@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} stavka premještena u smeće",
     "itemsMovedToTrash_few": "{{count}} stavke premještene u smeće",
     "itemsMovedToTrash_other": "{{count}} stavki premješteno u smeće",
+    "deletingItems": "Brisanje: {{done}} / {{total}}. Pričekajte da se završi prije lijepljenja ili otpremanja.",
+    "movingToTrash": "Pomicanje u smeće: {{done}} / {{total}}. Pričekajte da se završi prije lijepljenja ili otpremanja.",
     "trash": "Smeće",
     "trashDescription": "Obrisani predmeti se na ovom hostu zadržavaju {{days}} dan(a).",
     "trashLoadFailed": "Neuspješno učitavanje Smeća",

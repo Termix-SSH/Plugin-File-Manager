@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Öğe(ler) Termix Çöp Kutusu'na taşınacak ve saklama süresi dolmadan önce geri yüklenebilir.",
     "itemsMovedToTrash_one": "{{count}} öğe Çöp Kutusuna taşındı",
     "itemsMovedToTrash_other": "{{count}} öğe Çöp Kutusuna taşındı",
+    "deletingItems": "Siliniyor: {{done}} / {{total}}. Yapıştırma veya yükleme işlemi yapmadan önce tamamlanmasını bekleyin.",
+    "movingToTrash": "Çöp Kutusuna Taşınıyor: {{done}} / {{total}}. Yapıştırma veya yükleme işlemi yapmadan önce tamamlanmasını bekleyin.",
     "trash": "Çöp Kutusu",
     "trashDescription": "Silinen öğeler bu ana bilgisayar üzerinde {{days}} gün boyunca saklanır.",
     "trashLoadFailed": "Çöp Kutusu yüklenemedi",

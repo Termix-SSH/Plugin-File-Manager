@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import type { SFTPWrapper } from "ssh2";
-import { listTrash, moveToTrash } from "../../src/backend/trash-service.js";
+import {
+  listTrash,
+  moveManyToTrash,
+  moveToTrash,
+} from "../../src/backend/trash-service.js";
 
 /** An in-memory SFTP channel that counts every request. */
 function fakeSftp() {
@@ -71,6 +75,50 @@ function fakeSftp() {
 }
 
 describe("trash", () => {
+  it("never runs more moves at once than the limit", async () => {
+    const { sftp, files } = fakeSftp();
+    const paths = Array.from({ length: 20 }, (_, i) => `/home/me/f${i}.txt`);
+    for (const p of paths) files.set(p, Buffer.from("x"));
+    let running = 0;
+    let peak = 0;
+    const rename = sftp.rename as unknown as (
+      from: string,
+      to: string,
+      done: (e?: Error) => void,
+    ) => void;
+    const original = rename.bind(sftp);
+    (sftp as unknown as { rename: typeof rename }).rename = (f, t, d) => {
+      peak = Math.max(peak, ++running);
+      setTimeout(() => {
+        running--;
+        original(f, t, d);
+      }, 2);
+    };
+    const results = await moveManyToTrash(sftp, paths, 4);
+    expect(results.every((r) => r.item)).toBe(true);
+    expect(peak).toBeLessThanOrEqual(4);
+    expect(peak).toBeGreaterThan(1);
+  });
+
+  it("moves many paths, keeps input order and isolates failures", async () => {
+    const { sftp, files } = fakeSftp();
+    files.set("/home/me/b.txt", Buffer.from("b"));
+    const results = await moveManyToTrash(
+      sftp,
+      ["/home/me/a.txt", "/home/me/missing.txt", "/home/me/b.txt"],
+      2,
+    );
+    expect(results.map((r) => r.path)).toEqual([
+      "/home/me/a.txt",
+      "/home/me/missing.txt",
+      "/home/me/b.txt",
+    ]);
+    expect(results[0].item).toBeDefined();
+    expect(results[1].error).toBeDefined();
+    expect(results[2].item).toBeDefined();
+    expect(files.has("/home/me/a.txt")).toBe(false);
+  });
+
   it("finds the trash folders once per channel", async () => {
     const { sftp, calls, files } = fakeSftp();
     files.set("/home/me/b.txt", Buffer.from("b"));

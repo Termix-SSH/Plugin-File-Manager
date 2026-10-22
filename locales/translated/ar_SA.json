@@ -366,6 +366,8 @@
     "itemsMovedToTrash_few": "تم نقل {{count}} عناصر إلى سلة المحذوفات",
     "itemsMovedToTrash_many": "تم نقل {{count}} عنصرًا إلى سلة المحذوفات",
     "itemsMovedToTrash_other": "تم نقل {{count}} عنصر إلى سلة المحذوفات",
+    "deletingItems": "جاري الحذف: {{done}} / {{total}}. انتظر حتى ينتهي قبل اللصق أو الرفع.",
+    "movingToTrash": "جاري النقل إلى سلة المهملات: {{done}} / {{total}}. انتظر حتى ينتهي قبل اللصق أو الرفع.",
     "trash": "سلة المهملات",
     "trashDescription": "يتم الاحتفاظ بالعناصر المحذوفة لمدة {{days}} يومًا على هذا المضيف.",
     "trashLoadFailed": "فشل تحميل سلة المهملات",

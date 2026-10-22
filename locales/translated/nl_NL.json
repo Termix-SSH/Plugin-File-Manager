@@ -266,6 +266,8 @@
     "moveToTrashWarning": "De item(s) worden verplaatst naar de Termix Prullenbak en kunnen worden hersteld voordat de bewaartermijn verstrijkt.",
     "itemsMovedToTrash_one": "{{count}} item naar Prullenbak verplaatst",
     "itemsMovedToTrash_other": "{{count}} items naar Prullenbak verplaatst",
+    "deletingItems": "Verwijderen: {{done}} / {{total}}. Wacht tot het klaar is voordat je plakt of uploadt.",
+    "movingToTrash": "Verplaatsen naar Prullenbak: {{done}} / {{total}}. Wacht tot het klaar is voordat je plakt of uploadt.",
     "trash": "Prullenbak",
     "trashDescription": "Verwijderde items worden {{days}} dag(en) op deze host bewaard.",
     "trashLoadFailed": "Prullenbak laden mislukt",

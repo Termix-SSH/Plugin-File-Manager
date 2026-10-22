@@ -316,6 +316,8 @@
     "itemsMovedToTrash_few": "Přesunuty {{count}} položky do Koše",
     "itemsMovedToTrash_many": "Přesunuto {{count}} položek do Koše",
     "itemsMovedToTrash_other": "Přesunuto {{count}} položek do Koše",
+    "deletingItems": "Mazání: {{done}} / {{total}}. Počkejte, až bude hotovo, než začnete vkládat nebo nahrávat.",
+    "movingToTrash": "Přesun do Koše: {{done}} / {{total}}. Počkejte, až bude hotovo, než začnete vkládat nebo nahrávat.",
     "trash": "Koš",
     "trashDescription": "Smazané položky jsou na tomto hostiteli uchovávány po dobu {{days}} dnů.",
     "trashLoadFailed": "Nepodařilo se načíst Koš",

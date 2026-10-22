@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} item movido para a Lixeira",
     "itemsMovedToTrash_many": "{{count}} itens movidos para a Lixeira",
     "itemsMovedToTrash_other": "{{count}} itens movidos para a Lixeira",
+    "deletingItems": "Excluindo: {{done}} / {{total}}. Aguarde até que termine antes de colar ou fazer upload.",
+    "movingToTrash": "Movendo para a Lixeira: {{done}} / {{total}}. Aguarde até que termine antes de colar ou fazer upload.",
     "trash": "Lixeira",
     "trashDescription": "Os itens excluídos são mantidos por {{days}} dia(s) neste host.",
     "trashLoadFailed": "Falha ao carregar a Lixeira",

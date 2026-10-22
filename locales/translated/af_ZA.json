@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Die item(s) sal na die Termix-prulbak verskuif word en kan herstel word voordat die behoudstermyn verstryk.",
     "itemsMovedToTrash_one": "{{count}} item na Prulblik geskuif",
     "itemsMovedToTrash_other": "{{count}} items na Prulblik geskuif",
+    "deletingItems": "Verwyder: {{done}} / {{total}}. Wag tot dit klaar is voordat jy plak of oplaai.",
+    "movingToTrash": "Skuif na die prulbak: {{done}} / {{total}}. Wag tot dit klaar is voordat jy plak of oplaai.",
     "trash": "Prulbak",
     "trashDescription": "Verwyde items word vir {{days}} dag(e) op hierdie gasheer behou.",
     "trashLoadFailed": "Kon nie prul laai nie",

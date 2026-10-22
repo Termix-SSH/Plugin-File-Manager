@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} elemento spostato nel Cestino",
     "itemsMovedToTrash_many": "{{count}} elementi spostati nel Cestino",
     "itemsMovedToTrash_other": "{{count}} elementi spostati nel Cestino",
+    "deletingItems": "Eliminazione: {{done}} / {{total}}. Attendi il completamento prima di incollare o caricare file.",
+    "movingToTrash": "Spostamento nel Cestino: {{done}} / {{total}}. Attendi il completamento prima di incollare o caricare file.",
     "trash": "Cestino",
     "trashDescription": "Gli elementi eliminati vengono conservati per {{days}} giorno(i) su questo host.",
     "trashLoadFailed": "Impossibile caricare il Cestino",

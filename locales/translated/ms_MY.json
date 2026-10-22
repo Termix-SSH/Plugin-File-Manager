@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "Adakah anda pasti ingin memadam folder \"{{name}}\" dan semua kandungannya secara kekal?",
     "moveToTrashWarning": "Item akan dipindahkan ke Sampah Termix dan boleh dipulihkan sebelum tempoh penyimpanan tamat.",
     "itemsMovedToTrash_other": "{{count}} item dipindahkan ke Sampah",
+    "deletingItems": "Memadam: {{done}} / {{total}}. Tunggu sehingga selesai sebelum menampal atau memuat naik.",
+    "movingToTrash": "Memindahkan ke Sampah: {{done}} / {{total}}. Tunggu sehingga selesai sebelum menampal atau memuat naik.",
     "trash": "Sampah",
     "trashDescription": "Item yang dipadam disimpan selama {{days}} hari pada hos ini.",
     "trashLoadFailed": "Gagal memuatkan Sampah",

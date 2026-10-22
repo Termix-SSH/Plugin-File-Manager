@@ -316,6 +316,8 @@
     "itemsMovedToTrash_few": "{{count}} položky presunuté do Kôša",
     "itemsMovedToTrash_many": "{{count}} položiek presunutých do Kôša",
     "itemsMovedToTrash_other": "{{count}} položiek presunutých do Kôša",
+    "deletingItems": "Mazanie: {{done}} / {{total}}. Počkajte, kým sa dokončí, skôr než niečo vložíte alebo nahrajete.",
+    "movingToTrash": "Presúvanie do Kôša: {{done}} / {{total}}. Počkajte, kým sa dokončí, skôr než niečo vložíte alebo nahrajete.",
     "trash": "Kôš",
     "trashDescription": "Odstránené položky sa na tomto hostiteľovi uchovávajú po dobu {{days}} dňa/dní.",
     "trashLoadFailed": "Nepodarilo sa načítať Kôš",

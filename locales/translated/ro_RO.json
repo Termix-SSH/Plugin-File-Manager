@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} element mutat în Coș",
     "itemsMovedToTrash_few": "{{count}} elemente mutate în Coș",
     "itemsMovedToTrash_other": "{{count}} elemente mutate în Coș",
+    "deletingItems": "Se șterge: {{done}} / {{total}}. Așteptați până se termină înainte de a lipi sau încărca fișiere.",
+    "movingToTrash": "Se mută în Coș: {{done}} / {{total}}. Așteptați până se termină înainte de a lipi sau încărca fișiere.",
     "trash": "Coșul de gunoi",
     "trashDescription": "Elementele șterse sunt păstrate timp de {{days}} zi/zi pe acest gazdă.",
     "trashLoadFailed": "Nu s-a putut încărca Coșul de gunoi",

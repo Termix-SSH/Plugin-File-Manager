@@ -266,6 +266,8 @@
     "moveToTrashWarning": "Az elemek a Termix Kukaiba kerülnek, és visszaállíthatók a megőrzési idő letelte előtt.",
     "itemsMovedToTrash_one": "{{count}} elem áthelyezve a Kuka mappába",
     "itemsMovedToTrash_other": "{{count}} elem áthelyezve a Kuka mappába",
+    "deletingItems": "Törlés: {{done}} / {{total}}. Várjon, amíg befejeződik, mielőtt beillesztene vagy feltöltené.",
+    "movingToTrash": "Kuka: {{done}} / {{total}}. Várjon, amíg befejeződik, mielőtt beillesztene vagy feltöltené.",
     "trash": "Kuka",
     "trashDescription": "A törölt elemek ezen a hoszon {{days}} napig megmaradnak.",
     "trashLoadFailed": "A Kuka betöltése sikertelen",

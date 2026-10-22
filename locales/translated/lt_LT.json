@@ -316,6 +316,8 @@
     "itemsMovedToTrash_few": "{{count}} elementai perkelti į Šiukšlinę",
     "itemsMovedToTrash_many": "{{count}} elementų perkelta į Šiukšlinę",
     "itemsMovedToTrash_other": "{{count}} elementų perkelta į Šiukšlinę",
+    "deletingItems": "Trinama: {{done}} / {{total}}. Palaukite, kol baigsis, prieš įklijuodami ar įkeliantis.",
+    "movingToTrash": "Perkeliama į šiukšlinę: {{done}} / {{total}}. Palaukite, kol baigsis, prieš įklijuodami ar įkeliantis.",
     "trash": "Šiukšlinė",
     "trashDescription": "Šiame hoste ištrinti elementai saugomi {{days}} d.",
     "trashLoadFailed": "Nepavyko įkelti šiukšlinės",

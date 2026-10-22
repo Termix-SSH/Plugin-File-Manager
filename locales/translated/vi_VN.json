@@ -241,6 +241,8 @@
     "confirmDeleteFolder": "Bạn có chắc chắn muốn xóa vĩnh viễn thư mục \"{{name}}\" và tất cả nội dung của nó không?",
     "moveToTrashWarning": "Mục sẽ được di chuyển vào Thùng rác Termix và có thể khôi phục trước khi hết thời gian lưu trữ.",
     "itemsMovedToTrash_other": "Đã di chuyển {{count}} mục vào Thùng rác",
+    "deletingItems": "Đang xóa: {{done}} / {{total}}. Vui lòng đợi hoàn tất trước khi dán hoặc tải lên.",
+    "movingToTrash": "Đang chuyển vào Thùng rác: {{done}} / {{total}}. Vui lòng đợi hoàn tất trước khi dán hoặc tải lên.",
     "trash": "Thùng rác",
     "trashDescription": "Các mục đã xóa sẽ được giữ lại trong {{days}} ngày trên host này.",
     "trashLoadFailed": "Không thể tải Thùng rác",

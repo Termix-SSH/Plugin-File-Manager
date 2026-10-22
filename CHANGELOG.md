@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+### Fixed
+
+- Deleting many files at once is faster, shows progress, can be cancelled and no longer lets a paste or upload race it
+
 ## 1.1.0
 
 ### Added

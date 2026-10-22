@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} element s'ha mogut a la Paperera",
     "itemsMovedToTrash_many": "{{count}} elements s'han mogut a la Paperera",
     "itemsMovedToTrash_other": "{{count}} elements s'han mogut a la Paperera",
+    "deletingItems": "Esborrant: {{done}} / {{total}}. Espereu que acabi abans d'enganxar o pujar fitxers.",
+    "movingToTrash": "Movent a la paperera: {{done}} / {{total}}. Espereu que acabi abans d'enganxar o pujar fitxers.",
     "trash": "Paperera",
     "trashDescription": "Els elements eliminats es conserven durant {{days}} dia(s) en aquest amfitrió.",
     "trashLoadFailed": "No s'ha pogut carregar la paperera",

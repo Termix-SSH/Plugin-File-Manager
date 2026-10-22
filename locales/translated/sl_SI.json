@@ -316,6 +316,8 @@
     "itemsMovedToTrash_two": "{{count}} elementa premaknjena v Smeti",
     "itemsMovedToTrash_few": "{{count}} elementi premaknjeni v Smeti",
     "itemsMovedToTrash_other": "{{count}} elementov premaknjenih v Smeti",
+    "deletingItems": "Brisanje: {{done}} / {{total}}. Počakajte, da se konča, preden prilepite ali naložite datoteke.",
+    "movingToTrash": "Premeščanje v smeti: {{done}} / {{total}}. Počakajte, da se konča, preden prilepite ali naložite datoteke.",
     "trash": "Smeti",
     "trashDescription": "Izbrisani predmeti se na tem gostitelju hranijo {{days}} dni.",
     "trashLoadFailed": "Neuspešno nalaganje koša",

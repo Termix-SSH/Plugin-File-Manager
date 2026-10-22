@@ -291,6 +291,8 @@
     "itemsMovedToTrash_one": "{{count}} ставка је премештена у Кору",
     "itemsMovedToTrash_few": "{{count}} ставке су премештене у Кору",
     "itemsMovedToTrash_other": "{{count}} ставки је премештено у Кору",
+    "deletingItems": "Брише се: {{done}} / {{total}}. Сачекајте да се заврши пре лепљења или слања.",
+    "movingToTrash": "Премешта се у Кору: {{done}} / {{total}}. Сачекајте да се заврши пре лепљења или слања.",
     "trash": "Смеће",
     "trashDescription": "Обрисани ставки се чувају {{days}} дан(а) на овом хосту.",
     "trashLoadFailed": "Неуспешно учитавање смећа",

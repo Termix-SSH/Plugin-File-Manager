@@ -291,6 +291,8 @@
     "itemsMovedToTrash_zero": "{{count}} elementi pārvietoti uz Lūkaku",
     "itemsMovedToTrash_one": "{{count}} elements pārvietots uz Lūkaku",
     "itemsMovedToTrash_other": "{{count}} elementi pārvietoti uz Lūkaku",
+    "deletingItems": "Dzēš: {{done}} / {{total}}. Pagaidiet, līdz process ir pabeigts, pirms ielīmējat vai augšupielādējat.",
+    "movingToTrash": "Pārvieto uz atkritni: {{done}} / {{total}}. Pagaidiet, līdz process ir pabeigts, pirms ielīmējat vai augšupielādējat.",
     "trash": "Lūkaka",
     "trashDescription": "Dzēstie elementi šajā hostā tiek saglabāti {{days}} dienas.",
     "trashLoadFailed": "Neizdevās ielādēt grozu",
