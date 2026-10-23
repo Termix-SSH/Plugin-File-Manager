@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { filterAndSortFiles } from "../../src/frontend/file-list";
+import type { FileItem } from "../../src/frontend/host-types";
 
-const f = (name: string, type = "file", size = 0) =>
-  ({ name, type, size, path: "/" + name }) as never;
+const f = (
+  name: string,
+  type: FileItem["type"] = "file",
+  size = 0,
+): FileItem => ({
+  name,
+  type,
+  size,
+  path: "/" + name,
+});
 
 describe("filterAndSortFiles", () => {
   it("puts directories first and sorts names naturally", () => {
