@@ -346,8 +346,7 @@ export function registerFileListingRoutes(
     const tryWithSudo = () => {
       try {
         const escapedPath = sshPath.replace(/'/g, "'\"'\"'");
-        const escapedPassword = sshConn.sudoPassword!.replace(/'/g, "'\"'\"'");
-        const sudoCommand = `echo '${escapedPassword}' | sudo -S /bin/ls -la --color=never '${escapedPath}' 2>&1`;
+        const sudoCommand = `sudo -S -p '' /bin/ls -la --color=never '${escapedPath}' 2>&1`;
 
         execChannel(sshConn, sudoCommand, (err, stream) => {
           if (err) {
@@ -358,6 +357,9 @@ export function registerFileListingRoutes(
 
           let data = "";
           let errorData = "";
+
+          // stdin, not argv: keeps the password out of the process list
+          stream.write(`${sshConn.sudoPassword}\n`);
 
           stream.on("data", (chunk: Buffer) => {
             data += chunk.toString();

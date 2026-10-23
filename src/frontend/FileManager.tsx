@@ -14,6 +14,7 @@ import React, {
 import { asHttpError } from "./lib/http-error";
 import { cn, PanelShell } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerGrid } from "./FileManagerGrid.tsx";
+import { filterAndSortFiles } from "./file-list.ts";
 import { FileManagerSidebar, type SidebarItem } from "./FileManagerSidebar.tsx";
 import { FileManagerContextMenu } from "./FileManagerContextMenu.tsx";
 import { useFileSelection } from "./hooks/useFileSelection.ts";
@@ -3591,32 +3592,7 @@ function FileManagerContent({
   }, [sortBy, sortOrder]);
 
   const filteredFiles = useMemo(
-    () =>
-      files
-        .filter((file) =>
-          file.name.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-        .sort((a, b) => {
-          if (a.type === "directory" && b.type !== "directory") return -1;
-          if (a.type !== "directory" && b.type === "directory") return 1;
-
-          let result = 0;
-          switch (sortBy) {
-            case "name":
-              result = a.name.localeCompare(b.name, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-              break;
-            case "modified":
-              result = (a.modifiedTimestamp || 0) - (b.modifiedTimestamp || 0);
-              break;
-            case "size":
-              result = (a.size || 0) - (b.size || 0);
-              break;
-          }
-          return sortOrder === "desc" ? -result : result;
-        }),
+    () => filterAndSortFiles(files, searchQuery, sortBy, sortOrder),
     [files, searchQuery, sortBy, sortOrder],
   );
 
