@@ -304,6 +304,14 @@ export function FileManagerGrid({
     return () => ro.disconnect();
   }, [viewMode, CONTENT_PAD, GRID_GAP, GRID_CELL]);
 
+  const selectedPaths = useMemo(
+    () => new Set(selectedFiles.map((f) => f.path)),
+    [selectedFiles],
+  );
+  const dragPaths = useMemo(
+    () => new Set(dragState.files.map((f) => f.path)),
+    [dragState.files],
+  );
   const gridRowCount = useMemo(
     () => (viewMode === "grid" ? Math.ceil(files.length / gridCols) : 0),
     [viewMode, files.length, gridCols],
@@ -347,6 +355,27 @@ export function FileManagerGrid({
     // Keyed on the list itself: another folder with the same number of
     // entries would otherwise keep this folder's measured row heights.
   }, [viewMode, density, files, editingFile?.path, createIntent, gridCols]);
+
+  // A hidden tab (display:none) collapses the scroller and the browser resets
+  // its scrollTop without a scroll event, leaving the virtualizers with a stale
+  // offset and rect. Re-sync them when the scroller becomes visible again.
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    let wasHidden = el.clientHeight === 0;
+    const ro = new ResizeObserver(() => {
+      const hidden = el.clientHeight === 0;
+      if (wasHidden && !hidden) {
+        for (const v of [listVirtualizer, gridVirtualizer]) {
+          v.scrollOffset = el.scrollTop;
+          v.measure();
+        }
+      }
+      wasHidden = hidden;
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [listVirtualizer, gridVirtualizer]);
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -900,7 +929,7 @@ export function FileManagerGrid({
           onSelectionChange(rangeFiles);
         }
       } else if (multiSelect) {
-        const isSelected = selectedFiles.some((f) => f.path === file.path);
+        const isSelected = selectedPaths.has(file.path);
         if (isSelected) {
           onSelectionChange(selectedFiles.filter((f) => f.path !== file.path));
         } else {
@@ -1218,9 +1247,7 @@ export function FileManagerGrid({
                         }}
                       >
                         {rowFiles.map((file) => {
-                          const isSelected = selectedFiles.some(
-                            (f) => f.path === file.path,
-                          );
+                          const isSelected = selectedPaths.has(file.path);
                           return (
                             <div
                               key={file.path}
@@ -1233,9 +1260,7 @@ export function FileManagerGrid({
                                   "bg-accent-brand/10 hover:bg-accent-brand/10 border-accent-brand/30",
                                 dragState.target?.path === file.path &&
                                   "bg-accent-brand/20 border-accent-brand border-dashed",
-                                dragState.files.some(
-                                  (f) => f.path === file.path,
-                                ) && "opacity-50",
+                                dragPaths.has(file.path) && "opacity-50",
                                 deletingPaths?.has(file.path) &&
                                   "opacity-40 pointer-events-none",
                               )}
@@ -1413,18 +1438,16 @@ export function FileManagerGrid({
                 {listVirtualizer.getVirtualItems().map((vItem) => {
                   const file = files[vItem.index];
                   if (!file) return null;
-                  const isSelected = selectedFiles.some(
-                    (f) => f.path === file.path,
-                  );
+                  const isSelected = selectedPaths.has(file.path);
                   const isEditing = editingFile?.path === file.path;
                   return (
                     <div
                       key={vItem.key}
                       data-index={vItem.index}
-                      ref={listVirtualizer.measureElement}
                       className="absolute top-0 left-0 w-full"
                       style={{
                         transform: `translateY(${vItem.start}px)`,
+                        height: LIST_ROW_H,
                       }}
                     >
                       <div
@@ -1442,8 +1465,7 @@ export function FileManagerGrid({
                             "border-accent-brand bg-accent-brand/10 hover:bg-accent-brand/10",
                           dragState.target?.path === file.path &&
                             "bg-accent-brand/20 border-accent-brand border-dashed",
-                          dragState.files.some((f) => f.path === file.path) &&
-                            "opacity-50",
+                          dragPaths.has(file.path) && "opacity-50",
                           deletingPaths?.has(file.path) &&
                             "opacity-40 pointer-events-none",
                         )}
