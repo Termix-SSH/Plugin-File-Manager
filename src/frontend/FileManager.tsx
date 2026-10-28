@@ -104,6 +104,7 @@ import {
   runAdaptiveBackgroundTask,
 } from "@termix-ssh/plugin-sdk/ui";
 import { shouldPrefetchFileContent } from "./lib/file-content-request-cache";
+import { createDirectoryPrefetch } from "./lib/directory-prefetch";
 import {
   markFilePreviewUsed,
   preloadFilePreview,
@@ -200,6 +201,78 @@ function FileManagerContent({
   const [sshSessionId, setSshSessionId] = useState<string | null>(null);
   const sshSessionIdRef = useRef(sshSessionId);
   sshSessionIdRef.current = sshSessionId;
+  const paneVisibleRef = useRef(isVisible);
+  paneVisibleRef.current = isVisible;
+  const directoryPrefetchRef = useRef<ReturnType<
+    typeof createDirectoryPrefetch
+  > | null>(null);
+  const foregroundDirectoryLoadsRef = useRef(0);
+  const [prefetchListing, setPrefetchListing] = useState<{
+    sessionId: string;
+    path: string;
+    files: FileItem[];
+  } | null>(null);
+
+  function publishConnectedListing(
+    sessionId: string,
+    path: string,
+    response: Awaited<ReturnType<typeof listSSHFiles>>,
+    requestId: number,
+  ) {
+    // A newer navigation owns the pane; don't let a slow auth listing win.
+    if (directoryRequestRef.current !== requestId) return;
+    const files = Array.isArray(response) ? response : response?.files || [];
+    const listedPath = response.path || path;
+    setFiles(files);
+    setPrefetchListing({ sessionId, path: listedPath, files });
+    setCurrentPath(listedPath);
+    setNavHistory((history) =>
+      history.map((entry) => (entry === path ? listedPath : entry)),
+    );
+    lastSuccessfulPathRef.current = listedPath;
+  }
+
+  useEffect(() => {
+    const scheduler = createDirectoryPrefetch({
+      read: (path) => {
+        const sessionId = sshSessionIdRef.current;
+        return sessionId && paneVisibleRef.current
+          ? listSSHFiles(sessionId, path, { prefetch: true })
+          : Promise.resolve();
+      },
+      isCached: (path) => {
+        const sessionId = sshSessionIdRef.current;
+        return (
+          !sessionId || peekCachedFileList(sessionId, path, 5_000) !== null
+        );
+      },
+      run: (task) =>
+        paneVisibleRef.current &&
+        runAdaptiveBackgroundTask("network", "directory-list", task),
+    });
+    scheduler.setForeground(true);
+    directoryPrefetchRef.current = scheduler;
+    return () => {
+      scheduler.dispose();
+      directoryPrefetchRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    directoryPrefetchRef.current?.setForeground(true);
+    if (
+      !isVisible ||
+      prefetchListing?.sessionId !== sshSessionId ||
+      prefetchListing?.path !== currentPathRef.current ||
+      foregroundDirectoryLoadsRef.current > 0
+    )
+      return;
+    directoryPrefetchRef.current?.setForeground(false);
+    directoryPrefetchRef.current?.predict(
+      prefetchListing.path,
+      prefetchListing.files,
+    );
+  }, [prefetchListing, sshSessionId, isVisible]);
   const [isReconnecting, setIsReconnecting] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(0);
@@ -702,17 +775,14 @@ function FileManagerContent({
       connectRetryRef.current.markConnected();
 
       try {
+        const authRequestId = ++directoryRequestRef.current;
         const response = await listSSHFiles(sessionId, currentPath);
-        const files = Array.isArray(response)
-          ? response
-          : response?.files || [];
-        setFiles(files);
-        const listedPath = response.path || currentPath;
-        setCurrentPath(listedPath);
-        setNavHistory((history) =>
-          history.map((path) => (path === "." ? listedPath : path)),
+        publishConnectedListing(
+          sessionId,
+          currentPath,
+          response,
+          authRequestId,
         );
-        lastSuccessfulPathRef.current = listedPath;
         clearSelection();
         initialLoadDoneRef.current = true;
 
@@ -781,33 +851,45 @@ function FileManagerContent({
   }
 
   const loadDirectory = useCallback(
-    async (path: string, conflictAttempt = 0): Promise<boolean> => {
+    async (
+      path: string,
+      conflictAttempt = 0,
+      forceRefresh = false,
+    ): Promise<boolean> => {
       if (!sshSessionId) {
         return false;
       }
       const requestId = ++directoryRequestRef.current;
+      const scheduler = directoryPrefetchRef.current;
+      foregroundDirectoryLoadsRef.current += 1;
+      scheduler?.setForeground(true);
 
       let resolvedPath = path;
-      if (path.includes("$") || path.startsWith("~")) {
-        resolvedPath = await resolveSSHPath(sshSessionId, path);
-        if (resolvedPath !== path) {
-          setCurrentPath(resolvedPath);
-          lastPathChangeRef.current = resolvedPath;
-        }
-      }
-
-      currentLoadingPathRef.current = resolvedPath;
-      const cached = peekCachedFileList(sshSessionId, resolvedPath);
-      if (cached) {
-        setFiles(cached.files);
-        clearSelection();
-      }
-      setIsLoading(!cached);
-
       try {
-        const response = await listSSHFiles(sshSessionId, resolvedPath, {
-          force: cached !== null,
-        });
+        if (path.includes("$") || path.startsWith("~")) {
+          resolvedPath = await resolveSSHPath(sshSessionId, path);
+          if (resolvedPath !== path) {
+            setCurrentPath(resolvedPath);
+            lastPathChangeRef.current = resolvedPath;
+          }
+        }
+
+        currentLoadingPathRef.current = resolvedPath;
+        const cached = peekCachedFileList(sshSessionId, resolvedPath);
+        if (cached) {
+          setFiles(cached.files);
+          clearSelection();
+        }
+        setIsLoading(!cached);
+
+        const fresh = forceRefresh
+          ? null
+          : peekCachedFileList(sshSessionId, resolvedPath, 5_000);
+        const response =
+          fresh ??
+          (await listSSHFiles(sshSessionId, resolvedPath, {
+            force: forceRefresh || cached !== null,
+          }));
 
         if (directoryRequestRef.current !== requestId) {
           return false;
@@ -819,6 +901,11 @@ function FileManagerContent({
 
         setFiles(files);
         const listedPath = response.path || resolvedPath;
+        setPrefetchListing({
+          sessionId: sshSessionId,
+          path: listedPath,
+          files,
+        });
         if (listedPath !== resolvedPath) {
           setCurrentPath(listedPath);
           setNavHistory((history) =>
@@ -847,21 +934,6 @@ function FileManagerContent({
           };
 
           const httpStatus = apiError.status ?? apiError.response?.status;
-
-          // The sidebar may be listing the same path to populate its tree.
-          // Retry instead of leaving the breadcrumb and visible files out of sync.
-          if (httpStatus === 409) {
-            if (conflictAttempt < 3) {
-              await new Promise((resolve) => setTimeout(resolve, 250));
-              return loadDirectory(resolvedPath, conflictAttempt + 1);
-            }
-            const previousPath = lastSuccessfulPathRef.current;
-            lastPathChangeRef.current = previousPath;
-            setCurrentPath((current) =>
-              current === resolvedPath ? previousPath : current,
-            );
-            return false;
-          }
 
           if (apiError.response?.data?.needsSudo) {
             const previousPath = lastSuccessfulPathRef.current;
@@ -909,7 +981,7 @@ function FileManagerContent({
                 try {
                   await ensureSSHConnection();
                   setIsReconnecting(false);
-                  loadDirectory(resolvedPath);
+                  loadDirectory(resolvedPath, 0, forceRefresh);
                   return;
                 } catch {
                   // keep retrying
@@ -938,6 +1010,10 @@ function FileManagerContent({
         }
         return false;
       } finally {
+        foregroundDirectoryLoadsRef.current -= 1;
+        scheduler?.setForeground(
+          foregroundDirectoryLoadsRef.current > 0 || !paneVisibleRef.current,
+        );
         if (directoryRequestRef.current === requestId) {
           setIsLoading(false);
           currentLoadingPathRef.current = "";
@@ -958,13 +1034,16 @@ function FileManagerContent({
           lastPathChangeRef.current = path;
           loadDirectory(path);
         }
-      }, 150);
+      }, 0);
     },
     [sshSessionId, loadDirectory],
   );
 
   const navigateTo = useCallback(
     (path: string) => {
+      directoryPrefetchRef.current?.setForeground(
+        path !== currentPathRef.current,
+      );
       directoryRequestRef.current += 1;
       const cached = sshSessionId
         ? peekCachedFileList(sshSessionId, path)
@@ -996,6 +1075,7 @@ function FileManagerContent({
 
   const goBack = useCallback(() => {
     if (navIndex > 0) {
+      directoryPrefetchRef.current?.setForeground(true);
       directoryRequestRef.current += 1;
       const newIndex = navIndex - 1;
       const path = navHistory[newIndex];
@@ -1011,6 +1091,7 @@ function FileManagerContent({
 
   const goForward = useCallback(() => {
     if (navIndex < navHistory.length - 1) {
+      directoryPrefetchRef.current?.setForeground(true);
       directoryRequestRef.current += 1;
       const newIndex = navIndex + 1;
       const path = navHistory[newIndex];
@@ -1068,21 +1149,51 @@ function FileManagerContent({
     };
   }, [sshSessionId, currentPath, debouncedLoadDirectory]);
 
+  const refreshTrailingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const handleRefreshDirectory = useCallback(() => {
     const now = Date.now();
     const DEBOUNCE_MS = 500;
 
+    // Mutations must always drop stale snapshots, even when the read is throttled.
+    if (sshSessionId) invalidateCachedFileList(sshSessionId, currentPath);
+    const sessionAtSchedule = sshSessionId;
+    const run = () => {
+      refreshTrailingTimerRef.current = null;
+      // A navigation or session change since scheduling makes this read stale.
+      if (
+        currentPathRef.current !== currentPath ||
+        sshSessionIdRef.current !== sessionAtSchedule
+      )
+        return;
+      setLastRefreshTime(Date.now());
+      // Force reset loading state to ensure refresh is not blocked
+      setIsLoading(false);
+      currentLoadingPathRef.current = "";
+      loadDirectory(currentPath, 0, true);
+    };
+
     if (now - lastRefreshTime < DEBOUNCE_MS) {
+      // Trailing forced read so the post-mutation listing is never skipped.
+      if (refreshTrailingTimerRef.current)
+        clearTimeout(refreshTrailingTimerRef.current);
+      refreshTrailingTimerRef.current = setTimeout(
+        run,
+        DEBOUNCE_MS - (now - lastRefreshTime),
+      );
       return;
     }
-
-    setLastRefreshTime(now);
-    if (sshSessionId) invalidateCachedFileList(sshSessionId, currentPath);
-    // Force reset loading state to ensure refresh is not blocked
-    setIsLoading(false);
-    currentLoadingPathRef.current = "";
-    loadDirectory(currentPath);
+    run();
   }, [currentPath, lastRefreshTime, loadDirectory, sshSessionId]);
+
+  useEffect(
+    () => () => {
+      if (refreshTrailingTimerRef.current)
+        clearTimeout(refreshTrailingTimerRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -1775,7 +1886,7 @@ function FileManagerContent({
         }
         return;
       } else if (pendingSudoOperation.type === "navigate") {
-        const success = await loadDirectory(pendingSudoOperation.path);
+        const success = await loadDirectory(pendingSudoOperation.path, 0, true);
         if (success) {
           setCurrentPath(pendingSudoOperation.path);
           dismissSudo();
@@ -2073,6 +2184,9 @@ function FileManagerContent({
   }
   async function handleFileOpen(file: FileItem) {
     if (file.type === "directory") {
+      directoryPrefetchRef.current?.setForeground(
+        file.path !== currentPathRef.current,
+      );
       markAdaptiveResourceUsed("network", "directory-list");
       directoryRequestRef.current += 1;
       const cached = sshSessionId
@@ -2109,11 +2223,9 @@ function FileManagerContent({
 
   const prefetchFileIntent = useCallback(
     (file: FileItem) => {
-      if (!sshSessionId) return;
+      if (!sshSessionId || !isVisible) return;
       if (file.type === "directory") {
-        runAdaptiveBackgroundTask("network", "directory-list", () =>
-          listSSHFiles(sshSessionId, file.path),
-        );
+        directoryPrefetchRef.current?.intent(file.path);
         return;
       }
       const budget = getAdaptiveResourceBudget("network");
@@ -2129,7 +2241,7 @@ function FileManagerContent({
         );
       }
     },
-    [sshSessionId],
+    [sshSessionId, isVisible],
   );
 
   function handleContextMenu(event: React.MouseEvent, file?: FileItem) {
@@ -2937,11 +3049,14 @@ function FileManagerContent({
         connectRetryRef.current.markConnected();
 
         try {
+          const authRequestId = ++directoryRequestRef.current;
           const response = await listSSHFiles(totpSessionId, currentPath);
-          const files = Array.isArray(response)
-            ? response
-            : response?.files || [];
-          setFiles(files);
+          publishConnectedListing(
+            totpSessionId,
+            currentPath,
+            response,
+            authRequestId,
+          );
           clearSelection();
           initialLoadDoneRef.current = true;
           toast.success(t("fileManager.connectedSuccessfully"));
@@ -2979,14 +3094,17 @@ function FileManagerContent({
         connectRetryRef.current.markConnected();
 
         try {
+          const authRequestId = ++directoryRequestRef.current;
           const response = await listSSHFiles(
             browserSignInSessionId,
             currentPath,
           );
-          const files = Array.isArray(response)
-            ? response
-            : response?.files || [];
-          setFiles(files);
+          publishConnectedListing(
+            browserSignInSessionId,
+            currentPath,
+            response,
+            authRequestId,
+          );
           clearSelection();
           initialLoadDoneRef.current = true;
           toast.success(t("fileManager.connectedSuccessfully"));
@@ -3080,11 +3198,14 @@ function FileManagerContent({
       connectRetryRef.current.markConnected();
 
       try {
+        const authRequestId = ++directoryRequestRef.current;
         const response = await listSSHFiles(sessionId, currentPath);
-        const files = Array.isArray(response)
-          ? response
-          : response?.files || [];
-        setFiles(files);
+        publishConnectedListing(
+          sessionId,
+          currentPath,
+          response,
+          authRequestId,
+        );
         clearSelection();
         initialLoadDoneRef.current = true;
         toast.success(t("fileManager.connectedSuccessfully"));
@@ -3164,11 +3285,14 @@ function FileManagerContent({
       connectRetryRef.current.markConnected();
 
       try {
+        const authRequestId = ++directoryRequestRef.current;
         const response = await listSSHFiles(sessionId, currentPath);
-        const files = Array.isArray(response)
-          ? response
-          : response?.files || [];
-        setFiles(files);
+        publishConnectedListing(
+          sessionId,
+          currentPath,
+          response,
+          authRequestId,
+        );
         clearSelection();
         initialLoadDoneRef.current = true;
         toast.success(t("fileManager.connectedSuccessfully"));
@@ -3772,10 +3896,17 @@ function FileManagerContent({
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
+                isLoading={isLoading}
                 selectedFiles={selectedFiles}
                 deletingPaths={deletingPaths}
                 onFileOpen={handleFileOpen}
                 onFileIntent={prefetchFileIntent}
+                onDirectoryHover={(file) =>
+                  isVisible && directoryPrefetchRef.current?.hover(file.path)
+                }
+                onDirectoryLeave={(file) =>
+                  directoryPrefetchRef.current?.cancelIntent(file.path)
+                }
                 onSelectionChange={setSelection}
                 onRefresh={handleRefreshDirectory}
                 onUpload={handleFilesDropped}

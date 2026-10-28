@@ -169,7 +169,6 @@ export async function activate(ctx: PluginContext) {
 
   const sshSessions: Record<string, SSHSession> = {};
   const pendingTOTPSessions: Record<string, PendingTOTPSession> = {};
-  const activeListRequests: Record<string, boolean> = {};
 
   function cleanupSession(sessionId: string) {
     const session = sshSessions[sessionId];
@@ -861,6 +860,8 @@ export async function activate(ctx: PluginContext) {
         scpLegacy: resolvedScpLegacy,
       };
       scheduleSessionCleanup(sessionId);
+      // Open SFTP now so the first listing does not pay for it; fallbacks stay lazy.
+      void getSessionSftp(sshSessions[sessionId]).catch(() => {});
 
       if (userId) {
         void (async () => {
@@ -1362,6 +1363,8 @@ export async function activate(ctx: PluginContext) {
           scpLegacy: session.scpLegacy,
         };
         scheduleSessionCleanup(sessionId);
+        // Open SFTP now so the first listing does not pay for it; fallbacks stay lazy.
+        void getSessionSftp(sshSessions[sessionId]).catch(() => {});
 
         res.json({
           status: "success",
@@ -1512,6 +1515,8 @@ export async function activate(ctx: PluginContext) {
           scpLegacy: session.scpLegacy,
         };
         scheduleSessionCleanup(sessionId);
+        // Open SFTP now so the first listing does not pay for it; fallbacks stay lazy.
+        void getSessionSftp(sshSessions[sessionId]).catch(() => {});
 
         res.json({
           status: "success",
@@ -1673,7 +1678,6 @@ export async function activate(ctx: PluginContext) {
   registerFileListingRoutes(app, {
     ctx,
     sshSessions,
-    activeListRequests,
     verifySessionOwnership,
   });
   registerFileContentRoutes(app, { ctx, sshSessions, verifySessionOwnership });

@@ -12,7 +12,10 @@ import {
   resolveConnectionOrigin,
 } from "@termix-ssh/plugin-sdk/ui";
 import type { FileItem, SSHHost } from "../host-types";
-import { getCachedFileList } from "../lib/file-list-request-cache";
+import {
+  getCachedFileList,
+  getFileListEpoch,
+} from "../lib/file-list-request-cache";
 import {
   getCachedFileContent,
   invalidateCachedFileContent,
@@ -234,16 +237,25 @@ export async function keepSSHAlive(
 export async function listSSHFiles(
   sessionId: string,
   path: string,
-  options: { force?: boolean } = {},
+  options: { force?: boolean; prefetch?: boolean } = {},
 ): Promise<{ files: FileItem[]; path: string }> {
-  return getCachedFileList(
+  const epoch = getFileListEpoch(sessionId);
+  const result = getCachedFileList(
     sessionId,
     path,
     async () => {
       try {
         const response = await getFileManagerApiForSession(sessionId).get(
           "/listFiles",
-          { params: { sessionId, path } },
+          {
+            params: {
+              sessionId,
+              path,
+              epoch: String(epoch),
+              ...(options.force ? { force: true } : {}),
+              ...(options.prefetch ? { prefetch: "true" } : {}),
+            },
+          },
         );
         return response.data || { files: [], path };
       } catch (error) {
@@ -252,6 +264,15 @@ export async function listSSHFiles(
     },
     options.force,
   );
+  if (options.prefetch || options.force) return result;
+  // A caller may have joined a speculative read that deliberately skipped sudo.
+  return result.catch((error: unknown) => {
+    const data = (
+      error as { response?: { data?: { prefetchSkippedSudo?: boolean } } }
+    ).response?.data;
+    if (!data?.prefetchSkippedSudo) throw error;
+    return listSSHFiles(sessionId, path, { force: true });
+  });
 }
 
 export async function identifySSHSymlink(

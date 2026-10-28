@@ -7,6 +7,7 @@ export interface KeyedRequestCache<T> {
   peek(key: string, maxAgeMs?: number): T | null;
   set(key: string, value: T): void;
   invalidate(key?: string): void;
+  invalidateMatching(matches: (key: string) => boolean): void;
 }
 
 /** Bounded per-key cache with in-flight request coalescing. */
@@ -15,8 +16,7 @@ export function createKeyedRequestCache<T>(
   maxEntries = 100,
 ): KeyedRequestCache<T> {
   const values = new Map<string, { value: T; storedAt: number }>();
-  const inflight = new Map<string, Promise<T>>();
-  const versions = new Map<string, number>();
+  const inflight = new Map<string, { promise: Promise<T>; forced: boolean }>();
 
   const store = (key: string, value: T) => {
     values.delete(key);
@@ -36,18 +36,24 @@ export function createKeyedRequestCache<T>(
       }
 
       const pending = inflight.get(key);
-      if (pending) return pending;
+      if (pending && (!options.force || pending.forced)) return pending.promise;
 
-      const version = versions.get(key) ?? 0;
+      // Only the request still registered for this key may write the cache, so
+      // invalidate/set/forced replacement make older reads stale without metadata.
+      const entry = {
+        promise: undefined as unknown as Promise<T>,
+        forced: !!options.force,
+      };
       const request = loader()
         .then((value) => {
-          if ((versions.get(key) ?? 0) === version) store(key, value);
+          if (inflight.get(key) === entry) store(key, value);
           return value;
         })
         .finally(() => {
-          if (inflight.get(key) === request) inflight.delete(key);
+          if (inflight.get(key) === entry) inflight.delete(key);
         });
-      inflight.set(key, request);
+      entry.promise = request;
+      inflight.set(key, entry);
       return request;
     },
 
@@ -60,20 +66,23 @@ export function createKeyedRequestCache<T>(
     },
 
     set(key, value) {
-      versions.set(key, (versions.get(key) ?? 0) + 1);
       inflight.delete(key);
       store(key, value);
     },
 
     invalidate(key) {
       if (key === undefined) {
-        for (const activeKey of inflight.keys()) {
-          versions.set(activeKey, (versions.get(activeKey) ?? 0) + 1);
-        }
         values.clear();
         inflight.clear();
       } else {
-        versions.set(key, (versions.get(key) ?? 0) + 1);
+        values.delete(key);
+        inflight.delete(key);
+      }
+    },
+
+    invalidateMatching(matches) {
+      for (const key of new Set([...values.keys(), ...inflight.keys()])) {
+        if (!matches(key)) continue;
         values.delete(key);
         inflight.delete(key);
       }

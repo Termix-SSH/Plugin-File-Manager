@@ -28,6 +28,7 @@ import {
   FileSymlink,
   Move,
   GitCompare,
+  Loader2,
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "./host-types";
@@ -85,11 +86,15 @@ interface DragState {
 
 interface FileManagerGridProps {
   files: FileItem[];
+  /** Show a spinner instead of the empty-folder text while a listing is in flight. */
+  isLoading?: boolean;
   selectedFiles: FileItem[];
   /** Paths being moved to the trash: shown dimmed and not interactive. */
   deletingPaths?: ReadonlySet<string>;
   onFileOpen: (file: FileItem) => void;
   onFileIntent?: (file: FileItem) => void;
+  onDirectoryHover?: (file: FileItem) => void;
+  onDirectoryLeave?: (file: FileItem) => void;
   onSelectionChange: (files: FileItem[]) => void;
   onRefresh: () => void;
   onUpload?: (files: FileList) => void;
@@ -226,10 +231,13 @@ const getFileIcon = (
 
 export function FileManagerGrid({
   files,
+  isLoading,
   selectedFiles,
   deletingPaths,
   onFileOpen,
   onFileIntent,
+  onDirectoryHover,
+  onDirectoryLeave,
   onSelectionChange,
   onRefresh,
   onUpload,
@@ -265,6 +273,16 @@ export function FileManagerGrid({
 }: FileManagerGridProps) {
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement>(null);
+  const clickingFileRef = useRef(false);
+  const selectedDirectory =
+    selectedFiles.length === 1 && selectedFiles[0].type === "directory"
+      ? selectedFiles[0]
+      : undefined;
+  useEffect(() => {
+    if (gridRef.current === document.activeElement && selectedDirectory) {
+      onFileIntent?.(selectedDirectory);
+    }
+  }, [selectedDirectory?.path, onFileIntent]);
   const [editingName, setEditingName] = useState("");
   const [gridCols, setGridCols] = useState(4);
 
@@ -908,7 +926,9 @@ export function FileManagerGrid({
     onFileIntent?.(file);
 
     if (gridRef.current && !createIntent) {
+      clickingFileRef.current = true;
       gridRef.current.focus();
+      clickingFileRef.current = false;
     }
 
     if (event.detail === 2) {
@@ -1195,14 +1215,30 @@ export function FileManagerGrid({
           onDrop={handleDrop}
           onWheel={handleWheel}
           onContextMenu={(e) => onContextMenu?.(e)}
+          onFocus={(e) => {
+            if (
+              e.target === e.currentTarget &&
+              !clickingFileRef.current &&
+              selectedDirectory
+            )
+              onFileIntent?.(selectedDirectory);
+          }}
           tabIndex={0}
         >
           {files.length === 0 && !createIntent ? (
             <div className="h-full flex flex-col">
               {viewMode === "grid" ? parentGridStrip : parentListRow}
               <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground select-none pointer-events-none">
-                <Folder className="size-8 text-muted-foreground/30" />
-                <span className="text-xs">{t("fileManager.emptyFolder")}</span>
+                {isLoading ? (
+                  <Loader2 className="size-6 animate-spin text-muted-foreground/60" />
+                ) : (
+                  <>
+                    <Folder className="size-8 text-muted-foreground/30" />
+                    <span className="text-xs">
+                      {t("fileManager.emptyFolder")}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           ) : viewMode === "grid" ? (
@@ -1266,6 +1302,14 @@ export function FileManagerGrid({
                               )}
                               title={file.name}
                               onClick={(e) => handleFileClick(file, e)}
+                              onMouseEnter={() =>
+                                file.type === "directory" &&
+                                onDirectoryHover?.(file)
+                              }
+                              onMouseLeave={() =>
+                                file.type === "directory" &&
+                                onDirectoryLeave?.(file)
+                              }
                               onContextMenu={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1470,6 +1514,12 @@ export function FileManagerGrid({
                             "opacity-40 pointer-events-none",
                         )}
                         onClick={(e) => handleFileClick(file, e)}
+                        onMouseEnter={() =>
+                          file.type === "directory" && onDirectoryHover?.(file)
+                        }
+                        onMouseLeave={() =>
+                          file.type === "directory" && onDirectoryLeave?.(file)
+                        }
                         onContextMenu={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

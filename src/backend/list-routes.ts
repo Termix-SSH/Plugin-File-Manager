@@ -1,4 +1,5 @@
 import { resolveHomeDirectory } from "./home-directory.js";
+import { readDirectory } from "./read-directory.js";
 import { getErrorMessage } from "./error-message.js";
 import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
@@ -13,19 +14,25 @@ import {
 type FileListingRoutesDeps = {
   ctx: PluginContext;
   sshSessions: Record<string, SSHSession>;
-  activeListRequests: Record<string, boolean>;
   verifySessionOwnership: (session: SSHSession, userId: string) => boolean;
 };
 
+type ListingResult = { status: number; body: unknown };
+
 export function registerFileListingRoutes(
   app: Express,
-  {
-    ctx,
-    sshSessions,
-    activeListRequests,
-    verifySessionOwnership,
-  }: FileListingRoutesDeps,
+  { ctx, sshSessions, verifySessionOwnership }: FileListingRoutesDeps,
 ): void {
+  const pendingListings = new WeakMap<
+    SSHSession,
+    Map<
+      string,
+      {
+        sudoPassword: SSHSession["sudoPassword"];
+        promise: Promise<ListingResult>;
+      }
+    >
+  >();
   /**
    * @openapi
    * /plugin-api/file-manager/listFiles:
@@ -58,138 +65,225 @@ export function registerFileListingRoutes(
     const sshConn = sshSessions[sessionId];
     let sshPath = (req.query.path as string) || ".";
     const userId = ctx.currentActor()!;
+    let closed = false;
+    res.on("close", () => {
+      closed = true;
+    });
+    const sendJson = ({ status, body }: ListingResult) => {
+      if (closed || res.destroyed || res.writableEnded || res.headersSent)
+        return;
+      return res.status(status).json(body);
+    };
 
     if (!sessionId) {
-      return res.status(400).json({ error: "Session ID is required" });
+      return sendJson({
+        status: 400,
+        body: { error: "Session ID is required" },
+      });
     }
 
     if (!sshConn?.isConnected) {
-      return res.status(400).json({ error: "SSH connection not established" });
+      return sendJson({
+        status: 400,
+        body: { error: "SSH connection not established" },
+      });
     }
 
     if (!verifySessionOwnership(sshConn, userId)) {
-      return res.status(403).json({ error: "Session access denied" });
+      return sendJson({
+        status: 403,
+        body: { error: "Session access denied" },
+      });
     }
 
     if (sshPath === ".") {
       try {
         sshPath = await resolveHomeDirectory(sshConn);
       } catch (error) {
-        return res.status(500).json({
-          error: getErrorMessage(error, "Could not resolve home directory"),
+        return sendJson({
+          status: 500,
+          body: {
+            error: getErrorMessage(error, "Could not resolve home directory"),
+          },
+        });
+      }
+      // Home discovery yields; the session or its ownership may have changed.
+      if (sshSessions[sessionId] !== sshConn || !sshConn.isConnected) {
+        return sendJson({
+          status: 400,
+          body: { error: "SSH connection not established" },
+        });
+      }
+      if (!verifySessionOwnership(sshConn, userId)) {
+        return sendJson({
+          status: 403,
+          body: { error: "Session access denied" },
         });
       }
     }
 
-    // Drop concurrent requests for the same session+path, each would open
-    // a new SSH channel and can exceed the server's per-connection channel limit.
-    const listKey = `${sessionId}:${sshPath}`;
-    if (activeListRequests[listKey]) {
-      return res
-        .status(409)
-        .json({ error: "List request already in progress" });
+    const sudoPassword = sshConn.sudoPassword;
+    const force = req.query.force === "true";
+    const epoch =
+      typeof req.query.epoch === "string" && /^\d+$/.test(req.query.epoch)
+        ? req.query.epoch
+        : "0";
+    const prefetch = req.query.prefetch === "true";
+    const listKey = JSON.stringify([userId, sshPath, epoch, prefetch]);
+    let listings = pendingListings.get(sshConn);
+    if (!listings) {
+      listings = new Map();
+      pendingListings.set(sshConn, listings);
     }
-    activeListRequests[listKey] = true;
-    // "close" also fires when the client goes away before the answer.
-    res.on("close", () => {
-      delete activeListRequests[listKey];
+    const inFlight = listings.get(listKey);
+    if (!force && inFlight && inFlight.sudoPassword === sudoPassword) {
+      return sendJson(await inFlight.promise);
+    }
+    let settle!: (result: ListingResult) => void;
+    const promise = new Promise<ListingResult>((resolve) => {
+      settle = resolve;
     });
+    if (!force) listings.set(listKey, { sudoPassword, promise });
+    let settled = false;
+    let released = false;
+    // Once-only so the watchdog and a late callback never double-decrement.
+    const release = () => {
+      if (released) return;
+      released = true;
+      sshConn.activeOperations--;
+    };
+    // Joiners wait on this promise; a hung SFTP/exec callback must not strand them.
+    const watchdog = setTimeout(() => {
+      release();
+      finish(504, { error: "Directory listing timed out" });
+    }, 30_000);
+    const finish = (status: number, body: unknown) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
+      if (!force && listings.get(listKey)?.promise === promise) {
+        listings.delete(listKey);
+      }
+      settle({ status, body });
+    };
 
     sshConn.lastActive = Date.now();
     sshConn.activeOperations++;
     const trySFTP = () => {
       try {
-        ctx.log.info(
-          `Opening SFTP channel for listFiles: ${sessionId} (${sshPath})`,
-        );
+        ctx.log.info(`Opening SFTP channel for listFiles: ${sessionId}`);
         getSessionSftp(sshConn)
           .then((sftp) => {
-            sftp.readdir(sshPath, (readdirErr, list) => {
-              if (readdirErr) {
-                ctx.log.warn(
-                  `SFTP readdir failed, trying fallback: ${readdirErr.message}`,
-                );
-                tryFallbackMethod();
-                return;
-              }
-
-              const symlinks: Array<{ index: number; path: string }> = [];
-              const files: Array<{
-                name: string;
-                type: string;
-                size: number | undefined;
-                modified: string;
-                modifiedTimestamp: number;
-                permissions: string;
-                owner: string;
-                group: string;
-                linkTarget: string | undefined;
-                path: string;
-                executable: boolean;
-              }> = [];
-
-              for (const entry of list) {
-                if (entry.filename === "." || entry.filename === "..") continue;
-
-                const attrs = entry.attrs;
-                const permissions = modeToPermissions(attrs.mode);
-                const isDirectory = attrs.isDirectory();
-                const isLink = attrs.isSymbolicLink();
-
-                const fileEntry = {
-                  name: entry.filename,
-                  type: isDirectory ? "directory" : isLink ? "link" : "file",
-                  size: isDirectory ? undefined : attrs.size,
-                  modified: formatMtime(attrs.mtime),
-                  modifiedTimestamp: attrs.mtime,
-                  permissions,
-                  owner: String(attrs.uid),
-                  group: String(attrs.gid),
-                  linkTarget: undefined as string | undefined,
-                  path: `${sshPath.endsWith("/") ? sshPath : sshPath + "/"}${entry.filename}`,
-                  executable:
-                    !isDirectory && !isLink
-                      ? isExecutableFile(permissions, entry.filename)
-                      : false,
-                };
-
-                if (isLink) {
-                  symlinks.push({ index: files.length, path: fileEntry.path });
+            readDirectory(
+              sftp,
+              sshPath,
+              (readdirErr, list) => {
+                if (readdirErr) {
+                  if (
+                    prefetch &&
+                    ((readdirErr as Error & { code?: number }).code === 3 ||
+                      /permission denied|access denied/i.test(
+                        readdirErr.message,
+                      ))
+                  ) {
+                    release();
+                    return finish(403, {
+                      needsSudo: true,
+                      prefetchSkippedSudo: true,
+                      path: sshPath,
+                    });
+                  }
+                  ctx.log.warn(
+                    `SFTP readdir failed, trying fallback: ${readdirErr.message}`,
+                  );
+                  tryFallbackMethod();
+                  return;
                 }
 
-                files.push(fileEntry);
-              }
+                const symlinks: Array<{ index: number; path: string }> = [];
+                const files: Array<{
+                  name: string;
+                  type: string;
+                  size: number | undefined;
+                  modified: string;
+                  modifiedTimestamp: number;
+                  permissions: string;
+                  owner: string;
+                  group: string;
+                  linkTarget: string | undefined;
+                  path: string;
+                  executable: boolean;
+                }> = [];
 
-              if (symlinks.length === 0) {
-                sshConn.activeOperations--;
-                return res.json({ files, path: sshPath });
-              }
+                for (const entry of list) {
+                  if (entry.filename === "." || entry.filename === "..")
+                    continue;
 
-              let resolved = 0;
-              let responded = false;
+                  const attrs = entry.attrs;
+                  const permissions = modeToPermissions(attrs.mode);
+                  const isDirectory = attrs.isDirectory();
+                  const isLink = attrs.isSymbolicLink();
 
-              const sendResponse = () => {
-                if (responded) return;
-                responded = true;
-                sshConn.activeOperations--;
-                res.json({ files, path: sshPath });
-              };
+                  const fileEntry = {
+                    name: entry.filename,
+                    type: isDirectory ? "directory" : isLink ? "link" : "file",
+                    size: isDirectory ? undefined : attrs.size,
+                    modified: formatMtime(attrs.mtime),
+                    modifiedTimestamp: attrs.mtime,
+                    permissions,
+                    owner: String(attrs.uid),
+                    group: String(attrs.gid),
+                    linkTarget: undefined as string | undefined,
+                    path: `${sshPath.endsWith("/") ? sshPath : sshPath + "/"}${entry.filename}`,
+                    executable:
+                      !isDirectory && !isLink
+                        ? isExecutableFile(permissions, entry.filename)
+                        : false,
+                  };
 
-              const readlinkTimeout = setTimeout(sendResponse, 5000);
-
-              for (const link of symlinks) {
-                sftp.readlink(link.path, (linkErr, target) => {
-                  resolved++;
-                  if (!linkErr && target) {
-                    files[link.index].linkTarget = target;
+                  if (isLink) {
+                    symlinks.push({
+                      index: files.length,
+                      path: fileEntry.path,
+                    });
                   }
-                  if (resolved === symlinks.length) {
-                    clearTimeout(readlinkTimeout);
-                    sendResponse();
-                  }
-                });
-              }
-            });
+
+                  files.push(fileEntry);
+                }
+
+                if (symlinks.length === 0) {
+                  release();
+                  return finish(200, { files, path: sshPath });
+                }
+
+                let resolved = 0;
+                let responded = false;
+
+                const sendResponse = () => {
+                  if (responded) return;
+                  responded = true;
+                  release();
+                  finish(200, { files, path: sshPath });
+                };
+
+                const readlinkTimeout = setTimeout(sendResponse, 5000);
+
+                for (const link of symlinks) {
+                  sftp.readlink(link.path, (linkErr, target) => {
+                    resolved++;
+                    if (!linkErr && target) {
+                      files[link.index].linkTarget = target;
+                    }
+                    if (resolved === symlinks.length) {
+                      clearTimeout(readlinkTimeout);
+                      sendResponse();
+                    }
+                  });
+                }
+              },
+              (error) =>
+                ctx.log.warn(`SFTP directory close failed: ${error.message}`),
+            );
           })
           .catch((err: Error) => {
             ctx.log.warn(
@@ -213,10 +307,11 @@ export function registerFileListingRoutes(
 
     const tryFallbackMethod = () => {
       if (!sshConn?.isConnected) {
-        sshConn.activeOperations--;
-        return res
-          .status(503)
-          .json({ error: "SSH session disconnected", disconnected: true });
+        release();
+        return finish(503, {
+          error: "SSH session disconnected",
+          disconnected: true,
+        });
       }
       try {
         const escapedPath = sshPath.replace(/'/g, "'\"'\"'");
@@ -225,9 +320,9 @@ export function registerFileListingRoutes(
           `command ls -la --color=never '${escapedPath}'`,
           (err, stream) => {
             if (err) {
-              sshConn.activeOperations--;
+              release();
               ctx.log.error("SSH listFiles error:", err);
-              return res.status(500).json({ error: err.message });
+              return finish(500, { error: err.message });
             }
 
             let data = "";
@@ -248,34 +343,40 @@ export function registerFileListingRoutes(
                   errorData.toLowerCase().includes("access denied");
 
                 if (isPermissionDenied) {
-                  if (sshConn.sudoPassword) {
+                  if (prefetch) {
+                    release();
+                    return finish(403, {
+                      needsSudo: true,
+                      prefetchSkippedSudo: true,
+                      path: sshPath,
+                    });
+                  }
+                  if (sudoPassword) {
                     ctx.log.info(
-                      `Permission denied for listFiles, retrying with sudo: ${sshPath}`,
+                      "Permission denied for listFiles, retrying with sudo",
                     );
                     tryWithSudo();
                     return;
                   }
 
-                  sshConn.activeOperations--;
+                  release();
                   ctx.log.warn(
                     `Permission denied for listFiles, sudo required: ${sshPath}`,
                   );
-                  return res.status(403).json({
+                  return finish(403, {
                     error: `Permission denied: Cannot access ${sshPath}`,
                     needsSudo: true,
                     path: sshPath,
                   });
                 }
 
-                sshConn.activeOperations--;
+                release();
                 ctx.log.error(
                   `SSH listFiles command failed with code ${code}: ${errorData.replace(/\n/g, " ").trim()}`,
                 );
-                return res
-                  .status(500)
-                  .json({ error: `Command failed: ${errorData}` });
+                return finish(500, { error: `Command failed: ${errorData}` });
               }
-              sshConn.activeOperations--;
+              release();
 
               const lines = data.split("\n").filter((line) => line.trim());
               const files = [];
@@ -329,17 +430,15 @@ export function registerFileListingRoutes(
                 }
               }
 
-              res.json({ files, path: sshPath });
+              finish(200, { files, path: sshPath });
             });
           },
         );
       } catch (execErr: unknown) {
-        sshConn.activeOperations--;
+        release();
         const errMsg = getErrorMessage(execErr);
         ctx.log.error(`Fallback listFiles exec failed: ${errMsg}`);
-        if (!res.headersSent) {
-          return res.status(500).json({ error: errMsg });
-        }
+        return finish(500, { error: errMsg });
       }
     };
 
@@ -350,16 +449,16 @@ export function registerFileListingRoutes(
 
         execChannel(sshConn, sudoCommand, (err, stream) => {
           if (err) {
-            sshConn.activeOperations--;
+            release();
             ctx.log.error("SSH sudo listFiles error:", err);
-            return res.status(500).json({ error: err.message });
+            return finish(500, { error: err.message });
           }
 
           let data = "";
           let errorData = "";
 
           // stdin, not argv: keeps the password out of the process list
-          stream.write(`${sshConn.sudoPassword}\n`);
+          stream.write(`${sudoPassword}\n`);
 
           stream.on("data", (chunk: Buffer) => {
             data += chunk.toString();
@@ -370,7 +469,7 @@ export function registerFileListingRoutes(
           });
 
           stream.on("close", (code) => {
-            sshConn.activeOperations--;
+            release();
 
             data = data.replace(/\[sudo\] password for .+?:\s*/g, "");
 
@@ -379,8 +478,10 @@ export function registerFileListingRoutes(
               data.toLowerCase().includes("incorrect password") ||
               errorData.toLowerCase().includes("sorry, try again")
             ) {
-              sshConn.sudoPassword = undefined;
-              return res.status(403).json({
+              if (sshConn.sudoPassword === sudoPassword) {
+                sshConn.sudoPassword = undefined;
+              }
+              return finish(403, {
                 error: "Sudo authentication failed. Please try again.",
                 needsSudo: true,
                 sudoFailed: true,
@@ -392,9 +493,9 @@ export function registerFileListingRoutes(
               ctx.log.error(
                 `SSH sudo listFiles failed with code ${code}: ${errorData.replace(/\n/g, " ").trim()}`,
               );
-              return res
-                .status(500)
-                .json({ error: `Sudo command failed: ${errorData || data}` });
+              return finish(500, {
+                error: `Sudo command failed: ${errorData || data}`,
+              });
             }
 
             const lines = data.split("\n").filter((line) => line.trim());
@@ -461,19 +562,18 @@ export function registerFileListingRoutes(
               }
             }
 
-            res.json({ files, path: sshPath });
+            finish(200, { files, path: sshPath });
           });
         });
       } catch (execErr: unknown) {
-        sshConn.activeOperations--;
+        release();
         const errMsg = getErrorMessage(execErr);
         ctx.log.error(`Sudo listFiles exec failed: ${errMsg}`);
-        if (!res.headersSent) {
-          return res.status(500).json({ error: errMsg });
-        }
+        return finish(500, { error: errMsg });
       }
     };
 
     trySFTP();
+    return sendJson(await promise);
   });
 }

@@ -1,8 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { FileManagerGrid } from "../../src/frontend/FileManagerGrid";
 import type { FileItem } from "../../src/frontend/host-types";
+import { createDirectoryPrefetch } from "../../src/frontend/lib/directory-prefetch";
 
 vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@termix-ssh/plugin-sdk/frontend")>()),
@@ -158,5 +165,121 @@ describe("external file drops", () => {
       dataTransfer: { types: ["Files"], files, items: [], getData: () => "" },
     });
     expect(onUpload).toHaveBeenCalledExactlyOnceWith(files);
+  });
+});
+
+describe("directory prefetch intent", () => {
+  const folder: FileItem = {
+    name: "folder",
+    path: "/folder",
+    type: "directory",
+  };
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    );
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it.each(["list", "grid"] as const)(
+    "waits for deliberate directory hover and cancels on leave in %s view",
+    async (viewMode) => {
+      const read = vi.fn(async (_path: string) => undefined);
+      const scheduler = createDirectoryPrefetch({
+        read,
+        isCached: () => false,
+        run: (task) => {
+          void task();
+          return true;
+        },
+      });
+      const onFileIntent = vi.fn();
+      const { container } = render(
+        <FileManagerGrid
+          {...props}
+          files={[folder, file]}
+          selectedFiles={[]}
+          viewMode={viewMode}
+          onFileIntent={onFileIntent}
+          onDirectoryHover={(entry) => scheduler.hover(entry.path)}
+          onDirectoryLeave={(entry) => scheduler.cancelIntent(entry.path)}
+        />,
+      );
+      const row = container.querySelector('[data-file-path="/folder"]')!;
+      fireEvent.mouseEnter(row);
+      await vi.advanceTimersByTimeAsync(50);
+      fireEvent.mouseLeave(row);
+      await vi.advanceTimersByTimeAsync(200);
+      expect(read).not.toHaveBeenCalled();
+      fireEvent.mouseEnter(row);
+      await vi.advanceTimersByTimeAsync(99);
+      expect(read).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(read).toHaveBeenCalledExactlyOnceWith(folder.path);
+      expect(onFileIntent).not.toHaveBeenCalled();
+      fireEvent.mouseEnter(
+        container.querySelector('[data-file-path="/notes.txt"]')!,
+      );
+      await vi.advanceTimersByTimeAsync(200);
+      expect(read).toHaveBeenCalledTimes(1);
+      scheduler.dispose();
+    },
+  );
+
+  it("prefetches a keyboard-focused selection, keeps Enter-to-open, and adds no arrow navigation", () => {
+    vi.spyOn(HTMLElement.prototype, "offsetParent", "get").mockReturnValue(
+      document.body,
+    );
+    const onFileIntent = vi.fn();
+    const onFileOpen = vi.fn();
+    const onSelectionChange = vi.fn();
+    const { container, rerender } = render(
+      <FileManagerGrid
+        {...props}
+        files={[folder]}
+        selectedFiles={[folder]}
+        onFileIntent={onFileIntent}
+        onFileOpen={onFileOpen}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+    const grid = container.querySelector<HTMLElement>('[tabindex="0"]')!;
+    act(() => grid.focus());
+    expect(onFileIntent).toHaveBeenCalledExactlyOnceWith(folder);
+    const next = { ...folder, path: "/next", name: "next" };
+    rerender(
+      <FileManagerGrid
+        {...props}
+        files={[next]}
+        selectedFiles={[next]}
+        onFileIntent={onFileIntent}
+        onFileOpen={onFileOpen}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+    expect(onFileIntent).toHaveBeenLastCalledWith(next);
+    fireEvent.keyDown(grid, { key: "ArrowDown" });
+    expect(onSelectionChange).not.toHaveBeenCalled();
+    fireEvent.keyDown(grid, { key: "Enter" });
+    expect(onFileOpen).toHaveBeenCalledExactlyOnceWith(next);
+  });
+
+  it("keeps click content prefetch and does not prefetch an old selection during pointer focus", () => {
+    const onFileIntent = vi.fn();
+    render(
+      <FileManagerGrid
+        {...props}
+        files={[folder, file]}
+        selectedFiles={[folder]}
+        onFileIntent={onFileIntent}
+      />,
+    );
+    fireEvent.click(screen.getByText(file.name));
+    expect(onFileIntent).toHaveBeenCalledExactlyOnceWith(file);
   });
 });
