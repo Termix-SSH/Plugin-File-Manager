@@ -12,5 +12,6 @@ termix-plugin-signing.key
 .idea/
 .vscode/
 .claude/
+.serena/
 .DS_Store
 Thumbs.db

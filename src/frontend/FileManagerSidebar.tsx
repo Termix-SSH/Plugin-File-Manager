@@ -348,8 +348,17 @@ export function FileManagerSidebar({
         setDirectoryTree((prevTree) => {
           const updateChildren = (items: SidebarItem[]): SidebarItem[] =>
             items.map((item) => {
-              if (item.id === folderId) {
-                return { ...item, children: subTreeItems };
+              if (item.id === folderId || item.path === folderPath) {
+                // Keep folders already loaded, with their own children.
+                const known = new Map(
+                  (item.children ?? []).map((child) => [child.path, child]),
+                );
+                return {
+                  ...item,
+                  children: subTreeItems.map(
+                    (next) => known.get(next.path) ?? next,
+                  ),
+                };
               }
               if (item.children) {
                 return { ...item, children: updateChildren(item.children) };
@@ -380,6 +389,16 @@ export function FileManagerSidebar({
   useEffect(() => {
     loadQuickAccessData();
   }, [loadQuickAccessData, refreshTrigger]);
+
+  // Something changed on the host (delete, rename, new folder): list the
+  // folders the tree has open again, so it shows what is there now.
+  const lastRefresh = useRef(refreshTrigger);
+  useEffect(() => {
+    if (lastRefresh.current === refreshTrigger) return;
+    lastRefresh.current = refreshTrigger;
+    for (const path of [...loadedFoldersRef.current])
+      void loadSubdirectory("", path);
+  }, [refreshTrigger, loadSubdirectory]);
 
   useEffect(() => {
     if (sshSessionId) {

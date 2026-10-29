@@ -40,4 +40,6 @@ export interface CreateIntent {
 }
 
 export type PendingSudoOperation =
-  { type: "delete"; files: FileItem[] } | { type: "navigate"; path: string };
+  | { type: "delete"; files: FileItem[] }
+  | { type: "navigate"; path: string }
+  | { type: "download"; file: FileItem };

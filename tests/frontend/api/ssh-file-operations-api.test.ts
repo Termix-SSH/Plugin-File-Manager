@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const fileManagerApiMock = vi.hoisted(() => ({
+  get: vi.fn(async () => ({ data: { files: [], path: "/data" } })),
   post: vi.fn(async () => ({ data: { complete: false } })),
   postForm: vi.fn(async () => ({ data: {} })),
   delete: vi.fn(async () => ({ data: {} })),
@@ -27,6 +28,7 @@ vi.mock("@termix-ssh/plugin-sdk/ui", async (importOriginal) => ({
 }));
 vi.mock("../../../src/frontend/lib/file-list-request-cache", () => ({
   getCachedFileList: vi.fn(),
+  getFileListEpoch: vi.fn(() => 0),
 }));
 vi.mock("../../../src/frontend/lib/file-content-request-cache", () => ({
   getCachedFileContent: vi.fn(),
@@ -37,9 +39,78 @@ import {
   connectSSH,
   downloadSSHFileStream,
   uploadSSHFile,
+  listSSHFiles,
 } from "../../../src/frontend/api/ssh-file-operations-api";
+import {
+  getCachedFileList,
+  getFileListEpoch,
+} from "../../../src/frontend/lib/file-list-request-cache";
 import { setSessionOrigin } from "../../../src/frontend/api/client";
 import { resolveConnectionOrigin } from "@termix-ssh/plugin-sdk/ui";
+
+it("passes an explicit refresh through to the backend", async () => {
+  vi.mocked(getCachedFileList).mockImplementationOnce(
+    (_session, _path, loader) => loader(),
+  );
+  await listSSHFiles("session-refresh", "/data", { force: true });
+  expect(getCachedFileList).toHaveBeenCalledWith(
+    "session-refresh",
+    "/data",
+    expect.any(Function),
+    true,
+  );
+  expect(fileManagerApiMock.get).toHaveBeenCalledWith("/listFiles", {
+    params: {
+      sessionId: "session-refresh",
+      path: "/data",
+      epoch: "0",
+      force: true,
+    },
+  });
+});
+
+it("forwards the current session epoch and marks only speculative reads", async () => {
+  vi.mocked(getFileListEpoch).mockReturnValueOnce(3);
+  vi.mocked(getCachedFileList).mockImplementationOnce(
+    (_session, _path, loader) => loader(),
+  );
+  await listSSHFiles("session-prefetch", "/data", { prefetch: true });
+  expect(getFileListEpoch).toHaveBeenLastCalledWith("session-prefetch");
+  expect(fileManagerApiMock.get).toHaveBeenLastCalledWith("/listFiles", {
+    params: {
+      sessionId: "session-prefetch",
+      path: "/data",
+      epoch: "3",
+      prefetch: "true",
+    },
+  });
+
+  vi.mocked(getCachedFileList).mockImplementationOnce(
+    (_session, _path, loader) => loader(),
+  );
+  await listSSHFiles("session-navigation", "/data", { prefetch: false });
+  expect(fileManagerApiMock.get).toHaveBeenLastCalledWith("/listFiles", {
+    params: { sessionId: "session-navigation", path: "/data", epoch: "0" },
+  });
+});
+
+it("retries once as a forced read when a joined prefetch skipped sudo", async () => {
+  const skipped = { response: { data: { prefetchSkippedSudo: true } } };
+  vi.mocked(getCachedFileList)
+    .mockRejectedValueOnce(skipped)
+    .mockImplementationOnce((_s, _p, loader) => loader());
+  await listSSHFiles("session-sudo", "/root");
+  expect(getCachedFileList).toHaveBeenLastCalledWith(
+    "session-sudo",
+    "/root",
+    expect.any(Function),
+    true,
+  );
+  vi.mocked(getCachedFileList).mockRejectedValueOnce(skipped);
+  await expect(
+    listSSHFiles("session-sudo", "/root", { prefetch: true }),
+  ).rejects.toBe(skipped);
+});
 
 describe("connectSSH origin", () => {
   it("connects where the host or the desktop default says", async () => {

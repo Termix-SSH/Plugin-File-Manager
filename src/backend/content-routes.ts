@@ -1312,7 +1312,8 @@ export function registerFileContentRoutes(
       if (!res.writableFinished) abortUpload();
     });
 
-    const bb = Busboy({ headers: req.headers });
+    // Browsers send the file name as raw UTF-8; busboy reads latin1 by default.
+    const bb = Busboy({ headers: req.headers, defParamCharset: "utf8" });
 
     bb.on("field", (name: string, value: string) => {
       if (name === "sessionId") sessionId = value;
@@ -1367,6 +1368,61 @@ export function registerFileContentRoutes(
           `Streaming file upload started: ${sessionId} (${fullPath})`,
         );
 
+        const uploaded = () => {
+          if (resolved || requestAborted) return;
+          resolved = true;
+          ctx.log.info(
+            `Streaming file upload completed: ${sessionId} (${fullPath}, duration=${Date.now() - uploadStartTime}ms)`,
+          );
+          res.json({
+            message: "File uploaded successfully",
+            path: fullPath,
+            toast: {
+              type: "success",
+              message: `File uploaded: ${fullPath}`,
+            },
+          });
+        };
+
+        // Hosts without an SFTP server (Dropbear on routers, or SCP legacy
+        // mode): write the file with cat over a plain exec channel.
+        const uploadWithCat = () => {
+          const escaped = fullPath.replace(/'/g, "'\"'\"'");
+          execChannel(sshConn, `cat > '${escaped}'`, (err, stream) => {
+            if (err) {
+              fileStream.resume();
+              if (!resolved && !requestAborted) {
+                resolved = true;
+                res
+                  .status(500)
+                  .json({ error: `Upload failed: ${err.message}` });
+              }
+              return;
+            }
+            let stderr = "";
+            stream.stderr.on("data", (chunk: Buffer) => {
+              if (stderr.length < 4096) stderr += chunk.toString("utf8");
+            });
+            destroyUpload = () => stream.destroy();
+            stream.on("close", (code: number | null) => {
+              if (code === 0 || code == null) return uploaded();
+              if (resolved || requestAborted) return;
+              resolved = true;
+              const denied = /permission denied/i.test(stderr);
+              res.status(denied ? 403 : 500).json({
+                error: `Upload failed: ${stderr.trim() || code}`,
+                ...(denied ? { needsSudo: true } : {}),
+              });
+            });
+            fileStream.pipe(stream);
+          });
+        };
+
+        if (sshConn.scpLegacy) {
+          uploadWithCat();
+          return;
+        }
+
         getSessionSftp(sshConn)
           .then((sftp) => {
             if (requestAborted) {
@@ -1387,34 +1443,24 @@ export function registerFileContentRoutes(
             };
             destroyUpload = removePartialFile;
 
-            upload.done.then(
-              () => {
-                if (resolved || requestAborted) return;
+            upload.done.then(uploaded, (err: Error) => {
+              ctx.log.error("SFTP write error during upload:", err);
+              if (!resolved && !requestAborted) {
                 resolved = true;
-                ctx.log.info(
-                  `Streaming file upload completed: ${sessionId} (${fullPath}, duration=${Date.now() - uploadStartTime}ms)`,
-                );
-                res.json({
-                  message: "File uploaded successfully",
-                  path: fullPath,
-                  toast: {
-                    type: "success",
-                    message: `File uploaded: ${fullPath}`,
-                  },
-                });
-              },
-              (err: Error) => {
-                ctx.log.error("SFTP write error during upload:", err);
-                if (!resolved && !requestAborted) {
-                  resolved = true;
-                  res
-                    .status(500)
-                    .json({ error: `Upload failed: ${err.message}` });
-                }
-              },
-            );
+                res
+                  .status(500)
+                  .json({ error: `Upload failed: ${err.message}` });
+              }
+            });
           })
           .catch((err: Error) => {
+            if (/subsystem/i.test(err.message) && !requestAborted) {
+              ctx.log.warn(
+                `No SFTP server on the host, uploading with cat: ${sessionId}`,
+              );
+              uploadWithCat();
+              return;
+            }
             fileStream.resume();
             ctx.log.error("SFTP session error during stream upload:", err);
             if (!resolved && !requestAborted) {

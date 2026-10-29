@@ -24,11 +24,15 @@ function chunkSizeFor(sftp: SFTPWrapper): number {
   return Math.min(Math.floor(maxReadLen), MAX_CHUNK_SIZE);
 }
 
-/** Sliding read-ahead window; chunks keep file order even if replies arrive out of order. */
+/**
+ * Sliding read-ahead window; chunks keep file order even if replies arrive out of order.
+ * `start` skips the first bytes, for a resumed download.
+ */
 export function createDownloadStream(
   sftp: SFTPWrapper,
   path: string,
   size: number,
+  start = 0,
 ): Readable {
   const chunkSize = chunkSizeFor(sftp);
   const stream = Readable.from(readFile(), {
@@ -63,7 +67,7 @@ export function createDownloadStream(
     const handle = await promisifySftpOpen(sftp, path, SFTP_OPEN_READ, 0o666);
     const window: Promise<Buffer>[] = [];
     let failed = false;
-    let position = 0;
+    let position = start;
     const fill = () => {
       while (
         window.length < CONCURRENCY &&

@@ -6,8 +6,14 @@ import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { registerFileContentRoutes } from "../../src/backend/content-routes";
 import type { SSHSession } from "../../src/backend/session";
 
-const { getSessionSftp } = vi.hoisted(() => ({ getSessionSftp: vi.fn() }));
-vi.mock("../../src/backend/session.js", () => ({ getSessionSftp }));
+const { getSessionSftp, execChannel } = vi.hoisted(() => ({
+  getSessionSftp: vi.fn(),
+  execChannel: vi.fn(),
+}));
+vi.mock("../../src/backend/session.js", () => ({
+  getSessionSftp,
+  execChannel,
+}));
 
 function setup(route = "/uploadFileChunk") {
   const routes = new Map<string, (req: Request, res: Response) => void>();
@@ -19,7 +25,7 @@ function setup(route = "/uploadFileChunk") {
   registerFileContentRoutes(app, {
     ctx: {
       currentActor: () => "user-1",
-      log: { info: vi.fn(), error: vi.fn() },
+      log: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
     } as unknown as PluginContext,
     sshSessions: { s: { isConnected: true } as SSHSession },
     verifySessionOwnership: () => true,
@@ -155,5 +161,98 @@ describe("multipart upload disconnects", () => {
     expect(remote.close).toHaveBeenCalled();
     expect(remote.unlink).toHaveBeenCalledWith("/a.txt", expect.any(Function));
     expect(res.json).not.toHaveBeenCalled();
+  });
+
+  it("keeps a UTF-8 file name as sent", async () => {
+    const remote = {
+      ...sftp(),
+      unlink: vi.fn((_path, callback) => callback(null)),
+      open: vi.fn((_p: string, _f: string, cb: (e: null, h: Buffer) => void) =>
+        cb(null, Buffer.from("h")),
+      ),
+      write: vi.fn(),
+      close: vi.fn((_h: Buffer, cb: () => void) => cb()),
+    };
+    getSessionSftp.mockResolvedValue(remote);
+    const { req, start } = setup("/uploadFileStream");
+    start();
+    req.end(
+      Buffer.from(
+        [
+          "--test-boundary",
+          'Content-Disposition: form-data; name="sessionId"',
+          "",
+          "s",
+          "--test-boundary",
+          'Content-Disposition: form-data; name="path"',
+          "",
+          "/",
+          "--test-boundary",
+          'Content-Disposition: form-data; name="file"; filename="中文 文件.txt"',
+          "Content-Type: text/plain",
+          "",
+          "data",
+          "--test-boundary--",
+          "",
+        ].join("\r\n"),
+        "utf8",
+      ),
+    );
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(remote.open).toHaveBeenCalledWith(
+      "/中文 文件.txt",
+      "w",
+      expect.any(Function),
+    );
+    req.emit("close");
+  });
+
+  it("uploads with cat when the host has no SFTP server", async () => {
+    getSessionSftp.mockRejectedValue(
+      new Error("Unable to start subsystem: sftp"),
+    );
+    const received: Buffer[] = [];
+    const channel = Object.assign(
+      new Writable({
+        write(chunk, _enc, done) {
+          received.push(chunk);
+          done();
+        },
+        final(done) {
+          done();
+          setImmediate(() => channel.emit("close", 0));
+        },
+      }),
+      { stderr: new EventEmitter() },
+    );
+    execChannel.mockImplementation((_s, _cmd, cb) => cb(undefined, channel));
+    const { req, res, start } = setup("/uploadFileStream");
+    start();
+    req.end(
+      [
+        "--test-boundary",
+        'Content-Disposition: form-data; name="sessionId"',
+        "",
+        "s",
+        "--test-boundary",
+        'Content-Disposition: form-data; name="path"',
+        "",
+        "/tmp",
+        "--test-boundary",
+        'Content-Disposition: form-data; name="file"; filename="a.txt"',
+        "Content-Type: text/plain",
+        "",
+        "data",
+        "--test-boundary--",
+        "",
+      ].join("\r\n"),
+    );
+    await vi.waitFor(() =>
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ path: "/tmp/a.txt" }),
+      ),
+    );
+    expect(execChannel.mock.calls[0]?.[1]).toBe("cat > '/tmp/a.txt'");
+    expect(Buffer.concat(received).toString()).toBe("data");
   });
 });

@@ -2,6 +2,7 @@ import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { getMimeType } from "./utils.js";
 import { createDownloadStream } from "./download-stream.js";
+import { isPermissionDenied, pipeCommandDownload } from "./command-download.js";
 import type { SFTPWrapper } from "ssh2";
 import {
   execChannel,
@@ -27,6 +28,16 @@ const DEDICATED_CHANNEL_MIN_BYTES = 8 * 1024 * 1024;
  * the channel (the SSH connection itself is still shared).
  */
 const bulkChannels = new WeakMap<SSHSession, Promise<SFTPWrapper>>();
+
+/** RFC 6266: an ASCII fallback plus the real name as UTF-8. */
+export function contentDisposition(fileName: string): string {
+  const fallback = fileName.replace(/[^\x20-\x7e]|["\\]/g, "_") || "download";
+  const encoded = encodeURIComponent(fileName).replace(
+    /['()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
+}
 
 function evictBulkChannel(
   session: SSHSession,
@@ -73,6 +84,23 @@ type FileDownloadRoutesDeps = {
   scheduleSessionCleanup: (sessionId: string) => void;
   verifySessionOwnership: (session: SSHSession, userId: string) => boolean;
 };
+
+/**
+ * Reads an open ended `Range: bytes=N-` header. Null means no range (send it all),
+ * "invalid" means the start is past the end.
+ */
+export function parseRangeStart(
+  header: string | undefined,
+  size: number,
+): number | null | "invalid" {
+  if (!header) return null;
+  const match = /^bytes=(\d+)-$/.exec(header.trim());
+  if (!match) return null;
+  const start = Number(match[1]);
+  if (!Number.isSafeInteger(start)) return "invalid";
+  if (start === 0) return null;
+  return start < size ? start : "invalid";
+}
 
 function escapeSingleQuotes(path: string): string {
   return path.replace(/'/g, "'\"'\"'");
@@ -270,7 +298,7 @@ export function registerFileDownloadRoutes(
    * /plugin-api/file-manager/downloadFileStream:
    *   post:
    *     summary: Stream-download a file
-   *     description: Downloads a file as a binary stream. Uses SCP legacy mode (cat over exec) when the host has scpLegacy enabled, otherwise uses SFTP.
+   *     description: Downloads a file as a binary stream. Uses SCP legacy mode (cat over exec) when the host has scpLegacy enabled, otherwise uses SFTP. Over SFTP an open ended Range header (bytes=N-) resumes from byte N with a 206; SCP legacy mode always sends the whole file.
    *     tags:
    *       - File Manager
    *     requestBody:
@@ -287,8 +315,12 @@ export function registerFileDownloadRoutes(
    *     responses:
    *       200:
    *         description: Binary file stream.
+   *       206:
+   *         description: The rest of the file from the requested Range start.
    *       400:
    *         description: Missing required parameters.
+   *       416:
+   *         description: The Range start is past the end of the file.
    *       500:
    *         description: Download failed.
    */
@@ -314,10 +346,7 @@ export function registerFileDownloadRoutes(
 
     const fileName = filePath.split("/").pop() || "download";
     res.setHeader("Content-Type", "application/octet-stream");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${encodeURIComponent(fileName)}"`,
-    );
+    res.setHeader("Content-Disposition", contentDisposition(fileName));
 
     if (sshConn.scpLegacy) {
       ctx.log.info(
@@ -325,26 +354,48 @@ export function registerFileDownloadRoutes(
       );
 
       const escaped = escapeSingleQuotes(filePath);
-      execChannel(sshConn, `cat '${escaped}'`, (err, stream) => {
+      execChannel(sshConn, `cat -- '${escaped}'`, (err, stream) => {
         if (err) {
           if (!res.headersSent) {
             res.status(500).json({ error: `Download failed: ${err.message}` });
           }
           return;
         }
-        stream.on("error", (streamErr: Error) => {
-          if (!res.headersSent) {
-            res
-              .status(500)
-              .json({ error: `Download failed: ${streamErr.message}` });
-          } else {
-            res.destroy();
-          }
-        });
-        stream.pipe(res);
+        pipeCommandDownload(stream, res);
       });
       return;
     }
+
+    // A file only root can read: cat it through sudo when the session has a
+    // sudo password, else tell the browser to ask for one.
+    const downloadWithSudo = (): void => {
+      res.removeHeader("Content-Length");
+      res.removeHeader("Content-Range");
+      res.removeHeader("Accept-Ranges");
+      res.status(200);
+      if (!sshConn.sudoPassword) {
+        res.status(403).json({ error: "Permission denied", needsSudo: true });
+        return;
+      }
+      const escaped = escapeSingleQuotes(filePath);
+      execChannel(
+        sshConn,
+        `sudo -S -p '' cat -- '${escaped}'`,
+        (err, stream) => {
+          if (err) {
+            if (!res.headersSent)
+              res
+                .status(500)
+                .json({ error: `Download failed: ${err.message}` });
+            return;
+          }
+          // stdin, not argv: keeps the password out of the process list
+          pipeCommandDownload(stream, res, {
+            stdin: `${sshConn.sudoPassword}\n`,
+          });
+        },
+      );
+    };
 
     // Small files share one download channel (see getBulkChannel). Big files
     // get their own so a server stalling on one (e.g. on the CLOSE of a
@@ -379,6 +430,12 @@ export function registerFileDownloadRoutes(
         return res.status(400).json({ error: "Cannot download directories" });
       }
 
+      const start = parseRangeStart(req.headers?.range, stats.size);
+      if (start === "invalid") {
+        res.setHeader("Content-Range", `bytes */${stats.size}`);
+        return res.status(416).json({ error: "Range not satisfiable" });
+      }
+
       if (stats.size >= DEDICATED_CHANNEL_MIN_BYTES && !res.destroyed) {
         try {
           const dedicated = await openDedicatedSftp(sshConn);
@@ -397,13 +454,26 @@ export function registerFileDownloadRoutes(
         }
       }
 
-      res.setHeader("Content-Length", String(stats.size));
+      res.setHeader("Accept-Ranges", "bytes");
+      if (start) {
+        res.status(206);
+        res.setHeader(
+          "Content-Range",
+          `bytes ${start}-${stats.size - 1}/${stats.size}`,
+        );
+      }
+      res.setHeader("Content-Length", String(stats.size - (start ?? 0)));
 
       if (res.destroyed) {
         release();
         return;
       }
-      const readStream = createDownloadStream(sftp, filePath, stats.size);
+      const readStream = createDownloadStream(
+        sftp,
+        filePath,
+        stats.size,
+        start ?? 0,
+      );
       readStream.on("close", release);
       res.on("close", () => {
         readStream.destroy();
@@ -417,6 +487,11 @@ export function registerFileDownloadRoutes(
         }, CANCELLED_CLOSE_GRACE_MS).unref();
       });
       readStream.on("error", (err) => {
+        if (!res.headersSent && isPermissionDenied(err)) {
+          release();
+          downloadWithSudo();
+          return;
+        }
         if (!res.headersSent) {
           res.removeHeader("Content-Length");
           res.status(500).json({ error: `Download failed: ${err.message}` });
@@ -427,6 +502,10 @@ export function registerFileDownloadRoutes(
       readStream.pipe(res);
     } catch (err) {
       release();
+      if (!res.headersSent && isPermissionDenied(err)) {
+        downloadWithSudo();
+        return;
+      }
       if (!res.headersSent) {
         res
           .status(500)

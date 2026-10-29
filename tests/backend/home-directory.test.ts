@@ -16,10 +16,14 @@ vi.mock("../../src/backend/session.js", () => ({
 }));
 beforeEach(() => vi.resetAllMocks());
 
-function setup(home: string, owned = true) {
+function setup(home: string, owned = true, scpLegacy = false) {
   const sftp = {
     realpath: vi.fn((_path, done) => done(null, home)),
-    readdir: vi.fn((_path, done) => done(null, [])),
+    opendir: vi.fn((_path, done) => done(null, Buffer.from("directory"))),
+    readdir: vi.fn((_handle, _options, done) =>
+      done(Object.assign(new Error("EOF"), { code: 1 })),
+    ),
+    close: vi.fn((_handle, done) => done(null)),
   };
   vi.mocked(getSessionSftp).mockResolvedValue(sftp as never);
   let handler!: (req: Request, res: Response) => Promise<unknown>;
@@ -35,20 +39,21 @@ function setup(home: string, owned = true) {
         log: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
       } as unknown as PluginContext,
       sshSessions: {
-        s: { isConnected: true, activeOperations: 0 } as SSHSession,
+        s: { isConnected: true, activeOperations: 0, scpLegacy } as SSHSession,
       },
-      activeListRequests: {},
       verifySessionOwnership: () => owned,
     },
   );
-  const res = { on: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() };
+  const json = vi.fn();
+  const res = { on: vi.fn(), status: vi.fn().mockReturnThis(), json };
   return {
     sftp,
     res,
-    list: (path?: string) =>
+    json,
+    list: (path?: string, response = res) =>
       handler(
         { query: { sessionId: "s", path } } as unknown as Request,
-        res as unknown as Response,
+        response as unknown as Response,
       ),
   };
 }
@@ -57,29 +62,89 @@ describe("remote login directory", () => {
   it.each(["/root", "/srv/users/alice", "/"])(
     "lists the actual SFTP directory %s",
     async (home) => {
-      const { sftp, res, list } = setup(home);
+      const { sftp, res, json, list } = setup(home);
       await list(".");
       await vi.waitFor(() =>
-        expect(res.json).toHaveBeenCalledWith({ files: [], path: home }),
+        expect(json).toHaveBeenCalledWith({ files: [], path: home }),
       );
       expect(sftp.realpath).toHaveBeenCalledWith(".", expect.any(Function));
-      expect(sftp.readdir).toHaveBeenCalledWith(home, expect.any(Function));
+      expect(sftp.opendir).toHaveBeenCalledWith(home, expect.any(Function));
       expect(execChannel).not.toHaveBeenCalled();
     },
   );
   it("preserves an explicit root instead of replacing it with home", async () => {
-    const { sftp, res, list } = setup("/home/alice");
+    const { sftp, res, json, list } = setup("/home/alice");
     await list("/");
     await vi.waitFor(() =>
-      expect(res.json).toHaveBeenCalledWith({ files: [], path: "/" }),
+      expect(json).toHaveBeenCalledWith({ files: [], path: "/" }),
     );
     expect(sftp.realpath).not.toHaveBeenCalled();
   });
+  it("shares one listing between concurrent requests for the same path", async () => {
+    const { sftp, res, json, list } = setup("/home/alice");
+    const second = { ...res, json: vi.fn() };
+    await Promise.all([list("/data"), list("/data", second)]);
+    expect(sftp.opendir).toHaveBeenCalledTimes(1);
+    expect(json).toHaveBeenCalledExactlyOnceWith({ files: [], path: "/data" });
+    expect(second.json).toHaveBeenCalledExactlyOnceWith({
+      files: [],
+      path: "/data",
+    });
+  });
   it("checks ownership before discovering the home directory", async () => {
+    // placeholder-anchor
     const { res, list } = setup("/home/alice", false);
     await list(".");
     expect(res.status).toHaveBeenCalledWith(403);
     expect(getSessionSftp).not.toHaveBeenCalled();
+  });
+  it("uses the existing shell fallback when a handle read fails", async () => {
+    const { sftp, json, list } = setup("/home/alice");
+    sftp.readdir.mockImplementation((_handle, _options, done) =>
+      done(new Error("read failed")),
+    );
+    vi.mocked(execChannel).mockImplementation((_session, command, done) => {
+      expect(command).toBe(
+        "ls -la --color=never '/data' 2>/dev/null || ls -la '/data'",
+      );
+      done(new Error("fallback reached"), undefined as never);
+    });
+    await list("/data");
+    await vi.waitFor(() =>
+      expect(json).toHaveBeenCalledWith({ error: "fallback reached" }),
+    );
+    expect(execChannel).toHaveBeenCalledTimes(1);
+    expect(sftp.close).toHaveBeenCalledTimes(1);
+  });
+  it("lists with ls in SCP legacy mode without trying SFTP", async () => {
+    const { sftp, json, list } = setup("/home/alice", true, true);
+    vi.mocked(execChannel).mockImplementation((_session, _command, done) => {
+      done(new Error("fallback reached"), undefined as never);
+    });
+    await list("/tmp");
+    await vi.waitFor(() =>
+      expect(json).toHaveBeenCalledWith({ error: "fallback reached" }),
+    );
+    expect(sftp.opendir).not.toHaveBeenCalled();
+  });
+  it("keeps the session when only the SFTP channel failed", async () => {
+    vi.mocked(getSessionSftp).mockRejectedValue(
+      new Error("Channel open failure: no sftp"),
+    );
+    const sessions = setup("/home/alice");
+    vi.mocked(execChannel).mockImplementation((_session, _command, done) => {
+      const stream = Object.assign(new EventEmitter(), {
+        stderr: new EventEmitter(),
+      });
+      done(undefined as never, stream as never);
+      queueMicrotask(() => stream.emit("close", 0));
+    });
+    await sessions.list("/tmp");
+    await vi.waitFor(() =>
+      expect(sessions.json).toHaveBeenCalledWith(
+        expect.objectContaining({ path: "/tmp" }),
+      ),
+    );
   });
   it("falls back to the shell login directory when SFTP is unavailable", async () => {
     vi.mocked(getSessionSftp).mockRejectedValue(new Error("SFTP unavailable"));

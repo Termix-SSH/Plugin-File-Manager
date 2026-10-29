@@ -115,7 +115,16 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
               backgroundColor: "var(--background)",
               borderRight: "1px solid var(--border)",
             },
-            ".cm-activeLine": { backgroundColor: "var(--muted)" },
+            // See-through, so a selection on the current line still shows.
+            ".cm-activeLine": {
+              backgroundColor:
+                "color-mix(in oklab, var(--muted) 45%, transparent)",
+            },
+            "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+              {
+                backgroundColor:
+                  "color-mix(in oklab, var(--accent-brand) 35%, transparent)",
+              },
             ".cm-activeLineGutter": { backgroundColor: "var(--muted)" },
             ".cm-panels": { backgroundColor: "var(--background)" },
           }),

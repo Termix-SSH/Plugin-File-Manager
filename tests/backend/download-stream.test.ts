@@ -70,6 +70,15 @@ describe("SFTP download stream", () => {
     expect(remote.closedWithPending).toEqual([0]);
   });
 
+  it("starts at the given offset", async () => {
+    const data = Buffer.from("0123456789");
+    const remote = source(data);
+    const received = await contents(
+      createDownloadStream(remote.sftp, "/file", data.length, 4),
+    );
+    expect(received.toString()).toBe("456789");
+  });
+
   it("sizes reads to the negotiated SFTP read limit, capped at 256 KiB", async () => {
     const negotiated = source(Buffer.alloc(4 * 1024 * 1024), {
       maxReadLen: 254 * 1024,

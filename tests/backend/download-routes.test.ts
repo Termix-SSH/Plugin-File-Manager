@@ -78,9 +78,12 @@ function setup(
       json: vi.fn(),
     });
   const res = makeRes();
-  const start = (target = res) =>
+  const start = (target = res, range?: string) =>
     routes.get("/downloadFileStream")!(
-      { body: { sessionId: "s", path: "/file" } } as Request,
+      {
+        body: { sessionId: "s", path: "/file" },
+        headers: range ? { range } : {},
+      } as unknown as Request,
       target as unknown as Response,
     );
   return { res, makeRes, start, headers, shared, bulk, dedicated, client, log };
@@ -123,6 +126,35 @@ afterEach(() => {
 });
 
 describe("stream download route", () => {
+  it("sends the rest of the file with a 206 for a Range request", async () => {
+    const { res, start, headers } = setup();
+    await start(res, "bytes=2-");
+    const chunks: Buffer[] = [];
+    for await (const chunk of res) chunks.push(chunk);
+    expect(Buffer.concat(chunks).toString()).toBe("llo");
+    expect(res.status).toHaveBeenCalledWith(206);
+    expect(headers.get("Content-Range")).toBe("bytes 2-4/5");
+    expect(headers.get("Content-Length")).toBe("3");
+    expect(headers.get("Accept-Ranges")).toBe("bytes");
+  });
+
+  it("sends the whole file with a 200 when there is no usable Range", async () => {
+    for (const range of [undefined, "bytes=0-", "bytes=1-2", "items=1-"]) {
+      const { res, start, headers } = setup();
+      await start(res, range);
+      expect(await drain(res)).toBe(5);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(headers.get("Content-Length")).toBe("5");
+    }
+  });
+
+  it("answers 416 for a Range past the end", async () => {
+    const { res, start, headers } = setup();
+    await start(res, "bytes=5-");
+    expect(res.status).toHaveBeenCalledWith(416);
+    expect(headers.get("Content-Range")).toBe("bytes */5");
+  });
+
   it("streams a small file over the shared download channel, not browsing's", async () => {
     const { res, start, headers, shared, bulk, dedicated, client } = setup();
     await start();
@@ -350,15 +382,30 @@ describe("stream download route", () => {
   it("removes the file length before returning an early stream error as JSON, keeping the channel", async () => {
     const { res, start, headers, bulk } = setup();
     bulk.open.mockImplementation((_p, _f, _m, cb) =>
-      cb(new Error("permission denied"), undefined),
+      cb(new Error("disk on fire"), undefined),
     );
     await start();
     await vi.waitFor(() => expect(res.status).toHaveBeenCalledWith(500));
     expect(headers.has("Content-Length")).toBe(false);
     expect(res.json).toHaveBeenCalledWith({
-      error: "Download failed: permission denied",
+      error: "Download failed: disk on fire",
     });
     expect(bulk.end).not.toHaveBeenCalled();
+    res.destroy();
+  });
+
+  it("asks for sudo when the file can't be read", async () => {
+    const { res, start, headers, bulk } = setup();
+    bulk.open.mockImplementation((_p, _f, _m, cb) =>
+      cb(Object.assign(new Error("Permission denied"), { code: 3 }), undefined),
+    );
+    await start();
+    await vi.waitFor(() => expect(res.status).toHaveBeenCalledWith(403));
+    expect(headers.has("Content-Length")).toBe(false);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Permission denied",
+      needsSudo: true,
+    });
     res.destroy();
   });
 

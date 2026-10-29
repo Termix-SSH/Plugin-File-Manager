@@ -28,6 +28,7 @@ import {
   FileSymlink,
   Move,
   GitCompare,
+  Loader2,
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "./host-types";
@@ -85,11 +86,15 @@ interface DragState {
 
 interface FileManagerGridProps {
   files: FileItem[];
+  /** Show a spinner instead of the empty-folder text while a listing is in flight. */
+  isLoading?: boolean;
   selectedFiles: FileItem[];
   /** Paths being moved to the trash: shown dimmed and not interactive. */
   deletingPaths?: ReadonlySet<string>;
   onFileOpen: (file: FileItem) => void;
   onFileIntent?: (file: FileItem) => void;
+  onDirectoryHover?: (file: FileItem) => void;
+  onDirectoryLeave?: (file: FileItem) => void;
   onSelectionChange: (files: FileItem[]) => void;
   onRefresh: () => void;
   onUpload?: (files: FileList) => void;
@@ -226,10 +231,13 @@ const getFileIcon = (
 
 export function FileManagerGrid({
   files,
+  isLoading,
   selectedFiles,
   deletingPaths,
   onFileOpen,
   onFileIntent,
+  onDirectoryHover,
+  onDirectoryLeave,
   onSelectionChange,
   onRefresh,
   onUpload,
@@ -265,6 +273,16 @@ export function FileManagerGrid({
 }: FileManagerGridProps) {
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement>(null);
+  const clickingFileRef = useRef(false);
+  const selectedDirectory =
+    selectedFiles.length === 1 && selectedFiles[0].type === "directory"
+      ? selectedFiles[0]
+      : undefined;
+  useEffect(() => {
+    if (gridRef.current === document.activeElement && selectedDirectory) {
+      onFileIntent?.(selectedDirectory);
+    }
+  }, [selectedDirectory?.path, onFileIntent]);
   const [editingName, setEditingName] = useState("");
   const [gridCols, setGridCols] = useState(4);
 
@@ -304,6 +322,14 @@ export function FileManagerGrid({
     return () => ro.disconnect();
   }, [viewMode, CONTENT_PAD, GRID_GAP, GRID_CELL]);
 
+  const selectedPaths = useMemo(
+    () => new Set(selectedFiles.map((f) => f.path)),
+    [selectedFiles],
+  );
+  const dragPaths = useMemo(
+    () => new Set(dragState.files.map((f) => f.path)),
+    [dragState.files],
+  );
   const gridRowCount = useMemo(
     () => (viewMode === "grid" ? Math.ceil(files.length / gridCols) : 0),
     [viewMode, files.length, gridCols],
@@ -347,6 +373,27 @@ export function FileManagerGrid({
     // Keyed on the list itself: another folder with the same number of
     // entries would otherwise keep this folder's measured row heights.
   }, [viewMode, density, files, editingFile?.path, createIntent, gridCols]);
+
+  // A hidden tab (display:none) collapses the scroller and the browser resets
+  // its scrollTop without a scroll event, leaving the virtualizers with a stale
+  // offset and rect. Re-sync them when the scroller becomes visible again.
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    let wasHidden = el.clientHeight === 0;
+    const ro = new ResizeObserver(() => {
+      const hidden = el.clientHeight === 0;
+      if (wasHidden && !hidden) {
+        for (const v of [listVirtualizer, gridVirtualizer]) {
+          v.scrollOffset = el.scrollTop;
+          v.measure();
+        }
+      }
+      wasHidden = hidden;
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [listVirtualizer, gridVirtualizer]);
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -879,7 +926,9 @@ export function FileManagerGrid({
     onFileIntent?.(file);
 
     if (gridRef.current && !createIntent) {
+      clickingFileRef.current = true;
       gridRef.current.focus();
+      clickingFileRef.current = false;
     }
 
     if (event.detail === 2) {
@@ -900,7 +949,7 @@ export function FileManagerGrid({
           onSelectionChange(rangeFiles);
         }
       } else if (multiSelect) {
-        const isSelected = selectedFiles.some((f) => f.path === file.path);
+        const isSelected = selectedPaths.has(file.path);
         if (isSelected) {
           onSelectionChange(selectedFiles.filter((f) => f.path !== file.path));
         } else {
@@ -1166,14 +1215,30 @@ export function FileManagerGrid({
           onDrop={handleDrop}
           onWheel={handleWheel}
           onContextMenu={(e) => onContextMenu?.(e)}
+          onFocus={(e) => {
+            if (
+              e.target === e.currentTarget &&
+              !clickingFileRef.current &&
+              selectedDirectory
+            )
+              onFileIntent?.(selectedDirectory);
+          }}
           tabIndex={0}
         >
           {files.length === 0 && !createIntent ? (
             <div className="h-full flex flex-col">
               {viewMode === "grid" ? parentGridStrip : parentListRow}
               <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground select-none pointer-events-none">
-                <Folder className="size-8 text-muted-foreground/30" />
-                <span className="text-xs">{t("fileManager.emptyFolder")}</span>
+                {isLoading ? (
+                  <Loader2 className="size-6 animate-spin text-muted-foreground/60" />
+                ) : (
+                  <>
+                    <Folder className="size-8 text-muted-foreground/30" />
+                    <span className="text-xs">
+                      {t("fileManager.emptyFolder")}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           ) : viewMode === "grid" ? (
@@ -1218,14 +1283,13 @@ export function FileManagerGrid({
                         }}
                       >
                         {rowFiles.map((file) => {
-                          const isSelected = selectedFiles.some(
-                            (f) => f.path === file.path,
-                          );
+                          const isSelected = selectedPaths.has(file.path);
                           return (
                             <div
                               key={file.path}
                               data-file-path={file.path}
-                              draggable={true}
+                              // A row being renamed can't drag, so the mouse selects text.
+                              draggable={editingFile?.path !== file.path}
                               className={cn(
                                 "group flex flex-col items-center overflow-hidden rounded-none border border-border/40 bg-card/30 transition-colors cursor-pointer hover:bg-muted/50 hover:border-border select-none",
                                 compact ? "p-1.5" : "p-2",
@@ -1233,14 +1297,20 @@ export function FileManagerGrid({
                                   "bg-accent-brand/10 hover:bg-accent-brand/10 border-accent-brand/30",
                                 dragState.target?.path === file.path &&
                                   "bg-accent-brand/20 border-accent-brand border-dashed",
-                                dragState.files.some(
-                                  (f) => f.path === file.path,
-                                ) && "opacity-50",
+                                dragPaths.has(file.path) && "opacity-50",
                                 deletingPaths?.has(file.path) &&
                                   "opacity-40 pointer-events-none",
                               )}
                               title={file.name}
                               onClick={(e) => handleFileClick(file, e)}
+                              onMouseEnter={() =>
+                                file.type === "directory" &&
+                                onDirectoryHover?.(file)
+                              }
+                              onMouseLeave={() =>
+                                file.type === "directory" &&
+                                onDirectoryLeave?.(file)
+                              }
                               onContextMenu={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1271,7 +1341,7 @@ export function FileManagerGrid({
                                     }
                                     onKeyDown={handleEditKeyDown}
                                     onBlur={handleEditConfirm}
-                                    className="max-w-[120px] min-w-[60px] w-fit border border-accent-brand/60 bg-card px-2 py-1 text-xs rounded-none outline-none focus:ring-1 focus:ring-accent-brand/50 text-center pointer-events-auto"
+                                    className="max-w-[120px] min-w-[60px] w-fit border border-accent-brand/60 bg-card px-2 py-1 text-xs rounded-none outline-none focus:ring-1 focus:ring-accent-brand/50 text-center pointer-events-auto select-text"
                                     onClick={(e) => e.stopPropagation()}
                                     onMouseDown={(e) => e.stopPropagation()}
                                   />
@@ -1413,23 +1483,21 @@ export function FileManagerGrid({
                 {listVirtualizer.getVirtualItems().map((vItem) => {
                   const file = files[vItem.index];
                   if (!file) return null;
-                  const isSelected = selectedFiles.some(
-                    (f) => f.path === file.path,
-                  );
+                  const isSelected = selectedPaths.has(file.path);
                   const isEditing = editingFile?.path === file.path;
                   return (
                     <div
                       key={vItem.key}
                       data-index={vItem.index}
-                      ref={listVirtualizer.measureElement}
                       className="absolute top-0 left-0 w-full"
                       style={{
                         transform: `translateY(${vItem.start}px)`,
+                        height: LIST_ROW_H,
                       }}
                     >
                       <div
                         data-file-path={file.path}
-                        draggable={true}
+                        draggable={!isEditing}
                         style={{
                           gridTemplateColumns: isEditing
                             ? "minmax(0, 1fr)"
@@ -1442,12 +1510,17 @@ export function FileManagerGrid({
                             "border-accent-brand bg-accent-brand/10 hover:bg-accent-brand/10",
                           dragState.target?.path === file.path &&
                             "bg-accent-brand/20 border-accent-brand border-dashed",
-                          dragState.files.some((f) => f.path === file.path) &&
-                            "opacity-50",
+                          dragPaths.has(file.path) && "opacity-50",
                           deletingPaths?.has(file.path) &&
                             "opacity-40 pointer-events-none",
                         )}
                         onClick={(e) => handleFileClick(file, e)}
+                        onMouseEnter={() =>
+                          file.type === "directory" && onDirectoryHover?.(file)
+                        }
+                        onMouseLeave={() =>
+                          file.type === "directory" && onDirectoryLeave?.(file)
+                        }
                         onContextMenu={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -1478,7 +1551,7 @@ export function FileManagerGrid({
                               onKeyDown={handleEditKeyDown}
                               onBlur={handleEditConfirm}
                               className={cn(
-                                "flex-1 min-w-0 border border-accent-brand/60 bg-card px-2 py-0 text-xs rounded-none outline-none focus:ring-1 focus:ring-accent-brand/50 pointer-events-auto",
+                                "flex-1 min-w-0 border border-accent-brand/60 bg-card px-2 py-0 text-xs rounded-none outline-none focus:ring-1 focus:ring-accent-brand/50 pointer-events-auto select-text",
                                 compact ? "h-5" : "h-6",
                               )}
                               onClick={(e) => e.stopPropagation()}
