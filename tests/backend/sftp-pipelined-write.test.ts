@@ -100,3 +100,47 @@ describe("pipelineWriteToSftp", () => {
     expect(f.close).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("pipelineWriteToSftp when the host stops answering", () => {
+  const silent = () => ({
+    open: vi.fn(),
+    write: vi.fn(),
+    close: vi.fn(),
+  });
+
+  it("fails when open never answers", async () => {
+    const source = new PassThrough();
+    const { done } = pipelineWriteToSftp(silent() as never, "/x", source, {
+      stallMs: 60,
+    });
+    await expect(done).rejects.toThrow(/stalled/);
+  });
+
+  it("fails when a write never answers", async () => {
+    const sftp = silent();
+    sftp.open.mockImplementation((_p, _f, cb) =>
+      cb(undefined, Buffer.from("h")),
+    );
+    const source = new PassThrough();
+    const { done } = pipelineWriteToSftp(sftp as never, "/x", source, {
+      stallMs: 60,
+      closeAckMs: 10,
+    });
+    source.write(Buffer.alloc(16));
+    await expect(done).rejects.toThrow(/stalled/);
+  });
+
+  it("counts the upload as done when only the close ack is missing", async () => {
+    const sftp = silent();
+    sftp.open.mockImplementation((_p, _f, cb) =>
+      cb(undefined, Buffer.from("h")),
+    );
+    sftp.write.mockImplementation((_h, _b, _o, _l, _pos, cb) => cb());
+    const source = new PassThrough();
+    const { done } = pipelineWriteToSftp(sftp as never, "/x", source, {
+      closeAckMs: 10,
+    });
+    source.end(Buffer.alloc(16));
+    await expect(done).resolves.toBe(16);
+  });
+});

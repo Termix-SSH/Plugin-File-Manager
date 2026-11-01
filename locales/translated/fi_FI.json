@@ -205,6 +205,7 @@
     "selectHostToStart": "Valitse isäntä aloittaaksesi tiedostonhallinnan",
     "sshRequiredForFileManager": "Tiedostonhallinta vaatii SSH:n. Tässä isännässä SSH ei ole käytössä.",
     "failedToConnect": "SSH-yhteys epäonnistui",
+    "hostKeyChanged": "Tämän isäntälaitteen SSH-avain on muuttunut. Avaa isäntälaitteeseen päätteen yhteys, tarkista ja hyväksy uusi avain, ja yritä uudelleen täällä.",
     "failedToLoadDirectory": "Hakemiston lataus epäonnistui",
     "noSSHConnection": "SSH-yhteyttä ei saatavilla",
     "copy": "Kopioi",

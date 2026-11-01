@@ -191,6 +191,7 @@
     "selectHostToStart": "Pilih hos untuk memulakan pengurusan fail",
     "sshRequiredForFileManager": "Pengurus fail memerlukan SSH. Hos ini tidak mempunyai SSH diaktifkan.",
     "failedToConnect": "Gagal menyambung ke SSH",
+    "hostKeyChanged": "Kunci SSH hos ini telah berubah. Buka terminal ke hos ini untuk memeriksa dan menerima kunci baharu, kemudian cuba lagi di sini.",
     "failedToLoadDirectory": "Gagal memuatkan direktori",
     "noSSHConnection": "Tiada sambungan SSH tersedia",
     "copy": "Salin",

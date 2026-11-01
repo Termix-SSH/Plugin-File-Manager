@@ -191,6 +191,7 @@
     "selectHostToStart": "Chọn một host để bắt đầu quản lý tệp",
     "sshRequiredForFileManager": "Trình quản lý tệp yêu cầu SSH. Host này chưa bật SSH.",
     "failedToConnect": "Không thể kết nối SSH",
+    "hostKeyChanged": "Khóa SSH của máy chủ này đã thay đổi. Hãy mở một terminal kết nối đến máy chủ để kiểm tra và chấp nhận khóa mới, sau đó thử lại ở đây.",
     "failedToLoadDirectory": "Không thể tải thư mục",
     "noSSHConnection": "Không có kết nối SSH khả dụng",
     "copy": "Sao chép",

@@ -4,7 +4,11 @@ import type { SFTPWrapper } from "ssh2";
 import {
   execChannel,
   execWithSudo,
+  ensureSessionAlive,
   getSessionSftp,
+  markSessionLost,
+  SessionLostError,
+  SftpTimeoutError,
   type SSHSession,
 } from "./session.js";
 import { ensureDirectoryTreeSftp } from "./transfer-sftp-dir.js";
@@ -60,6 +64,20 @@ export function registerFileOperationRoutes(
     return typeof opId === "string" && opId
       ? `${session.userId}:${req.body?.sessionId}:${opId}`
       : null;
+  };
+  /** Answers a request whose session's transport is gone. True when it did. */
+  const answerIfSessionLost = (
+    session: SSHSession,
+    error: unknown,
+    res: Response,
+  ): boolean => {
+    if (error instanceof SftpTimeoutError) markSessionLost(session);
+    else if (!(error instanceof SessionLostError)) return false;
+    res.status(400).json({
+      error: "SSH connection not established",
+      disconnected: true,
+    });
+    return true;
   };
   const purgeExpiredTrash = (session: SSHSession, sftp: SFTPWrapper) => {
     const now = Date.now();
@@ -526,6 +544,12 @@ export function registerFileOperationRoutes(
     );
     sshConn.lastActive = Date.now();
 
+    try {
+      await ensureSessionAlive(sshConn);
+    } catch (error) {
+      if (answerIfSessionLost(sshConn, error, res)) return;
+    }
+
     if (!permanent) {
       try {
         const sftp = await getSessionSftp(sshConn);
@@ -544,6 +568,7 @@ export function registerFileOperationRoutes(
           `Failed to move item to trash: ${sessionId} (${itemPath})`,
           error as Error,
         );
+        if (answerIfSessionLost(sshConn, error, res)) return;
         return res.status(409).json({
           error: (error as Error).message,
           trashUnavailable: true,
@@ -693,6 +718,14 @@ export function registerFileOperationRoutes(
     const dirs = new Set<unknown>(
       Array.isArray(req.body?.directories) ? req.body.directories : [],
     );
+    ctx.log.info(
+      `Deleting ${unique.length} item(s): ${req.body?.sessionId} (permanent=${req.body?.permanent === true})`,
+    );
+    try {
+      await ensureSessionAlive(session);
+    } catch (error) {
+      if (answerIfSessionLost(session, error, res)) return;
+    }
     if (req.body?.permanent === true) {
       return res.json({
         results: await removePermanently(
@@ -713,6 +746,7 @@ export function registerFileOperationRoutes(
       purgeExpiredTrash(session, sftp);
       res.json({ results });
     } catch (error) {
+      if (answerIfSessionLost(session, error, res)) return;
       res
         .status(409)
         .json({ error: (error as Error).message, trashUnavailable: true });

@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import path from "node:path";
 import type { SFTPWrapper, Stats } from "ssh2";
+import { withDeadline } from "./session.js";
 
 export interface TrashItem {
   id: string;
@@ -15,13 +16,18 @@ type StoredTrashItem = TrashItem & { trashPath: string };
 
 const TRASH_DIR = ".termix-trash";
 const ID_PATTERN = /^[0-9a-f-]{36}$/i;
+const SFTP_CALL_TIMEOUT_MS = 30_000;
 
 function call<T>(
   run: (done: (error: Error | undefined, value: T) => void) => void,
 ) {
-  return new Promise<T>((resolve, reject) => {
-    run((error, value) => (error ? reject(error) : resolve(value)));
-  });
+  return withDeadline(
+    new Promise<T>((resolve, reject) => {
+      run((error, value) => (error ? reject(error) : resolve(value)));
+    }),
+    SFTP_CALL_TIMEOUT_MS,
+    "SFTP request",
+  );
 }
 
 function stat(sftp: SFTPWrapper, target: string) {

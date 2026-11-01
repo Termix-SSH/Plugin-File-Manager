@@ -219,6 +219,7 @@
     "selectHostToStart": "Selectați un gazdă pentru a începe gestionarea fișierelor",
     "sshRequiredForFileManager": "Managerul de fișiere necesită SSH. Această gazdă nu are SSH activat.",
     "failedToConnect": "Conectarea la SSH a eșuat",
+    "hostKeyChanged": "Cheia SSH a acestui gazdă s-a schimbat. Deschideți un terminal către această gazdă pentru a verifica și a accepta noua cheie, apoi reîncercați aici.",
     "failedToLoadDirectory": "Încărcarea directorului a eșuat",
     "noSSHConnection": "Nicio conexiune SSH disponibilă",
     "copy": "Copiere",

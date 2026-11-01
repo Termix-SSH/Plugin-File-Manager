@@ -219,6 +219,7 @@
     "selectHostToStart": "Sélectionnez un hôte pour démarrer la gestion des fichiers",
     "sshRequiredForFileManager": "Le gestionnaire de fichiers nécessite SSH. Cet hôte n'a pas SSH activé.",
     "failedToConnect": "Échec de la connexion SSH",
+    "hostKeyChanged": "La clé SSH de cet hôte a changé. Ouvrez un terminal vers cet hôte pour vérifier et accepter la nouvelle clé, puis réessayez ici.",
     "failedToLoadDirectory": "Échec du chargement du répertoire",
     "noSSHConnection": "Aucune connexion SSH disponible",
     "copy": "Copier",

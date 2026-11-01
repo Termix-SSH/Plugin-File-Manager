@@ -205,6 +205,7 @@
     "selectHostToStart": "Select a host to start file management",
     "sshRequiredForFileManager": "File manager requires SSH. This host does not have SSH enabled.",
     "failedToConnect": "Failed to connect to SSH",
+    "hostKeyChanged": "This host's SSH key has changed. Open a terminal to this host to check and accept the new key, then retry here.",
     "failedToLoadDirectory": "Failed to load directory",
     "noSSHConnection": "No SSH connection available",
     "copy": "Copy",

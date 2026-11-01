@@ -205,6 +205,7 @@
     "selectHostToStart": "Failihalduse alustamiseks vali host",
     "sshRequiredForFileManager": "Failihaldus nõuab SSH-d. Sellel hostil ei ole SSH-d lubatud.",
     "failedToConnect": "SSH-ühenduse loomine ebaõnnestus",
+    "hostKeyChanged": "Selle hosti SSH- võti on muutunud. Ava selle hosti jaoks terminal, et kontrollida ja aktsepteerida uus võti, ning proovi seejärel uuesti.",
     "failedToLoadDirectory": "Kausta laadimine ebaõnnestus",
     "noSSHConnection": "SSH-ühendus pole saadaval",
     "copy": "Kopeeri",

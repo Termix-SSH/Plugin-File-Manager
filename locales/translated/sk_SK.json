@@ -233,6 +233,7 @@
     "selectHostToStart": "Vyberte hostiteľa pre spustenie správy súborov",
     "sshRequiredForFileManager": "Správca súborov vyžaduje SSH. Tento hostiteľ nemá SSH povolené.",
     "failedToConnect": "Nepodarilo sa pripojiť k SSH",
+    "hostKeyChanged": "SSH kľúč tohto hostiteľa sa zmenil. Otvorte terminál pre tento hostiteľ, overte a prijmite nový kľúč a potom to skúste znova.",
     "failedToLoadDirectory": "Nepodarilo sa načítať adresár",
     "noSSHConnection": "Nie je k dispozícii žiadne SSH pripojenie",
     "copy": "Kopírovať",

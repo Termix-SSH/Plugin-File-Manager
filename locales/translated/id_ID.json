@@ -191,6 +191,7 @@
     "selectHostToStart": "Pilih host untuk memulai manajemen file",
     "sshRequiredForFileManager": "Manajer file memerlukan SSH. Host ini tidak mengaktifkan SSH.",
     "failedToConnect": "Gagal terhubung ke SSH",
+    "hostKeyChanged": "Kunci SSH host ini telah berubah. Buka terminal ke host ini untuk memeriksa dan menerima kunci baru, lalu coba lagi di sini.",
     "failedToLoadDirectory": "Gagal memuat direktori",
     "noSSHConnection": "Tidak ada koneksi SSH yang tersedia",
     "copy": "Salin",

@@ -205,6 +205,7 @@
     "selectHostToStart": "Kies 'n gasheer om lêerbestuur te begin",
     "sshRequiredForFileManager": "Lêerbestuur vereis SSH. Hierdie gasheer het nie SSH geaktiveer nie.",
     "failedToConnect": "Kon nie met SSH verbind nie",
+    "hostKeyChanged": "Die SSH-sleutel vir hierdie gasheer het verander. Maak ’n terminaal na hierdie gasheer oop om die nuwe sleutel te kontroleer en aanvaar, en probeer dan weer hier.",
     "failedToLoadDirectory": "Kon nie gids laai nie",
     "noSSHConnection": "Geen SSH-verbinding beskikbaar nie",
     "copy": "Kopieer",

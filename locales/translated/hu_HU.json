@@ -205,6 +205,7 @@
     "selectHostToStart": "Válasszon egy gazdagépet a fájlkezelés indításához",
     "sshRequiredForFileManager": "A fájlkezelőhöz SSH szükséges. Ennél a gazdagépnél nincs engedélyezve az SSH.",
     "failedToConnect": "Nem sikerült csatlakozni az SSH-hoz",
+    "hostKeyChanged": "Ez a host SSH-kulcsa megváltozott. Nyisson meg egy terminált ehhez a host-hoz, ellenőrizze és fogadja el az új kulcsot, majd próbálja meg újra itt.",
     "failedToLoadDirectory": "Nem sikerült betölteni a könyvtárat",
     "noSSHConnection": "Nincs elérhető SSH kapcsolat",
     "copy": "Másolás",

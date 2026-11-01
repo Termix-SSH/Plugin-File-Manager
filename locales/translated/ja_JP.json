@@ -191,6 +191,7 @@
     "selectHostToStart": "ファイル管理を開始するにはホストを選択してください",
     "sshRequiredForFileManager": "ファイルマネージャーにはSSHが必要です。このホストではSSHが有効になっていません。",
     "failedToConnect": "SSHへの接続に失敗しました",
+    "hostKeyChanged": "このホストの SSH キーが変更されました。このホストにターミナルを開いて新しいキーを確認し、受け入れた後、ここで再試行してください。",
     "failedToLoadDirectory": "ディレクトリの読み込みに失敗しました",
     "noSSHConnection": "利用可能なSSH接続がありません",
     "copy": "コピー",

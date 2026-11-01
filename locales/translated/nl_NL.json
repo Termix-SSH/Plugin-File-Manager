@@ -205,6 +205,7 @@
     "selectHostToStart": "Selecteer een host om het bestandsbeheer te starten",
     "sshRequiredForFileManager": "Bestandsbeheer vereist SSH. SSH is niet ingeschakeld op deze host.",
     "failedToConnect": "Verbinding met SSH mislukt",
+    "hostKeyChanged": "De SSH-sleutel van deze host is gewijzigd. Open een terminal naar deze host om de nieuwe sleutel te controleren en te accepteren, en probeer het hier opnieuw.",
     "failedToLoadDirectory": "Directory laden mislukt",
     "noSSHConnection": "Geen SSH-verbinding beschikbaar",
     "copy": "Kopiëren",

@@ -973,6 +973,13 @@ export async function activate(ctx: PluginContext) {
         err.message.includes("no passphrase")
       ) {
         res.json({ status: "passphrase_required", connectionLogs });
+      } else if (err.message.includes("verification failed")) {
+        // Trying again gets the same answer until someone accepts the new key.
+        res.status(409).json({
+          status: "host_key_changed",
+          message: err.message,
+          connectionLogs,
+        });
       } else if (
         credentialless &&
         (err.message.includes("authentication") ||

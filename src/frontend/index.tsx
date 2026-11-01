@@ -120,7 +120,7 @@ export function activate(app: TermixApp): void {
     icon: ArrowLeftRight,
     titleKey: "nav.sftp",
     kind: "tab",
-    after: "ssh-tools",
+    after: "quick-connect",
     permission: "use",
   });
 

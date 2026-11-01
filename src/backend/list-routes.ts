@@ -3,7 +3,7 @@ import { readDirectory } from "./read-directory.js";
 import { getErrorMessage } from "./error-message.js";
 import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
-import { execChannel, getSessionSftp, type SSHSession } from "./session.js";
+import { execChannel, getLiveSessionSftp, type SSHSession } from "./session.js";
 import {
   formatMtime,
   isExecutableFile,
@@ -172,7 +172,7 @@ export function registerFileListingRoutes(
     const trySFTP = () => {
       try {
         ctx.log.info(`Opening SFTP channel for listFiles: ${sessionId}`);
-        getSessionSftp(sshConn)
+        getLiveSessionSftp(sshConn)
           .then((sftp) => {
             readDirectory(
               sftp,

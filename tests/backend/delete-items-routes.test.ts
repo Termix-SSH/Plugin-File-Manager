@@ -5,6 +5,8 @@ import { registerFileOperationRoutes } from "../../src/backend/operation-routes.
 import type { SSHSession } from "../../src/backend/session.js";
 
 const m = vi.hoisted(() => ({
+  alive: vi.fn(async () => {}),
+  SessionLostError: class extends Error {},
   moveMany: vi.fn(),
   remove: vi.fn(),
 }));
@@ -12,6 +14,10 @@ vi.mock("../../src/backend/session.js", () => ({
   execChannel: vi.fn(),
   execWithSudo: vi.fn(),
   getSessionSftp: vi.fn(async () => ({})),
+  ensureSessionAlive: m.alive,
+  markSessionLost: vi.fn(),
+  SessionLostError: m.SessionLostError,
+  SftpTimeoutError: class extends Error {},
 }));
 vi.mock("../../src/backend/trash-service.js", () => ({
   emptyTrash: vi.fn(),
@@ -141,5 +147,17 @@ describe("POST /deleteItems", () => {
     expect(stop()).toBe(true);
     await call("/deleteItems", { sessionId: "s", paths: ["/a"], opId: "op2" });
     expect(stop()).toBe(false);
+  });
+
+  it("answers with a lost connection instead of hanging on a dead session", async () => {
+    m.alive.mockRejectedValueOnce(new m.SessionLostError());
+    const call = setup();
+    const response = await call("/deleteItems", {
+      sessionId: "s",
+      paths: ["/a"],
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({ disconnected: true });
+    expect(m.moveMany).not.toHaveBeenCalled();
   });
 });

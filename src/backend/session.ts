@@ -1,5 +1,43 @@
 import type { Client as SSHClient } from "ssh2";
 
+const CHANNEL_OPEN_TIMEOUT_MS = 20_000;
+const SESSION_PROBE_TIMEOUT_MS = 5_000;
+
+/** ssh2 never calls back once the connection is gone without a FIN or RST. */
+export class SftpTimeoutError extends Error {
+  constructor(what: string) {
+    super(`${what} timed out`);
+    this.name = "SftpTimeoutError";
+  }
+}
+
+export class SessionLostError extends Error {
+  constructor() {
+    super("SSH connection not established");
+    this.name = "SessionLostError";
+  }
+}
+
+export function withDeadline<T>(
+  work: Promise<T>,
+  ms: number,
+  what: string,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new SftpTimeoutError(what)), ms);
+    work.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 // Serializes SSH channel open requests so only one channel negotiation is
 // in-flight at a time per session. Once the channel is established the slot
 // is released immediately so the next open can proceed; the channels
@@ -8,10 +46,10 @@ export class ChannelOpenSerializer {
   private tail: Promise<void> = Promise.resolve();
 
   run<T>(action: () => Promise<T>): Promise<T> {
-    const next = this.tail.then(
-      () => action(),
-      () => action(),
-    );
+    // A deadline here means one dead open cannot hold up the whole queue.
+    const bounded = () =>
+      withDeadline(action(), CHANNEL_OPEN_TIMEOUT_MS, "Opening an SSH channel");
+    const next = this.tail.then(bounded, bounded);
     this.tail = next.then(
       () => {},
       () => {},
@@ -267,6 +305,56 @@ export function getSessionSftp(
     });
 
   return session.sftpPending;
+}
+
+/** Closes a session whose transport stopped answering, so the next call reconnects. */
+export function markSessionLost(session: SSHSession): void {
+  session.isConnected = false;
+  session.sftp = undefined;
+  session.sftpPending = undefined;
+  try {
+    session.client.destroy();
+  } catch {
+    // Already gone.
+  }
+}
+
+/**
+ * Checks the transport really answers, since isConnected only changes when a
+ * close reaches ssh2. Rejects with SessionLostError when it does not. Any other
+ * failure, like a host with no SFTP server, is left for the caller's own path.
+ */
+export async function ensureSessionAlive(
+  session: SSHSession,
+  timeoutMs = SESSION_PROBE_TIMEOUT_MS,
+): Promise<void> {
+  try {
+    const sftp = await withDeadline(
+      getSessionSftp(session),
+      timeoutMs,
+      "Opening SFTP",
+    );
+    await withDeadline(
+      new Promise<void>((resolve, reject) => {
+        sftp.realpath(".", (err) => (err ? reject(err) : resolve()));
+      }),
+      timeoutMs,
+      "SFTP check",
+    );
+  } catch (error) {
+    if (error instanceof SftpTimeoutError) {
+      markSessionLost(session);
+      throw new SessionLostError();
+    }
+  }
+}
+
+/** The session's SFTP channel, after checking the connection still answers. */
+export async function getLiveSessionSftp(
+  session: SSHSession,
+): Promise<import("ssh2").SFTPWrapper> {
+  await ensureSessionAlive(session);
+  return getSessionSftp(session);
 }
 
 export function execChannel(

@@ -205,6 +205,7 @@
     "selectHostToStart": "Välj en värd för att starta filhanteraren",
     "sshRequiredForFileManager": "Filhanteraren kräver SSH. Denna värd har inte SSH aktiverat.",
     "failedToConnect": "Misslyckades att ansluta till SSH",
+    "hostKeyChanged": "Värdens SSH-nyckel har ändrats. Öppna en terminal till denna värd för att kontrollera och acceptera den nya nyckeln, och försök sedan igen här.",
     "failedToLoadDirectory": "Misslyckades att ladda katalog",
     "noSSHConnection": "Ingen SSH-anslutning tillgänglig",
     "copy": "Kopiera",

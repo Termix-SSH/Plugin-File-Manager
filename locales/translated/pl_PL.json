@@ -233,6 +233,7 @@
     "selectHostToStart": "Wybierz hosta, aby rozpocząć zarządzanie plikami",
     "sshRequiredForFileManager": "Menedżer plików wymaga SSH. Na tym hoście SSH nie jest włączone.",
     "failedToConnect": "Nie udało się połączyć z SSH",
+    "hostKeyChanged": "Klucz SSH tego hosta uległ zmianie. Otwórz terminal do tego hosta, aby sprawdzić i zaakceptować nowy klucz, a następnie spróbuj ponownie.",
     "failedToLoadDirectory": "Nie udało się załadować katalogu",
     "noSSHConnection": "Brak dostępnego połączenia SSH",
     "copy": "Kopiuj",

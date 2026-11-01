@@ -219,6 +219,7 @@
     "selectHostToStart": "בחר מארח כדי להתחיל ניהול קבצים",
     "sshRequiredForFileManager": "מנהל הקבצים דורש SSH. מארח זה אינו כולל SSH פעיל.",
     "failedToConnect": "החיבור ל-SSH נכשל",
+    "hostKeyChanged": "מפתח ה-SSH של המארח הזה השתנה. פתח טרמינל למארח כדי לבדוק ולקבל את המפתח החדש, ואז נסה שוב כאן.",
     "failedToLoadDirectory": "טעינת התיקייה נכשלה",
     "noSSHConnection": "אין חיבור SSH זמין",
     "copy": "העתקה",

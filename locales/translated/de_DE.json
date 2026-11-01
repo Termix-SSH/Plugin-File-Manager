@@ -205,6 +205,7 @@
     "selectHostToStart": "Wählen Sie einen Host aus, um mit der Dateiverwaltung zu beginnen",
     "sshRequiredForFileManager": "Der Dateimanager erfordert SSH. Für diesen Host ist SSH nicht aktiviert.",
     "failedToConnect": "Verbindung zu SSH fehlgeschlagen",
+    "hostKeyChanged": "Der SSH-Schlüssel dieses Hosts hat sich geändert. Öffnen Sie ein Terminal für diesen Host, um den neuen Schlüssel zu überprüfen und zu akzeptieren, und versuchen Sie es dann hier erneut.",
     "failedToLoadDirectory": "Verzeichnis konnte nicht geladen werden",
     "noSSHConnection": "Keine SSH-Verbindung verfügbar",
     "copy": "Kopieren",

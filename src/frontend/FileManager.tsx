@@ -316,6 +316,7 @@ function FileManagerContent({
     "no_keyboard" | "auth_failed" | "timeout"
   >("no_keyboard");
   const [showPassphraseDialog, setShowPassphraseDialog] = useState(false);
+  const [hostKeyChanged, setHostKeyChanged] = useState(false);
   const [pinnedFiles, setPinnedFiles] = useState<Set<string>>(new Set());
   const [sidebarRefreshTrigger, setSidebarRefreshTrigger] = useState(0);
   // Desktop-only Local | Remote split view (Termius-style dual pane).
@@ -542,7 +543,8 @@ function FileManagerContent({
       !totpRequired &&
       !browserSignInRequired &&
       !showAuthDialog &&
-      !showPassphraseDialog,
+      !showPassphraseDialog &&
+      !hostKeyChanged,
     autoStart: false,
   });
   const connectRetryRef = useRef(connectRetry);
@@ -825,6 +827,13 @@ function FileManagerContent({
         if (sshError.status === "auth_required") {
           setAuthDialogReason(sshError.reason || "no_keyboard");
           setShowAuthDialog(true);
+          setIsLoading(false);
+          return;
+        }
+        if (sshError.status === "host_key_changed") {
+          setHasConnectionError(true);
+          setLastConnectionError(t("fileManager.hostKeyChanged"));
+          setHostKeyChanged(true);
           setIsLoading(false);
           return;
         }
@@ -3772,7 +3781,11 @@ function FileManagerContent({
       <div className="h-full w-full flex flex-col bg-background relative">
         <ConnectionScreen
           status={
-            isReconnecting || isLoading ? "connecting" : connectRetry.status
+            isReconnecting || isLoading
+              ? "connecting"
+              : hostKeyChanged
+                ? "error"
+                : connectRetry.status
           }
           message={t("fileManager.connecting")}
           detail={
@@ -3781,10 +3794,16 @@ function FileManagerContent({
               : undefined
           }
           errorDetail={lastConnectionError}
-          attempt={connectRetry.attempt}
+          attempt={hostKeyChanged ? 0 : connectRetry.attempt}
           maxAttempts={connectRetry.maxAttempts}
-          nextRetryInMs={connectRetry.nextRetryInMs}
-          onManualRetry={connectRetry.retryNow}
+          nextRetryInMs={hostKeyChanged ? null : connectRetry.nextRetryInMs}
+          onManualRetry={() => {
+            if (hostKeyChanged) {
+              setHostKeyChanged(false);
+              connectRetry.reset();
+            }
+            connectRetry.retryNow();
+          }}
           logPosition={hasConnectionError ? "top" : "bottom"}
         />
       </div>

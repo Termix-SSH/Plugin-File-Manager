@@ -205,6 +205,7 @@
     "selectHostToStart": "Velg en vert for å starte filbehandling",
     "sshRequiredForFileManager": "Filbehandler krever SSH. Denne verten har ikke SSH aktivert.",
     "failedToConnect": "Kunne ikke koble til SSH",
+    "hostKeyChanged": "Denne vertsens SSH-nøkkel har endret seg. Åpne en terminal til denne verten for å sjekke og godta den nye nøkkelen, og prøv deretter igjen her.",
     "failedToLoadDirectory": "Kunne ikke laste inn katalog",
     "noSSHConnection": "Ingen SSH-tilkobling tilgjengelig",
     "copy": "Kopier",

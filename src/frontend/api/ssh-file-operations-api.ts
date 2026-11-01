@@ -155,6 +155,9 @@ export async function connectSSH(
           reason: data.reason,
         });
       }
+      if (data.status === "host_key_changed") {
+        Object.assign(errorWithLogs, { status: "host_key_changed" });
+      }
       throw errorWithLogs;
     }
     handleApiError(error, "connect SSH");

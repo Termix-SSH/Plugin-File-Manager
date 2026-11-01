@@ -17,10 +17,14 @@ vi.mock("../../src/backend/read-directory.js", () => ({
 vi.mock("../../src/backend/home-directory.js", () => ({
   resolveHomeDirectory: vi.fn(),
 }));
-vi.mock("../../src/backend/session.js", () => ({
-  getSessionSftp: vi.fn(),
-  execChannel: vi.fn(),
-}));
+vi.mock("../../src/backend/session.js", () => {
+  const getSessionSftp = vi.fn();
+  return {
+    getSessionSftp,
+    getLiveSessionSftp: (session: unknown) => getSessionSftp(session),
+    execChannel: vi.fn(),
+  };
+});
 
 beforeEach(() => {
   vi.resetAllMocks();

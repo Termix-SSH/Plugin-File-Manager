@@ -205,6 +205,7 @@
     "selectHostToStart": "Vælg en host for at starte filhåndtering",
     "sshRequiredForFileManager": "Filhåndtering kræver SSH. Denne host har ikke SSH aktiveret.",
     "failedToConnect": "Kunne ikke oprette forbindelse til SSH",
+    "hostKeyChanged": "Denne værts SSH-nøgle er ændret. Åbn en terminal til denne vært for at kontrollere og acceptere den nye nøgle, og prøv derefter igen her.",
     "failedToLoadDirectory": "Kunne ikke indlæse mappe",
     "noSSHConnection": "Ingen SSH-forbindelse tilgængelig",
     "copy": "Kopier",

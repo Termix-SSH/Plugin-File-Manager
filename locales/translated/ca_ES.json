@@ -219,6 +219,7 @@
     "selectHostToStart": "Selecciona un host per començar a gestionar fitxers",
     "sshRequiredForFileManager": "El gestor de fitxers requereix SSH. Aquest host no té SSH habilitat.",
     "failedToConnect": "No s'ha pogut connectar a SSH",
+    "hostKeyChanged": "La clau SSH d'aquest amfitrió ha canviat. Obriu un terminal connectat a aquest amfitrió per verificar i acceptar la nova clau, i torneu-ho a provar aquí.",
     "failedToLoadDirectory": "No s'ha pogut carregar el directori",
     "noSSHConnection": "No hi ha cap connexió SSH disponible",
     "copy": "Copia",

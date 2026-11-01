@@ -219,6 +219,7 @@
     "selectHostToStart": "Izvēlieties hostu, lai sāktu failu pārvaldību",
     "sshRequiredForFileManager": "Failu pārvaldnīkam ir nepieciešams SSH. Šim hostam SSH nav iespējots.",
     "failedToConnect": "Neizdevās izveidot savienojumu ar SSH",
+    "hostKeyChanged": "Šī hosta SSH atslēga ir mainījusies. Atveriet termināli šim hostam, lai pārbaudītu un pieņemtu jauno atslēgu, pēc tam mēģiniet vēlreiz.",
     "failedToLoadDirectory": "Neizdevās ielādēt direktoriju",
     "noSSHConnection": "Nav pieejams SSH savienojums",
     "copy": "Kopēt",

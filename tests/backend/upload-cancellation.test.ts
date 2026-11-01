@@ -12,7 +12,9 @@ const { getSessionSftp, execChannel } = vi.hoisted(() => ({
 }));
 vi.mock("../../src/backend/session.js", () => ({
   getSessionSftp,
+  getLiveSessionSftp: (session: unknown) => getSessionSftp(session),
   execChannel,
+  SessionLostError: class extends Error {},
 }));
 
 function setup(route = "/uploadFileChunk") {

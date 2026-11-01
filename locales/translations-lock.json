@@ -150,6 +150,7 @@
   "fileManager.selectHostToStart": "34ea455d4395",
   "fileManager.sshRequiredForFileManager": "f34d5e91cefb",
   "fileManager.failedToConnect": "f098d8a4b2f1",
+  "fileManager.hostKeyChanged": "ba954badfba0",
   "fileManager.failedToLoadDirectory": "ff2f51ea0155",
   "fileManager.noSSHConnection": "684863128b89",
   "fileManager.copy": "af74f7c5362a",

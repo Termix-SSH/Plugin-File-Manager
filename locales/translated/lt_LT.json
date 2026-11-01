@@ -233,6 +233,7 @@
     "selectHostToStart": "Pasirinkite hostą, kad pradėtumėte failų valdymą",
     "sshRequiredForFileManager": "Failų valdyklė reikalauja SSH. Šis hostas neturi įjungto SSH.",
     "failedToConnect": "Nepavyko prisijungti prie SSH",
+    "hostKeyChanged": "Šio kompiuterio SSH raktas pasikeitė. Atidarykite terminalą į šį kompiuterį, kad patikrintumėte ir priimtumėte naują raktą, tada bandykite dar kartą.",
     "failedToLoadDirectory": "Nepavyko įkelti katalogo",
     "noSSHConnection": "Nėra prieinamo SSH ryšio",
     "copy": "Kopijuoti",

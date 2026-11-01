@@ -233,6 +233,7 @@
     "selectHostToStart": "Izberite gostitelja za začetno upravljanje datotek",
     "sshRequiredForFileManager": "Upravitelj datotek zahteva SSH. Ta gostitelj nima omogočenega SSH.",
     "failedToConnect": "Povezava z SSH ni uspela",
+    "hostKeyChanged": "SSH ključ tega gostitelja se je spremenil. Odprite terminal do tega gostitelja, da preverite in sprejmete nov ključ, nato pa poskusite znova.",
     "failedToLoadDirectory": "Nalaganje imenika ni uspelo",
     "noSSHConnection": "Ni na voljo povezave SSH",
     "copy": "Kopiraj",

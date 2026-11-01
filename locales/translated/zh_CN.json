@@ -191,6 +191,7 @@
     "selectHostToStart": "选择一台主机以开始文件管理",
     "sshRequiredForFileManager": "文件管理器需要 SSH。此主机未启用 SSH。",
     "failedToConnect": "无法连接到 SSH",
+    "hostKeyChanged": "此主机的 SSH 密钥已更改。请打开连接到该主机的终端以检查并接受新密钥，然后在此处重试。",
     "failedToLoadDirectory": "无法加载目录",
     "noSSHConnection": "没有可用的 SSH 连接",
     "copy": "复制",

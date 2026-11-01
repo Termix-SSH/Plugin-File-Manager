@@ -191,6 +191,7 @@
     "selectHostToStart": "選擇一台主機以開始檔案管理",
     "sshRequiredForFileManager": "檔案管理器需要 SSH。此主機未啟用 SSH。",
     "failedToConnect": "無法連線至 SSH",
+    "hostKeyChanged": "此主機的 SSH 金鑰已變更。請開啟終端機連線至此主機，檢查並接受新的金鑰，然後在此重新嘗試。",
     "failedToLoadDirectory": "無法載入目錄",
     "noSSHConnection": "沒有可用的 SSH 連線",
     "copy": "複製",

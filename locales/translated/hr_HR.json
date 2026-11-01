@@ -219,6 +219,7 @@
     "selectHostToStart": "Odaberite host za početak upravljanja datotekama",
     "sshRequiredForFileManager": "Upravitelj datoteka zahtijeva SSH. Na ovom hostu SSH nije omogućen.",
     "failedToConnect": "Povezivanje na SSH nije uspjelo",
+    "hostKeyChanged": "SSH ključ ovog hosta se promijenio. Otvorite terminal za ovaj host kako biste provjerili i prihvatili novi ključ, a zatim pokušajte ponovno ovdje.",
     "failedToLoadDirectory": "Učitavanje direktorija nije uspjelo",
     "noSSHConnection": "Nema dostupne SSH veze",
     "copy": "Kopiraj",

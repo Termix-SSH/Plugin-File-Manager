@@ -205,6 +205,7 @@
     "selectHostToStart": "Dosya yönetimine başlamak için bir ana bilgisayar seçin",
     "sshRequiredForFileManager": "Dosya yöneticisi SSH gerektirir. Bu ana bilgisayarda SSH etkin değil.",
     "failedToConnect": "SSH'ya bağlanılamadı",
+    "hostKeyChanged": "Bu sunucunun SSH anahtarı değişti. Yeni anahtarı kontrol etmek ve kabul etmek için bu sunucuya bir terminal açın, ardından burada yeniden deneyin.",
     "failedToLoadDirectory": "Dizin yüklenemedi",
     "noSSHConnection": "Kullanılabilir SSH bağlantısı yok",
     "copy": "Kopyala",

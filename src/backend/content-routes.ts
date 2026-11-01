@@ -8,7 +8,9 @@ import {
   execChannel,
   execWithSudo,
   execWithSudoBuffer,
+  getLiveSessionSftp,
   getSessionSftp,
+  SessionLostError,
   type SSHSession,
 } from "./session.js";
 import { detectBinary } from "./utils.js";
@@ -1423,7 +1425,7 @@ export function registerFileContentRoutes(
           return;
         }
 
-        getSessionSftp(sshConn)
+        getLiveSessionSftp(sshConn)
           .then((sftp) => {
             if (requestAborted) {
               fileStream.resume();
@@ -1465,7 +1467,13 @@ export function registerFileContentRoutes(
             ctx.log.error("SFTP session error during stream upload:", err);
             if (!resolved && !requestAborted) {
               resolved = true;
-              res.status(500).json({ error: `SFTP error: ${err.message}` });
+              if (err instanceof SessionLostError) {
+                res
+                  .status(400)
+                  .json({ error: err.message, disconnected: true });
+              } else {
+                res.status(500).json({ error: `SFTP error: ${err.message}` });
+              }
             }
           });
       },
@@ -1541,7 +1549,7 @@ export function registerFileContentRoutes(
       destroyUpload?.();
     });
 
-    getSessionSftp(sshConn)
+    getLiveSessionSftp(sshConn)
       .then((sftp) => {
         if (resolved) return;
         const writeStream = sftp.createWriteStream(fullPath, {

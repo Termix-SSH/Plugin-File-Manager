@@ -261,6 +261,7 @@
     "selectHostToStart": "اختر مضيفًا لبدء إدارة الملفات",
     "sshRequiredForFileManager": "يتطلب مدير الملفات SSH. هذا المضيف لا يحتوي على SSH مفعّل.",
     "failedToConnect": "فشل الاتصال بـ SSH",
+    "hostKeyChanged": "تغير مفتاح SSH الخاص بهذا المضيف. افتح طرفية لهذا المضيف للتحقق من المفتاح الجديد وقبوله، ثم أعد المحاولة هنا.",
     "failedToLoadDirectory": "فشل تحميل الدليل",
     "noSSHConnection": "لا يوجد اتصال SSH متاح",
     "copy": "نسخ",
