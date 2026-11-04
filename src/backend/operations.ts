@@ -17,6 +17,12 @@ export function cleanPath(value: unknown): string {
   return path.length > 1 ? path.replace(/\/+$/, "") : path;
 }
 
+function deletable(value: unknown): string {
+  const path = cleanPath(value);
+  if (path === "/") throw new Error("Will not delete /");
+  return path;
+}
+
 /** File actions that need no open session. */
 export function registerOperations(
   ctx: PluginContext,
@@ -73,10 +79,9 @@ export function registerOperations(
   });
 
   ctx.operations.register("file-manager.delete-path", {
-    describe: (input) => `Would delete ${cleanPath(input.path)}`,
+    describe: (input) => `Would delete ${deletable(input.path)}`,
     run: async (input, context) => {
-      const path = cleanPath(input.path);
-      if (path === "/") throw new Error("Will not delete /");
+      const path = deletable(input.path);
       await files.delete(requireHost(context), path);
       return { summary: `Deleted ${path}`, changed: true };
     },
