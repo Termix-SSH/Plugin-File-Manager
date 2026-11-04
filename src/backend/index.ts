@@ -50,6 +50,7 @@ import {
   type HostTransferDeps,
 } from "./transfer-engine.js";
 import { createFilesService } from "./service.js";
+import { registerOperations } from "./operations.js";
 import { tables } from "./tables.js";
 import { registerLocalDesktop } from "./local-desktop.js";
 
@@ -2411,6 +2412,7 @@ export async function activate(ctx: PluginContext) {
 
   const service = createFilesService(ctx);
   ctx.services.provide("files.sftp", service);
+  registerOperations(ctx, service);
 
   ctx.log.info("File manager mounted at /plugin-api/file-manager");
 }

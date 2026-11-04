@@ -1,6 +1,14 @@
 # Changelog
 
-## 1.1.4
+## 1.2.0
+
+### Added
+
+- List files, read file info, make folders and delete files through Termix actions, so they work from rules, rollouts and the CLI
+
+### Changed
+
+- Needs Termix 26.11.1 or newer
 
 ### Fixed
 

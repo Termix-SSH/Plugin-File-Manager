@@ -1,7 +1,7 @@
 {
   "id": "file-manager",
   "name": "File Manager",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Browse, edit and move files over SFTP, including straight from one server to another.",
   "author": {
     "name": "Termix"
@@ -22,7 +22,7 @@
     "A side by side local and remote view in the desktop app"
   ],
   "engine": {
-    "termix": ">=26.10.3",
+    "termix": ">=26.11.1-0",
     "api": "^1.9"
   },
   "capabilities": [
@@ -36,7 +36,8 @@
     "events:core",
     "kv:own",
     "users:impersonate",
-    "desktop:local"
+    "desktop:local",
+    "operations:provide"
   ],
   "provides": [
     {
@@ -217,7 +218,91 @@
         "viewMode": "list"
       }
     },
-    "uses": ["homepage.widgets", "host-metrics.disk", "terminal.open"]
+    "uses": ["homepage.widgets", "host-metrics.disk", "terminal.open"],
+    "operations": {
+      "actions": [
+        {
+          "id": "file-manager.list-files",
+          "titleKey": "operations.list.title",
+          "icon": "FolderOpen",
+          "scope": "host",
+          "risk": "read",
+          "permission": "use",
+          "hostAccess": "connect",
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true,
+              "default": "/"
+            }
+          ],
+          "surfaces": {
+            "assistant": true,
+            "mcp": true
+          }
+        },
+        {
+          "id": "file-manager.path-info",
+          "titleKey": "operations.info.title",
+          "icon": "FileSearch",
+          "scope": "host",
+          "risk": "read",
+          "permission": "use",
+          "hostAccess": "connect",
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true
+            }
+          ],
+          "surfaces": {
+            "assistant": true,
+            "mcp": true
+          }
+        },
+        {
+          "id": "file-manager.make-folder",
+          "titleKey": "operations.mkdir.title",
+          "icon": "FolderPlus",
+          "scope": "host",
+          "risk": "change",
+          "permission": "use",
+          "hostAccess": "edit",
+          "dryRun": "describe",
+          "idempotent": true,
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "file-manager.delete-path",
+          "titleKey": "operations.delete.title",
+          "icon": "Trash2",
+          "scope": "host",
+          "risk": "destructive",
+          "permission": "use",
+          "hostAccess": "edit",
+          "dryRun": "describe",
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true
+            }
+          ]
+        }
+      ]
+    }
   },
   "locales": "locales",
   "platforms": ["linux", "win32", "darwin"]

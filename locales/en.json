@@ -636,5 +636,20 @@
     "syncNow": "Go to the terminal folder",
     "cdTerminal": "Change the terminal to this folder",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "List files"
+    },
+    "info": {
+      "title": "File info"
+    },
+    "mkdir": {
+      "title": "Make folder"
+    },
+    "delete": {
+      "title": "Delete file or empty folder"
+    },
+    "path": "Path"
   }
 }
