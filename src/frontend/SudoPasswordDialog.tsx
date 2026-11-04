@@ -71,6 +71,7 @@ export function SudoPasswordDialog({
     >
       <form onSubmit={handleSubmit}>
         <PasswordInput
+          className="h-8 pr-8 text-xs"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t("fileManager.sudoPassword")}
