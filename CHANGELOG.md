@@ -10,6 +10,7 @@
 
 - Needs Termix 26.11.1 or newer
 - The file viewer, diff view and transfer panes use the darker Termix page background
+- The SFTP transfer tab uses the same header as other tabs, with the two servers side by side and a line between them
 
 ### Fixed
 
