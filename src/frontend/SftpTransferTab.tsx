@@ -396,7 +396,7 @@ function RemotePane({
 
   return (
     <section
-      className={`flex min-h-0 flex-1 flex-col border bg-card transition-colors ${
+      className={`flex min-h-0 flex-1 flex-col border transition-colors ${
         acceptsDrop ? "border-accent-brand/50" : "border-border"
       }`}
       onDragOver={(event) => {

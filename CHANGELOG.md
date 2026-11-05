@@ -9,6 +9,7 @@
 ### Changed
 
 - Needs Termix 26.11.1 or newer
+- The file viewer, diff view and transfer panes use the darker Termix page background
 
 ### Fixed
 
