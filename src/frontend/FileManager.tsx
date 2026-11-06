@@ -29,6 +29,7 @@ import { UploadProgressToast } from "./components/UploadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
+import { useNativeDragOut } from "./hooks/useNativeDragOut";
 import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
@@ -491,6 +492,9 @@ function FileManagerContent({
     sshHost: currentHost!,
   });
 
+  const nativeDrag = useNativeDragOut(sshSessionId || "");
+  const nativeDragStarted = useRef(false);
+
   const startKeepalive = useCallback(() => {
     if (!sshSessionId) return;
 
@@ -656,18 +660,20 @@ function FileManagerContent({
 
   const handleFileDragStart = useCallback(
     (files: FileItem[]) => {
-      systemDrag.startDragToSystem(files, {
-        enableToast: true,
-        onSuccess: () => {
-          clearSelection();
-        },
-      });
+      nativeDragStarted.current = nativeDrag.start(files);
     },
-    [systemDrag, clearSelection],
+    [nativeDrag],
   );
 
   const handleFileDragEnd = useCallback(
     (e: DragEvent, draggedFiles: FileItem[]) => {
+      if (nativeDragStarted.current) {
+        nativeDragStarted.current = false;
+        systemDrag.cancelDragToSystem();
+        setTimeout(() => nativeDrag.cleanup(), 30000);
+        return;
+      }
+
       const isOutside =
         e.clientX < 0 ||
         e.clientX > window.innerWidth ||
@@ -690,7 +696,7 @@ function FileManagerContent({
         systemDrag.cancelDragToSystem();
       }
     },
-    [systemDrag, clearSelection],
+    [systemDrag, nativeDrag, clearSelection],
   );
 
   const isConnectingRef = useRef(false);
@@ -3997,6 +4003,7 @@ function FileManagerContent({
                 hasClipboard={!!clipboard}
                 onFileDrop={handleFileDrop}
                 onFileDiff={handleFileDiff}
+                onSystemPrefetch={nativeDrag.prefetch}
                 onSystemDragStart={handleFileDragStart}
                 onSystemDragEnd={handleFileDragEnd}
                 createIntent={createIntent}
