@@ -5,6 +5,7 @@
 ### Added
 
 - List files, read file info, make folders and delete files through Termix actions, so they work from rules, rollouts and the CLI
+- Open a host's files from the command palette
 
 ### Changed
 

@@ -138,6 +138,20 @@ export function activate(app: TermixApp): void {
       fileManagerHostSetting(host, "enableFileManager", true),
   });
 
+  app.registerPaletteEntry({
+    id: "files.open",
+    titleKey: "nav.openFileManager",
+    icon: FolderSearch,
+    keywords: ["files", "sftp", "browse", "upload", "download"],
+    scope: "host",
+    when: (host) =>
+      !!host?.enableSsh &&
+      fileManagerHostSetting(host, "enableFileManager", true),
+    run: (shell, host) => {
+      if (host) shell.openTab(host, "files");
+    },
+  });
+
   app.registerExtension("homepage.widgets", {
     id: "file_manager_widget",
     name: "File Manager",
