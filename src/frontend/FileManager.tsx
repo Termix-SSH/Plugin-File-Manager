@@ -1664,7 +1664,10 @@ function FileManagerContent({
     updateDeletingPaths(new Set([...deletingPathsRef.current, ...targetPaths]));
     clearSelection();
     const controller = new AbortController();
-    const opId = crypto.randomUUID();
+    // getRandomValues also works on HTTP LAN origins, unlike randomUUID.
+    const opId = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+      b.toString(16).padStart(2, "0"),
+    ).join("");
     const labelKey = permanent
       ? "fileManager.deletingItems"
       : "fileManager.movingToTrash";

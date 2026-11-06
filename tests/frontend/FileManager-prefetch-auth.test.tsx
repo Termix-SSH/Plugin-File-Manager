@@ -7,6 +7,9 @@ const mocks = vi.hoisted(() => ({
   t: (key: string) => key,
   get: vi.fn(),
   connect: vi.fn(),
+  status: vi.fn(),
+  trash: vi.fn(),
+  error: vi.fn(),
   verifyTotp: vi.fn(),
   verifyBrowser: vi.fn(),
   grid: vi.fn(
@@ -47,6 +50,8 @@ vi.mock(
   async (importOriginal) => ({
     ...(await importOriginal<object>()),
     connectSSH: mocks.connect,
+    getSSHStatus: mocks.status,
+    trashSSHItems: mocks.trash,
     verifySSHTOTP: mocks.verifyTotp,
     verifySSHBrowserSignIn: mocks.verifyBrowser,
   }),
@@ -57,6 +62,7 @@ vi.mock("../../src/frontend/api/file-manager-data-api", () => ({
 vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useTranslation: () => ({ t: mocks.t }),
+  useSettings: () => ({ values: { confirmBeforeTrash: false } }),
   usePluginUiPreferences: () => ({ values: {}, set: vi.fn() }),
   useConnectionRetry: ({ connect }: { connect: () => void }) => ({
     retryNow: connect,
@@ -127,6 +133,15 @@ vi.mock("../../src/frontend/hooks/useLocalTransfers", () => ({
   useLocalTransfers: () => ({}),
 }));
 
+vi.mock("sonner", () => ({
+  toast: {
+    loading: vi.fn(),
+    dismiss: vi.fn(),
+    success: vi.fn(),
+    error: mocks.error,
+  },
+}));
+
 import { FileManager } from "../../src/frontend/FileManager";
 import { invalidateCachedFileList } from "../../src/frontend/lib/file-list-request-cache";
 
@@ -172,6 +187,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 describe("FileManager post-auth directory prefetch", () => {
@@ -380,4 +396,40 @@ describe("FileManager navigation joining a speculative listing", () => {
       "prefetch",
     );
   });
+});
+
+describe("FileManager deletion over HTTP", () => {
+  it.each([false, true])(
+    "finishes deletion without randomUUID (failure=%s)",
+    async (failed) => {
+      const getRandomValues = crypto.getRandomValues.bind(crypto);
+      vi.stubGlobal("crypto", { getRandomValues });
+      mocks.status.mockResolvedValue({ connected: true });
+      if (failed) mocks.trash.mockRejectedValue(new Error("Delete refused"));
+      else
+        mocks.trash.mockResolvedValue({
+          results: [{ path: child.path, success: true }],
+        });
+      render(
+        <FileManager initialHost={host} initialPath="/home/alice" compact />,
+      );
+      await tick();
+      await act(async () => {
+        await toolbar().handleDeleteFiles([child]);
+      });
+      expect(mocks.trash).toHaveBeenCalledWith(
+        String(host.id),
+        [child.path],
+        expect.objectContaining({
+          permanent: false,
+          opId: expect.any(String),
+        }),
+      );
+      expect(grid().deletingPaths?.has(child.path)).toBe(false);
+      if (failed)
+        expect(mocks.error).toHaveBeenCalledWith(
+          "fileManager.failedToDeleteItems",
+        );
+    },
+  );
 });
