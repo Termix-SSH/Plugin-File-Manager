@@ -1,5 +1,5 @@
 import { Folder } from "lucide-react";
-import { fileManagerHostSetting } from "./host-settings";
+import { canOpenFiles, fileManagerHostSetting, usesFtp } from "./host-settings";
 import { getErrorMessage } from "./lib/error-message";
 import { fileManagerApi } from "./api/client";
 import { subscribeLocalEvents } from "./lib/local-events";
@@ -175,6 +175,7 @@ function FileManagerContent({
   const { addLog, clearLogs } = useConnectionLog();
 
   const [currentHost] = useState<SSHHost | null>(initialHost || null);
+  const isFtp = usesFtp(currentHost);
   const [currentPath, setCurrentPath] = useState(
     initialPath ||
       fileManagerHostSetting(initialHost, "defaultPath", "") ||
@@ -704,7 +705,7 @@ function FileManagerContent({
   async function initializeSSHConnection() {
     if (!currentHost || isConnectingRef.current) return;
 
-    if (currentHost.enableSsh === false) {
+    if (!canOpenFiles(currentHost)) {
       setHasConnectionError(true);
       addLog({
         type: "error",
@@ -3904,7 +3905,7 @@ function FileManagerContent({
                 onItemContextMenu={handleSidebarItemContextMenu}
                 sshSessionId={sshSessionId}
                 refreshTrigger={sidebarRefreshTrigger}
-                onOpenTrash={() => setTrashOpen(true)}
+                onOpenTrash={isFtp ? undefined : () => setTrashOpen(true)}
                 diskInfo={diskInfo ?? undefined}
               />
             </div>
@@ -3996,7 +3997,7 @@ function FileManagerContent({
                 onStartEdit={handleStartEdit}
                 onCancelEdit={handleCancelEdit}
                 onDelete={handleDeleteFiles}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onUndo={handleUndo}
@@ -4029,7 +4030,7 @@ function FileManagerContent({
                 onPreview={handleFileOpen}
                 onOpenExternally={handleOpenExternally}
                 onRename={handleRenameFile}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onDelete={handleDeleteFiles}
@@ -4048,19 +4049,23 @@ function FileManagerContent({
                 onRefresh={handleRefreshDirectory}
                 hasClipboard={!!clipboard}
                 onDragToDesktop={() => handleDragToDesktop(contextMenu.files)}
-                onOpenTerminal={(path) => handleOpenTerminal(path)}
-                onRunExecutable={(file) => handleRunExecutable(file)}
+                onOpenTerminal={
+                  isFtp ? undefined : (path) => handleOpenTerminal(path)
+                }
+                onRunExecutable={
+                  isFtp ? undefined : (file) => handleRunExecutable(file)
+                }
                 onPinFile={handlePinFile}
                 onUnpinFile={handleUnpinFile}
                 onAddShortcut={handleAddShortcut}
                 isPinned={isPinnedFile}
                 currentPath={currentPath}
-                onProperties={handleOpenPermissionsDialog}
-                onExtractArchive={handleExtractArchive}
-                onCompress={handleOpenCompressDialog}
+                onProperties={isFtp ? undefined : handleOpenPermissionsDialog}
+                onExtractArchive={isFtp ? undefined : handleExtractArchive}
+                onCompress={isFtp ? undefined : handleOpenCompressDialog}
                 onCopyPath={handleCopyPath}
                 onCopyFolderLink={handleCopyFolderLink}
-                onTransferToHost={handleOpenTransferDialog}
+                onTransferToHost={isFtp ? undefined : handleOpenTransferDialog}
               />
             </div>
           </div>

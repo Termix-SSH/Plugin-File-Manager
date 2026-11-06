@@ -15,6 +15,8 @@ vi.mock("../../../src/frontend/api/client", () => ({
   },
   setSessionOrigin: vi.fn(),
   clearSessionOrigin: vi.fn(),
+  setSessionFtp: vi.fn(),
+  listHosts: async () => [],
 }));
 vi.mock("@termix-ssh/plugin-sdk/ui", async (importOriginal) => ({
   ...(await importOriginal<object>()),

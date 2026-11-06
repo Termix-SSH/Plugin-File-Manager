@@ -198,6 +198,40 @@
             "descriptionKey": "settings.host.showPanel.description",
             "default": true,
             "requires": "enableFileManager"
+          },
+          {
+            "key": "enableFtp",
+            "type": "boolean",
+            "labelKey": "settings.host.enableFtp.label",
+            "default": false,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "ftpPort",
+            "type": "number",
+            "labelKey": "settings.host.ftpPort.label",
+            "min": 1,
+            "max": 65535,
+            "default": 21,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "ftpSecure",
+            "type": "string",
+            "labelKey": "settings.host.ftpSecure.label",
+            "default": "none",
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "ftpAllowSelfSigned",
+            "type": "boolean",
+            "labelKey": "settings.host.ftpAllowSelfSigned.label",
+            "default": false,
+            "hidden": true,
+            "defaultable": false
           }
         ]
       }
@@ -302,7 +336,14 @@
           ]
         }
       ]
-    }
+    },
+    "protocols": [
+      {
+        "id": "ftp",
+        "defaultPort": 21,
+        "hostLoginFallback": ["username", "password"]
+      }
+    ]
   },
   "locales": "locales",
   "platforms": ["linux", "win32", "darwin"]

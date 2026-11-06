@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { canBrowseFiles } from "../../src/frontend/host-settings";
+import {
+  canBrowseFiles,
+  canOpenFiles,
+  ftpEnabled,
+  usesFtp,
+} from "../../src/frontend/host-settings";
 
 describe("canBrowseFiles", () => {
   it("needs SSH and the plugin turned on for the host", () => {
@@ -14,5 +19,26 @@ describe("canBrowseFiles", () => {
       }),
     ).toBe(false);
     expect(canBrowseFiles(null)).toBe(false);
+  });
+});
+
+describe("ftp hosts", () => {
+  const ftp = { "file-manager": { enableFtp: true } };
+
+  it("uses FTP when the host has no SFTP files", () => {
+    expect(usesFtp({ enableSsh: false, pluginSettings: ftp })).toBe(true);
+    expect(canOpenFiles({ enableSsh: false, pluginSettings: ftp })).toBe(true);
+    expect(canBrowseFiles({ enableSsh: false, pluginSettings: ftp })).toBe(
+      false,
+    );
+  });
+
+  it("keeps SFTP when SSH files are on", () => {
+    expect(usesFtp({ enableSsh: true, pluginSettings: ftp })).toBe(false);
+  });
+
+  it("stays closed without FTP or SSH", () => {
+    expect(canOpenFiles({ enableSsh: false })).toBe(false);
+    expect(ftpEnabled(null)).toBe(false);
   });
 });

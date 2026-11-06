@@ -4,6 +4,7 @@
 
 ### Added
 
+- FTP and FTPS hosts: turn on FTP in a host's editor to browse, edit, upload and download files on devices that have no SSH, like old game consoles
 - List files, read file info, make folders and delete files through Termix actions, so they work from rules, rollouts and the CLI
 - Open a host's files from the command palette
 - Drag files out of the file manager straight into Explorer or Finder in the desktop app, with no Save As window (files up to 50 MB)
