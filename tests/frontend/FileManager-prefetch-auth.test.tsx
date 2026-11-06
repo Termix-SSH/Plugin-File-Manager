@@ -1,6 +1,6 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, render } from "@testing-library/react";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import type { FileItem, SSHHost } from "../../src/frontend/host-types";
 
 const mocks = vi.hoisted(() => ({
@@ -21,7 +21,7 @@ const mocks = vi.hoisted(() => ({
       _props: React.ComponentProps<
         typeof import("../../src/frontend/FileManagerToolbar").FileManagerToolbar
       >,
-    ) => null,
+    ): React.ReactNode => null,
   ),
   dialogs: vi.fn(
     (
@@ -379,5 +379,86 @@ describe("FileManager navigation joining a speculative listing", () => {
     expect(listCalls("/home/alice")[1][1].params).not.toHaveProperty(
       "prefetch",
     );
+  });
+});
+
+describe("FileManager mouse history ownership", () => {
+  it("routes back and forward once to the visible pane containing the target", async () => {
+    mocks.toolbar.mockImplementation(({ currentPath, navigateTo }) => (
+      <button onClick={() => navigateTo(`${currentPath}/child`)}>
+        {currentPath}
+      </button>
+    ));
+    const first = render(
+      <FileManager initialHost={host} initialPath="/first" compact />,
+    );
+    const second = render(
+      <FileManager
+        initialHost={{ ...host, id: 902 }}
+        initialPath="/second"
+        compact
+      />,
+    );
+    await tick();
+    await tick();
+    const firstButton = () => first.container.querySelector("button")!;
+    const secondButton = () => second.container.querySelector("button")!;
+    fireEvent.click(firstButton());
+    fireEvent.click(secondButton());
+    await tick();
+    fireEvent.click(firstButton());
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    expect(secondButton().textContent).toBe("/second/child");
+    const mouse = (target: EventTarget, type: string, button: number) => {
+      const event = new MouseEvent(type, {
+        button,
+        bubbles: true,
+        cancelable: true,
+      });
+      act(() => {
+        target.dispatchEvent(event);
+      });
+      return event.defaultPrevented;
+    };
+    expect(mouse(firstButton(), "mouseup", 3)).toBe(true);
+    expect(mouse(firstButton(), "auxclick", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child");
+    expect(secondButton().textContent).toBe("/second/child");
+    expect(mouse(firstButton(), "mouseup", 4)).toBe(true);
+    expect(mouse(firstButton(), "auxclick", 4)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    first.rerender(
+      <FileManager
+        initialHost={host}
+        initialPath="/first"
+        compact
+        isVisible={false}
+      />,
+    );
+    for (const target of [firstButton(), document.body, window]) {
+      for (const button of [3, 4]) {
+        expect(mouse(target, "mouseup", button)).toBe(false);
+        expect(mouse(target, "auxclick", button)).toBe(false);
+      }
+    }
+    expect(mouse(secondButton(), "mouseup", 0)).toBe(false);
+    expect(mouse(secondButton(), "mouseup", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    expect(secondButton().textContent).toBe("/second");
+    first.rerender(
+      <FileManager initialHost={host} initialPath="/first" compact />,
+    );
+    expect(mouse(firstButton(), "mouseup", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child");
+    const detached = firstButton();
+    first.unmount();
+    expect(mouse(detached, "mouseup", 3)).toBe(false);
+    expect(mouse(window, "auxclick", 4)).toBe(false);
+    mocks.toolbar.mockImplementation(() => null);
   });
 });

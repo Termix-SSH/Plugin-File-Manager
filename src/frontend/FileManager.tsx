@@ -201,6 +201,7 @@ function FileManagerContent({
   const [sshSessionId, setSshSessionId] = useState<string | null>(null);
   const sshSessionIdRef = useRef(sshSessionId);
   sshSessionIdRef.current = sshSessionId;
+  const paneRootRef = useRef<HTMLDivElement>(null);
   const paneVisibleRef = useRef(isVisible);
   paneVisibleRef.current = isVisible;
   const directoryPrefetchRef = useRef<ReturnType<
@@ -1115,14 +1116,19 @@ function FileManagerContent({
   }, [navIndex, navHistory, sshSessionId]);
 
   useEffect(() => {
+    const ownsMouseNavigation = (event: MouseEvent) =>
+      paneVisibleRef.current &&
+      (event.button === 3 || event.button === 4) &&
+      event.target instanceof Node &&
+      !!paneRootRef.current?.contains(event.target);
     const handleMouseNavigation = (event: MouseEvent) => {
-      if (event.button !== 3 && event.button !== 4) return;
+      if (!ownsMouseNavigation(event)) return;
       event.preventDefault();
       if (event.button === 3) goBack();
       else goForward();
     };
     const preventBrowserMouseNavigation = (event: MouseEvent) => {
-      if (event.button === 3 || event.button === 4) event.preventDefault();
+      if (ownsMouseNavigation(event)) event.preventDefault();
     };
 
     window.addEventListener("mouseup", handleMouseNavigation);
@@ -3811,7 +3817,10 @@ function FileManagerContent({
   }
 
   return (
-    <div className="h-full flex flex-col bg-background relative overflow-hidden isolate">
+    <div
+      ref={paneRootRef}
+      className="h-full flex flex-col bg-background relative overflow-hidden isolate"
+    >
       <PanelShell
         icon={<Folder className="size-4" />}
         title={t("nav.files")}
