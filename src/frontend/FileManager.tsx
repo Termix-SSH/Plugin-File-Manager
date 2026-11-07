@@ -1138,11 +1138,17 @@ function FileManagerContent({
       if (ownsMouseNavigation(event)) event.preventDefault();
     };
 
-    window.addEventListener("mouseup", handleMouseNavigation);
-    window.addEventListener("auxclick", preventBrowserMouseNavigation);
+    // Capture runs before Termix's own handler, which then sees the click
+    // was claimed and leaves tab back and forward alone.
+    window.addEventListener("mouseup", handleMouseNavigation, true);
+    window.addEventListener("auxclick", preventBrowserMouseNavigation, true);
     return () => {
-      window.removeEventListener("mouseup", handleMouseNavigation);
-      window.removeEventListener("auxclick", preventBrowserMouseNavigation);
+      window.removeEventListener("mouseup", handleMouseNavigation, true);
+      window.removeEventListener(
+        "auxclick",
+        preventBrowserMouseNavigation,
+        true,
+      );
     };
   }, [goBack, goForward]);
 
