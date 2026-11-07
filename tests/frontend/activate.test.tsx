@@ -52,9 +52,9 @@ describe(`${manifest.id} activate`, () => {
     );
   });
 
-  it("leaves its host fields to the schema-driven Plugins tab", async () => {
+  it("only adds a host editor section for FTP", async () => {
     rendered = await renderWithApp(plugin, { manifest, locales });
-    expect(rendered.registered.hostEditorSections()).toEqual([]);
+    expect(rendered.registered.hostEditorSections()).toEqual(["ftp"]);
   });
 
   it("registers its open actions and the tab menu entry", async () => {

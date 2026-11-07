@@ -12,6 +12,7 @@ import {
   Select2,
   InlineView,
   FormFooter,
+  LoadingState,
 } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
@@ -858,7 +859,7 @@ export function TransferToHostDialog({
                   {t("transfer.browseFolders")}
                 </Label>
                 <div className="border border-border">
-                  <div className="flex min-w-0 items-center gap-2 border-b border-border px-2 py-1.5 bg-muted/30">
+                  <div className="flex min-w-0 items-center gap-2 border-b border-border px-2 py-1.5">
                     <button
                       type="button"
                       className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
@@ -1000,9 +1001,7 @@ export function TransferToHostDialog({
                 </div>
 
                 {methodPreviewLoading && (
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("transfer.methodPreviewLoading")}
-                  </p>
+                  <LoadingState label={t("transfer.methodPreviewLoading")} />
                 )}
                 {methodPreviewError && (
                   <p className="text-[10px] text-warning">

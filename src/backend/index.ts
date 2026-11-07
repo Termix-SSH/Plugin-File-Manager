@@ -37,6 +37,7 @@ import { registerFileContentRoutes } from "./content-routes.js";
 import { registerFileOperationRoutes } from "./operation-routes.js";
 import { registerFileDownloadRoutes } from "./download-routes.js";
 import { registerFileActionRoutes } from "./action-routes.js";
+import { registerFtpRoutes } from "./ftp-routes.js";
 import { registerBookmarkRoutes } from "./bookmark-routes.js";
 import {
   startHostTransfer,
@@ -1706,6 +1707,7 @@ export async function activate(ctx: PluginContext) {
     scheduleSessionCleanup,
     verifySessionOwnership,
   });
+  registerFtpRoutes(app, ctx);
   registerBookmarkRoutes(app, ctx, {
     table,
     pinnedTable,

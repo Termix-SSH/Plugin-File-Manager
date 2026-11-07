@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Show files panel in terminals",
         "description": "Let the files panel open beside this host's SSH terminal."
+      },
+      "enableFtp": {
+        "label": "Enable FTP"
+      },
+      "ftpPort": {
+        "label": "FTP Port"
+      },
+      "ftpSecure": {
+        "label": "FTP Security"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Allow self-signed certificate"
       }
     },
     "user": {
@@ -651,5 +663,29 @@
       "title": "Delete file or empty folder"
     },
     "path": "Path"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Browse files on this host over FTP or FTPS.",
+    "originNote": "FTP connections are made from the Termix server.",
+    "connection": "Connection",
+    "port": "Port",
+    "security": "Security",
+    "securityNone": "None (plain FTP)",
+    "securityExplicit": "Explicit TLS (FTPS)",
+    "securityImplicit": "Implicit TLS (FTPS)",
+    "allowSelfSigned": "Allow self-signed certificate",
+    "allowSelfSignedDesc": "Skip certificate checks for this host.",
+    "login": "Login",
+    "auth": {
+      "direct": "Direct",
+      "credential": "Credential",
+      "none": "Anonymous"
+    },
+    "selectCredential": "Select a credential...",
+    "anonymousNote": "Signs in as anonymous with no password.",
+    "username": "Username",
+    "password": "Password",
+    "passwordSaved": "Password saved, type to change"
   }
 }

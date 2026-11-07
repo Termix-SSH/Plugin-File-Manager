@@ -26,7 +26,7 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { cn, ToolbarBand } from "@termix-ssh/plugin-sdk/ui";
 import { Button, Input } from "@termix-ssh/plugin-sdk/ui";
 import type { LocalFileEntry } from "./local-types";
 import {
@@ -680,7 +680,7 @@ export function LocalFilePane({
       onDrop={handlePaneDrop}
     >
       {/* Header */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border">
+      <ToolbarBand>
         <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">
           {t("fileManager.localFiles")}
         </span>
@@ -801,7 +801,7 @@ export function LocalFilePane({
             <X className="size-4" />
           </Button>
         )}
-      </div>
+      </ToolbarBand>
 
       {/* Column headers */}
       <div

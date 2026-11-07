@@ -6,7 +6,10 @@ import {
   getFileManagerApiForSession,
   setSessionOrigin,
   clearSessionOrigin,
+  setSessionFtp,
+  listHosts,
 } from "./client";
+import { usesFtp } from "../host-settings";
 import {
   createFrontendLogger,
   resolveConnectionOrigin,
@@ -114,10 +117,20 @@ export async function connectSSH(
     sessionId,
     await resolveConnectionOrigin({ connectionOrigin }),
   );
+  let ftp = false;
+  try {
+    const record = (await listHosts()).find(
+      (h) => String(h.id) === String(body.hostId),
+    );
+    ftp = !!record && usesFtp(record);
+  } catch {
+    // keep SFTP
+  }
+  setSessionFtp(sessionId, ftp);
   try {
     const response = await getFileManagerApiForSession(sessionId).post(
       "/connect",
-      { sessionId, ...body },
+      ftp ? { sessionId, hostId: body.hostId } : { sessionId, ...body },
       { timeout: 120000 },
     );
     return response.data;

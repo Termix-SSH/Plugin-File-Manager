@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { AlertCircle, Download } from "lucide-react";
-import { Button } from "@termix-ssh/plugin-sdk/ui";
+import { Button, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface ImagePreviewProps {
@@ -101,12 +101,7 @@ export function ImagePreview({
 
       {imageLoading && !imageLoadError && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-            <p className="text-sm text-muted-foreground">
-              {t("fileManager.loadingImage")}
-            </p>
-          </div>
+          <LoadingState label={t("fileManager.loadingImage")} />
         </div>
       )}
     </div>

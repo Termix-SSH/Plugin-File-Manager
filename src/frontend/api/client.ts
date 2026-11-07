@@ -73,18 +73,44 @@ export function setSessionOrigin(
 
 export function clearSessionOrigin(sessionId: string): void {
   sessionOrigins.delete(sessionId);
+  ftpSessions.delete(sessionId);
 }
 
 export function getSessionOrigin(sessionId: string): "local" | "remote" {
   return sessionOrigins.get(sessionId) === "remote" ? "remote" : "local";
 }
 
+// Sessions opened over FTP talk to the /ftp routes of the same plugin API.
+const ftpSessions = new Set<string>();
+
+export function setSessionFtp(sessionId: string, ftp: boolean): void {
+  if (ftp) ftpSessions.add(sessionId);
+  else ftpSessions.delete(sessionId);
+}
+
+export function isFtpSession(sessionId: string): boolean {
+  return ftpSessions.has(sessionId);
+}
+
+function ftpClient(base: FileManagerClient): FileManagerClient {
+  const at = (url: string) => `/ftp${url}`;
+  return {
+    get: (url, config) => base.get(at(url), config),
+    delete: (url, config) => base.delete(at(url), config),
+    post: (url, body, config) => base.post(at(url), body, config),
+    put: (url, body, config) => base.put(at(url), body, config),
+    patch: (url, body, config) => base.patch(at(url), body, config),
+    postForm: (url, body, config) => base.postForm(at(url), body, config),
+  };
+}
+
 export function getFileManagerApiForSession(
   sessionId: string,
 ): FileManagerClient {
-  return app().apiFor(
+  const base = app().apiFor(
     getSessionOrigin(sessionId),
   ) as unknown as FileManagerClient;
+  return ftpSessions.has(sessionId) ? ftpClient(base) : base;
 }
 
 function fileManagerApiFor(

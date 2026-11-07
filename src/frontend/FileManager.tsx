@@ -1,5 +1,5 @@
 import { Folder } from "lucide-react";
-import { fileManagerHostSetting } from "./host-settings";
+import { canOpenFiles, fileManagerHostSetting, usesFtp } from "./host-settings";
 import { getErrorMessage } from "./lib/error-message";
 import { fileManagerApi } from "./api/client";
 import { subscribeLocalEvents } from "./lib/local-events";
@@ -29,6 +29,7 @@ import { UploadProgressToast } from "./components/UploadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
+import { useNativeDragOut } from "./hooks/useNativeDragOut";
 import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
@@ -174,6 +175,7 @@ function FileManagerContent({
   const { addLog, clearLogs } = useConnectionLog();
 
   const [currentHost] = useState<SSHHost | null>(initialHost || null);
+  const isFtp = usesFtp(currentHost);
   const [currentPath, setCurrentPath] = useState(
     initialPath ||
       fileManagerHostSetting(initialHost, "defaultPath", "") ||
@@ -492,6 +494,9 @@ function FileManagerContent({
     sshHost: currentHost!,
   });
 
+  const nativeDrag = useNativeDragOut(sshSessionId || "");
+  const nativeDragStarted = useRef(false);
+
   const startKeepalive = useCallback(() => {
     if (!sshSessionId) return;
 
@@ -657,18 +662,20 @@ function FileManagerContent({
 
   const handleFileDragStart = useCallback(
     (files: FileItem[]) => {
-      systemDrag.startDragToSystem(files, {
-        enableToast: true,
-        onSuccess: () => {
-          clearSelection();
-        },
-      });
+      nativeDragStarted.current = nativeDrag.start(files);
     },
-    [systemDrag, clearSelection],
+    [nativeDrag],
   );
 
   const handleFileDragEnd = useCallback(
     (e: DragEvent, draggedFiles: FileItem[]) => {
+      if (nativeDragStarted.current) {
+        nativeDragStarted.current = false;
+        systemDrag.cancelDragToSystem();
+        setTimeout(() => nativeDrag.cleanup(), 30000);
+        return;
+      }
+
       const isOutside =
         e.clientX < 0 ||
         e.clientX > window.innerWidth ||
@@ -691,7 +698,7 @@ function FileManagerContent({
         systemDrag.cancelDragToSystem();
       }
     },
-    [systemDrag, clearSelection],
+    [systemDrag, nativeDrag, clearSelection],
   );
 
   const isConnectingRef = useRef(false);
@@ -699,7 +706,7 @@ function FileManagerContent({
   async function initializeSSHConnection() {
     if (!currentHost || isConnectingRef.current) return;
 
-    if (currentHost.enableSsh === false) {
+    if (!canOpenFiles(currentHost)) {
       setHasConnectionError(true);
       addLog({
         type: "error",
@@ -1670,7 +1677,10 @@ function FileManagerContent({
     updateDeletingPaths(new Set([...deletingPathsRef.current, ...targetPaths]));
     clearSelection();
     const controller = new AbortController();
-    const opId = crypto.randomUUID();
+    // getRandomValues also works on HTTP LAN origins, unlike randomUUID.
+    const opId = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+      b.toString(16).padStart(2, "0"),
+    ).join("");
     const labelKey = permanent
       ? "fileManager.deletingItems"
       : "fileManager.movingToTrash";
@@ -3907,7 +3917,7 @@ function FileManagerContent({
                 onItemContextMenu={handleSidebarItemContextMenu}
                 sshSessionId={sshSessionId}
                 refreshTrigger={sidebarRefreshTrigger}
-                onOpenTrash={() => setTrashOpen(true)}
+                onOpenTrash={isFtp ? undefined : () => setTrashOpen(true)}
                 diskInfo={diskInfo ?? undefined}
               />
             </div>
@@ -3999,13 +4009,14 @@ function FileManagerContent({
                 onStartEdit={handleStartEdit}
                 onCancelEdit={handleCancelEdit}
                 onDelete={handleDeleteFiles}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onUndo={handleUndo}
                 hasClipboard={!!clipboard}
                 onFileDrop={handleFileDrop}
                 onFileDiff={handleFileDiff}
+                onSystemPrefetch={nativeDrag.prefetch}
                 onSystemDragStart={handleFileDragStart}
                 onSystemDragEnd={handleFileDragEnd}
                 createIntent={createIntent}
@@ -4031,7 +4042,7 @@ function FileManagerContent({
                 onPreview={handleFileOpen}
                 onOpenExternally={handleOpenExternally}
                 onRename={handleRenameFile}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onDelete={handleDeleteFiles}
@@ -4050,19 +4061,23 @@ function FileManagerContent({
                 onRefresh={handleRefreshDirectory}
                 hasClipboard={!!clipboard}
                 onDragToDesktop={() => handleDragToDesktop(contextMenu.files)}
-                onOpenTerminal={(path) => handleOpenTerminal(path)}
-                onRunExecutable={(file) => handleRunExecutable(file)}
+                onOpenTerminal={
+                  isFtp ? undefined : (path) => handleOpenTerminal(path)
+                }
+                onRunExecutable={
+                  isFtp ? undefined : (file) => handleRunExecutable(file)
+                }
                 onPinFile={handlePinFile}
                 onUnpinFile={handleUnpinFile}
                 onAddShortcut={handleAddShortcut}
                 isPinned={isPinnedFile}
                 currentPath={currentPath}
-                onProperties={handleOpenPermissionsDialog}
-                onExtractArchive={handleExtractArchive}
-                onCompress={handleOpenCompressDialog}
+                onProperties={isFtp ? undefined : handleOpenPermissionsDialog}
+                onExtractArchive={isFtp ? undefined : handleExtractArchive}
+                onCompress={isFtp ? undefined : handleOpenCompressDialog}
                 onCopyPath={handleCopyPath}
                 onCopyFolderLink={handleCopyFolderLink}
-                onTransferToHost={handleOpenTransferDialog}
+                onTransferToHost={isFtp ? undefined : handleOpenTransferDialog}
               />
             </div>
           </div>

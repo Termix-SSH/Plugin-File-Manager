@@ -118,6 +118,7 @@ interface FileManagerGridProps {
   onFileDrop?: (draggedFiles: FileItem[], targetFile: FileItem) => void;
   onFileDiff?: (file1: FileItem, file2: FileItem) => void;
   onSystemDragStart?: (files: FileItem[]) => void;
+  onSystemPrefetch?: (files: FileItem[]) => void;
   onSystemDragEnd?: (e: DragEvent, files: FileItem[]) => void;
   hasClipboard?: boolean;
   createIntent?: CreateIntent | null;
@@ -259,6 +260,8 @@ export function FileManagerGrid({
   onFileDrop,
   onFileDiff,
   onSystemDragEnd,
+  onSystemPrefetch,
+  onSystemDragStart,
   hasClipboard,
   createIntent,
   onConfirmCreate,
@@ -469,6 +472,12 @@ export function FileManagerGrid({
       e.dataTransfer,
       filesToDrag.map((f) => f.path),
     );
+    onSystemDragStart?.(filesToDrag);
+  };
+
+  const prefetchFor = (file: FileItem) => {
+    if (!onSystemPrefetch) return;
+    onSystemPrefetch(selectedFiles.includes(file) ? selectedFiles : [file]);
   };
 
   const handleFileDragOver = (e: React.DragEvent, targetFile: FileItem) => {
@@ -1302,6 +1311,7 @@ export function FileManagerGrid({
                                   "opacity-40 pointer-events-none",
                               )}
                               title={file.name}
+                              onMouseDown={() => prefetchFor(file)}
                               onClick={(e) => handleFileClick(file, e)}
                               onMouseEnter={() =>
                                 file.type === "directory" &&
@@ -1514,6 +1524,7 @@ export function FileManagerGrid({
                           deletingPaths?.has(file.path) &&
                             "opacity-40 pointer-events-none",
                         )}
+                        onMouseDown={() => prefetchFor(file)}
                         onClick={(e) => handleFileClick(file, e)}
                         onMouseEnter={() =>
                           file.type === "directory" && onDirectoryHover?.(file)

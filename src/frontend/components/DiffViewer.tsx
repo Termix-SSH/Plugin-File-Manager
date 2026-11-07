@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { DiffEditor } from "@monaco-editor/react";
-import { Button } from "@termix-ssh/plugin-sdk/ui";
+import { Button, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { DownloadProgressToast } from "./DownloadProgressToast";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
@@ -227,12 +227,7 @@ export function DiffViewer({
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-          <p className="text-sm text-muted-foreground">
-            {t("fileManager.loadingFileComparison")}
-          </p>
-        </div>
+        <LoadingState label={t("fileManager.loadingFileComparison")} />
       </div>
     );
   }
@@ -348,12 +343,7 @@ export function DiffViewer({
           }}
           loading={
             <div className="h-full flex items-center justify-center">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                <p className="text-sm text-muted-foreground">
-                  {t("fileManager.initializingEditor")}
-                </p>
-              </div>
+              <LoadingState label={t("fileManager.initializingEditor")} />
             </div>
           }
         />

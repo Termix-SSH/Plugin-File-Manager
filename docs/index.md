@@ -6,6 +6,12 @@ File Manager uses the host's SSH login, so a host you can open a terminal on is 
 
 Then pick Files from the host's menu, or the file button in the tab bar.
 
+## FTP hosts
+
+Some devices only speak FTP, like an Xbox 360 or a Wii. Open the host in Manage, add the FTP protocol and fill in the port, security and login. Choose None for plain FTP, or Explicit or Implicit TLS for FTPS. Anonymous sign in is a login choice too.
+
+The Termix server makes the FTP connection, so it must be able to reach the device. A host with SSH and File Manager on still uses SFTP. On an FTP host there is no sudo, permissions, archives, copy or trash, and delete is permanent. Copying between hosts needs SFTP on both.
+
 ## Browse and edit
 
 - Click to open folders, and double-click a file to edit or preview it.
