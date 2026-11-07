@@ -3,7 +3,7 @@ import type { Express, Request, Response } from "express";
 import Busboy from "busboy";
 import { Client as FtpClient, type FileInfo } from "basic-ftp";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
-import { detectBinary, getMimeType } from "./utils.js";
+import { detectBinary, getMimeType, parseLsDateToTimestamp } from "./utils.js";
 import { contentDisposition } from "./download-routes.js";
 
 const IDLE_MS = 30 * 60 * 1000;
@@ -48,15 +48,18 @@ function permissionsOf(info: FileInfo): string {
   return `${kind}${bit(p.user)}${bit(p.group)}${bit(p.world)}`;
 }
 
-function toItem(info: FileInfo, dir: string) {
+export function toItem(info: FileInfo, dir: string) {
   const type = info.isDirectory
     ? "directory"
     : info.isSymbolicLink
       ? "link"
       : "file";
+  // Servers without MLSD (like vsftpd) only send the ls style date text.
   const mtime = info.modifiedAt
     ? Math.floor(info.modifiedAt.getTime() / 1000)
-    : 0;
+    : info.rawModifiedAt
+      ? parseLsDateToTimestamp(info.rawModifiedAt)
+      : 0;
   const permissions = permissionsOf(info);
   return {
     name: info.name,

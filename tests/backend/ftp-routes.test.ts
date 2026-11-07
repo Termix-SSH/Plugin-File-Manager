@@ -14,7 +14,8 @@ import FtpSrv from "ftp-srv";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMockCtx } from "@termix-ssh/plugin-sdk/testing";
 import type { PluginProtocolTarget } from "@termix-ssh/plugin-sdk/backend";
-import { registerFtpRoutes } from "../../src/backend/ftp-routes.js";
+import { registerFtpRoutes, toItem } from "../../src/backend/ftp-routes.js";
+import { FileInfo } from "basic-ftp";
 import { manifest } from "./helpers.js";
 
 const FTP_PORT = 2121;
@@ -222,5 +223,15 @@ describe("ftp routes", () => {
     expect(res.status).toBe(403);
     actor = "user-1";
     await call("POST", "/disconnect", { sessionId: "s2" });
+  });
+});
+
+describe("toItem", () => {
+  it("reads the ls style date when the server sends no MLSD time", () => {
+    const info = new FileInfo("notes.txt");
+    info.size = 5;
+    info.rawModifiedAt = "Jan 02 2024";
+    const item = toItem(info, "/files");
+    expect(item.modifiedTimestamp).toBe(new Date(2024, 0, 2).getTime() / 1000);
   });
 });
