@@ -19,6 +19,7 @@
 ### Fixed
 
 - Password fields with the show button are the same height as the other fields next to them
+- The History, sync and change folder buttons at the top of the terminal files panel are one height
 
 ## 1.1.3
 
