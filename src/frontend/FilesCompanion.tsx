@@ -184,7 +184,7 @@ export function FilesCompanion({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-1 px-1.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+              className="flex h-6 items-center gap-1 px-1.5 text-xs text-muted-foreground hover:text-foreground"
               title={t("companion.history")}
             >
               <History className="size-3.5" />
@@ -248,7 +248,7 @@ export function FilesCompanion({
             </label>
             <button
               type="button"
-              className="p-1 text-muted-foreground hover:text-foreground"
+              className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground"
               title={t("companion.syncNow")}
               onClick={syncNow}
             >
@@ -256,7 +256,7 @@ export function FilesCompanion({
             </button>
             <button
               type="button"
-              className="p-1 text-muted-foreground hover:text-foreground"
+              className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground"
               title={t("companion.cdTerminal")}
               onClick={() => sendToTerminal(currentPathRef.current)}
             >
