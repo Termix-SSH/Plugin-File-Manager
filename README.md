@@ -32,6 +32,9 @@ Read the [docs](https://docs.termix.site/plugins/file-manager) to set it up and 
 - A trash you can restore deleted files from
 - Copy files between two hosts, with the fastest route picked for you and an integrity check
 - A side by side local and remote view in the desktop app
+- FTP and FTPS hosts for devices with no SSH
+- Drag files out to Explorer or Finder in the desktop app
+- List, read and delete files through Termix actions
 
 <br />
 
