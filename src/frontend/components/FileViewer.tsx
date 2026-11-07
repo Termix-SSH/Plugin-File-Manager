@@ -805,7 +805,7 @@ export function FileViewer({
 
         {fileTypeInfo.type === "markdown" && !showLargeFileWarning && (
           <div className="h-full flex flex-col">
-            <div className="flex-shrink-0 bg-muted/30 border-b border-border p-2">
+            <div className="flex-shrink-0 bg-background border-b border-border p-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
