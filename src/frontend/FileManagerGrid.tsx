@@ -604,6 +604,33 @@ export function FileManagerGrid({
     [dragState.type],
   );
 
+  // A cancelled drag (Escape, drop elsewhere) can skip dragleave and leave the overlay up.
+  const outsideDragActive =
+    dragState.type === "external" || dragState.type === "local";
+  useEffect(() => {
+    if (!outsideDragActive) return;
+    const reset = () => setDragState({ type: "none", files: [], counter: 0 });
+    let idle = setTimeout(reset, 1500);
+    const alive = () => {
+      clearTimeout(idle);
+      idle = setTimeout(reset, 1500);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") reset();
+    };
+    window.addEventListener("dragover", alive, true);
+    window.addEventListener("dragend", reset, true);
+    window.addEventListener("drop", reset, true);
+    window.addEventListener("keydown", onKey, true);
+    return () => {
+      clearTimeout(idle);
+      window.removeEventListener("dragover", alive, true);
+      window.removeEventListener("dragend", reset, true);
+      window.removeEventListener("drop", reset, true);
+      window.removeEventListener("keydown", onKey, true);
+    };
+  }, [outsideDragActive]);
+
   const handleDragLeave = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();

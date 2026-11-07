@@ -168,6 +168,42 @@ describe("external file drops", () => {
   });
 });
 
+describe("cancelled outside drag", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    );
+  });
+
+  it("hides the overlay on Escape", () => {
+    render(<FileManagerGrid {...props} onUpload={vi.fn()} />);
+    fireEvent.dragEnter(screen.getByText(file.name), {
+      dataTransfer: { types: ["Files"], items: [{}], files: [] },
+    });
+    expect(screen.getByText(/dragFilesToUpload/)).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByText(/dragFilesToUpload/)).toBeNull();
+  });
+
+  it("hides the overlay when the drag goes quiet", () => {
+    vi.useFakeTimers();
+    render(<FileManagerGrid {...props} onUpload={vi.fn()} />);
+    fireEvent.dragEnter(screen.getByText(file.name), {
+      dataTransfer: { types: ["Files"], items: [{}], files: [] },
+    });
+    expect(screen.getByText(/dragFilesToUpload/)).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.queryByText(/dragFilesToUpload/)).toBeNull();
+    vi.useRealTimers();
+  });
+});
+
 describe("directory prefetch intent", () => {
   const folder: FileItem = {
     name: "folder",

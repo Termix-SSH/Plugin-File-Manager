@@ -22,6 +22,7 @@
 - The History, sync and change folder buttons at the top of the terminal files panel are one height
 - Deleting files works again when Termix is opened over plain HTTP on a local network
 - The mouse back and forward buttons only move the file pane under the pointer, not every open file tab
+- The Drop files overlay goes away when you cancel a drag with Escape or drop somewhere else
 
 ## 1.1.3
 
