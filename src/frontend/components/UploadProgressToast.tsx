@@ -50,7 +50,7 @@ export function UploadProgressToast({
             done: doneFiles,
             total: totalFiles,
           })}
-          {" · "}
+          {" | "}
           {formatFileSize(loaded)} / {formatFileSize(total)}
         </span>
         <span

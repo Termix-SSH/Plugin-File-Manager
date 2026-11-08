@@ -132,7 +132,6 @@ export function FilesCompanion({
       busy = true;
       void readCwd()
         .then((cwd) => {
-          console.debug("[files-panel] terminal folder", cwd);
           setTerminalPath(cwd);
           if (!cwd || cwd === terminalPathRef.current) return;
           terminalPathRef.current = cwd;
@@ -147,7 +146,6 @@ export function FilesCompanion({
 
   const syncNow = useCallback(() => {
     void readCwd().then((cwd) => {
-      console.debug("[files-panel] terminal folder", cwd);
       setTerminalPath(cwd);
       if (!cwd) return;
       terminalPathRef.current = cwd;

@@ -8,6 +8,7 @@
 - List files, read file info, make folders and delete files through Termix actions, so they work from rules, rollouts and the CLI
 - Open a host's files from the command palette
 - Drag files out of the file manager straight into Explorer or Finder in the desktop app, with no Save As window (files up to 50 MB)
+- The empty file list names your search when nothing matches, instead of saying the folder is empty
 
 ### Changed
 
@@ -18,12 +19,23 @@
 
 ### Fixed
 
+- Ctrl+S saves a Markdown file while you edit it
 - Password fields with the show button are the same height as the other fields next to them
 - The History, sync and change folder buttons at the top of the terminal files panel are one height
 - The selected files box with delete and copy is the same height as the path bar and search next to it
 - Deleting files works again when Termix is opened over plain HTTP on a local network
 - The mouse back and forward buttons only move the file pane under the pointer, not every open file tab
 - The Drop files overlay goes away when you cancel a drag with Escape or drop somewhere else
+- Back, forward, up and refresh in the toolbar have names for screen readers
+- Opening a folder or a folder link adds it to the history, so Back returns to where you were
+- Ctrl+Shift+T only opens a terminal from the file tab you are looking at, not every open file tab
+- Undo after a paste or drag move puts back the right files when one of them failed
+- The sudo password prompt can be tried again after a wrong password instead of staying stuck on Loading
+- Keyboard shortcuts in the file list no longer act on an old folder after you move around
+- The column headers in list view can be sorted with the keyboard
+- The local files pane no longer shows an older folder when you click through folders quickly
+- The SFTP transfer tab shows what is left after a delete fails part way
+- The SFTP transfer refresh button has a name for screen readers
 
 ## 1.1.3
 

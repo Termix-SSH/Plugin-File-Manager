@@ -402,7 +402,7 @@ const Root: React.FC<RootProps> = ({
               animate="rootAnimate"
               transition={transitions.root}
               className={cn(
-                "bg-canvas border border-edge rounded-lg overflow-hidden",
+                "bg-canvas border border-edge overflow-hidden",
                 className,
               )}
               role="tree"
@@ -551,7 +551,7 @@ const Item: React.FC<ItemProps> = ({
             tabIndex={isFocused ? 0 : -1}
             aria-expanded={hasChildren ? isExpanded : undefined}
             aria-selected={isSelected}
-            aria-label={`${hasChildren ? "Folder" : "File"}: ${label}`}
+            aria-label={label}
             aria-level={level + 1}
           >
             {hasChildren && (

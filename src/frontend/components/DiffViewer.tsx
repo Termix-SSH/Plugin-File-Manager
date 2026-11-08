@@ -283,6 +283,9 @@ export function DiffViewer({
               variant="outline"
               size="sm"
               onClick={() => setShowLineNumbers(!showLineNumbers)}
+              title={t("fileManager.lineNumbers")}
+              aria-label={t("fileManager.lineNumbers")}
+              aria-pressed={showLineNumbers}
             >
               {showLineNumbers ? (
                 <Eye className="w-4 h-4" />
@@ -311,7 +314,13 @@ export function DiffViewer({
               {file2.name}
             </Button>
 
-            <Button variant="outline" size="sm" onClick={loadFileContents}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadFileContents}
+              title={t("fileManager.refresh")}
+              aria-label={t("fileManager.refresh")}
+            >
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>

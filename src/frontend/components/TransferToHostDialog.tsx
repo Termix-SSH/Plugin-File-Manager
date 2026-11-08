@@ -493,6 +493,8 @@ export function TransferToHostDialog({
 
     return () => {
       cancelled = true;
+      // The next run may return early, so it must not inherit the spinner.
+      setMethodPreviewLoading(false);
     };
   }, [
     open,
@@ -703,9 +705,7 @@ export function TransferToHostDialog({
       <p className="text-xs text-muted-foreground">{sourceLabel}</p>
       <div className="flex flex-col gap-4 py-2 max-h-[min(60vh,28rem)] overflow-y-auto overflow-x-hidden">
         {loadingHosts ? (
-          <p className="text-xs text-muted-foreground">
-            {t("fileManager.connecting")}
-          </p>
+          <LoadingState compact label={t("fileManager.connecting")} />
         ) : availableHosts.length === 0 ? (
           <div className="border border-border bg-muted/10 p-3">
             <p className="text-xs font-semibold">
@@ -878,9 +878,11 @@ export function TransferToHostDialog({
                   </div>
                   <div className="max-h-36 overflow-y-auto overflow-x-hidden">
                     {browseLoading ? (
-                      <p className="text-[10px] text-muted-foreground px-3 py-2">
-                        {t("fileManager.connecting")}
-                      </p>
+                      <LoadingState
+                        compact
+                        label={t("fileManager.connecting")}
+                        className="px-3 py-2"
+                      />
                     ) : browseStatus === "not_found" ? (
                       <p className="text-[10px] text-muted-foreground px-3 py-2">
                         {t("transfer.browsePathWillBeCreated")}

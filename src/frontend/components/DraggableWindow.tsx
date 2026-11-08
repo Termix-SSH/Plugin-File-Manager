@@ -243,7 +243,7 @@ export function DraggableWindow({
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       document.body.style.userSelect = "none";
-      document.body.style.cursor = isDragging ? "grabbing" : "resizing";
+      document.body.style.cursor = isDragging ? "grabbing" : "";
 
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
@@ -262,7 +262,7 @@ export function DraggableWindow({
     <div
       ref={windowRef}
       className={cn(
-        "absolute bg-[#0d0e0c] rounded-none shadow-2xl",
+        "absolute bg-background rounded-none shadow-2xl",
         "select-none overflow-hidden flex flex-col",
         isMaximized ? "inset-0" : "border border-border",
       )}
@@ -302,6 +302,7 @@ export function DraggableWindow({
                 onMinimize();
               }}
               title={t("common.minimize")}
+              aria-label={t("common.minimize")}
             >
               <Minus className="size-3.5" />
             </button>
@@ -315,6 +316,9 @@ export function DraggableWindow({
                 onMaximize();
               }}
               title={isMaximized ? t("common.restore") : t("common.maximize")}
+              aria-label={
+                isMaximized ? t("common.restore") : t("common.maximize")
+              }
             >
               {isMaximized ? (
                 <Minimize2 className="size-3.5" />
@@ -331,6 +335,7 @@ export function DraggableWindow({
               onClose();
             }}
             title={t("common.close")}
+            aria-label={t("common.close")}
           >
             <X className="size-3.5" />
           </button>

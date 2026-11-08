@@ -1384,6 +1384,8 @@ function FileManagerContent({
       }
 
       if (event.key === "T" && event.ctrlKey && event.shiftKey) {
+        // Every mounted tab listens, so only the visible one acts.
+        if (!paneVisibleRef.current || isFtp) return;
         event.preventDefault();
         handleOpenTerminal(currentPath);
       }
@@ -1391,7 +1393,7 @@ function FileManagerContent({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [currentPath]);
+  }, [currentPath, isFtp]);
 
   async function handleItemsDropped(entries: FileSystemEntry[]) {
     if (!sshSessionId) {
@@ -2159,7 +2161,7 @@ function FileManagerContent({
       const symlinkInfo = await identifySSHSymlink(currentSessionId, file.path);
 
       if (symlinkInfo.type === "directory") {
-        setCurrentPath(symlinkInfo.target);
+        navigateTo(symlinkInfo.target);
       } else if (symlinkInfo.type === "file") {
         const windowCount = Date.now() % 10;
         const offsetX = 120 + windowCount * 30;
@@ -2370,13 +2372,7 @@ function FileManagerContent({
         file.path !== currentPathRef.current,
       );
       markAdaptiveResourceUsed("network", "directory-list");
-      directoryRequestRef.current += 1;
-      const cached = sshSessionId
-        ? peekCachedFileList(sshSessionId, file.path)
-        : null;
-      if (cached) setFiles(cached.files);
-      setIsLoading(!!sshSessionId && !cached);
-      setCurrentPath(file.path);
+      navigateTo(file.path);
       return;
     }
 
@@ -3899,7 +3895,7 @@ function FileManagerContent({
           navigateTo={navigateTo}
           handleRefreshDirectory={handleRefreshDirectory}
           handleDeleteFiles={handleDeleteFiles}
-          handleCopyFiles={handleCopyFiles}
+          handleCopyFiles={isFtp ? undefined : handleCopyFiles}
           handleFilesDropped={handleFilesDropped}
           handleCreateNewFolder={handleCreateNewFolder}
           handleCreateNewFile={handleCreateNewFile}
@@ -3994,6 +3990,7 @@ function FileManagerContent({
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
+                searchQuery={searchQuery}
                 isLoading={isLoading}
                 selectedFiles={selectedFiles}
                 deletingPaths={deletingPaths}

@@ -428,7 +428,16 @@ export function useLocalTransfers({
       if (items.length === 0) return;
       const sessionId = sshSessionId;
 
-      const { separator } = await getLocalHome();
+      let separator: string;
+      try {
+        ({ separator } = await getLocalHome());
+      } catch (error) {
+        toast.error(
+          t("fileManager.localDownloadFailed"),
+          error instanceof Error ? { description: error.message } : undefined,
+        );
+        return;
+      }
       // Every remote name is validated for the local platform and the result
       // must stay inside `localDir`; anything else is reported and skipped.
       const toLocalPath = (relativePath: string) =>
