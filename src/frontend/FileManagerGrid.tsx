@@ -88,6 +88,8 @@ interface FileManagerGridProps {
   files: FileItem[];
   /** Show a spinner instead of the empty-folder text while a listing is in flight. */
   isLoading?: boolean;
+  /** Active name filter; when it leaves nothing to show, the empty state names it. */
+  searchQuery?: string;
   selectedFiles: FileItem[];
   /** Paths being moved to the trash: shown dimmed and not interactive. */
   deletingPaths?: ReadonlySet<string>;
@@ -232,6 +234,7 @@ const getFileIcon = (
 export function FileManagerGrid({
   files,
   isLoading,
+  searchQuery,
   selectedFiles,
   deletingPaths,
   onFileOpen,
@@ -1235,7 +1238,13 @@ export function FileManagerGrid({
                   <>
                     <Folder className="size-8 text-muted-foreground/30" />
                     <span className="text-xs">
-                      {t("fileManager.emptyFolder")}
+                      {searchQuery
+                        ? t("fileManager.noSearchResults", {
+                            query: searchQuery,
+                            // React already escapes the text.
+                            interpolation: { escapeValue: false },
+                          })
+                        : t("fileManager.emptyFolder")}
                     </span>
                   </>
                 )}

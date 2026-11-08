@@ -55,6 +55,15 @@ afterEach(() => {
 });
 
 describe("remote file rename", () => {
+  it("names the search in the empty state only while filtering", () => {
+    const { rerender } = render(
+      <FileManagerGrid {...props} files={[]} searchQuery="abc" />,
+    );
+    expect(screen.getByText("fileManager.noSearchResults")).toBeInTheDocument();
+    rerender(<FileManagerGrid {...props} files={[]} searchQuery="" />);
+    expect(screen.getByText("fileManager.emptyFolder")).toBeInTheDocument();
+  });
+
   it.each(["F2", "F6"])("starts rename with %s in the visible pane", (key) => {
     vi.spyOn(HTMLElement.prototype, "offsetParent", "get").mockReturnValue(
       document.body,

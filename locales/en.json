@@ -200,6 +200,7 @@
     "columns": "Columns",
     "columnsHint": "Right-click to choose columns",
     "emptyFolder": "This folder is empty",
+    "noSearchResults": "No results found for \"{{query}}\"",
     "searchFiles": "Search files...",
     "upload": "Upload",
     "selectHostToStart": "Select a host to start file management",

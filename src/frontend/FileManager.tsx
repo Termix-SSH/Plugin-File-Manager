@@ -3942,6 +3942,7 @@ function FileManagerContent({
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
+                searchQuery={searchQuery}
                 isLoading={isLoading}
                 selectedFiles={selectedFiles}
                 deletingPaths={deletingPaths}
