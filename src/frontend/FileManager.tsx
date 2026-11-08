@@ -4046,7 +4046,11 @@ function FileManagerContent({
                     .forEach(handleDownloadFile)
                 }
                 onPreview={handleFileOpen}
-                onOpenExternally={handleOpenExternally}
+                onOpenExternally={
+                  window.electronAPI?.isElectron
+                    ? handleOpenExternally
+                    : undefined
+                }
                 onRename={handleRenameFile}
                 onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
