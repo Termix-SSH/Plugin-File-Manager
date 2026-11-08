@@ -8,6 +8,7 @@
 - List files, read file info, make folders and delete files through Termix actions, so they work from rules, rollouts and the CLI
 - Open a host's files from the command palette
 - Drag files out of the file manager straight into Explorer or Finder in the desktop app, with no Save As window (files up to 50 MB)
+- The empty file list names your search when nothing matches, instead of saying the folder is empty
 
 ### Changed
 
