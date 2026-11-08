@@ -1308,6 +1308,8 @@ function FileManagerContent({
       }
 
       if (event.key === "T" && event.ctrlKey && event.shiftKey) {
+        // Every mounted tab listens, so only the visible one acts.
+        if (!paneVisibleRef.current || isFtp) return;
         event.preventDefault();
         handleOpenTerminal(currentPath);
       }
@@ -1315,7 +1317,7 @@ function FileManagerContent({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [currentPath]);
+  }, [currentPath, isFtp]);
 
   async function handleItemsDropped(entries: FileSystemEntry[]) {
     if (!sshSessionId) {
@@ -2035,7 +2037,7 @@ function FileManagerContent({
       const symlinkInfo = await identifySSHSymlink(currentSessionId, file.path);
 
       if (symlinkInfo.type === "directory") {
-        setCurrentPath(symlinkInfo.target);
+        navigateTo(symlinkInfo.target);
       } else if (symlinkInfo.type === "file") {
         const windowCount = Date.now() % 10;
         const offsetX = 120 + windowCount * 30;
@@ -2246,13 +2248,7 @@ function FileManagerContent({
         file.path !== currentPathRef.current,
       );
       markAdaptiveResourceUsed("network", "directory-list");
-      directoryRequestRef.current += 1;
-      const cached = sshSessionId
-        ? peekCachedFileList(sshSessionId, file.path)
-        : null;
-      if (cached) setFiles(cached.files);
-      setIsLoading(!!sshSessionId && !cached);
-      setCurrentPath(file.path);
+      navigateTo(file.path);
       return;
     }
 
@@ -2474,6 +2470,11 @@ function FileManagerContent({
 
       let successCount = 0;
       const copiedItems: string[] = [];
+      const doneFiles: {
+        originalPath: string;
+        targetPath: string;
+        targetName: string;
+      }[] = [];
 
       for (const file of files) {
         try {
@@ -2485,7 +2486,13 @@ function FileManagerContent({
               currentHost?.id,
               currentHost?.userId?.toString(),
             );
-            copiedItems.push(result.uniqueName || file.name);
+            const targetName = result.uniqueName || file.name;
+            copiedItems.push(targetName);
+            doneFiles.push({
+              originalPath: file.path,
+              targetPath: childPath(currentPath, targetName),
+              targetName,
+            });
             successCount++;
           } else {
             const targetPath = currentPath.endsWith("/")
@@ -2500,6 +2507,11 @@ function FileManagerContent({
                 currentHost?.id,
                 currentHost?.userId?.toString(),
               );
+              doneFiles.push({
+                originalPath: file.path,
+                targetPath,
+                targetName: file.name,
+              });
               successCount++;
             }
           }
@@ -2531,13 +2543,7 @@ function FileManagerContent({
 
       if (successCount > 0) {
         if (operation === "copy") {
-          const copiedFiles = files
-            .slice(0, successCount)
-            .map((file, index) => ({
-              originalPath: file.path,
-              targetPath: `${currentPath}/${copiedItems[index] || file.name}`,
-              targetName: copiedItems[index] || file.name,
-            }));
+          const copiedFiles = doneFiles;
 
           const undoAction: UndoAction = {
             type: "copy",
@@ -2551,16 +2557,7 @@ function FileManagerContent({
           };
           setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
         } else if (operation === "cut") {
-          const movedFiles = files.slice(0, successCount).map((file) => {
-            const targetPath = currentPath.endsWith("/")
-              ? `${currentPath}${file.name}`
-              : `${currentPath}/${file.name}`;
-            return {
-              originalPath: file.path,
-              targetPath: targetPath,
-              targetName: file.name,
-            };
-          });
+          const movedFiles = doneFiles;
 
           const undoAction: UndoAction = {
             type: "cut",
@@ -3403,7 +3400,11 @@ function FileManagerContent({
       await ensureSSHConnection();
 
       let successCount = 0;
-      const movedItems: string[] = [];
+      const movedFiles: {
+        originalPath: string;
+        targetPath: string;
+        targetName: string;
+      }[] = [];
 
       for (const file of draggedFiles) {
         try {
@@ -3419,7 +3420,11 @@ function FileManagerContent({
               currentHost?.id,
               currentHost?.userId?.toString(),
             );
-            movedItems.push(file.name);
+            movedFiles.push({
+              originalPath: file.path,
+              targetPath,
+              targetName: file.name,
+            });
             successCount++;
           }
         } catch (error: unknown) {
@@ -3432,17 +3437,6 @@ function FileManagerContent({
       }
 
       if (successCount > 0) {
-        const movedFiles = draggedFiles.slice(0, successCount).map((file) => {
-          const targetPath = targetFolder.path.endsWith("/")
-            ? `${targetFolder.path}${file.name}`
-            : `${targetFolder.path}/${file.name}`;
-          return {
-            originalPath: file.path,
-            targetPath: targetPath,
-            targetName: file.name,
-          };
-        });
-
         const undoAction: UndoAction = {
           type: "cut",
           description: t("fileManager.dragMovedItems", {
@@ -3872,7 +3866,7 @@ function FileManagerContent({
           navigateTo={navigateTo}
           handleRefreshDirectory={handleRefreshDirectory}
           handleDeleteFiles={handleDeleteFiles}
-          handleCopyFiles={handleCopyFiles}
+          handleCopyFiles={isFtp ? undefined : handleCopyFiles}
           handleFilesDropped={handleFilesDropped}
           handleCreateNewFolder={handleCreateNewFolder}
           handleCreateNewFile={handleCreateNewFile}

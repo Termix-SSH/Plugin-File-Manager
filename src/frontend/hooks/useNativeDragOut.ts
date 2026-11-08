@@ -37,9 +37,10 @@ export function useNativeDragOut(sshSessionId: string) {
 
   useEffect(() => cleanup, [cleanup]);
 
+  // Files made for another session are never used again, so delete them.
   useEffect(() => {
-    ready.current.clear();
-  }, [sshSessionId]);
+    cleanup();
+  }, [sshSessionId, cleanup]);
 
   const key = (f: FileItem) => `${sshSessionId}:${f.path}:${f.size ?? 0}`;
 

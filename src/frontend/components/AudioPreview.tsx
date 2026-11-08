@@ -22,8 +22,11 @@ interface AudioPreviewProps {
 
 function formatFileSize(bytes?: number, t?: (key: string) => string): string {
   if (!bytes) return t ? t("fileManager.unknownSize") : "Unknown size";
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(
+    sizes.length - 1,
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+  );
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 }
 
@@ -65,11 +68,11 @@ export function AudioPreview({
           <div className="flex justify-center">
             <div
               className={cn(
-                "w-32 h-32 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center shadow-lg",
+                "w-32 h-32 bg-muted flex items-center justify-center",
                 color,
               )}
             >
-              <Music className="w-16 h-16 text-pink-600" />
+              <Music className="w-16 h-16 text-muted-foreground" />
             </div>
           </div>
 
@@ -83,7 +86,7 @@ export function AudioPreview({
             </p>
           </div>
 
-          <div className="rounded-lg overflow-hidden">
+          <div className="overflow-hidden">
             <AudioPlayer
               src={audioUrl}
               onLoadedMetaData={() => {

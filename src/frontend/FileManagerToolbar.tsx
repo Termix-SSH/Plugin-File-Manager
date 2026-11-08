@@ -59,7 +59,8 @@ type FileManagerToolbarProps = {
   navigateTo: (path: string) => void;
   handleRefreshDirectory: () => void;
   handleDeleteFiles: (files: FileItem[]) => void;
-  handleCopyFiles: (files: FileItem[]) => void;
+  /** Left out where copy is not supported (FTP). */
+  handleCopyFiles?: (files: FileItem[]) => void;
   handleFilesDropped: (fileList: FileList) => void;
   handleCreateNewFolder: () => void;
   handleCreateNewFile: () => void;
@@ -304,6 +305,7 @@ export function FileManagerToolbar({
                 sidebarOpen ? "" : "md:bg-accent-brand/10 md:text-accent-brand"
               }
               title={t("fileManager.toggleSidebar")}
+              aria-label={t("fileManager.toggleSidebar")}
               aria-pressed={!sidebarOpen}
             >
               <Layout className="size-4" />
@@ -313,6 +315,8 @@ export function FileManagerToolbar({
             variant="ghost"
             size="icon"
             onClick={goBack}
+            title={t("fileManager.back")}
+            aria-label={t("fileManager.back")}
             disabled={navIndex <= 0}
           >
             <ChevronLeft className="size-4" />
@@ -321,6 +325,8 @@ export function FileManagerToolbar({
             variant="ghost"
             size="icon"
             onClick={goForward}
+            title={t("fileManager.forward")}
+            aria-label={t("fileManager.forward")}
             disabled={navIndex >= navHistoryLength - 1}
           >
             <ChevronRight className="size-4" />
@@ -329,11 +335,19 @@ export function FileManagerToolbar({
             variant="ghost"
             size="icon"
             onClick={goUp}
+            title={t("fileManager.up")}
+            aria-label={t("fileManager.up")}
             disabled={currentPath === "/"}
           >
             <ArrowUp className="size-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleRefreshDirectory}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRefreshDirectory}
+            title={t("fileManager.refresh")}
+            aria-label={t("fileManager.refresh")}
+          >
             <RefreshCw
               className={`size-4 ${isLoading && !!sshSessionId ? "animate-spin [animation-duration:0.5s]" : ""}`}
             />
@@ -368,15 +382,17 @@ export function FileManagerToolbar({
               >
                 <Trash2 className="size-3.5" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                title={t("fileManager.copy")}
-                className="text-accent-brand hover:bg-accent-brand/20"
-                onClick={() => handleCopyFiles(selectedFiles)}
-              >
-                <Copy className="size-3.5" />
-              </Button>
+              {handleCopyFiles && (
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  title={t("fileManager.copy")}
+                  className="text-accent-brand hover:bg-accent-brand/20"
+                  onClick={() => handleCopyFiles(selectedFiles)}
+                >
+                  <Copy className="size-3.5" />
+                </Button>
+              )}
             </div>
           )}
 

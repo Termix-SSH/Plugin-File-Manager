@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { cn, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import {
   Folder,
   File,
@@ -28,7 +28,6 @@ import {
   FileSymlink,
   Move,
   GitCompare,
-  Loader2,
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "./host-types";
@@ -956,6 +955,16 @@ export function FileManagerGrid({
     [onUpload, onUploadItems, onLocalFilesDrop, dragState],
   );
 
+  const sortKeyDown = (
+    e: React.KeyboardEvent,
+    field: "name" | "modified" | "size",
+  ) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    e.stopPropagation();
+    onSortChange?.(field);
+  };
+
   const handleFileClick = (file: FileItem, event: React.MouseEvent) => {
     event.stopPropagation();
 
@@ -1158,6 +1167,14 @@ export function FileManagerGrid({
     onCut,
     onPaste,
     onUndo,
+    onDownload,
+    onNewFile,
+    onNewFolder,
+    onUpload,
+    onStartEdit,
+    onFileOpen,
+    hasClipboard,
+    deletingPaths,
   ]);
 
   // Pinned ".." entry (Termius-style). Behaves as a directory drop target
@@ -1266,7 +1283,7 @@ export function FileManagerGrid({
               {viewMode === "grid" ? parentGridStrip : parentListRow}
               <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground select-none pointer-events-none">
                 {isLoading ? (
-                  <Loader2 className="size-6 animate-spin text-muted-foreground/60" />
+                  <LoadingState label={t("common.loading")} />
                 ) : (
                   <>
                     <Folder className="size-8 text-muted-foreground/30" />
@@ -1432,7 +1449,10 @@ export function FileManagerGrid({
               >
                 <div
                   className="flex items-center gap-1 cursor-pointer hover:text-accent-brand transition-colors min-w-0"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSortChange?.("name")}
+                  onKeyDown={(e) => sortKeyDown(e, "name")}
                 >
                   {t("fileManager.name")}
                   {sortBy === "name" &&
@@ -1445,7 +1465,10 @@ export function FileManagerGrid({
                 {listColumns.isVisible("modified") && (
                   <div
                     className="relative flex items-center gap-1 cursor-pointer hover:text-accent-brand transition-colors min-w-0"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onSortChange?.("modified")}
+                    onKeyDown={(e) => sortKeyDown(e, "modified")}
                   >
                     <ColumnResizeHandle
                       {...listColumns.getHandleProps("modified")}
@@ -1472,7 +1495,10 @@ export function FileManagerGrid({
                 {listColumns.isVisible("size") && (
                   <div
                     className="relative flex items-center gap-1 cursor-pointer hover:text-accent-brand transition-colors justify-end min-w-0"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onSortChange?.("size")}
+                    onKeyDown={(e) => sortKeyDown(e, "size")}
                   >
                     <ColumnResizeHandle
                       {...listColumns.getHandleProps("size")}

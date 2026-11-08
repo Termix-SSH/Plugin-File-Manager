@@ -422,6 +422,8 @@ function RemotePane({
           variant="ghost"
           size="icon"
           className="size-7 rounded-none"
+          title={t("fileManager.refresh")}
+          aria-label={t("fileManager.refresh")}
           disabled={!pane.sessionId || pane.loading}
           onClick={() =>
             pane.sessionId && void loadRemotePath(pane.sessionId, pane.path)
@@ -917,6 +919,8 @@ export function SftpTransferTab() {
       await refreshRemotePane(paneId);
       toast.success(t("sftpTransfer.itemsDeleted", { count: entries.length }));
     } catch (error) {
+      // Some items may already be gone, so show what is left.
+      void refreshRemotePane(paneId);
       toast.error(
         error instanceof Error ? error.message : t("sftpTransfer.deleteFailed"),
       );

@@ -72,7 +72,7 @@ export function ImagePreview({
             <img
               src={imageUrl}
               alt={fileName}
-              className="max-w-full max-h-full object-contain rounded-lg shadow-sm cursor-pointer hover:shadow-lg transition-shadow"
+              className="max-w-full max-h-full object-contain cursor-pointer"
               style={{ maxHeight: "calc(100vh - 200px)" }}
               onLoad={(e) => {
                 setImageLoading(false);

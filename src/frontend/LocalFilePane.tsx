@@ -193,12 +193,16 @@ export function LocalFilePane({
     overscan: 12,
   });
 
+  const loadSeqRef = useRef(0);
   const load = useCallback(
     async (dirPath: string) => {
+      // A slower earlier listing must not replace a newer one.
+      const seq = ++loadSeqRef.current;
       setLoading(true);
       setError(null);
       try {
         const listing = await listLocalDirectory(dirPath);
+        if (seq !== loadSeqRef.current) return null;
         setCurrentPath(listing.path);
         setParentPath(listing.parent);
         setEntries(listing.entries);
@@ -213,10 +217,11 @@ export function LocalFilePane({
         onPathChange?.(listing.path);
         return listing.path;
       } catch (err) {
+        if (seq !== loadSeqRef.current) return null;
         setError(err instanceof Error ? err.message : String(err));
         return null;
       } finally {
-        setLoading(false);
+        if (seq === loadSeqRef.current) setLoading(false);
       }
     },
     [onPathChange],

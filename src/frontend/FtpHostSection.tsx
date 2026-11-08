@@ -117,6 +117,7 @@ export function FtpHostSection(props: HostEditorSectionProps) {
               <button
                 key={m}
                 type="button"
+                aria-pressed={login.authType === m}
                 onClick={() => setLogin({ authType: m })}
                 className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border transition-colors ${
                   login.authType === m
@@ -169,10 +170,6 @@ export function FtpHostSection(props: HostEditorSectionProps) {
                       ? ""
                       : login.password
                   }
-                  onFocus={() => {
-                    if (login.password === HOST_PROTOCOL_SECRET_KEPT)
-                      setLogin({ password: "" });
-                  }}
                   onChange={(e) => setLogin({ password: e.target.value })}
                 />
               </div>

@@ -113,7 +113,7 @@ export function useDragToSystemDesktop({ sshSessionId }: UseDragToSystemProps) {
       const { enableToast = true, onSuccess, onError } = options;
 
       if (files.length === 0) {
-        const error = "No files available for dragging";
+        const error = t("fileManager.onlyFilesToDesktop");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -121,7 +121,7 @@ export function useDragToSystemDesktop({ sshSessionId }: UseDragToSystemProps) {
 
       const fileList = files.filter((f) => f.type === "file");
       if (fileList.length === 0) {
-        const error = "Only files can be dragged to desktop";
+        const error = t("fileManager.onlyFilesToDesktop");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -217,9 +217,7 @@ export function useDragToSystemDesktop({ sshSessionId }: UseDragToSystemProps) {
         } else {
           fallbackDownload(blob, fileName);
           if (enableToast) {
-            toast.info(
-              "Due to browser limitations, file will be downloaded to default download directory",
-            );
+            toast.info(t("fileManager.savedToDownloads"));
           }
         }
 
@@ -228,8 +226,8 @@ export function useDragToSystemDesktop({ sshSessionId }: UseDragToSystemProps) {
         if (enableToast) {
           toast.success(
             fileList.length === 1
-              ? `${fileName} saved to specified location`
-              : `${fileList.length} files packaged and saved`,
+              ? t("fileManager.savedFile", { name: fileName })
+              : t("fileManager.savedFilesZip", { count: fileList.length }),
           );
         }
 
@@ -242,7 +240,7 @@ export function useDragToSystemDesktop({ sshSessionId }: UseDragToSystemProps) {
         return true;
       } catch (error: unknown) {
         const err = error as { message?: string };
-        const errorMessage = err.message || "Save failed";
+        const errorMessage = err.message || t("fileManager.unknownError");
 
         setState((prev) => ({
           ...prev,
