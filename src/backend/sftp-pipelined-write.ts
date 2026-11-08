@@ -17,9 +17,10 @@ export function pipelineWriteToSftp(
   sftp: SFTPWrapper,
   path: string,
   source: NodeJS.ReadableStream,
-  { stallMs = STALL_MS, closeAckMs = CLOSE_ACK_MS } = {},
-): { done: Promise<number>; abort: () => void } {
+  { stallMs = STALL_MS, closeAckMs = CLOSE_ACK_MS, flags = "w" } = {},
+): { done: Promise<number>; abort: () => void; hasOpened: () => boolean } {
   let abortHook: () => void = () => {};
+  let openedSuccessfully = false;
 
   const done = new Promise<number>((resolve, reject) => {
     let handle: Buffer | undefined;
@@ -115,10 +116,11 @@ export function pipelineWriteToSftp(
       maybeFinish();
     });
 
-    sftp.open(path, "w", (err, h) => {
+    sftp.open(path, flags, (err, h) => {
       opened = true;
       lastAnswer = Date.now();
       if (err) return fail(err);
+      openedSuccessfully = true;
       if (settled) {
         sftp.close(h, () => {});
         return;
@@ -128,5 +130,9 @@ export function pipelineWriteToSftp(
     });
   });
 
-  return { done, abort: () => abortHook() };
+  return {
+    done,
+    abort: () => abortHook(),
+    hasOpened: () => openedSuccessfully,
+  };
 }

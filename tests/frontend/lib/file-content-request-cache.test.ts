@@ -6,6 +6,26 @@ import {
 } from "../../../src/frontend/lib/file-content-request-cache";
 
 describe("file content request cache", () => {
+  it("invalidates overwritten folder contents without flushing siblings or other sessions", async () => {
+    const loader = vi.fn(async () => ({ content: "old", path: "/folder/a" }));
+    for (const [session, path] of [
+      ["copy", "/folder/a"],
+      ["copy", "/folder-b/a"],
+      ["other", "/folder/a"],
+    ]) {
+      await getCachedFileContent(session, path, loader);
+    }
+    invalidateCachedFileContent("copy", "/folder");
+    for (const [session, path] of [
+      ["copy", "/folder/a"],
+      ["copy", "/folder-b/a"],
+      ["other", "/folder/a"],
+    ]) {
+      await getCachedFileContent(session, path, loader);
+    }
+    expect(loader).toHaveBeenCalledTimes(4);
+  });
+
   it("coalesces reads and reloads after invalidation", async () => {
     const loader = vi.fn(async () => ({ content: "hello", path: "/note" }));
 

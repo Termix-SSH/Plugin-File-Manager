@@ -50,6 +50,28 @@ function fakeSftp(opts: { openDelay?: boolean; failWriteAt?: number } = {}) {
 const tick = () => new Promise<void>((r) => setImmediate(r));
 
 describe("pipelineWriteToSftp", () => {
+  it("uses exclusive create for protected uploads and never owns a rejected destination", async () => {
+    const source = new PassThrough();
+    const sftp = {
+      open: vi.fn((_path, _flags, callback) =>
+        callback(new Error("File exists")),
+      ),
+      close: vi.fn(),
+    };
+    const upload = pipelineWriteToSftp(sftp as never, "/exists", source, {
+      flags: "wx",
+    });
+    await expect(upload.done).rejects.toThrow("File exists");
+    expect(sftp.open).toHaveBeenCalledWith(
+      "/exists",
+      "wx",
+      expect.any(Function),
+    );
+    expect(upload.hasOpened()).toBe(false);
+    upload.abort();
+    expect(sftp.close).not.toHaveBeenCalled();
+  });
+
   it("writes exact bytes with out-of-order acks and bounded concurrency", async () => {
     const f = fakeSftp();
     const src = new PassThrough();

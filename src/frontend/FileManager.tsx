@@ -34,6 +34,14 @@ import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
+import {
+  applyUploadPlan,
+  resolveNameConflicts,
+  uploadRoots,
+  type NamedItem,
+  type NameConflict,
+  type ConflictChoice,
+} from "./lib/name-conflicts";
 import { PassphraseDialog } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerToolbar } from "./FileManagerToolbar.tsx";
 import { LocalFilePane } from "./LocalFilePane.tsx";
@@ -1236,6 +1244,72 @@ function FileManagerContent({
     return () => window.removeEventListener("file-manager:refresh", handler);
   }, [currentHost?.id, handleRefreshDirectory]);
 
+  const [nameConflict, setNameConflict] = useState<
+    (NameConflict & { id: number }) | null
+  >(null);
+  const conflictSequence = useRef(0);
+  const pendingConflict = useRef<
+    ((choice: ConflictChoice | null) => void) | null
+  >(null);
+  const planningConflicts = useRef(false);
+  const conflictContext = useRef(0);
+
+  function resolveConflict(choice: ConflictChoice | null) {
+    const resolve = pendingConflict.current;
+    pendingConflict.current = null;
+    setNameConflict(null);
+    resolve?.(choice);
+  }
+
+  useEffect(
+    () => () => {
+      conflictContext.current++;
+      pendingConflict.current?.(null);
+      pendingConflict.current = null;
+      setNameConflict(null);
+    },
+    [sshSessionId, currentPath],
+  );
+
+  async function planConflicts<T extends NamedItem>(
+    items: T[],
+    targetDir: string,
+    sameDirectoryCopy?: (item: T) => boolean,
+  ) {
+    if (!sshSessionId) return null;
+    if (planningConflicts.current) {
+      toast.info(t("fileManager.conflictBusy"));
+      return null;
+    }
+    planningConflicts.current = true;
+    const context = conflictContext.current;
+    try {
+      const existing =
+        targetDir.replace(/\/+$/, "") === currentPath.replace(/\/+$/, "")
+          ? files
+          : (await listSSHFiles(sshSessionId, targetDir, { force: true }))
+              .files;
+      if (context !== conflictContext.current) return null;
+      const plan = await resolveNameConflicts(
+        items,
+        existing,
+        (conflict) =>
+          new Promise((resolve) => {
+            pendingConflict.current = resolve;
+            setNameConflict({ ...conflict, id: ++conflictSequence.current });
+          }),
+        sameDirectoryCopy,
+      );
+      return context === conflictContext.current ? plan : null;
+    } finally {
+      planningConflicts.current = false;
+    }
+  }
+
+  // Dropped local paths are planned with the latest listing, not a stale render.
+  const planUploadRef = useRef(planUpload);
+  planUploadRef.current = planUpload;
+
   const localTransfers = useLocalTransfers({
     sshSessionId,
     hostId: currentHost?.id,
@@ -1254,7 +1328,9 @@ function FileManagerContent({
     (localPaths: string[], targetDir?: FileItem) => {
       const remoteDir = targetDir?.path ?? currentPathRef.current;
       void waitForDeletes(pendingDeleteRef).then(() =>
-        localTransfers.uploadLocalPaths(localPaths, remoteDir),
+        localTransfers.uploadLocalPaths(localPaths, remoteDir, (batch) =>
+          planUploadRef.current(batch.files, batch.emptyDirs, remoteDir),
+        ),
       );
     },
     [localTransfers],
@@ -1376,10 +1452,44 @@ function FileManagerContent({
     await uploadBatch(files, emptyDirs);
   }
 
+  /** Resolve name conflicts for an upload batch; null = cancelled or refused. */
+  async function planUpload<F extends { relativePath: string }>(
+    files: F[],
+    emptyDirs: string[],
+    targetDir: string,
+  ) {
+    const uploadPlan = await planConflicts(
+      uploadRoots(files, emptyDirs),
+      targetDir,
+    ).catch((): null => {
+      toast.error(t("fileManager.failedToUploadFile"));
+      return null;
+    });
+    if (!uploadPlan) return null;
+    if (
+      uploadPlan.some(
+        ({ item, overwrite, existing }) =>
+          overwrite && existing && existing.type !== item.type,
+      )
+    ) {
+      toast.error(t("fileManager.conflictTypeMismatch"));
+      return null;
+    }
+    if (uploadPlan.some((entry) => entry.overwrite)) setUndoHistory([]);
+    return applyUploadPlan(files, emptyDirs, uploadPlan);
+  }
+
   async function uploadBatch(
     files: { file: File; relativePath: string }[],
     emptyDirs: string[],
   ) {
+    const targetDir = currentPath;
+    const planned = await planUpload(files, emptyDirs, targetDir);
+    if (!planned) return;
+    const uploads = planned.files;
+    files = uploads;
+    emptyDirs = planned.emptyDirs;
+    if (files.length === 0 && emptyDirs.length === 0) return;
     const controller = new AbortController();
     const totalBytes = files.reduce((n, f) => n + f.file.size, 0);
     const toastId = toast.loading(null, { duration: Infinity });
@@ -1420,7 +1530,7 @@ function FileManagerContent({
     try {
       await ensureSSHConnection();
 
-      const base = currentPath.endsWith("/") ? currentPath : currentPath + "/";
+      const base = targetDir.endsWith("/") ? targetDir : targetDir + "/";
 
       const dirs = new Set<string>();
       for (const relativePath of [
@@ -1448,36 +1558,50 @@ function FileManagerContent({
           targetPath,
           folderName,
           currentHost?.id,
+          undefined,
+          targetDir,
         );
       }
 
       const ticker = setInterval(render, 500);
       try {
-        await runWithConcurrency(files, 4, async ({ file, relativePath }) => {
-          controller.signal.throwIfAborted();
-          const dirPart = relativePath.includes("/")
-            ? relativePath.substring(0, relativePath.lastIndexOf("/"))
-            : "";
-          const uploadPath = dirPart ? `${base}${dirPart}/` : base;
-
-          try {
-            await uploadSSHFile(
-              sshSessionId,
-              uploadPath,
-              file.name,
-              file,
-              currentHost?.id,
-              undefined,
-              (p) => sent.set(relativePath, p.bytesSent),
-              controller.signal,
-            );
-            sent.set(relativePath, file.size);
-          } catch (error) {
+        // Duplicate loose names may explicitly overwrite each other; keep their order.
+        const concurrency =
+          new Set(uploads.map((file) => file.relativePath)).size ===
+          uploads.length
+            ? 4
+            : 1;
+        await runWithConcurrency(
+          uploads,
+          concurrency,
+          async ({ file, relativePath, overwrite }) => {
             controller.signal.throwIfAborted();
-            failed.push(relativePath);
-          }
-          doneFiles++;
-        });
+            const dirPart = relativePath.includes("/")
+              ? relativePath.substring(0, relativePath.lastIndexOf("/"))
+              : "";
+            const uploadPath = dirPart ? `${base}${dirPart}/` : base;
+
+            try {
+              await uploadSSHFile(
+                sshSessionId,
+                uploadPath,
+                relativePath.split("/").pop()!,
+                file,
+                currentHost?.id,
+                undefined,
+                (p) => sent.set(relativePath, p.bytesSent),
+                controller.signal,
+                overwrite,
+                targetDir,
+              );
+              sent.set(relativePath, file.size);
+            } catch (error) {
+              controller.signal.throwIfAborted();
+              failed.push(relativePath);
+            }
+            doneFiles++;
+          },
+        );
       } finally {
         clearInterval(ticker);
       }
@@ -2455,10 +2579,120 @@ function FileManagerContent({
     }
   }
 
+  async function transferItems(
+    items: FileItem[],
+    targetDir: string,
+    operation: "copy" | "cut",
+  ) {
+    await ensureSSHConnection();
+    const base = targetDir.replace(/\/+$/, "");
+    const candidates = items.filter(
+      (file) => operation === "copy" || file.path !== `${base}/${file.name}`,
+    );
+    const plan = await planConflicts(
+      candidates,
+      targetDir,
+      (file) => operation === "copy" && file.path === `${base}/${file.name}`,
+    );
+    if (!plan) return [];
+    const completed: {
+      originalPath: string;
+      targetPath: string;
+      targetName: string;
+      overwrite: boolean;
+    }[] = [];
+    for (const { item: file, name, overwrite } of plan) {
+      try {
+        let targetPath = `${base}/${name}`;
+        let targetName = name;
+        if (operation === "copy") {
+          const result = await copySSHItem(
+            sshSessionId!,
+            file.path,
+            targetDir,
+            currentHost?.id,
+            currentHost?.userId?.toString(),
+            { name, overwrite },
+          );
+          targetPath = result.targetPath || targetPath;
+          targetName = result.uniqueName || name;
+        } else {
+          await moveSSHItem(
+            sshSessionId!,
+            file.path,
+            targetPath,
+            currentHost?.id,
+            currentHost?.userId?.toString(),
+            overwrite,
+          );
+        }
+        completed.push({
+          originalPath: file.path,
+          targetPath,
+          targetName,
+          overwrite,
+        });
+      } catch (error) {
+        const denied = error as {
+          response?: { status?: number; data?: { error?: string } };
+        };
+        if (
+          denied.response?.status === 403 ||
+          denied.response?.data?.error
+            ?.toLowerCase()
+            .includes("permission denied")
+        ) {
+          toast.error(t("fileManager.permissionDenied"));
+          continue;
+        }
+        toast.error(
+          t("fileManager.operationFailed", {
+            operation:
+              operation === "copy"
+                ? t("fileManager.copy")
+                : t("fileManager.move"),
+            name: file.name,
+            error: getErrorMessage(error, String(error)),
+          }),
+        );
+      }
+    }
+    // Overwrites cannot be undone without a backup of the replaced file.
+    if (completed.some((file) => file.overwrite)) setUndoHistory([]);
+    const undoable = completed.filter((file) => !file.overwrite);
+    if (undoable.length > 0) {
+      const undoAction: UndoAction = {
+        type: operation,
+        description: t(
+          operation === "copy"
+            ? "fileManager.copiedItems"
+            : "fileManager.movedItems",
+          { count: undoable.length },
+        ),
+        data: { operation, copiedFiles: undoable, targetDirectory: targetDir },
+        timestamp: Date.now(),
+      };
+      setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
+    }
+    if (completed.length > 0) {
+      toast.success(
+        t("fileManager.operationCompleted", {
+          operation:
+            operation === "copy"
+              ? t("fileManager.copy")
+              : t("fileManager.move"),
+          count: completed.length,
+        }),
+      );
+      handleRefreshDirectory();
+      clearSelection();
+    }
+    return completed;
+  }
+
   async function handlePasteFiles() {
     if (!clipboard || !sshSessionId) return;
     await waitForDeletes(pendingDeleteRef);
-
     if (
       clipboard.sourceHostId !== null &&
       clipboard.sourceHostId !== currentHost?.id
@@ -2466,158 +2700,20 @@ function FileManagerContent({
       await handleCrossHostPaste();
       return;
     }
-
     try {
-      await ensureSSHConnection();
-
       const { files, operation } = clipboard;
-
-      let successCount = 0;
-      const copiedItems: string[] = [];
-
-      for (const file of files) {
-        try {
-          if (operation === "copy") {
-            const result = await copySSHItem(
-              sshSessionId,
-              file.path,
-              currentPath,
-              currentHost?.id,
-              currentHost?.userId?.toString(),
-            );
-            copiedItems.push(result.uniqueName || file.name);
-            successCount++;
-          } else {
-            const targetPath = currentPath.endsWith("/")
-              ? `${currentPath}${file.name}`
-              : `${currentPath}/${file.name}`;
-
-            if (file.path !== targetPath) {
-              await moveSSHItem(
-                sshSessionId,
-                file.path,
-                targetPath,
-                currentHost?.id,
-                currentHost?.userId?.toString(),
-              );
-              successCount++;
-            }
-          }
-        } catch (error: unknown) {
-          const axiosError = error as {
-            response?: { status?: number; data?: { error?: string } };
-          };
-          if (
-            axiosError.response?.status === 403 ||
-            axiosError.response?.data?.error
-              ?.toLowerCase()
-              .includes("permission denied")
-          ) {
-            toast.error(t("fileManager.permissionDenied"));
-          } else {
-            toast.error(
-              t("fileManager.operationFailed", {
-                operation:
-                  operation === "copy"
-                    ? t("fileManager.copy")
-                    : t("fileManager.move"),
-                name: file.name,
-                error: getErrorMessage(error, String(error)),
-              }),
-            );
-          }
-        }
+      const completed = await transferItems(files, currentPath, operation);
+      if (operation === "cut" && completed.length > 0) {
+        const moved = new Set(completed.map((file) => file.originalPath));
+        const remaining = files.filter((file) => !moved.has(file.path));
+        setClipboard(
+          remaining.length ? { ...clipboard, files: remaining } : null,
+        );
       }
-
-      if (successCount > 0) {
-        if (operation === "copy") {
-          const copiedFiles = files
-            .slice(0, successCount)
-            .map((file, index) => ({
-              originalPath: file.path,
-              targetPath: `${currentPath}/${copiedItems[index] || file.name}`,
-              targetName: copiedItems[index] || file.name,
-            }));
-
-          const undoAction: UndoAction = {
-            type: "copy",
-            description: t("fileManager.copiedItems", { count: successCount }),
-            data: {
-              operation: "copy",
-              copiedFiles,
-              targetDirectory: currentPath,
-            },
-            timestamp: Date.now(),
-          };
-          setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-        } else if (operation === "cut") {
-          const movedFiles = files.slice(0, successCount).map((file) => {
-            const targetPath = currentPath.endsWith("/")
-              ? `${currentPath}${file.name}`
-              : `${currentPath}/${file.name}`;
-            return {
-              originalPath: file.path,
-              targetPath: targetPath,
-              targetName: file.name,
-            };
-          });
-
-          const undoAction: UndoAction = {
-            type: "cut",
-            description: t("fileManager.movedItems", { count: successCount }),
-            data: {
-              operation: "cut",
-              copiedFiles: movedFiles,
-              targetDirectory: currentPath,
-            },
-            timestamp: Date.now(),
-          };
-          setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-        }
-      }
-
-      if (successCount > 0) {
-        const operationText =
-          operation === "copy" ? t("fileManager.copy") : t("fileManager.move");
-        if (operation === "copy" && copiedItems.length > 0) {
-          const hasRenamed = copiedItems.some(
-            (name) => !files.some((file) => file.name === name),
-          );
-
-          if (hasRenamed) {
-            toast.success(
-              t("fileManager.operationCompletedSuccessfully", {
-                operation: operationText,
-                count: successCount,
-              }),
-            );
-          } else {
-            toast.success(
-              t("fileManager.operationCompleted", {
-                operation: operationText,
-                count: successCount,
-              }),
-            );
-          }
-        } else {
-          toast.success(
-            t("fileManager.operationCompleted", {
-              operation: operationText,
-              count: successCount,
-            }),
-          );
-        }
-      }
-
-      handleRefreshDirectory();
-      clearSelection();
-
-      if (operation === "cut") {
-        setClipboard(null);
-      }
-    } catch (error: unknown) {
-      const errorMessage = getErrorMessage(error, String(error));
-      toast.error(`${t("fileManager.pasteFailed")}: ${errorMessage}`);
+    } catch (error) {
+      toast.error(
+        `${t("fileManager.pasteFailed")}: ${getErrorMessage(error, String(error))}`,
+      );
     }
   }
 
@@ -3398,80 +3494,11 @@ function FileManagerContent({
   ) {
     if (!sshSessionId || targetFolder.type !== "directory") return;
     await waitForDeletes(pendingDeleteRef);
-
     try {
-      await ensureSSHConnection();
-
-      let successCount = 0;
-      const movedItems: string[] = [];
-
-      for (const file of draggedFiles) {
-        try {
-          const targetPath = targetFolder.path.endsWith("/")
-            ? `${targetFolder.path}${file.name}`
-            : `${targetFolder.path}/${file.name}`;
-
-          if (file.path !== targetPath) {
-            await moveSSHItem(
-              sshSessionId,
-              file.path,
-              targetPath,
-              currentHost?.id,
-              currentHost?.userId?.toString(),
-            );
-            movedItems.push(file.name);
-            successCount++;
-          }
-        } catch (error: unknown) {
-          toast.error(
-            t("fileManager.moveFileFailed", { name: file.name }) +
-              ": " +
-              getErrorMessage(error, String(error)),
-          );
-        }
-      }
-
-      if (successCount > 0) {
-        const movedFiles = draggedFiles.slice(0, successCount).map((file) => {
-          const targetPath = targetFolder.path.endsWith("/")
-            ? `${targetFolder.path}${file.name}`
-            : `${targetFolder.path}/${file.name}`;
-          return {
-            originalPath: file.path,
-            targetPath: targetPath,
-            targetName: file.name,
-          };
-        });
-
-        const undoAction: UndoAction = {
-          type: "cut",
-          description: t("fileManager.dragMovedItems", {
-            count: successCount,
-            target: targetFolder.name,
-          }),
-          data: {
-            operation: "cut",
-            copiedFiles: movedFiles,
-            targetDirectory: targetFolder.path,
-          },
-          timestamp: Date.now(),
-        };
-        setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-
-        toast.success(
-          t("fileManager.successfullyMovedItems", {
-            count: successCount,
-            target: targetFolder.name,
-          }),
-        );
-        handleRefreshDirectory();
-        clearSelection();
-      }
-    } catch (error: unknown) {
+      await transferItems(draggedFiles, targetFolder.path, "cut");
+    } catch (error) {
       toast.error(
-        t("fileManager.moveOperationFailed") +
-          ": " +
-          getErrorMessage(error, String(error)),
+        `${t("fileManager.moveOperationFailed")}: ${getErrorMessage(error, String(error))}`,
       );
     }
   }
@@ -4133,6 +4160,8 @@ function FileManagerContent({
       )}
 
       <FileManagerDialogs
+        nameConflict={nameConflict}
+        onResolveConflict={resolveConflict}
         compressDialogFiles={compressDialogFiles}
         setCompressDialogFiles={setCompressDialogFiles}
         handleCompress={handleCompress}

@@ -23,7 +23,10 @@ export function invalidateCachedFileContent(
   sessionId: string,
   path: string,
 ): void {
-  cache.invalidate(keyFor(sessionId, path));
+  const key = keyFor(sessionId, path);
+  cache.invalidateMatching(
+    (candidate) => candidate === key || candidate.startsWith(`${key}/`),
+  );
 }
 
 export function shouldPrefetchFileContent(

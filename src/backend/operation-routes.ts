@@ -12,7 +12,11 @@ import {
   type SSHSession,
 } from "./session.js";
 import { ensureDirectoryTreeSftp } from "./transfer-sftp-dir.js";
-import { buildDeleteCommand } from "./operation-commands.js";
+import { assertNoLinksBelow, UploadGuardError } from "./upload-guard.js";
+import {
+  buildDeleteCommand,
+  buildTransferCommand,
+} from "./operation-commands.js";
 import { removePermanently } from "./permanent-delete.js";
 import {
   emptyTrash,
@@ -443,7 +447,7 @@ export function registerFileOperationRoutes(
    *         description: Failed to create folder.
    */
   app.post("/createFolder", async (req, res) => {
-    const { sessionId, path: folderPath, folderName } = req.body;
+    const { sessionId, path: folderPath, folderName, uploadRoot } = req.body;
     const sshConn = sshSessions[sessionId];
     const userId = ctx.currentActor()!;
 
@@ -472,13 +476,20 @@ export function registerFileOperationRoutes(
       : folderPath + "/" + folderName;
     ctx.log.info(`Creating directory: ${sessionId} (${fullPath})`);
     try {
-      await ensureDirectoryTreeSftp(await getSessionSftp(sshConn), fullPath);
+      const sftp = await getSessionSftp(sshConn);
+      if (typeof uploadRoot === "string" && uploadRoot) {
+        await assertNoLinksBelow(sftp, uploadRoot, fullPath, "directory");
+      }
+      await ensureDirectoryTreeSftp(sftp, fullPath);
       res.json({
         message: "Folder created successfully",
         path: fullPath,
         toast: { type: "success", message: `Folder created: ${fullPath}` },
       });
     } catch (error) {
+      if (error instanceof UploadGuardError) {
+        return res.status(400).json({ error: error.message });
+      }
       ctx.log.error("SFTP createFolder failed", error as Error);
       const code = (error as { code?: string | number }).code;
       res.status(code === 3 || code === "EACCES" ? 403 : 500).json({
@@ -962,7 +973,7 @@ export function registerFileOperationRoutes(
    *         description: Failed to move item.
    */
   app.put("/moveItem", async (req, res) => {
-    const { sessionId, oldPath, newPath } = req.body;
+    const { sessionId, oldPath, newPath, overwrite } = req.body;
     const sshConn = sshSessions[sessionId];
     const userId = ctx.currentActor()!;
 
@@ -978,7 +989,12 @@ export function registerFileOperationRoutes(
       return res.status(403).json({ error: "Session access denied" });
     }
 
-    if (!oldPath || !newPath) {
+    if (
+      typeof oldPath !== "string" ||
+      !oldPath ||
+      typeof newPath !== "string" ||
+      !newPath
+    ) {
       return res
         .status(400)
         .json({ error: "Old path and new path are required" });
@@ -986,10 +1002,12 @@ export function registerFileOperationRoutes(
 
     sshConn.lastActive = Date.now();
 
-    const escapedOldPath = oldPath.replace(/'/g, "'\"'\"'");
-    const escapedNewPath = newPath.replace(/'/g, "'\"'\"'");
-
-    const moveCommand = `mv '${escapedOldPath}' '${escapedNewPath}' && echo "SUCCESS" && exit 0`;
+    const moveCommand = buildTransferCommand(
+      "move",
+      oldPath,
+      newPath,
+      overwrite === true,
+    );
 
     const commandTimeout = setTimeout(() => {
       if (!res.headersSent) {

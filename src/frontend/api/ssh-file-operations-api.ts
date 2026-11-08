@@ -403,6 +403,8 @@ export async function uploadSSHFile(
     totalBytes: number;
   }) => void,
   signal?: AbortSignal,
+  overwrite = true,
+  uploadRoot?: string,
 ): Promise<Record<string, unknown>> {
   // Browser-side safety: any single multipart body approaching 2^31 bytes (~2.14GB)
   // crashes the XHR/ArrayBuffer pipeline in both Chromium (Electron) and Firefox,
@@ -414,6 +416,10 @@ export async function uploadSSHFile(
 
   try {
     signal?.throwIfAborted();
+    invalidateCachedFileContent(
+      sessionId,
+      `${path.replace(/\/+$/, "")}/${fileName}`,
+    );
     if (file.size > CHUNK_THRESHOLD_BYTES) {
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE_BYTES);
       fileLogger.info("Starting chunked upload", {
@@ -428,7 +434,9 @@ export async function uploadSSHFile(
         ? `${path}${fileName}`
         : `${path}/${fileName}`;
       // A cancel between chunks leaves a partial file behind; remove it.
+      let started = false;
       const removePartial = () =>
+        started &&
         deleteSSHItem(sessionId, remotePath, false, hostId, userId, true).catch(
           () => {},
         );
@@ -452,6 +460,8 @@ export async function uploadSSHFile(
                 fileName,
                 offset: start,
                 totalSize: file.size,
+                overwrite,
+                ...(uploadRoot ? { uploadRoot } : {}),
               },
               headers: { "Content-Type": "application/octet-stream" },
               timeout: 0,
@@ -459,6 +469,7 @@ export async function uploadSSHFile(
             },
           );
 
+          started = true;
           bytesSent = end;
           onChunkProgress?.({
             chunkIndex: i,
@@ -486,6 +497,8 @@ export async function uploadSSHFile(
     const form = new FormData();
     form.append("sessionId", sessionId);
     form.append("path", path);
+    form.append("overwrite", String(overwrite));
+    if (uploadRoot) form.append("uploadRoot", uploadRoot);
     if (hostId !== undefined) form.append("hostId", String(hostId));
     if (userId !== undefined) form.append("userId", userId);
     form.append("file", file, fileName);
@@ -602,11 +615,12 @@ export async function createSSHFolder(
   folderName: string,
   hostId?: number,
   userId?: string,
+  uploadRoot?: string,
 ): Promise<Record<string, unknown>> {
   try {
     const response = await getFileManagerApiForSession(sessionId).post(
       "/createFolder",
-      { sessionId, path, folderName, hostId, userId },
+      { sessionId, path, folderName, hostId, userId, uploadRoot },
     );
     return response.data;
   } catch (error) {
@@ -801,14 +815,22 @@ export async function copySSHItem(
   targetDir: string,
   hostId?: number,
   userId?: string,
+  destination?: { name: string; overwrite: boolean },
 ): Promise<CopySSHItemResult> {
   try {
+    if (destination)
+      invalidateCachedFileContent(
+        sessionId,
+        `${targetDir.replace(/\/+$/, "")}/${destination.name}`,
+      );
     const response = await getFileManagerApiForSession(sessionId).post(
       "/copyItem",
       {
         sessionId,
         sourcePath,
         targetDir,
+        targetName: destination?.name,
+        overwrite: destination?.overwrite === true,
         hostId,
         userId,
       },
@@ -852,6 +874,7 @@ export async function moveSSHItem(
   newPath: string,
   hostId?: number,
   userId?: string,
+  overwrite = false,
 ): Promise<Record<string, unknown>> {
   try {
     const response = await getFileManagerApiForSession(sessionId).put(
@@ -860,6 +883,7 @@ export async function moveSSHItem(
         sessionId,
         oldPath,
         newPath,
+        overwrite,
         hostId,
         userId,
       },

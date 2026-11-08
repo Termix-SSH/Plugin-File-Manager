@@ -65,6 +65,26 @@ function sftp() {
 }
 
 describe("chunk upload disconnects", () => {
+  it.each(["false", "true"])(
+    "opens the first chunk with overwrite=%s and never deletes a rejected destination",
+    async (overwrite) => {
+      const remote = sftp();
+      getSessionSftp.mockResolvedValue(remote);
+      const { req, res, start } = setup();
+      Object.assign(req.query, { overwrite });
+      start();
+      await Promise.resolve();
+      expect(remote.createWriteStream).toHaveBeenCalledWith("/upload.bin", {
+        flags: overwrite === "false" ? "wx" : "w",
+        start: 0,
+      });
+      remote.stream.emit("error", new Error("File exists"));
+      res.emit("close");
+      expect(remote.unlink).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(500);
+    },
+  );
+
   it("stops SSH writes when the client disconnects after sending its body", async () => {
     const remote = sftp();
     getSessionSftp.mockResolvedValue(remote);
@@ -72,6 +92,7 @@ describe("chunk upload disconnects", () => {
     start();
     await Promise.resolve();
     expect(remote.createWriteStream).toHaveBeenCalledOnce();
+    remote.stream.emit("open", Buffer.from("handle"));
     res.emit("close");
     expect(remote.stream.destroyed).toBe(true);
     expect(remote.unlink).toHaveBeenCalledWith(
@@ -118,6 +139,48 @@ describe("chunk upload disconnects", () => {
 });
 
 describe("multipart upload disconnects", () => {
+  it("rejects a protected destination without deleting it when dismissed", async () => {
+    const remote = {
+      open: vi.fn((_p, _flags, callback) => callback(new Error("File exists"))),
+      unlink: vi.fn(),
+    };
+    getSessionSftp.mockResolvedValue(remote);
+    const { req, res, start } = setup("/uploadFileStream");
+    start();
+    req.end(
+      [
+        "--test-boundary",
+        'Content-Disposition: form-data; name="sessionId"',
+        "",
+        "s",
+        "--test-boundary",
+        'Content-Disposition: form-data; name="path"',
+        "",
+        "/",
+        "--test-boundary",
+        'Content-Disposition: form-data; name="overwrite"',
+        "",
+        "false",
+        "--test-boundary",
+        'Content-Disposition: form-data; name="file"; filename="a.txt"',
+        "Content-Type: text/plain",
+        "",
+        "data",
+        "--test-boundary--",
+        "",
+      ].join("\r\n"),
+    );
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(remote.open).toHaveBeenCalledWith(
+      "/a.txt",
+      "wx",
+      expect.any(Function),
+    );
+    expect(res.status).toHaveBeenCalledWith(500);
+    res.emit("close");
+    expect(remote.unlink).not.toHaveBeenCalled();
+  });
+
   it("keeps normal request completion alive but cancels unfinished SSH writes on response disconnect", async () => {
     const remote = {
       ...sftp(),
@@ -256,5 +319,69 @@ describe("multipart upload disconnects", () => {
     );
     expect(execChannel.mock.calls[0]?.[1]).toBe("cat > '/tmp/a.txt'");
     expect(Buffer.concat(received).toString()).toBe("data");
+  });
+});
+
+describe("upload root link guard", () => {
+  it("refuses a chunk upload that would write through a nested link", async () => {
+    const remote = {
+      ...sftp(),
+      lstat: vi.fn((path: string, done: (e: unknown, s?: unknown) => void) =>
+        path === "/root/link"
+          ? done(null, { isSymbolicLink: () => true, isDirectory: () => false })
+          : done({ code: 2 }),
+      ),
+    };
+    getSessionSftp.mockResolvedValue(remote);
+    const { req, res, start } = setup();
+    Object.assign(req.query, {
+      path: "/root/link",
+      uploadRoot: "/root",
+      overwrite: "true",
+    });
+    start();
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(remote.createWriteStream).not.toHaveBeenCalled();
+  });
+
+  it("refuses a stream upload through a nested link before opening anything", async () => {
+    const remote = {
+      open: vi.fn(),
+      unlink: vi.fn(),
+      lstat: vi.fn((path: string, done: (e: unknown, s?: unknown) => void) =>
+        done(null, { isSymbolicLink: () => true, isDirectory: () => true }),
+      ),
+    };
+    getSessionSftp.mockResolvedValue(remote);
+    const { req, res, start } = setup("/uploadFileStream");
+    start();
+    req.end(
+      [
+        ["sessionId", "s"],
+        ["path", "/root/d"],
+        ["uploadRoot", "/root"],
+        ["overwrite", "true"],
+      ]
+        .flatMap(([name, value]) => [
+          "--test-boundary",
+          `Content-Disposition: form-data; name="${name}"`,
+          "",
+          value,
+        ])
+        .concat([
+          "--test-boundary",
+          'Content-Disposition: form-data; name="file"; filename="a.txt"',
+          "Content-Type: text/plain",
+          "",
+          "data",
+          "--test-boundary--",
+          "",
+        ])
+        .join("\r\n"),
+    );
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(remote.open).not.toHaveBeenCalled();
   });
 });

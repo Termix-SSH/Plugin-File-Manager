@@ -83,6 +83,10 @@ export async function uploadLocalFileToSession(options: {
   fileName: string;
   hostId?: number;
   transferId?: string;
+  /** Omitted = legacy behaviour (replace an existing file). */
+  overwrite?: boolean;
+  /** Folder the upload was dropped into; nothing below it may be a link. */
+  uploadRoot?: string;
   onProgress?: ProgressListener;
 }): Promise<void> {
   const transferId =
@@ -93,6 +97,10 @@ export async function uploadLocalFileToSession(options: {
     path: options.remoteDir,
   };
   if (options.hostId !== undefined) fields.hostId = String(options.hostId);
+  if (options.overwrite !== undefined) {
+    fields.overwrite = String(options.overwrite);
+  }
+  if (options.uploadRoot) fields.uploadRoot = options.uploadRoot;
 
   if (options.onProgress) {
     progressListeners.set(transferId, options.onProgress);
