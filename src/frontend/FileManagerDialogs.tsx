@@ -1,3 +1,5 @@
+import { NameConflictDialog } from "./components/NameConflictDialog";
+import type { NameConflict, ConflictChoice } from "./lib/name-conflicts";
 import type { FileItem, SSHHost } from "./host-types";
 import {
   TOTPDialog,
@@ -10,6 +12,8 @@ import { SudoPasswordDialog } from "./SudoPasswordDialog.tsx";
 import type { PendingSudoOperation } from "./file-manager-types.ts";
 
 type FileManagerDialogsProps = {
+  nameConflict: (NameConflict & { id: number }) | null;
+  onResolveConflict: (choice: ConflictChoice | null) => void;
   compressDialogFiles: FileItem[];
   setCompressDialogFiles: (files: FileItem[]) => void;
   handleCompress: (archiveName: string, format: string) => void | Promise<void>;
@@ -43,6 +47,8 @@ type FileManagerDialogsProps = {
 };
 
 export function FileManagerDialogs({
+  nameConflict,
+  onResolveConflict,
   compressDialogFiles,
   setCompressDialogFiles,
   handleCompress,
@@ -72,6 +78,13 @@ export function FileManagerDialogs({
 }: FileManagerDialogsProps) {
   return (
     <>
+      {nameConflict && (
+        <NameConflictDialog
+          key={nameConflict.id}
+          conflict={nameConflict}
+          onResolve={onResolveConflict}
+        />
+      )}
       <CompressDialog
         open={compressDialogFiles.length > 0}
         onOpenChange={(open) => !open && setCompressDialogFiles([])}

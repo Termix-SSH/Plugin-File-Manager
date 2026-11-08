@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "터미널에서 파일 패널 표시",
         "description": "이 호스트의 SSH 터미널 옆에 파일 패널을 열도록 합니다."
+      },
+      "enableFtp": {
+        "label": "FTP 사용"
+      },
+      "ftpPort": {
+        "label": "FTP 포트"
+      },
+      "ftpSecure": {
+        "label": "FTP 보안"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "자체 서명 인증서 허용"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "파일 관리자"
   },
   "fileManager": {
+    "nameConflictTitle": "항목이 이미 존재합니다",
+    "nameConflictDescription": "\"{{name}}\"이라는 항목이 이 폴더에 이미 있습니다.",
+    "nameConflictHint": "덮어쓰기는 되돌릴 수 없습니다. 업로드 및 복사된 폴더는 내부 파일을 병합하고 대체합니다. 기존 폴더 위로 이동하거나 다른 항목 유형을 대체하는 것은 거부되며, 대신 둘 다 유지하기를 선택하세요.",
+    "conflict-overwrite": "덮어쓰기",
+    "conflict-skip": "건너뛰기",
+    "conflict-keep-both": "둘 다 유지",
+    "conflictBusy": "다른 작업을 시작하기 전에 현재 이름 충돌 프롬프트를 완료하세요.",
+    "conflictApplyToAll": "나머지 모든 충돌에 적용",
+    "conflictTypeMismatch": "다른 항목 유형이나 심볼릭 링크를 덮어쓸 수 없습니다. 대신 둘 다 유지하기를 선택하세요.",
     "noHostSelected": "선택된 호스트 없음",
     "initializingEditor": "편집기 초기화 중...",
     "file": "파일",
@@ -186,6 +207,7 @@
     "columns": "열",
     "columnsHint": "우클릭하여 열 선택",
     "emptyFolder": "이 폴더는 비어 있습니다",
+    "noSearchResults": "\"{{query}}\"에 대한 결과가 없습니다",
     "searchFiles": "파일 검색...",
     "upload": "업로드",
     "selectHostToStart": "파일 관리를 시작하려면 호스트를 선택하세요",
@@ -398,6 +420,7 @@
     "octal": "8진수",
     "storage": "저장소",
     "disk": "디스크",
+    "notAvailable": "해당 없음",
     "used": "사용량",
     "of": "의",
     "toggleSidebar": "사이드바 전환",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "폴더를 데스크톱으로 드래그하는 기능은 아직 지원되지 않습니다",
     "saveToDesktopFailed": "저장 실패: {{error}}",
     "dragFailedDetail": "드래그 실패: {{error}}",
+    "desktopAppOnly": "이 기능은 데스크톱 앱에서만 작동합니다",
+    "onlyFilesToDesktop": "파일만 데스크톱으로 끌 수 있습니다",
+    "onlyFoldersCanBeDragged": "여기로는 폴더만 끌 수 있습니다",
+    "savedToDownloads": "브라우저가 이를 다운로드 폴더에 저장합니다",
+    "savedFile": "{{name}} 저장됨",
+    "savedFilesZip_other": "파일 {{count}}개를 zip에 저장함",
+    "dropFileTooLarge": "{{name}}이(가) 너무 큽니다. 제한은 {{size}}MB입니다.",
+    "dropFileTypeNotAllowed": "{{name}}은(는) 여기서 허용되지 않는 파일 유형입니다",
+    "lineNumbers": "줄 번호",
     "videoUnsupported": "브라우저에서 이 비디오 형식을 재생할 수 없습니다.",
     "downloadToPlay": "다른 곳에서 재생하려면 다운로드하세요",
     "cannotPreviewType": "이 파일 유형의 미리보기를 표시할 수 없습니다",
@@ -595,5 +627,44 @@
     "syncNow": "터미널 폴더로 이동",
     "cdTerminal": "터미널을 이 폴더로 변경",
     "terminalAt": "터미널:"
+  },
+  "operations": {
+    "list": {
+      "title": "파일 목록"
+    },
+    "info": {
+      "title": "파일 정보"
+    },
+    "mkdir": {
+      "title": "폴더 만들기"
+    },
+    "delete": {
+      "title": "파일 또는 빈 폴더 삭제"
+    },
+    "path": "경로"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "FTP 또는 FTPS를 통해 이 호스트의 파일을 탐색합니다.",
+    "originNote": "FTP 연결은 Termix 서버에서 이루어집니다.",
+    "connection": "연결",
+    "port": "포트",
+    "security": "보안",
+    "securityNone": "없음 (일반 FTP)",
+    "securityExplicit": "명시적 TLS (FTPS)",
+    "securityImplicit": "암시적 TLS (FTPS)",
+    "allowSelfSigned": "자체 서명 인증서 허용",
+    "allowSelfSignedDesc": "이 호스트에 대한 인증서 확인을 건너뜁니다.",
+    "login": "로그인",
+    "auth": {
+      "direct": "직접",
+      "credential": "자격 증명",
+      "none": "익명"
+    },
+    "selectCredential": "자격 증명을 선택하세요...",
+    "anonymousNote": "비밀번호 없이 익명으로 로그인합니다.",
+    "username": "사용자 이름",
+    "password": "비밀번호",
+    "passwordSaved": "비밀번호가 저장되었습니다. 변경하려면 입력하세요"
   }
 }

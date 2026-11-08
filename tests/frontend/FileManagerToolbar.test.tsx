@@ -129,3 +129,24 @@ describe("toolbar menus", () => {
     expect(props.setSortBy).toHaveBeenCalledWith("size");
   });
 });
+
+describe("selection actions", () => {
+  const file = { name: "a.txt", path: "/a.txt", type: "file" as const };
+
+  it("shows copy when copy is supported", () => {
+    render(<FileManagerToolbar {...props} selectedFiles={[file]} />);
+    expect(screen.getByTitle("fileManager.copy")).toBeInTheDocument();
+  });
+
+  it("hides copy where it is not supported", () => {
+    render(
+      <FileManagerToolbar
+        {...props}
+        selectedFiles={[file]}
+        handleCopyFiles={undefined}
+      />,
+    );
+    expect(screen.queryByTitle("fileManager.copy")).not.toBeInTheDocument();
+    expect(screen.getByTitle("fileManager.delete")).toBeInTheDocument();
+  });
+});

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "ターミナルでファイルパネルを表示",
         "description": "このホストの SSH ターミナルの横にファイルパネルを開きます。"
+      },
+      "enableFtp": {
+        "label": "FTP を有効にする"
+      },
+      "ftpPort": {
+        "label": "FTP ポート"
+      },
+      "ftpSecure": {
+        "label": "FTP セキュリティ"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "自己署名証明書を許可する"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "ファイルマネージャー"
   },
   "fileManager": {
+    "nameConflictTitle": "アイテムは既に存在します",
+    "nameConflictDescription": "「{{name}}」という名前のアイテムは、このフォルダに既に存在します。",
+    "nameConflictHint": "上書きは元に戻せません。アップロードおよびコピーされたフォルダは、内部のファイルとマージ・置換されます。既存のフォルダへの移動や、異なるアイテムタイプへの置換は拒否されます。代わりに「両方保持」を選択してください。",
+    "conflict-overwrite": "上書き",
+    "conflict-skip": "スキップ",
+    "conflict-keep-both": "両方保持",
+    "conflictBusy": "別の操作を開始する前に、現在の名前競合プロンプトを完了してください。",
+    "conflictApplyToAll": "残りのすべての競合に適用",
+    "conflictTypeMismatch": "異なるアイテムタイプやシンボリックリンクを上書きすることはできません。代わりに「両方保持」を選択してください。",
     "noHostSelected": "ホストが選択されていません",
     "initializingEditor": "エディタを初期化中...",
     "file": "ファイル",
@@ -186,6 +207,7 @@
     "columns": "列",
     "columnsHint": "右クリックして列を選択",
     "emptyFolder": "このフォルダは空です",
+    "noSearchResults": "「{{query}}」の検索結果はありません",
     "searchFiles": "ファイルを検索...",
     "upload": "アップロード",
     "selectHostToStart": "ファイル管理を開始するにはホストを選択してください",
@@ -398,6 +420,7 @@
     "octal": "8 進数",
     "storage": "ストレージ",
     "disk": "ディスク",
+    "notAvailable": "N/A",
     "used": "使用量",
     "of": "の",
     "toggleSidebar": "サイドバーの表示/非表示",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "フォルダをデスクトップにドラッグする機能は現在サポートされていません",
     "saveToDesktopFailed": "保存に失敗しました: {{error}}",
     "dragFailedDetail": "ドラッグに失敗しました: {{error}}",
+    "desktopAppOnly": "これはデスクトップアプリでのみ動作します",
+    "onlyFilesToDesktop": "ファイルのみをデスクトップにドラッグできます",
+    "onlyFoldersCanBeDragged": "フォルダのみをここにドラッグできます",
+    "savedToDownloads": "ブラウザはこれをダウンロードフォルダに保存します",
+    "savedFile": "{{name}} を保存しました",
+    "savedFilesZip_other": "{{count}} ファイルを zip に保存しました",
+    "dropFileTooLarge": "{{name}} は大きすぎます。制限は {{size}} MB です。",
+    "dropFileTypeNotAllowed": "{{name}} は、ここで許可されていないファイルタイプです",
+    "lineNumbers": "行番号",
     "videoUnsupported": "お使いのブラウザはこの動画形式を再生できません。",
     "downloadToPlay": "ダウンロードして別の場所で再生してください",
     "cannotPreviewType": "このファイルタイプのプレビューはできません",
@@ -595,5 +627,44 @@
     "syncNow": "ターミナルのフォルダに移動",
     "cdTerminal": "ターミナルをこのフォルダに変更",
     "terminalAt": "ターミナル:"
+  },
+  "operations": {
+    "list": {
+      "title": "ファイル一覧"
+    },
+    "info": {
+      "title": "ファイル情報"
+    },
+    "mkdir": {
+      "title": "フォルダ作成"
+    },
+    "delete": {
+      "title": "ファイルまたは空のフォルダを削除"
+    },
+    "path": "パス"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "FTP または FTPS を介して、このホスト上のファイルを閲覧します。",
+    "originNote": "FTP 接続は Termix サーバーから行われます。",
+    "connection": "接続",
+    "port": "ポート",
+    "security": "セキュリティ",
+    "securityNone": "なし（プレーン FTP）",
+    "securityExplicit": "明示的 TLS（FTPS）",
+    "securityImplicit": "暗黙的 TLS（FTPS）",
+    "allowSelfSigned": "自己署名証明書を許可する",
+    "allowSelfSignedDesc": "このホストの証明書チェックをスキップします。",
+    "login": "ログイン",
+    "auth": {
+      "direct": "直接",
+      "credential": "認証情報",
+      "none": "匿名"
+    },
+    "selectCredential": "認証情報を選択...",
+    "anonymousNote": "パスワードなしで匿名としてサインインします。",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "passwordSaved": "パスワードが保存されました。変更するには入力してください"
   }
 }

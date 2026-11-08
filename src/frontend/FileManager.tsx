@@ -1,5 +1,5 @@
 import { Folder } from "lucide-react";
-import { fileManagerHostSetting } from "./host-settings";
+import { canOpenFiles, fileManagerHostSetting, usesFtp } from "./host-settings";
 import { getErrorMessage } from "./lib/error-message";
 import { fileManagerApi } from "./api/client";
 import { subscribeLocalEvents } from "./lib/local-events";
@@ -29,10 +29,19 @@ import { UploadProgressToast } from "./components/UploadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
+import { useNativeDragOut } from "./hooks/useNativeDragOut";
 import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
+import {
+  applyUploadPlan,
+  resolveNameConflicts,
+  uploadRoots,
+  type NamedItem,
+  type NameConflict,
+  type ConflictChoice,
+} from "./lib/name-conflicts";
 import { PassphraseDialog } from "@termix-ssh/plugin-sdk/ui";
 import { FileManagerToolbar } from "./FileManagerToolbar.tsx";
 import { LocalFilePane } from "./LocalFilePane.tsx";
@@ -174,6 +183,7 @@ function FileManagerContent({
   const { addLog, clearLogs } = useConnectionLog();
 
   const [currentHost] = useState<SSHHost | null>(initialHost || null);
+  const isFtp = usesFtp(currentHost);
   const [currentPath, setCurrentPath] = useState(
     initialPath ||
       fileManagerHostSetting(initialHost, "defaultPath", "") ||
@@ -201,6 +211,7 @@ function FileManagerContent({
   const [sshSessionId, setSshSessionId] = useState<string | null>(null);
   const sshSessionIdRef = useRef(sshSessionId);
   sshSessionIdRef.current = sshSessionId;
+  const paneRootRef = useRef<HTMLDivElement>(null);
   const paneVisibleRef = useRef(isVisible);
   paneVisibleRef.current = isVisible;
   const directoryPrefetchRef = useRef<ReturnType<
@@ -491,6 +502,9 @@ function FileManagerContent({
     sshHost: currentHost!,
   });
 
+  const nativeDrag = useNativeDragOut(sshSessionId || "");
+  const nativeDragStarted = useRef(false);
+
   const startKeepalive = useCallback(() => {
     if (!sshSessionId) return;
 
@@ -656,18 +670,20 @@ function FileManagerContent({
 
   const handleFileDragStart = useCallback(
     (files: FileItem[]) => {
-      systemDrag.startDragToSystem(files, {
-        enableToast: true,
-        onSuccess: () => {
-          clearSelection();
-        },
-      });
+      nativeDragStarted.current = nativeDrag.start(files);
     },
-    [systemDrag, clearSelection],
+    [nativeDrag],
   );
 
   const handleFileDragEnd = useCallback(
     (e: DragEvent, draggedFiles: FileItem[]) => {
+      if (nativeDragStarted.current) {
+        nativeDragStarted.current = false;
+        systemDrag.cancelDragToSystem();
+        setTimeout(() => nativeDrag.cleanup(), 30000);
+        return;
+      }
+
       const isOutside =
         e.clientX < 0 ||
         e.clientX > window.innerWidth ||
@@ -690,7 +706,7 @@ function FileManagerContent({
         systemDrag.cancelDragToSystem();
       }
     },
-    [systemDrag, clearSelection],
+    [systemDrag, nativeDrag, clearSelection],
   );
 
   const isConnectingRef = useRef(false);
@@ -698,7 +714,7 @@ function FileManagerContent({
   async function initializeSSHConnection() {
     if (!currentHost || isConnectingRef.current) return;
 
-    if (currentHost.enableSsh === false) {
+    if (!canOpenFiles(currentHost)) {
       setHasConnectionError(true);
       addLog({
         type: "error",
@@ -1115,21 +1131,32 @@ function FileManagerContent({
   }, [navIndex, navHistory, sshSessionId]);
 
   useEffect(() => {
+    const ownsMouseNavigation = (event: MouseEvent) =>
+      paneVisibleRef.current &&
+      (event.button === 3 || event.button === 4) &&
+      event.target instanceof Node &&
+      !!paneRootRef.current?.contains(event.target);
     const handleMouseNavigation = (event: MouseEvent) => {
-      if (event.button !== 3 && event.button !== 4) return;
+      if (!ownsMouseNavigation(event)) return;
       event.preventDefault();
       if (event.button === 3) goBack();
       else goForward();
     };
     const preventBrowserMouseNavigation = (event: MouseEvent) => {
-      if (event.button === 3 || event.button === 4) event.preventDefault();
+      if (ownsMouseNavigation(event)) event.preventDefault();
     };
 
-    window.addEventListener("mouseup", handleMouseNavigation);
-    window.addEventListener("auxclick", preventBrowserMouseNavigation);
+    // Capture runs before Termix's own handler, which then sees the click
+    // was claimed and leaves tab back and forward alone.
+    window.addEventListener("mouseup", handleMouseNavigation, true);
+    window.addEventListener("auxclick", preventBrowserMouseNavigation, true);
     return () => {
-      window.removeEventListener("mouseup", handleMouseNavigation);
-      window.removeEventListener("auxclick", preventBrowserMouseNavigation);
+      window.removeEventListener("mouseup", handleMouseNavigation, true);
+      window.removeEventListener(
+        "auxclick",
+        preventBrowserMouseNavigation,
+        true,
+      );
     };
   }, [goBack, goForward]);
 
@@ -1217,6 +1244,72 @@ function FileManagerContent({
     return () => window.removeEventListener("file-manager:refresh", handler);
   }, [currentHost?.id, handleRefreshDirectory]);
 
+  const [nameConflict, setNameConflict] = useState<
+    (NameConflict & { id: number }) | null
+  >(null);
+  const conflictSequence = useRef(0);
+  const pendingConflict = useRef<
+    ((choice: ConflictChoice | null) => void) | null
+  >(null);
+  const planningConflicts = useRef(false);
+  const conflictContext = useRef(0);
+
+  function resolveConflict(choice: ConflictChoice | null) {
+    const resolve = pendingConflict.current;
+    pendingConflict.current = null;
+    setNameConflict(null);
+    resolve?.(choice);
+  }
+
+  useEffect(
+    () => () => {
+      conflictContext.current++;
+      pendingConflict.current?.(null);
+      pendingConflict.current = null;
+      setNameConflict(null);
+    },
+    [sshSessionId, currentPath],
+  );
+
+  async function planConflicts<T extends NamedItem>(
+    items: T[],
+    targetDir: string,
+    sameDirectoryCopy?: (item: T) => boolean,
+  ) {
+    if (!sshSessionId) return null;
+    if (planningConflicts.current) {
+      toast.info(t("fileManager.conflictBusy"));
+      return null;
+    }
+    planningConflicts.current = true;
+    const context = conflictContext.current;
+    try {
+      const existing =
+        targetDir.replace(/\/+$/, "") === currentPath.replace(/\/+$/, "")
+          ? files
+          : (await listSSHFiles(sshSessionId, targetDir, { force: true }))
+              .files;
+      if (context !== conflictContext.current) return null;
+      const plan = await resolveNameConflicts(
+        items,
+        existing,
+        (conflict) =>
+          new Promise((resolve) => {
+            pendingConflict.current = resolve;
+            setNameConflict({ ...conflict, id: ++conflictSequence.current });
+          }),
+        sameDirectoryCopy,
+      );
+      return context === conflictContext.current ? plan : null;
+    } finally {
+      planningConflicts.current = false;
+    }
+  }
+
+  // Dropped local paths are planned with the latest listing, not a stale render.
+  const planUploadRef = useRef(planUpload);
+  planUploadRef.current = planUpload;
+
   const localTransfers = useLocalTransfers({
     sshSessionId,
     hostId: currentHost?.id,
@@ -1235,7 +1328,9 @@ function FileManagerContent({
     (localPaths: string[], targetDir?: FileItem) => {
       const remoteDir = targetDir?.path ?? currentPathRef.current;
       void waitForDeletes(pendingDeleteRef).then(() =>
-        localTransfers.uploadLocalPaths(localPaths, remoteDir),
+        localTransfers.uploadLocalPaths(localPaths, remoteDir, (batch) =>
+          planUploadRef.current(batch.files, batch.emptyDirs, remoteDir),
+        ),
       );
     },
     [localTransfers],
@@ -1289,6 +1384,8 @@ function FileManagerContent({
       }
 
       if (event.key === "T" && event.ctrlKey && event.shiftKey) {
+        // Every mounted tab listens, so only the visible one acts.
+        if (!paneVisibleRef.current || isFtp) return;
         event.preventDefault();
         handleOpenTerminal(currentPath);
       }
@@ -1296,7 +1393,7 @@ function FileManagerContent({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [currentPath]);
+  }, [currentPath, isFtp]);
 
   async function handleItemsDropped(entries: FileSystemEntry[]) {
     if (!sshSessionId) {
@@ -1357,10 +1454,44 @@ function FileManagerContent({
     await uploadBatch(files, emptyDirs);
   }
 
+  /** Resolve name conflicts for an upload batch; null = cancelled or refused. */
+  async function planUpload<F extends { relativePath: string }>(
+    files: F[],
+    emptyDirs: string[],
+    targetDir: string,
+  ) {
+    const uploadPlan = await planConflicts(
+      uploadRoots(files, emptyDirs),
+      targetDir,
+    ).catch((): null => {
+      toast.error(t("fileManager.failedToUploadFile"));
+      return null;
+    });
+    if (!uploadPlan) return null;
+    if (
+      uploadPlan.some(
+        ({ item, overwrite, existing }) =>
+          overwrite && existing && existing.type !== item.type,
+      )
+    ) {
+      toast.error(t("fileManager.conflictTypeMismatch"));
+      return null;
+    }
+    if (uploadPlan.some((entry) => entry.overwrite)) setUndoHistory([]);
+    return applyUploadPlan(files, emptyDirs, uploadPlan);
+  }
+
   async function uploadBatch(
     files: { file: File; relativePath: string }[],
     emptyDirs: string[],
   ) {
+    const targetDir = currentPath;
+    const planned = await planUpload(files, emptyDirs, targetDir);
+    if (!planned) return;
+    const uploads = planned.files;
+    files = uploads;
+    emptyDirs = planned.emptyDirs;
+    if (files.length === 0 && emptyDirs.length === 0) return;
     const controller = new AbortController();
     const totalBytes = files.reduce((n, f) => n + f.file.size, 0);
     const toastId = toast.loading(null, { duration: Infinity });
@@ -1401,7 +1532,7 @@ function FileManagerContent({
     try {
       await ensureSSHConnection();
 
-      const base = currentPath.endsWith("/") ? currentPath : currentPath + "/";
+      const base = targetDir.endsWith("/") ? targetDir : targetDir + "/";
 
       const dirs = new Set<string>();
       for (const relativePath of [
@@ -1429,36 +1560,50 @@ function FileManagerContent({
           targetPath,
           folderName,
           currentHost?.id,
+          undefined,
+          targetDir,
         );
       }
 
       const ticker = setInterval(render, 500);
       try {
-        await runWithConcurrency(files, 4, async ({ file, relativePath }) => {
-          controller.signal.throwIfAborted();
-          const dirPart = relativePath.includes("/")
-            ? relativePath.substring(0, relativePath.lastIndexOf("/"))
-            : "";
-          const uploadPath = dirPart ? `${base}${dirPart}/` : base;
-
-          try {
-            await uploadSSHFile(
-              sshSessionId,
-              uploadPath,
-              file.name,
-              file,
-              currentHost?.id,
-              undefined,
-              (p) => sent.set(relativePath, p.bytesSent),
-              controller.signal,
-            );
-            sent.set(relativePath, file.size);
-          } catch (error) {
+        // Duplicate loose names may explicitly overwrite each other; keep their order.
+        const concurrency =
+          new Set(uploads.map((file) => file.relativePath)).size ===
+          uploads.length
+            ? 4
+            : 1;
+        await runWithConcurrency(
+          uploads,
+          concurrency,
+          async ({ file, relativePath, overwrite }) => {
             controller.signal.throwIfAborted();
-            failed.push(relativePath);
-          }
-          doneFiles++;
-        });
+            const dirPart = relativePath.includes("/")
+              ? relativePath.substring(0, relativePath.lastIndexOf("/"))
+              : "";
+            const uploadPath = dirPart ? `${base}${dirPart}/` : base;
+
+            try {
+              await uploadSSHFile(
+                sshSessionId,
+                uploadPath,
+                relativePath.split("/").pop()!,
+                file,
+                currentHost?.id,
+                undefined,
+                (p) => sent.set(relativePath, p.bytesSent),
+                controller.signal,
+                overwrite,
+                targetDir,
+              );
+              sent.set(relativePath, file.size);
+            } catch (error) {
+              controller.signal.throwIfAborted();
+              failed.push(relativePath);
+            }
+            doneFiles++;
+          },
+        );
       } finally {
         clearInterval(ticker);
       }
@@ -1664,7 +1809,10 @@ function FileManagerContent({
     updateDeletingPaths(new Set([...deletingPathsRef.current, ...targetPaths]));
     clearSelection();
     const controller = new AbortController();
-    const opId = crypto.randomUUID();
+    // getRandomValues also works on HTTP LAN origins, unlike randomUUID.
+    const opId = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+      b.toString(16).padStart(2, "0"),
+    ).join("");
     const labelKey = permanent
       ? "fileManager.deletingItems"
       : "fileManager.movingToTrash";
@@ -2013,7 +2161,7 @@ function FileManagerContent({
       const symlinkInfo = await identifySSHSymlink(currentSessionId, file.path);
 
       if (symlinkInfo.type === "directory") {
-        setCurrentPath(symlinkInfo.target);
+        navigateTo(symlinkInfo.target);
       } else if (symlinkInfo.type === "file") {
         const windowCount = Date.now() % 10;
         const offsetX = 120 + windowCount * 30;
@@ -2224,13 +2372,7 @@ function FileManagerContent({
         file.path !== currentPathRef.current,
       );
       markAdaptiveResourceUsed("network", "directory-list");
-      directoryRequestRef.current += 1;
-      const cached = sshSessionId
-        ? peekCachedFileList(sshSessionId, file.path)
-        : null;
-      if (cached) setFiles(cached.files);
-      setIsLoading(!!sshSessionId && !cached);
-      setCurrentPath(file.path);
+      navigateTo(file.path);
       return;
     }
 
@@ -2433,10 +2575,120 @@ function FileManagerContent({
     }
   }
 
+  async function transferItems(
+    items: FileItem[],
+    targetDir: string,
+    operation: "copy" | "cut",
+  ) {
+    await ensureSSHConnection();
+    const base = targetDir.replace(/\/+$/, "");
+    const candidates = items.filter(
+      (file) => operation === "copy" || file.path !== `${base}/${file.name}`,
+    );
+    const plan = await planConflicts(
+      candidates,
+      targetDir,
+      (file) => operation === "copy" && file.path === `${base}/${file.name}`,
+    );
+    if (!plan) return [];
+    const completed: {
+      originalPath: string;
+      targetPath: string;
+      targetName: string;
+      overwrite: boolean;
+    }[] = [];
+    for (const { item: file, name, overwrite } of plan) {
+      try {
+        let targetPath = `${base}/${name}`;
+        let targetName = name;
+        if (operation === "copy") {
+          const result = await copySSHItem(
+            sshSessionId!,
+            file.path,
+            targetDir,
+            currentHost?.id,
+            currentHost?.userId?.toString(),
+            { name, overwrite },
+          );
+          targetPath = result.targetPath || targetPath;
+          targetName = result.uniqueName || name;
+        } else {
+          await moveSSHItem(
+            sshSessionId!,
+            file.path,
+            targetPath,
+            currentHost?.id,
+            currentHost?.userId?.toString(),
+            overwrite,
+          );
+        }
+        completed.push({
+          originalPath: file.path,
+          targetPath,
+          targetName,
+          overwrite,
+        });
+      } catch (error) {
+        const denied = error as {
+          response?: { status?: number; data?: { error?: string } };
+        };
+        if (
+          denied.response?.status === 403 ||
+          denied.response?.data?.error
+            ?.toLowerCase()
+            .includes("permission denied")
+        ) {
+          toast.error(t("fileManager.permissionDenied"));
+          continue;
+        }
+        toast.error(
+          t("fileManager.operationFailed", {
+            operation:
+              operation === "copy"
+                ? t("fileManager.copy")
+                : t("fileManager.move"),
+            name: file.name,
+            error: getErrorMessage(error, String(error)),
+          }),
+        );
+      }
+    }
+    // Overwrites cannot be undone without a backup of the replaced file.
+    if (completed.some((file) => file.overwrite)) setUndoHistory([]);
+    const undoable = completed.filter((file) => !file.overwrite);
+    if (undoable.length > 0) {
+      const undoAction: UndoAction = {
+        type: operation,
+        description: t(
+          operation === "copy"
+            ? "fileManager.copiedItems"
+            : "fileManager.movedItems",
+          { count: undoable.length },
+        ),
+        data: { operation, copiedFiles: undoable, targetDirectory: targetDir },
+        timestamp: Date.now(),
+      };
+      setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
+    }
+    if (completed.length > 0) {
+      toast.success(
+        t("fileManager.operationCompleted", {
+          operation:
+            operation === "copy"
+              ? t("fileManager.copy")
+              : t("fileManager.move"),
+          count: completed.length,
+        }),
+      );
+      handleRefreshDirectory();
+      clearSelection();
+    }
+    return completed;
+  }
+
   async function handlePasteFiles() {
     if (!clipboard || !sshSessionId) return;
     await waitForDeletes(pendingDeleteRef);
-
     if (
       clipboard.sourceHostId !== null &&
       clipboard.sourceHostId !== currentHost?.id
@@ -2444,158 +2696,20 @@ function FileManagerContent({
       await handleCrossHostPaste();
       return;
     }
-
     try {
-      await ensureSSHConnection();
-
       const { files, operation } = clipboard;
-
-      let successCount = 0;
-      const copiedItems: string[] = [];
-
-      for (const file of files) {
-        try {
-          if (operation === "copy") {
-            const result = await copySSHItem(
-              sshSessionId,
-              file.path,
-              currentPath,
-              currentHost?.id,
-              currentHost?.userId?.toString(),
-            );
-            copiedItems.push(result.uniqueName || file.name);
-            successCount++;
-          } else {
-            const targetPath = currentPath.endsWith("/")
-              ? `${currentPath}${file.name}`
-              : `${currentPath}/${file.name}`;
-
-            if (file.path !== targetPath) {
-              await moveSSHItem(
-                sshSessionId,
-                file.path,
-                targetPath,
-                currentHost?.id,
-                currentHost?.userId?.toString(),
-              );
-              successCount++;
-            }
-          }
-        } catch (error: unknown) {
-          const axiosError = error as {
-            response?: { status?: number; data?: { error?: string } };
-          };
-          if (
-            axiosError.response?.status === 403 ||
-            axiosError.response?.data?.error
-              ?.toLowerCase()
-              .includes("permission denied")
-          ) {
-            toast.error(t("fileManager.permissionDenied"));
-          } else {
-            toast.error(
-              t("fileManager.operationFailed", {
-                operation:
-                  operation === "copy"
-                    ? t("fileManager.copy")
-                    : t("fileManager.move"),
-                name: file.name,
-                error: getErrorMessage(error, String(error)),
-              }),
-            );
-          }
-        }
+      const completed = await transferItems(files, currentPath, operation);
+      if (operation === "cut" && completed.length > 0) {
+        const moved = new Set(completed.map((file) => file.originalPath));
+        const remaining = files.filter((file) => !moved.has(file.path));
+        setClipboard(
+          remaining.length ? { ...clipboard, files: remaining } : null,
+        );
       }
-
-      if (successCount > 0) {
-        if (operation === "copy") {
-          const copiedFiles = files
-            .slice(0, successCount)
-            .map((file, index) => ({
-              originalPath: file.path,
-              targetPath: `${currentPath}/${copiedItems[index] || file.name}`,
-              targetName: copiedItems[index] || file.name,
-            }));
-
-          const undoAction: UndoAction = {
-            type: "copy",
-            description: t("fileManager.copiedItems", { count: successCount }),
-            data: {
-              operation: "copy",
-              copiedFiles,
-              targetDirectory: currentPath,
-            },
-            timestamp: Date.now(),
-          };
-          setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-        } else if (operation === "cut") {
-          const movedFiles = files.slice(0, successCount).map((file) => {
-            const targetPath = currentPath.endsWith("/")
-              ? `${currentPath}${file.name}`
-              : `${currentPath}/${file.name}`;
-            return {
-              originalPath: file.path,
-              targetPath: targetPath,
-              targetName: file.name,
-            };
-          });
-
-          const undoAction: UndoAction = {
-            type: "cut",
-            description: t("fileManager.movedItems", { count: successCount }),
-            data: {
-              operation: "cut",
-              copiedFiles: movedFiles,
-              targetDirectory: currentPath,
-            },
-            timestamp: Date.now(),
-          };
-          setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-        }
-      }
-
-      if (successCount > 0) {
-        const operationText =
-          operation === "copy" ? t("fileManager.copy") : t("fileManager.move");
-        if (operation === "copy" && copiedItems.length > 0) {
-          const hasRenamed = copiedItems.some(
-            (name) => !files.some((file) => file.name === name),
-          );
-
-          if (hasRenamed) {
-            toast.success(
-              t("fileManager.operationCompletedSuccessfully", {
-                operation: operationText,
-                count: successCount,
-              }),
-            );
-          } else {
-            toast.success(
-              t("fileManager.operationCompleted", {
-                operation: operationText,
-                count: successCount,
-              }),
-            );
-          }
-        } else {
-          toast.success(
-            t("fileManager.operationCompleted", {
-              operation: operationText,
-              count: successCount,
-            }),
-          );
-        }
-      }
-
-      handleRefreshDirectory();
-      clearSelection();
-
-      if (operation === "cut") {
-        setClipboard(null);
-      }
-    } catch (error: unknown) {
-      const errorMessage = getErrorMessage(error, String(error));
-      toast.error(`${t("fileManager.pasteFailed")}: ${errorMessage}`);
+    } catch (error) {
+      toast.error(
+        `${t("fileManager.pasteFailed")}: ${getErrorMessage(error, String(error))}`,
+      );
     }
   }
 
@@ -3376,80 +3490,11 @@ function FileManagerContent({
   ) {
     if (!sshSessionId || targetFolder.type !== "directory") return;
     await waitForDeletes(pendingDeleteRef);
-
     try {
-      await ensureSSHConnection();
-
-      let successCount = 0;
-      const movedItems: string[] = [];
-
-      for (const file of draggedFiles) {
-        try {
-          const targetPath = targetFolder.path.endsWith("/")
-            ? `${targetFolder.path}${file.name}`
-            : `${targetFolder.path}/${file.name}`;
-
-          if (file.path !== targetPath) {
-            await moveSSHItem(
-              sshSessionId,
-              file.path,
-              targetPath,
-              currentHost?.id,
-              currentHost?.userId?.toString(),
-            );
-            movedItems.push(file.name);
-            successCount++;
-          }
-        } catch (error: unknown) {
-          toast.error(
-            t("fileManager.moveFileFailed", { name: file.name }) +
-              ": " +
-              getErrorMessage(error, String(error)),
-          );
-        }
-      }
-
-      if (successCount > 0) {
-        const movedFiles = draggedFiles.slice(0, successCount).map((file) => {
-          const targetPath = targetFolder.path.endsWith("/")
-            ? `${targetFolder.path}${file.name}`
-            : `${targetFolder.path}/${file.name}`;
-          return {
-            originalPath: file.path,
-            targetPath: targetPath,
-            targetName: file.name,
-          };
-        });
-
-        const undoAction: UndoAction = {
-          type: "cut",
-          description: t("fileManager.dragMovedItems", {
-            count: successCount,
-            target: targetFolder.name,
-          }),
-          data: {
-            operation: "cut",
-            copiedFiles: movedFiles,
-            targetDirectory: targetFolder.path,
-          },
-          timestamp: Date.now(),
-        };
-        setUndoHistory((prev) => [...prev.slice(-9), undoAction]);
-
-        toast.success(
-          t("fileManager.successfullyMovedItems", {
-            count: successCount,
-            target: targetFolder.name,
-          }),
-        );
-        handleRefreshDirectory();
-        clearSelection();
-      }
-    } catch (error: unknown) {
+      await transferItems(draggedFiles, targetFolder.path, "cut");
+    } catch (error) {
       toast.error(
-        t("fileManager.moveOperationFailed") +
-          ": " +
-          getErrorMessage(error, String(error)),
+        `${t("fileManager.moveOperationFailed")}: ${getErrorMessage(error, String(error))}`,
       );
     }
   }
@@ -3811,7 +3856,10 @@ function FileManagerContent({
   }
 
   return (
-    <div className="h-full flex flex-col bg-background relative overflow-hidden isolate">
+    <div
+      ref={paneRootRef}
+      className="h-full flex flex-col bg-background relative overflow-hidden isolate"
+    >
       <PanelShell
         icon={<Folder className="size-4" />}
         title={t("nav.files")}
@@ -3847,7 +3895,7 @@ function FileManagerContent({
           navigateTo={navigateTo}
           handleRefreshDirectory={handleRefreshDirectory}
           handleDeleteFiles={handleDeleteFiles}
-          handleCopyFiles={handleCopyFiles}
+          handleCopyFiles={isFtp ? undefined : handleCopyFiles}
           handleFilesDropped={handleFilesDropped}
           handleCreateNewFolder={handleCreateNewFolder}
           handleCreateNewFile={handleCreateNewFile}
@@ -3898,7 +3946,7 @@ function FileManagerContent({
                 onItemContextMenu={handleSidebarItemContextMenu}
                 sshSessionId={sshSessionId}
                 refreshTrigger={sidebarRefreshTrigger}
-                onOpenTrash={() => setTrashOpen(true)}
+                onOpenTrash={isFtp ? undefined : () => setTrashOpen(true)}
                 diskInfo={diskInfo ?? undefined}
               />
             </div>
@@ -3942,6 +3990,7 @@ function FileManagerContent({
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
+                searchQuery={searchQuery}
                 isLoading={isLoading}
                 selectedFiles={selectedFiles}
                 deletingPaths={deletingPaths}
@@ -3990,13 +4039,14 @@ function FileManagerContent({
                 onStartEdit={handleStartEdit}
                 onCancelEdit={handleCancelEdit}
                 onDelete={handleDeleteFiles}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onUndo={handleUndo}
                 hasClipboard={!!clipboard}
                 onFileDrop={handleFileDrop}
                 onFileDiff={handleFileDiff}
+                onSystemPrefetch={nativeDrag.prefetch}
                 onSystemDragStart={handleFileDragStart}
                 onSystemDragEnd={handleFileDragEnd}
                 createIntent={createIntent}
@@ -4020,9 +4070,13 @@ function FileManagerContent({
                     .forEach(handleDownloadFile)
                 }
                 onPreview={handleFileOpen}
-                onOpenExternally={handleOpenExternally}
+                onOpenExternally={
+                  window.electronAPI?.isElectron
+                    ? handleOpenExternally
+                    : undefined
+                }
                 onRename={handleRenameFile}
-                onCopy={handleCopyFiles}
+                onCopy={isFtp ? undefined : handleCopyFiles}
                 onCut={handleCutFiles}
                 onPaste={handlePasteFiles}
                 onDelete={handleDeleteFiles}
@@ -4041,19 +4095,23 @@ function FileManagerContent({
                 onRefresh={handleRefreshDirectory}
                 hasClipboard={!!clipboard}
                 onDragToDesktop={() => handleDragToDesktop(contextMenu.files)}
-                onOpenTerminal={(path) => handleOpenTerminal(path)}
-                onRunExecutable={(file) => handleRunExecutable(file)}
+                onOpenTerminal={
+                  isFtp ? undefined : (path) => handleOpenTerminal(path)
+                }
+                onRunExecutable={
+                  isFtp ? undefined : (file) => handleRunExecutable(file)
+                }
                 onPinFile={handlePinFile}
                 onUnpinFile={handleUnpinFile}
                 onAddShortcut={handleAddShortcut}
                 isPinned={isPinnedFile}
                 currentPath={currentPath}
-                onProperties={handleOpenPermissionsDialog}
-                onExtractArchive={handleExtractArchive}
-                onCompress={handleOpenCompressDialog}
+                onProperties={isFtp ? undefined : handleOpenPermissionsDialog}
+                onExtractArchive={isFtp ? undefined : handleExtractArchive}
+                onCompress={isFtp ? undefined : handleOpenCompressDialog}
                 onCopyPath={handleCopyPath}
                 onCopyFolderLink={handleCopyFolderLink}
-                onTransferToHost={handleOpenTransferDialog}
+                onTransferToHost={isFtp ? undefined : handleOpenTransferDialog}
               />
             </div>
           </div>
@@ -4099,6 +4157,8 @@ function FileManagerContent({
       )}
 
       <FileManagerDialogs
+        nameConflict={nameConflict}
+        onResolveConflict={resolveConflict}
         compressDialogFiles={compressDialogFiles}
         setCompressDialogFiles={setCompressDialogFiles}
         handleCompress={handleCompress}

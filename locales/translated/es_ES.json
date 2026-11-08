@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Mostrar el panel de archivos en las terminales",
         "description": "Permitir que el panel de archivos se abra junto a la terminal SSH de este host."
+      },
+      "enableFtp": {
+        "label": "Habilitar FTP"
+      },
+      "ftpPort": {
+        "label": "Puerto FTP"
+      },
+      "ftpSecure": {
+        "label": "Seguridad FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Permitir certificado autofirmado"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Gestor de archivos"
   },
   "fileManager": {
+    "nameConflictTitle": "El elemento ya existe",
+    "nameConflictDescription": "Ya existe un elemento con el nombre «{{name}}» en esta carpeta.",
+    "nameConflictHint": "La sobrescritura no se puede deshacer. Las carpetas cargadas y copiadas se fusionan y reemplazan los archivos internos. No se permite mover sobre una carpeta existente ni reemplazar un tipo de elemento diferente; elige Conservar ambos en su lugar.",
+    "conflict-overwrite": "Sobrescribir",
+    "conflict-skip": "Omitir",
+    "conflict-keep-both": "Conservar ambos",
+    "conflictBusy": "Finaliza el aviso de conflicto de nombre actual antes de iniciar otra operación.",
+    "conflictApplyToAll": "Aplicar a todos los conflictos restantes",
+    "conflictTypeMismatch": "No se puede sobrescribir un tipo de elemento diferente ni un enlace simbólico. Elige Conservar ambos en su lugar.",
     "noHostSelected": "Ningún host seleccionado",
     "initializingEditor": "Inicializando editor...",
     "file": "Archivo",
@@ -214,6 +235,7 @@
     "columns": "Columnas",
     "columnsHint": "Haz clic derecho para elegir las columnas",
     "emptyFolder": "Esta carpeta está vacía",
+    "noSearchResults": "No se han encontrado resultados para «{{query}}»",
     "searchFiles": "Buscar archivos...",
     "upload": "Subir",
     "selectHostToStart": "Selecciona un host para comenzar la gestión de archivos",
@@ -460,6 +482,7 @@
     "octal": "Octal",
     "storage": "Almacenamiento",
     "disk": "Disco",
+    "notAvailable": "N/D",
     "used": "Usado",
     "of": "de",
     "toggleSidebar": "Alternar barra lateral",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Arrastrar carpetas al escritorio aún no está soportado",
     "saveToDesktopFailed": "Error al guardar: {{error}}",
     "dragFailedDetail": "Error al arrastrar: {{error}}",
+    "desktopAppOnly": "Esto solo funciona en la aplicación de escritorio",
+    "onlyFilesToDesktop": "Solo se pueden arrastrar archivos al escritorio",
+    "onlyFoldersCanBeDragged": "Solo se pueden arrastrar carpetas aquí",
+    "savedToDownloads": "Tu navegador lo guarda en la carpeta Descargas",
+    "savedFile": "Guardado {{name}}",
+    "savedFilesZip_one": "Guardado {{count}} archivo en un zip",
+    "savedFilesZip_many": "Guardados {{count}} archivos en un zip",
+    "savedFilesZip_other": "Guardados {{count}} archivos en un zip",
+    "dropFileTooLarge": "{{name}} es demasiado grande. El límite es {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} es un tipo de archivo no permitido aquí",
+    "lineNumbers": "Números de línea",
     "videoUnsupported": "Tu navegador no puede reproducir este formato de vídeo.",
     "downloadToPlay": "Descárgalo para reproducirlo en otro lugar",
     "cannotPreviewType": "No se puede previsualizar este tipo de archivo",
@@ -677,5 +711,44 @@
     "syncNow": "Ir a la carpeta de la terminal",
     "cdTerminal": "Cambiar la terminal a esta carpeta",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Listar archivos"
+    },
+    "info": {
+      "title": "Información del archivo"
+    },
+    "mkdir": {
+      "title": "Crear carpeta"
+    },
+    "delete": {
+      "title": "Eliminar archivo o carpeta vacía"
+    },
+    "path": "Ruta"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Explora los archivos de este host a través de FTP o FTPS.",
+    "originNote": "Las conexiones FTP se realizan desde el servidor Termix.",
+    "connection": "Conexión",
+    "port": "Puerto",
+    "security": "Seguridad",
+    "securityNone": "Ninguna (FTP sin cifrar)",
+    "securityExplicit": "TLS explícito (FTPS)",
+    "securityImplicit": "TLS implícito (FTPS)",
+    "allowSelfSigned": "Permitir certificado autofirmado",
+    "allowSelfSignedDesc": "Omite la verificación de certificados para este host.",
+    "login": "Inicio de sesión",
+    "auth": {
+      "direct": "Directo",
+      "credential": "Credencial",
+      "none": "Anónimo"
+    },
+    "selectCredential": "Selecciona una credencial...",
+    "anonymousNote": "Inicia sesión como anónimo sin contraseña.",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "passwordSaved": "Contraseña guardada, escribe para cambiarla"
   }
 }

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Näytä tiedostopaneeli terminaaleissa",
         "description": "Avaa tiedostopaneeli tämän isäntäpalvelimen SSH-terminaalin viereen."
+      },
+      "enableFtp": {
+        "label": "Ota FTP käyttöön"
+      },
+      "ftpPort": {
+        "label": "FTP-portti"
+      },
+      "ftpSecure": {
+        "label": "FTP-turvallisuus"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Salli itseallekirjoitettu varmenne"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Tiedostonhallinta"
   },
   "fileManager": {
+    "nameConflictTitle": "Kohde on jo olemassa",
+    "nameConflictDescription": "Tähän kansioon on jo tallennettu kohde nimeltä \"{{name}}\".",
+    "nameConflictHint": "Korvaamista ei voi peruuttaa. Ladatut ja kopioidut kansiot yhdistyvät ja korvaavat niiden sisällön. Olemassa olevan kansion päälle siirtämistä tai eri tyyppisen kohteen korvaamista ei sallita; valitse sen sijaan Pidä molemmat.",
+    "conflict-overwrite": "Korvaa",
+    "conflict-skip": "Ohita",
+    "conflict-keep-both": "Pidä molemmat",
+    "conflictBusy": "Päätä nykyinen nimikonfliktin kysely ennen uuden toiminnon aloittamista.",
+    "conflictApplyToAll": "Käytä kaikille jäljellä oleviin konflikteihin",
+    "conflictTypeMismatch": "Eri tyyppistä kohdetta tai symbolista linkkiä ei voi korvata. Valitse sen sijaan Pidä molemmat.",
     "noHostSelected": "Isäntäpalvelinta ei ole valittu",
     "initializingEditor": "Editorin alustaminen...",
     "file": "Tiedosto",
@@ -200,6 +221,7 @@
     "columns": "Sarakkeet",
     "columnsHint": "Valitse sarakkeet oikealla hiiren painikkeella",
     "emptyFolder": "Tämä kansio on tyhjä",
+    "noSearchResults": "Ei tuloksia haulle \"{{query}}\"",
     "searchFiles": "Hae tiedostoja...",
     "upload": "Lataa",
     "selectHostToStart": "Valitse isäntä aloittaaksesi tiedostonhallinnan",
@@ -429,6 +451,7 @@
     "octal": "Kahdeksikkö",
     "storage": "Tallennustila",
     "disk": "Levy",
+    "notAvailable": "Ei saatavilla",
     "used": "Käytetty",
     "of": "/",
     "toggleSidebar": "Näytä/piilota sivupalkki",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Kansioiden vetäminen työpöydälle ei vielä tueta",
     "saveToDesktopFailed": "Tallennus epäonnistui: {{error}}",
     "dragFailedDetail": "Veto epäonnistui: {{error}}",
+    "desktopAppOnly": "Tämä toimii vain työpöytäsovelluksessa",
+    "onlyFilesToDesktop": "Vain tiedostoja voi vetää työpöydälle",
+    "onlyFoldersCanBeDragged": "Vain kansioita voi vetää tähän",
+    "savedToDownloads": "Selain tallentaa sen Lataukset-kansioon",
+    "savedFile": "Tallennettu {{name}}",
+    "savedFilesZip_one": "Tallennettu {{count}} tiedosto zip-pakettiin",
+    "savedFilesZip_other": "Tallennettu {{count}} tiedostoa zip-pakettiin",
+    "dropFileTooLarge": "{{name}} on liian suuri. Raja on {{size}} Mt.",
+    "dropFileTypeNotAllowed": "{{name}} on tiedostotyyppi, jota ei sallita tässä",
+    "lineNumbers": "Rivinumerot",
     "videoUnsupported": "Selaimesi ei tue tätä videomuotoa.",
     "downloadToPlay": "Lataa se toistaksesi muualla",
     "cannotPreviewType": "Tämän tiedostotyypin esikatselua ei voi näyttää",
@@ -636,5 +669,44 @@
     "syncNow": "Siirry terminaalin kansioon",
     "cdTerminal": "Vaihda terminaali tähän kansioon",
     "terminalAt": "Terminaali:"
+  },
+  "operations": {
+    "list": {
+      "title": "Listaa tiedostot"
+    },
+    "info": {
+      "title": "Tiedoston tiedot"
+    },
+    "mkdir": {
+      "title": "Luo kansio"
+    },
+    "delete": {
+      "title": "Poista tiedosto tai tyhjä kansio"
+    },
+    "path": "Polku"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Selaa tämän isäntäkonemiehen tiedostoja FTP- tai FTPS-yhteydellä.",
+    "originNote": "FTP-yhteydet muodostetaan Termix-palvelimelta.",
+    "connection": "Yhteys",
+    "port": "Portti",
+    "security": "Turvallisuus",
+    "securityNone": "Ei mitään (tavallinen FTP)",
+    "securityExplicit": "Nimenomainen TLS (FTPS)",
+    "securityImplicit": "Epäsuora TLS (FTPS)",
+    "allowSelfSigned": "Salli itseallekirjoitettu varmenne",
+    "allowSelfSignedDesc": "Ohita varmennetarkastukset tälle isäntäkonemiehelle.",
+    "login": "Kirjaudu sisään",
+    "auth": {
+      "direct": "Suora",
+      "credential": "Tunnus",
+      "none": "Anonyymi"
+    },
+    "selectCredential": "Valitse tunnus...",
+    "anonymousNote": "Kirjautuu sisään anonyymisti ilman salasanaa.",
+    "username": "Käyttäjätunnus",
+    "password": "Salasana",
+    "passwordSaved": "Salasana tallennettu, kirjoita vaihtaaksesi"
   }
 }

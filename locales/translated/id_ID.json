@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Tampilkan panel file di terminal",
         "description": "Biarkan panel file terbuka di samping terminal SSH host ini."
+      },
+      "enableFtp": {
+        "label": "Aktifkan FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Keamanan FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Izinkan sertifikat tanda tangan sendiri"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Pengelola File"
   },
   "fileManager": {
+    "nameConflictTitle": "Item sudah ada",
+    "nameConflictDescription": "Item bernama \"{{name}}\" sudah ada di folder ini.",
+    "nameConflictHint": "Penimpaan tidak dapat dibatalkan. Folder yang diunggah dan disalin akan digabungkan dan menggantikan file di dalamnya. Memindahkan ke folder yang sudah ada atau mengganti jenis item yang berbeda akan ditolak; pilih Simpan keduanya sebagai gantinya.",
+    "conflict-overwrite": "Timpa",
+    "conflict-skip": "Lewati",
+    "conflict-keep-both": "Simpan keduanya",
+    "conflictBusy": "Selesaikan permintaan konflik nama saat ini sebelum memulai operasi lain.",
+    "conflictApplyToAll": "Terapkan ke semua konflik yang tersisa",
+    "conflictTypeMismatch": "Tidak dapat menimpa jenis item yang berbeda atau tautan simbolik. Pilih Simpan keduanya sebagai gantinya.",
     "noHostSelected": "Tidak ada host yang dipilih",
     "initializingEditor": "Menginisialisasi editor...",
     "file": "File",
@@ -186,6 +207,7 @@
     "columns": "Kolom",
     "columnsHint": "Klik kanan untuk memilih kolom",
     "emptyFolder": "Folder ini kosong",
+    "noSearchResults": "Tidak ada hasil untuk \"{{query}}\"",
     "searchFiles": "Cari file...",
     "upload": "Unggah",
     "selectHostToStart": "Pilih host untuk memulai manajemen file",
@@ -398,6 +420,7 @@
     "octal": "Oktal",
     "storage": "Penyimpanan",
     "disk": "Disk",
+    "notAvailable": "T/A",
     "used": "Digunakan",
     "of": "dari",
     "toggleSidebar": "Alihkan Sidebar",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "Menyeret folder ke desktop belum didukung",
     "saveToDesktopFailed": "Penyimpanan gagal: {{error}}",
     "dragFailedDetail": "Seret gagal: {{error}}",
+    "desktopAppOnly": "Ini hanya berfungsi di aplikasi desktop",
+    "onlyFilesToDesktop": "Hanya file yang dapat diseret ke desktop",
+    "onlyFoldersCanBeDragged": "Hanya folder yang dapat diseret ke sini",
+    "savedToDownloads": "Peramban Anda menyimpannya ke folder Unduhan",
+    "savedFile": "{{name}} disimpan",
+    "savedFilesZip_other": "{{count}} file disimpan dalam zip",
+    "dropFileTooLarge": "{{name}} terlalu besar. Batasannya adalah {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} adalah jenis file yang tidak diizinkan di sini",
+    "lineNumbers": "Nomor baris",
     "videoUnsupported": "Browser Anda tidak dapat memutar format video ini.",
     "downloadToPlay": "Unduh untuk memutar di tempat lain",
     "cannotPreviewType": "Tidak dapat menampilkan pratinjau tipe file ini",
@@ -595,5 +627,44 @@
     "syncNow": "Pergi ke folder terminal",
     "cdTerminal": "Ubah terminal ke folder ini",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Daftar file"
+    },
+    "info": {
+      "title": "Info file"
+    },
+    "mkdir": {
+      "title": "Buat folder"
+    },
+    "delete": {
+      "title": "Hapus file atau folder kosong"
+    },
+    "path": "Jalur"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Jelajahi file di host ini melalui FTP atau FTPS.",
+    "originNote": "Koneksi FTP dibuat dari server Termix.",
+    "connection": "Koneksi",
+    "port": "Port",
+    "security": "Keamanan",
+    "securityNone": "Tidak ada (FTP biasa)",
+    "securityExplicit": "TLS Eksplisit (FTPS)",
+    "securityImplicit": "TLS Implisit (FTPS)",
+    "allowSelfSigned": "Izinkan sertifikat tanda tangan sendiri",
+    "allowSelfSignedDesc": "Lewati pemeriksaan sertifikat untuk host ini.",
+    "login": "Masuk",
+    "auth": {
+      "direct": "Langsung",
+      "credential": "Kredensial",
+      "none": "Anonim"
+    },
+    "selectCredential": "Pilih kredensial...",
+    "anonymousNote": "Masuk sebagai anonim tanpa kata sandi.",
+    "username": "Nama pengguna",
+    "password": "Kata sandi",
+    "passwordSaved": "Kata sandi disimpan, ketik untuk mengubah"
   }
 }

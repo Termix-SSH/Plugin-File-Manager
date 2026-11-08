@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Dateipanel in Terminals anzeigen",
         "description": "Das Dateipanel neben dem SSH-Terminal dieses Hosts öffnen."
+      },
+      "enableFtp": {
+        "label": "FTP aktivieren"
+      },
+      "ftpPort": {
+        "label": "FTP-Port"
+      },
+      "ftpSecure": {
+        "label": "FTP-Sicherheit"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Selbstsignierte Zertifikate zulassen"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Dateimanager"
   },
   "fileManager": {
+    "nameConflictTitle": "Element existiert bereits",
+    "nameConflictDescription": "Ein Element mit dem Namen „{{name}}“ existiert bereits in diesem Ordner.",
+    "nameConflictHint": "Das Überschreiben kann nicht rückgängig gemacht werden. Hochgeladene und kopierte Ordner werden zusammengeführt und Dateien darin ersetzt. Das Verschieben auf einen vorhandenen Ordner oder das Ersetzen eines anderen Elementtyps wird abgelehnt; wählen Sie stattdessen Beide behalten.",
+    "conflict-overwrite": "Überschreiben",
+    "conflict-skip": "Überspringen",
+    "conflict-keep-both": "Beide behalten",
+    "conflictBusy": "Schließen Sie den aktuellen Konfliktdialog ab, bevor Sie einen weiteren Vorgang starten.",
+    "conflictApplyToAll": "Auf alle verbleibenden Konflikte anwenden",
+    "conflictTypeMismatch": "Ein anderer Elementtyp oder ein symbolischer Link kann nicht überschrieben werden. Wählen Sie stattdessen Beide behalten.",
     "noHostSelected": "Kein Host ausgewählt",
     "initializingEditor": "Editor wird initialisiert...",
     "file": "Datei",
@@ -200,6 +221,7 @@
     "columns": "Spalten",
     "columnsHint": "Rechtsklick zum Auswählen der Spalten",
     "emptyFolder": "Dieser Ordner ist leer",
+    "noSearchResults": "Keine Ergebnisse für „{{query}}“ gefunden",
     "searchFiles": "Dateien durchsuchen...",
     "upload": "Hochladen",
     "selectHostToStart": "Wählen Sie einen Host aus, um mit der Dateiverwaltung zu beginnen",
@@ -429,6 +451,7 @@
     "octal": "Oktal",
     "storage": "Speicher",
     "disk": "Festplatte",
+    "notAvailable": "N/V",
     "used": "Verwendet",
     "of": "von",
     "toggleSidebar": "Seitenleiste umschalten",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Das Ziehen von Ordnern auf den Desktop wird noch nicht unterstützt",
     "saveToDesktopFailed": "Speichern fehlgeschlagen: {{error}}",
     "dragFailedDetail": "Ziehen fehlgeschlagen: {{error}}",
+    "desktopAppOnly": "Dies funktioniert nur in der Desktop-App",
+    "onlyFilesToDesktop": "Nur Dateien können auf den Desktop gezogen werden",
+    "onlyFoldersCanBeDragged": "Nur Ordner können hierher gezogen werden",
+    "savedToDownloads": "Ihr Browser speichert die Datei im Download-Ordner",
+    "savedFile": "{{name}} gespeichert",
+    "savedFilesZip_one": "{{count}} Datei in einem ZIP-Archiv gespeichert",
+    "savedFilesZip_other": "{{count}} Dateien in einem ZIP-Archiv gespeichert",
+    "dropFileTooLarge": "{{name}} ist zu groß. Das Limit beträgt {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} ist ein Dateityp, der hier nicht erlaubt ist",
+    "lineNumbers": "Zeilennummern",
     "videoUnsupported": "Ihr Browser kann dieses Videoformat nicht abspielen.",
     "downloadToPlay": "Herunterladen, um es woanders abzuspielen",
     "cannotPreviewType": "Vorschau für diesen Dateityp nicht möglich",
@@ -636,5 +669,44 @@
     "syncNow": "Zum Terminal-Ordner wechseln",
     "cdTerminal": "Terminal in diesen Ordner wechseln",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Dateien auflisten"
+    },
+    "info": {
+      "title": "Dateiinfo"
+    },
+    "mkdir": {
+      "title": "Ordner erstellen"
+    },
+    "delete": {
+      "title": "Datei oder leeren Ordner löschen"
+    },
+    "path": "Pfad"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Durchsuchen Sie Dateien auf diesem Host über FTP oder FTPS.",
+    "originNote": "FTP-Verbindungen werden vom Termix-Server aus hergestellt.",
+    "connection": "Verbindung",
+    "port": "Port",
+    "security": "Sicherheit",
+    "securityNone": "Keine (plain FTP)",
+    "securityExplicit": "Explizites TLS (FTPS)",
+    "securityImplicit": "Implizites TLS (FTPS)",
+    "allowSelfSigned": "Selbstsignierte Zertifikate zulassen",
+    "allowSelfSignedDesc": "Zertifikatsprüfungen für diesen Host überspringen.",
+    "login": "Anmeldung",
+    "auth": {
+      "direct": "Direkt",
+      "credential": "Anmeldeinformationen",
+      "none": "Anonym"
+    },
+    "selectCredential": "Wählen Sie Anmeldeinformationen aus...",
+    "anonymousNote": "Meldet sich als anonym ohne Passwort an.",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "passwordSaved": "Passwort gespeichert, zum Ändern eingeben"
   }
 }

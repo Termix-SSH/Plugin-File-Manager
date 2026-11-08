@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Mostra el panell de fitxers als terminals",
         "description": "Permet que el panell de fitxers s'obri al costat del terminal SSH d'aquest amfitrió."
+      },
+      "enableFtp": {
+        "label": "Activa FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Seguretat FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Permet certificats autofirmats"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Gestor de fitxers"
   },
   "fileManager": {
+    "nameConflictTitle": "L'element ja existeix",
+    "nameConflictDescription": "Ja existeix un element anomenat «{{name}}» en aquesta carpeta.",
+    "nameConflictHint": "No es pot desfer la substitució. Les carpetes pujades i copiades es fusionen i substitueixen els fitxers interns. No es permet moure sobre una carpeta existent ni substituir un tipus d'element diferent; trieu «Conserva tots dos» en el seu lloc.",
+    "conflict-overwrite": "Substitueix",
+    "conflict-skip": "Omet",
+    "conflict-keep-both": "Conserva tots dos",
+    "conflictBusy": "Finalitza el diàleg de conflicte de noms actual abans d'iniciar una altra operació.",
+    "conflictApplyToAll": "Aplica a tots els conflictes restants",
+    "conflictTypeMismatch": "No es pot substituir un tipus d'element diferent ni un enllaç simbòlic. Tria «Conserva tots dos» en el seu lloc.",
     "noHostSelected": "Cap host seleccionat",
     "initializingEditor": "Inicialitzant l'editor...",
     "file": "Fitxer",
@@ -214,6 +235,7 @@
     "columns": "Columnes",
     "columnsHint": "Fes clic dret per triar les columnes",
     "emptyFolder": "Aquesta carpeta està buida",
+    "noSearchResults": "No s'han trobat resultats per a «{{query}}»",
     "searchFiles": "Cerca fitxers...",
     "upload": "Pujar",
     "selectHostToStart": "Selecciona un host per començar a gestionar fitxers",
@@ -460,6 +482,7 @@
     "octal": "Octal",
     "storage": "Emmagatzematge",
     "disk": "Disc",
+    "notAvailable": "N/D",
     "used": "Utilitzat",
     "of": "de",
     "toggleSidebar": "Alterna la barra lateral",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Encara no es pot arrossegar carpetes a l'escriptori",
     "saveToDesktopFailed": "Ha fallat el desament: {{error}}",
     "dragFailedDetail": "Ha fallat l'arrossegament: {{error}}",
+    "desktopAppOnly": "Això només funciona a l'aplicació d'escriptori",
+    "onlyFilesToDesktop": "Només es poden arrossegar fitxers a l'escriptori",
+    "onlyFoldersCanBeDragged": "Només es poden arrossegar carpetes aquí",
+    "savedToDownloads": "El navegador ho desa a la carpeta Descàrregues",
+    "savedFile": "S'ha desat {{name}}",
+    "savedFilesZip_one": "S'ha desat {{count}} fitxer en un zip",
+    "savedFilesZip_many": "S'han desat {{count}} fitxers en un zip",
+    "savedFilesZip_other": "S'han desat {{count}} fitxers en un zip",
+    "dropFileTooLarge": "{{name}} és massa gran. El límit és {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} és un tipus de fitxer no permès aquí",
+    "lineNumbers": "Números de línia",
     "videoUnsupported": "El vostre navegador no pot reproduir aquest format de vídeo.",
     "downloadToPlay": "Descarregueu-lo per reproduir-lo en un altre lloc",
     "cannotPreviewType": "No es pot prévisualitzar aquest tipus de fitxer",
@@ -677,5 +711,44 @@
     "syncNow": "Vés a la carpeta del terminal",
     "cdTerminal": "Canvia el terminal a aquesta carpeta",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Llista fitxers"
+    },
+    "info": {
+      "title": "Informació del fitxer"
+    },
+    "mkdir": {
+      "title": "Crea carpeta"
+    },
+    "delete": {
+      "title": "Suprimeix fitxer o carpeta buida"
+    },
+    "path": "Camí"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Navega pels fitxers d'aquest amfitrió mitjançant FTP o FTPS.",
+    "originNote": "Les connexions FTP es realitzen des del servidor Termix.",
+    "connection": "Connexió",
+    "port": "Port",
+    "security": "Seguretat",
+    "securityNone": "Cap (FTP pla)",
+    "securityExplicit": "TLS explícit (FTPS)",
+    "securityImplicit": "TLS implícit (FTPS)",
+    "allowSelfSigned": "Permet certificats autofirmats",
+    "allowSelfSignedDesc": "Omet les comprovacions de certificat per a aquest amfitrió.",
+    "login": "Inici de sessió",
+    "auth": {
+      "direct": "Directe",
+      "credential": "Credencial",
+      "none": "Anònim"
+    },
+    "selectCredential": "Selecciona una credencial...",
+    "anonymousNote": "Inicia sessió com a anònim sense contrasenya.",
+    "username": "Nom d'usuari",
+    "password": "Contrasenya",
+    "passwordSaved": "Contrasenya desada, escriu per canviar-la"
   }
 }

@@ -12,6 +12,7 @@ import {
   Select2,
   InlineView,
   FormFooter,
+  LoadingState,
 } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
@@ -492,6 +493,8 @@ export function TransferToHostDialog({
 
     return () => {
       cancelled = true;
+      // The next run may return early, so it must not inherit the spinner.
+      setMethodPreviewLoading(false);
     };
   }, [
     open,
@@ -702,9 +705,7 @@ export function TransferToHostDialog({
       <p className="text-xs text-muted-foreground">{sourceLabel}</p>
       <div className="flex flex-col gap-4 py-2 max-h-[min(60vh,28rem)] overflow-y-auto overflow-x-hidden">
         {loadingHosts ? (
-          <p className="text-xs text-muted-foreground">
-            {t("fileManager.connecting")}
-          </p>
+          <LoadingState compact label={t("fileManager.connecting")} />
         ) : availableHosts.length === 0 ? (
           <div className="border border-border bg-muted/10 p-3">
             <p className="text-xs font-semibold">
@@ -858,7 +859,7 @@ export function TransferToHostDialog({
                   {t("transfer.browseFolders")}
                 </Label>
                 <div className="border border-border">
-                  <div className="flex min-w-0 items-center gap-2 border-b border-border px-2 py-1.5 bg-muted/30">
+                  <div className="flex min-w-0 items-center gap-2 border-b border-border px-2 py-1.5">
                     <button
                       type="button"
                       className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
@@ -877,9 +878,11 @@ export function TransferToHostDialog({
                   </div>
                   <div className="max-h-36 overflow-y-auto overflow-x-hidden">
                     {browseLoading ? (
-                      <p className="text-[10px] text-muted-foreground px-3 py-2">
-                        {t("fileManager.connecting")}
-                      </p>
+                      <LoadingState
+                        compact
+                        label={t("fileManager.connecting")}
+                        className="px-3 py-2"
+                      />
                     ) : browseStatus === "not_found" ? (
                       <p className="text-[10px] text-muted-foreground px-3 py-2">
                         {t("transfer.browsePathWillBeCreated")}
@@ -1000,9 +1003,7 @@ export function TransferToHostDialog({
                 </div>
 
                 {methodPreviewLoading && (
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("transfer.methodPreviewLoading")}
-                  </p>
+                  <LoadingState label={t("transfer.methodPreviewLoading")} />
                 )}
                 {methodPreviewError && (
                   <p className="text-[10px] text-warning">

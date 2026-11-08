@@ -136,9 +136,7 @@ export function FileManagerContextMenu({
     const timeoutId = setTimeout(() => {
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as Element;
-        const menuElement = document.querySelector("[data-context-menu]");
-
-        if (!menuElement?.contains(target)) {
+        if (!menuRef.current?.contains(target)) {
           onClose();
         }
       };
@@ -552,10 +550,10 @@ export function FileManagerContextMenu({
     return (
       <Kbd>
         {keys.map((key, index) => (
-          <>
-            <KbdKey key={`key-${index}`}>{key}</KbdKey>
-            {index < keys.length - 1 && <KbdSeparator key={`sep-${index}`} />}
-          </>
+          <React.Fragment key={index}>
+            <KbdKey>{key}</KbdKey>
+            {index < keys.length - 1 && <KbdSeparator />}
+          </React.Fragment>
         ))}
       </Kbd>
     );

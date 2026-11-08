@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Hiển thị bảng điều khiển tệp trong terminal",
         "description": "Cho phép bảng điều khiển tệp mở bên cạnh terminal SSH của máy chủ này."
+      },
+      "enableFtp": {
+        "label": "Bật FTP"
+      },
+      "ftpPort": {
+        "label": "Cổng FTP"
+      },
+      "ftpSecure": {
+        "label": "Bảo mật FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Cho phép chứng chỉ tự ký"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Trình quản lý tệp"
   },
   "fileManager": {
+    "nameConflictTitle": "Mục đã tồn tại",
+    "nameConflictDescription": "Một mục có tên \"{{name}}\" đã tồn tại trong thư mục này.",
+    "nameConflictHint": "Việc ghi đè không thể hoàn tác. Các thư mục được tải lên và sao chép sẽ hợp nhất và thay thế các tệp bên trong. Việc di chuyển vào một thư mục hiện có hoặc thay thế một loại mục khác sẽ bị từ chối; hãy chọn Giữ cả hai thay vào đó.",
+    "conflict-overwrite": "Ghi đè",
+    "conflict-skip": "Bỏ qua",
+    "conflict-keep-both": "Giữ cả hai",
+    "conflictBusy": "Hoàn thành lời nhắc xung đột tên hiện tại trước khi bắt đầu một thao tác khác.",
+    "conflictApplyToAll": "Áp dụng cho tất cả các xung đột còn lại",
+    "conflictTypeMismatch": "Không thể ghi đè lên một loại mục khác hoặc liên kết biểu tượng. Hãy chọn Giữ cả hai thay vào đó.",
     "noHostSelected": "Chưa chọn máy chủ",
     "initializingEditor": "Đang khởi tạo trình soạn thảo...",
     "file": "Tệp",
@@ -186,6 +207,7 @@
     "columns": "Cột",
     "columnsHint": "Nhấp chuột phải để chọn cột",
     "emptyFolder": "Thư mục này trống",
+    "noSearchResults": "Không tìm thấy kết quả cho \"{{query}}\"",
     "searchFiles": "Tìm kiếm tệp...",
     "upload": "Tải lên",
     "selectHostToStart": "Chọn một host để bắt đầu quản lý tệp",
@@ -398,6 +420,7 @@
     "octal": "Thập phân tám",
     "storage": "Bộ nhớ",
     "disk": "Đĩa",
+    "notAvailable": "N/A",
     "used": "Đã dùng",
     "of": "trên",
     "toggleSidebar": "Bật/tắt thanh bên",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "Chức năng kéo thư mục ra màn hình nền chưa được hỗ trợ",
     "saveToDesktopFailed": "Lưu thất bại: {{error}}",
     "dragFailedDetail": "Kéo thả thất bại: {{error}}",
+    "desktopAppOnly": "Tính năng này chỉ hoạt động trong ứng dụng máy tính để bàn",
+    "onlyFilesToDesktop": "Chỉ có thể kéo tệp vào máy tính để bàn",
+    "onlyFoldersCanBeDragged": "Chỉ có thể kéo thư mục vào đây",
+    "savedToDownloads": "Trình duyệt của bạn sẽ lưu vào thư mục Tải xuống",
+    "savedFile": "Đã lưu {{name}}",
+    "savedFilesZip_other": "Đã lưu {{count}} tệp trong một tệp zip",
+    "dropFileTooLarge": "{{name}} quá lớn. Giới hạn là {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} là loại tệp không được phép ở đây",
+    "lineNumbers": "Số dòng",
     "videoUnsupported": "Trình duyệt của bạn không thể phát định dạng video này.",
     "downloadToPlay": "Tải xuống để phát ở nơi khác",
     "cannotPreviewType": "Không thể xem trước loại tệp này",
@@ -595,5 +627,44 @@
     "syncNow": "Đi đến thư mục của terminal",
     "cdTerminal": "Thay đổi terminal sang thư mục này",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Liệt kê tệp"
+    },
+    "info": {
+      "title": "Thông tin tệp"
+    },
+    "mkdir": {
+      "title": "Tạo thư mục"
+    },
+    "delete": {
+      "title": "Xóa tệp hoặc thư mục rỗng"
+    },
+    "path": "Đường dẫn"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Duyệt tệp trên máy chủ này qua FTP hoặc FTPS.",
+    "originNote": "Kết nối FTP được thực hiện từ máy chủ Termix.",
+    "connection": "Kết nối",
+    "port": "Cổng",
+    "security": "Bảo mật",
+    "securityNone": "Không (FTP thuần)",
+    "securityExplicit": "TLS rõ ràng (FTPS)",
+    "securityImplicit": "TLS ngầm (FTPS)",
+    "allowSelfSigned": "Cho phép chứng chỉ tự ký",
+    "allowSelfSignedDesc": "Bỏ qua kiểm tra chứng chỉ cho máy chủ này.",
+    "login": "Đăng nhập",
+    "auth": {
+      "direct": "Trực tiếp",
+      "credential": "Thông tin đăng nhập",
+      "none": "Ẩn danh"
+    },
+    "selectCredential": "Chọn thông tin đăng nhập...",
+    "anonymousNote": "Đăng nhập với tư cách ẩn danh mà không cần mật khẩu.",
+    "username": "Tên người dùng",
+    "password": "Mật khẩu",
+    "passwordSaved": "Mật khẩu đã được lưu, nhập để thay đổi"
   }
 }

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "แสดงแผงไฟล์ในเทอร์มินัล",
         "description": "ให้แผงไฟล์เปิดขึ้นข้างเทอร์มินัล SSH ของโฮสต์นี้"
+      },
+      "enableFtp": {
+        "label": "เปิดใช้งาน FTP"
+      },
+      "ftpPort": {
+        "label": "พอร์ต FTP"
+      },
+      "ftpSecure": {
+        "label": "ความปลอดภัยของ FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "อนุญาตใบรับรองที่ลงนามด้วยตนเอง"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "จัดการไฟล์"
   },
   "fileManager": {
+    "nameConflictTitle": "รายการนี้มีอยู่แล้ว",
+    "nameConflictDescription": "รายการชื่อ \"{{name}}\" มีอยู่แล้วในโฟลเดอร์นี้",
+    "nameConflictHint": "การเขียนทับไม่สามารถย้อนกลับได้ โฟลเดอร์ที่อัปโหลดและคัดลอกจะรวมและแทนที่ไฟล์ภายใน การย้ายไปยังโฟลเดอร์ที่มีอยู่หรือแทนที่ประเภทรายการอื่นจะถูกปฏิเสธ ให้เลือกเก็บทั้งสองรายการแทน",
+    "conflict-overwrite": "เขียนทับ",
+    "conflict-skip": "ข้าม",
+    "conflict-keep-both": "เก็บทั้งสองรายการ",
+    "conflictBusy": "เสร็จสิ้นการแก้ไขความขัดแย้งของชื่อปัจจุบันก่อนเริ่มดำเนินการอื่น",
+    "conflictApplyToAll": "นำไปใช้กับความขัดแย้งที่เหลือทั้งหมด",
+    "conflictTypeMismatch": "ไม่สามารถเขียนทับประเภทรายการอื่นหรือลิงก์สัญลักษณ์ได้ ให้เลือกเก็บทั้งสองรายการแทน",
     "noHostSelected": "ไม่ได้เลือกโฮสต์",
     "initializingEditor": "กำลังเริ่มต้นแก้ไข...",
     "file": "ไฟล์",
@@ -186,6 +207,7 @@
     "columns": "คอลัมน์",
     "columnsHint": "คลิกขวาเพื่อเลือกคอลัมน์",
     "emptyFolder": "โฟลเดอร์นี้ว่างเปล่า",
+    "noSearchResults": "ไม่พบผลลัพธ์สำหรับ \"{{query}}\"",
     "searchFiles": "ค้นหาไฟล์...",
     "upload": "อัปโหลด",
     "selectHostToStart": "เลือกโฮสต์เพื่อเริ่มจัดการไฟล์",
@@ -398,6 +420,7 @@
     "octal": "ฐานแปด",
     "storage": "พื้นที่จัดเก็บข้อมูล",
     "disk": "ดิสก์",
+    "notAvailable": "ไม่มีข้อมูล",
     "used": "ที่ใช้แล้ว",
     "of": "ของ",
     "toggleSidebar": "สลับแถบด้านข้าง",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "ยังไม่รองรับการลากโฟลเดอร์ไปยังเดสก์ท็อป",
     "saveToDesktopFailed": "การบันทึกล้มเหลว: {{error}}",
     "dragFailedDetail": "การลากล้มเหลว: {{error}}",
+    "desktopAppOnly": "สิ่งนี้ใช้งานได้เฉพาะในแอปเดสก์ท็อป",
+    "onlyFilesToDesktop": "สามารถลากเฉพาะไฟล์ไปยังเดสก์ท็อปได้",
+    "onlyFoldersCanBeDragged": "สามารถลากเฉพาะโฟลเดอร์มาที่นี่ได้",
+    "savedToDownloads": "เบราว์เซอร์ของคุณจะบันทึกไปยังโฟลเดอร์ Downloads",
+    "savedFile": "บันทึก {{name}} แล้ว",
+    "savedFilesZip_other": "บันทึกไฟล์ {{count}} ไฟล์ในไฟล์ zip",
+    "dropFileTooLarge": "{{name}} มีขนาดใหญ่เกินไป ขนาดสูงสุดคือ {{size}} MB",
+    "dropFileTypeNotAllowed": "{{name}} เป็นประเภทไฟล์ที่ไม่อนุญาตให้ใช้ที่นี่",
+    "lineNumbers": "หมายเลขบรรทัด",
     "videoUnsupported": "เบราว์เซอร์ของคุณไม่สามารถเล่นรูปแบบวิดีโอนี้ได้",
     "downloadToPlay": "ดาวน์โหลดเพื่อเล่นในแอปอื่น",
     "cannotPreviewType": "ไม่สามารถแสดงตัวอย่างไฟล์ประเภทนี้ได้",
@@ -595,5 +627,44 @@
     "syncNow": "ไปที่โฟลเดอร์ของเทอร์มินัล",
     "cdTerminal": "เปลี่ยนเทอร์มินัลไปยังโฟลเดอร์นี้",
     "terminalAt": "เทอร์มินัล:"
+  },
+  "operations": {
+    "list": {
+      "title": "แสดงรายการไฟล์"
+    },
+    "info": {
+      "title": "ข้อมูลไฟล์"
+    },
+    "mkdir": {
+      "title": "สร้างโฟลเดอร์"
+    },
+    "delete": {
+      "title": "ลบไฟล์หรือโฟลเดอร์ว่าง"
+    },
+    "path": "เส้นทาง"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "เรียกดูไฟล์บนโฮสต์นี้ผ่าน FTP หรือ FTPS",
+    "originNote": "การเชื่อมต่อ FTP จะดำเนินการจากเซิร์ฟเวอร์ Termix",
+    "connection": "การเชื่อมต่อ",
+    "port": "พอร์ต",
+    "security": "ความปลอดภัย",
+    "securityNone": "ไม่มี (FTP ธรรมดา)",
+    "securityExplicit": "TLS แบบชัดเจน (FTPS)",
+    "securityImplicit": "TLS แบบนัย (FTPS)",
+    "allowSelfSigned": "อนุญาตใบรับรองที่ลงนามด้วยตนเอง",
+    "allowSelfSignedDesc": "ข้ามการตรวจสอบใบรับรองสำหรับโฮสต์นี้",
+    "login": "เข้าสู่ระบบ",
+    "auth": {
+      "direct": "โดยตรง",
+      "credential": "ข้อมูลประจำตัว",
+      "none": "ไม่ระบุตัวตน"
+    },
+    "selectCredential": "เลือกข้อมูลประจำตัว...",
+    "anonymousNote": "เข้าสู่ระบบแบบไม่ระบุตัวตนโดยไม่มีรหัสผ่าน",
+    "username": "ชื่อผู้ใช้",
+    "password": "รหัสผ่าน",
+    "passwordSaved": "บันทึกรหัสผ่านแล้ว พิมพ์เพื่อเปลี่ยน"
   }
 }

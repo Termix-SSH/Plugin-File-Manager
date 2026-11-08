@@ -44,15 +44,14 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
       const { enableToast = true, onSuccess, onError } = options;
 
       if (!isElectron()) {
-        const error =
-          "Drag to desktop feature is only available in desktop application";
+        const error = t("fileManager.desktopAppOnly");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
       }
 
       if (file.type !== "file") {
-        const error = "Only files can be dragged to desktop";
+        const error = t("fileManager.onlyFilesToDesktop");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -118,7 +117,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
         return true;
       } catch (error: unknown) {
         const err = error as { message?: string };
-        const errorMessage = err.message || "Drag failed";
+        const errorMessage = err.message || t("fileManager.unknownError");
 
         setState((prev) => ({
           ...prev,
@@ -138,7 +137,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
         return false;
       }
     },
-    [sshSessionId],
+    [sshSessionId, t],
   );
 
   const dragFilesToDesktop = useCallback(
@@ -146,8 +145,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
       const { enableToast = true, onSuccess, onError } = options;
 
       if (!isElectron()) {
-        const error =
-          "Drag to desktop feature is only available in desktop application";
+        const error = t("fileManager.desktopAppOnly");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -155,7 +153,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
 
       const fileList = files.filter((f) => f.type === "file");
       if (fileList.length === 0) {
-        const error = "No files available for dragging";
+        const error = t("fileManager.onlyFilesToDesktop");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -231,7 +229,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
         return true;
       } catch (error: unknown) {
         const err = error as { message?: string };
-        const errorMessage = err.message || "Batch drag failed";
+        const errorMessage = err.message || t("fileManager.unknownError");
 
         setState((prev) => ({
           ...prev,
@@ -251,7 +249,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
         return false;
       }
     },
-    [sshSessionId, dragFileToDesktop],
+    [sshSessionId, dragFileToDesktop, t],
   );
 
   const dragFolderToDesktop = useCallback(
@@ -259,15 +257,14 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
       const { enableToast = true, onError } = options;
 
       if (!isElectron()) {
-        const error =
-          "Drag to desktop feature is only available in desktop application";
+        const error = t("fileManager.desktopAppOnly");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
       }
 
       if (folder.type !== "directory") {
-        const error = "Only folder types can be dragged";
+        const error = t("fileManager.onlyFoldersCanBeDragged");
         if (enableToast) toast.error(error);
         onError?.(error);
         return false;
@@ -279,7 +276,7 @@ export function useDragToDesktop({ sshSessionId }: UseDragToDesktopProps) {
 
       return false;
     },
-    [],
+    [t],
   );
 
   return {

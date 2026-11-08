@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Afișează panoul de fișiere în terminale",
         "description": "Permite deschiderea panoului de fișiere lângă terminalul SSH al acestui gazdă."
+      },
+      "enableFtp": {
+        "label": "Activează FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Securitate FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Permite certificatul auto-semnat"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Manager de Fișiere"
   },
   "fileManager": {
+    "nameConflictTitle": "Elementul există deja",
+    "nameConflictDescription": "Un element cu numele „{{name}}” există deja în acest dosar.",
+    "nameConflictHint": "Suprascrierea nu poate fi anulată. Dosarele încărcate și copiate se îmbină și înlocuiesc fișierele din interior. Mutarea peste un dosar existent sau înlocuirea unui tip diferit de element este refuzată; alegeți Păstrează ambele în schimb.",
+    "conflict-overwrite": "Suprascrie",
+    "conflict-skip": "Sari peste",
+    "conflict-keep-both": "Păstrează ambele",
+    "conflictBusy": "Finalizează solicitarea curentă de conflict de nume înainte de a începe o altă operație.",
+    "conflictApplyToAll": "Aplică la toate conflictele rămase",
+    "conflictTypeMismatch": "Nu se poate suprascrie un tip diferit de element sau un link simbolic. Alegeți Păstrează ambele în schimb.",
     "noHostSelected": "Nicio gazdă selectată",
     "initializingEditor": "Se inițializează editorul...",
     "file": "Fișier",
@@ -214,6 +235,7 @@
     "columns": "Coloane",
     "columnsHint": "Faceți clic dreapta pentru a alege coloanele",
     "emptyFolder": "Această folder este gol",
+    "noSearchResults": "Nu s-au găsit rezultate pentru „{{query}}”",
     "searchFiles": "Căutați fișiere...",
     "upload": "Încărcare",
     "selectHostToStart": "Selectați un gazdă pentru a începe gestionarea fișierelor",
@@ -460,6 +482,7 @@
     "octal": "Octal",
     "storage": "Stocare",
     "disk": "Disc",
+    "notAvailable": "N/A",
     "used": "Folosit",
     "of": "din",
     "toggleSidebar": "Comută bara laterală",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Tragerea folderelor pe desktop nu este încă suportată",
     "saveToDesktopFailed": "Salvarea a eșuat: {{error}}",
     "dragFailedDetail": "Tragerea a eșuat: {{error}}",
+    "desktopAppOnly": "Aceasta funcționează doar în aplicația desktop",
+    "onlyFilesToDesktop": "Doar fișierele pot fi trase pe desktop",
+    "onlyFoldersCanBeDragged": "Doar dosarele pot fi trase aici",
+    "savedToDownloads": "Browserul dumneavoastră le salvează în dosarul Descărcări",
+    "savedFile": "Salvat {{name}}",
+    "savedFilesZip_one": "Salvat {{count}} fișier într-un zip",
+    "savedFilesZip_few": "Salvate {{count}} fișiere într-un zip",
+    "savedFilesZip_other": "Salvate {{count}} fișiere într-un zip",
+    "dropFileTooLarge": "{{name}} este prea mare. Limita este de {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} este un tip de fișier care nu este permis aici",
+    "lineNumbers": "Numere de linie",
     "videoUnsupported": "Browserul dvs. nu poate reda acest format video.",
     "downloadToPlay": "Descărcați-l pentru a-l reda în altă parte",
     "cannotPreviewType": "Nu se poate previzualiza acest tip de fișier",
@@ -677,5 +711,44 @@
     "syncNow": "Mergi la folderul terminalului",
     "cdTerminal": "Schimbă terminalul în acest folder",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Listează fișiere"
+    },
+    "info": {
+      "title": "Informații fișier"
+    },
+    "mkdir": {
+      "title": "Creează dosar"
+    },
+    "delete": {
+      "title": "Șterge fișier sau dosar gol"
+    },
+    "path": "Cale"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Răsfoiește fișiere pe acest gazdă prin FTP sau FTPS.",
+    "originNote": "Conexiunile FTP sunt efectuate de pe serverul Termix.",
+    "connection": "Conexiune",
+    "port": "Port",
+    "security": "Securitate",
+    "securityNone": "Niciuna (FTP simplu)",
+    "securityExplicit": "TLS explicit (FTPS)",
+    "securityImplicit": "TLS implicit (FTPS)",
+    "allowSelfSigned": "Permite certificatul auto-semnat",
+    "allowSelfSignedDesc": "Omite verificările de certificat pentru această gazdă.",
+    "login": "Autentificare",
+    "auth": {
+      "direct": "Direct",
+      "credential": "Credențial",
+      "none": "Anonim"
+    },
+    "selectCredential": "Selectați un credențial...",
+    "anonymousNote": "Se autentifică ca anonim fără parolă.",
+    "username": "Nume utilizator",
+    "password": "Parolă",
+    "passwordSaved": "Parola a fost salvată, tastați pentru a o modifica"
   }
 }

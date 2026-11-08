@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Прикажи панел датотека у терминалима",
         "description": "Омогући отварање панела датотека поред SSH терминала овог хоста."
+      },
+      "enableFtp": {
+        "label": "Укључи FTP"
+      },
+      "ftpPort": {
+        "label": "FTP порт"
+      },
+      "ftpSecure": {
+        "label": "FTP безбедност"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Дозволи само-потписани сертификат"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Управљач датотека"
   },
   "fileManager": {
+    "nameConflictTitle": "Ставка већ постоји",
+    "nameConflictDescription": "Ставка са називом „{{name}}“ већ постоји у овој фасцикли.",
+    "nameConflictHint": "Преписивање се не може поништити. Отпремљене и копиране фасцикле се спајају и замењују датотеке унутар њих. Премештање на постојећу фасциклу или замена другог типа ставке се одбија; изаберите Зadrži обе уместо тога.",
+    "conflict-overwrite": "Препиши",
+    "conflict-skip": "Прескочи",
+    "conflict-keep-both": "Зadrжи обе",
+    "conflictBusy": "Завршите тренутни дијалог о сукобу имена пре него што покренете другу операцију.",
+    "conflictApplyToAll": "Примени на све преостале сукобе",
+    "conflictTypeMismatch": "Не може се преписати ставка другог типа или симболички линк. Изаберите Зadrжи обе уместо тога.",
     "noHostSelected": "Није изабран хост",
     "initializingEditor": "Иницијализација уређивача...",
     "file": "Датотека",
@@ -214,6 +235,7 @@
     "columns": "Колоне",
     "columnsHint": "Кликните десним тастером за избор колона",
     "emptyFolder": "Ова фасцикла је празна",
+    "noSearchResults": "Нема резултата за „{{query}}“",
     "searchFiles": "Претрага фајлова...",
     "upload": "Отпреми",
     "selectHostToStart": "Изаберите хост за почетак управљања фајловима",
@@ -460,6 +482,7 @@
     "octal": "Октални",
     "storage": "Складиште",
     "disk": "Диск",
+    "notAvailable": "Н/Д",
     "used": "Искоришћено",
     "of": "од",
     "toggleSidebar": "Прикажи/сакриј бочну траку",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Превлачење фолдера на радну површину још није подржано",
     "saveToDesktopFailed": "Спавање није успело: {{error}}",
     "dragFailedDetail": "Превлачење није успело: {{error}}",
+    "desktopAppOnly": "Ово ради само у десктоп апликацији",
+    "onlyFilesToDesktop": "Само датотеке могу бити превучене на радну површ",
+    "onlyFoldersCanBeDragged": "Само фасцикле могу бити превучене овде",
+    "savedToDownloads": "Ваш прегледач ће је сачувати у фасцикли Downloads",
+    "savedFile": "Сачувано {{name}}",
+    "savedFilesZip_one": "Сачувано {{count}} датотеку у zip архиви",
+    "savedFilesZip_few": "Сачувано {{count}} датотеке у zip архиви",
+    "savedFilesZip_other": "Сачувано {{count}} датотека у zip архиви",
+    "dropFileTooLarge": "{{name}} је превелика. Лимит је {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} је тип датотеке који није дозвољен овде",
+    "lineNumbers": "Бројеви редова",
     "videoUnsupported": "Ваш прегледач не може да пушта овај видео формат.",
     "downloadToPlay": "Преузмите га да бисте га пустили негде другом",
     "cannotPreviewType": "Не могу да прикажем преглед овог типа фајла",
@@ -677,5 +711,44 @@
     "syncNow": "Иди у фолдер терминала",
     "cdTerminal": "Промени терминал на овај фолдер",
     "terminalAt": "Терминал:"
+  },
+  "operations": {
+    "list": {
+      "title": "Листај датотеке"
+    },
+    "info": {
+      "title": "Информације о датотеци"
+    },
+    "mkdir": {
+      "title": "Направи фасциклу"
+    },
+    "delete": {
+      "title": "Обриши датотеку или празну фасциклу"
+    },
+    "path": "Путања"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Прегледајте датотеке на овом хосту преко FTP или FTPS.",
+    "originNote": "FTP везе се успостављају са Termix сервера.",
+    "connection": "Веза",
+    "port": "Порт",
+    "security": "Безбедност",
+    "securityNone": "Ништа (обичан FTP)",
+    "securityExplicit": "Експлицитни TLS (FTPS)",
+    "securityImplicit": "Имплицитни TLS (FTPS)",
+    "allowSelfSigned": "Дозволи само-потписани сертификат",
+    "allowSelfSignedDesc": "Прескочи провере сертификата за овај хост.",
+    "login": "Пријава",
+    "auth": {
+      "direct": "Директно",
+      "credential": "Акредитив",
+      "none": "Анонимно"
+    },
+    "selectCredential": "Изаберите акредитив...",
+    "anonymousNote": "Пријављује се као анонимни корисник без лозинке.",
+    "username": "Корисничко име",
+    "password": "Лозинка",
+    "passwordSaved": "Лозинка је сачувана, куцајте да је промените"
   }
 }

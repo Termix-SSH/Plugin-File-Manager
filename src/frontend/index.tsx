@@ -1,8 +1,9 @@
-import { fileManagerHostSetting } from "./host-settings";
+import { canOpenFiles, fileManagerHostSetting } from "./host-settings";
 import type { ComponentType } from "react";
 import {
   FolderOpen,
   FolderSearch,
+  FolderInput,
   ArrowLeftRight,
   PanelRight,
 } from "lucide-react";
@@ -29,6 +30,7 @@ import { FileManagerWidget } from "./homepage/FileManagerWidget.tsx";
 import { FileManagerWidgetEditForm } from "./homepage/FileManagerWidgetEditForm.tsx";
 import { startTransferMonitor } from "./TransferMonitor.tsx";
 import { setFileManagerApp } from "./api/client";
+import { FtpHostSection } from "./FtpHostSection.tsx";
 
 function FilesTab({ tab, host, sshHost, isVisible }: TabProps) {
   const data = tab.data as
@@ -133,9 +135,41 @@ export function activate(app: TermixApp): void {
     tabType: "files",
     copyUrlView: "file-manager",
     quickConnect: true,
-    when: (host) =>
-      !!host.enableSsh &&
-      fileManagerHostSetting(host, "enableFileManager", true),
+    when: (host) => canOpenFiles(host),
+  });
+
+  app.registerPaletteEntry({
+    id: "files.open",
+    titleKey: "nav.openFileManager",
+    icon: FolderSearch,
+    keywords: ["files", "sftp", "browse", "upload", "download"],
+    scope: "host",
+    when: (host) => canOpenFiles(host),
+    run: (shell, host) => {
+      if (host) shell.openTab(host, "files");
+    },
+  });
+
+  app.registerHostProtocol({
+    id: "ftp",
+    settingKey: "enableFtp",
+    portKey: "ftpPort",
+    defaultPort: 21,
+    titleKey: "ftp.title",
+    descriptionKey: "ftp.description",
+    connectionOriginNoteKey: "ftp.originNote",
+    icon: FolderInput,
+    order: 70,
+  });
+
+  app.registerHostEditorSection({
+    id: "ftp",
+    group: "top",
+    titleKey: "ftp.title",
+    icon: FolderInput,
+    order: 14,
+    visible: (protocols) => !!protocols.enableFtp,
+    component: FtpHostSection,
   });
 
   app.registerExtension("homepage.widgets", {

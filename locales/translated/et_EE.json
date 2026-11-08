@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Kuva failide paneel terminaalides",
         "description": "Luba failide paneel avada selle hosti SSH terminali kõrval."
+      },
+      "enableFtp": {
+        "label": "Luba FTP"
+      },
+      "ftpPort": {
+        "label": "FTP port"
+      },
+      "ftpSecure": {
+        "label": "FTP turvalisus"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Luba isesertifitseeritud sertifikaat"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Failihaldur"
   },
   "fileManager": {
+    "nameConflictTitle": "Element on juba olemas",
+    "nameConflictDescription": "Selles kaustas on juba element nimega \"{{name}}\".",
+    "nameConflictHint": "Ülekirjutamist ei saa tagasi võtta. Üles laaditud ja kopeeritud kaustad liituvad ning asendavad nende sisu. Olemasolevale kaustale liikumine või erineva tüüpi elemendi asendamine keelatakse; vali selle asemel Hoidke mõlemad.",
+    "conflict-overwrite": "Kirjuta üle",
+    "conflict-skip": "Jäta vahele",
+    "conflict-keep-both": "Hoidke mõlemad",
+    "conflictBusy": "Lõpeta praegune nimekonflikti hüpikaken enne uue toimingu alustamist.",
+    "conflictApplyToAll": "Rakenda kõikidele ülejäänud konfliktidele",
+    "conflictTypeMismatch": "Eri tüüpi elementi või sümbolilinki ei saa üle kirjutada. Vali selle asemel Hoidke mõlemad.",
     "noHostSelected": "Hosti ei ole valitud",
     "initializingEditor": "Redaktori alustamine...",
     "file": "Fail",
@@ -200,6 +221,7 @@
     "columns": "Veerud",
     "columnsHint": "Veerude valimiseks klõpsa parema nupuga",
     "emptyFolder": "See kaust on tühi",
+    "noSearchResults": "Päringule \"{{query}}\" ei leitud tulemusi",
     "searchFiles": "Otsi faile...",
     "upload": "Laadi üles",
     "selectHostToStart": "Failihalduse alustamiseks vali host",
@@ -429,6 +451,7 @@
     "octal": "Kaheksandik",
     "storage": "Salvestusruum",
     "disk": "Ketas",
+    "notAvailable": "Pole saadaval",
     "used": "Kasutatud",
     "of": "/",
     "toggleSidebar": "Külgriba näitamine/peidamine",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Kaustade lohistamine töölauale ei ole veel toetatud",
     "saveToDesktopFailed": "Salvestamine ebaõnnestus: {{error}}",
     "dragFailedDetail": "Lohistamine ebaõnnestus: {{error}}",
+    "desktopAppOnly": "See toimib ainult lauaarvuti rakenduses",
+    "onlyFilesToDesktop": "Lauale saab lohisedada ainult faile",
+    "onlyFoldersCanBeDragged": "Siia saab lohisedada ainult kaustu",
+    "savedToDownloads": "Sinu brauser salvestab selle Laaditud failide kausta",
+    "savedFile": "Salvestatud {{name}}",
+    "savedFilesZip_one": "Salvestatud {{count}} fail zip-ina",
+    "savedFilesZip_other": "Salvestatud {{count}} faili zip-ina",
+    "dropFileTooLarge": "{{name}} on liiga suur. Piirang on {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} on failitüüp, mida siin ei lubata",
+    "lineNumbers": "Reanumbrid",
     "videoUnsupported": "Sinu brauser ei suuda seda videoformaati esitada.",
     "downloadToPlay": "Laadi alla, et esitada mujal",
     "cannotPreviewType": "Selle failitüübi eelvaadet ei saa kuvada",
@@ -636,5 +669,44 @@
     "syncNow": "Mine terminali kausta",
     "cdTerminal": "Muuda terminal sellele kaustale",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Loetle failid"
+    },
+    "info": {
+      "title": "Faili info"
+    },
+    "mkdir": {
+      "title": "Loo kaust"
+    },
+    "delete": {
+      "title": "Kustuta fail või tühi kaust"
+    },
+    "path": "Asukohateekond"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Sirvi selle hosti faile FTP või FTPS kaudu.",
+    "originNote": "FTP-ühendused tehakse Termix serverist.",
+    "connection": "Ühendus",
+    "port": "Port",
+    "security": "Turvalisus",
+    "securityNone": "Puudub (tavaline FTP)",
+    "securityExplicit": "Ekspliitselt TLS (FTPS)",
+    "securityImplicit": "Implitsiitselt TLS (FTPS)",
+    "allowSelfSigned": "Luba isesertifitseeritud sertifikaat",
+    "allowSelfSignedDesc": "Jäta selle hosti sertifikaadikontrollid vahele.",
+    "login": "Sisselogimine",
+    "auth": {
+      "direct": "Otsene",
+      "credential": "Tunnusandmed",
+      "none": "Anonüümne"
+    },
+    "selectCredential": "Vali tunnusandmed...",
+    "anonymousNote": "Logib sisse anonüümselt ilma paroolita.",
+    "username": "Kasutajanimi",
+    "password": "Parool",
+    "passwordSaved": "Parool on salvestatud, muutmiseks kirjuta uus"
   }
 }

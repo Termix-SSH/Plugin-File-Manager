@@ -14,6 +14,11 @@ import {
   type SSHSession,
 } from "./session.js";
 import { detectBinary } from "./utils.js";
+import {
+  assertNoLinksBelow,
+  buildLinkGuardCommand,
+  UploadGuardError,
+} from "./upload-guard.js";
 
 type FileContentRoutesDeps = {
   ctx: PluginContext;
@@ -1292,6 +1297,10 @@ export function registerFileContentRoutes(
     let sessionId: string | undefined;
     let remotePath: string | undefined;
     let fileName: string | undefined;
+    // Legacy desktop transfers omit this field; browser batches always send a decision.
+    let overwrite = true;
+    // When set, nothing below this folder may be a link (browser batches).
+    let uploadRoot: string | undefined;
     let uploadStartTime: number;
     let resolved = false;
     let requestAborted = false;
@@ -1320,6 +1329,8 @@ export function registerFileContentRoutes(
     bb.on("field", (name: string, value: string) => {
       if (name === "sessionId") sessionId = value;
       if (name === "path") remotePath = value;
+      if (name === "overwrite") overwrite = value !== "false";
+      if (name === "uploadRoot") uploadRoot = value;
     });
 
     bb.on(
@@ -1390,34 +1401,38 @@ export function registerFileContentRoutes(
         // mode): write the file with cat over a plain exec channel.
         const uploadWithCat = () => {
           const escaped = fullPath.replace(/'/g, "'\"'\"'");
-          execChannel(sshConn, `cat > '${escaped}'`, (err, stream) => {
-            if (err) {
-              fileStream.resume();
-              if (!resolved && !requestAborted) {
-                resolved = true;
-                res
-                  .status(500)
-                  .json({ error: `Upload failed: ${err.message}` });
+          execChannel(
+            sshConn,
+            `${uploadRoot ? buildLinkGuardCommand(uploadRoot, fullPath, "file") : ""}${overwrite ? "" : "set -C; "}cat > '${escaped}'`,
+            (err, stream) => {
+              if (err) {
+                fileStream.resume();
+                if (!resolved && !requestAborted) {
+                  resolved = true;
+                  res
+                    .status(500)
+                    .json({ error: `Upload failed: ${err.message}` });
+                }
+                return;
               }
-              return;
-            }
-            let stderr = "";
-            stream.stderr.on("data", (chunk: Buffer) => {
-              if (stderr.length < 4096) stderr += chunk.toString("utf8");
-            });
-            destroyUpload = () => stream.destroy();
-            stream.on("close", (code: number | null) => {
-              if (code === 0 || code == null) return uploaded();
-              if (resolved || requestAborted) return;
-              resolved = true;
-              const denied = /permission denied/i.test(stderr);
-              res.status(denied ? 403 : 500).json({
-                error: `Upload failed: ${stderr.trim() || code}`,
-                ...(denied ? { needsSudo: true } : {}),
+              let stderr = "";
+              stream.stderr.on("data", (chunk: Buffer) => {
+                if (stderr.length < 4096) stderr += chunk.toString("utf8");
               });
-            });
-            fileStream.pipe(stream);
-          });
+              destroyUpload = () => stream.destroy();
+              stream.on("close", (code: number | null) => {
+                if (code === 0 || code == null) return uploaded();
+                if (resolved || requestAborted) return;
+                resolved = true;
+                const denied = /permission denied/i.test(stderr);
+                res.status(denied ? 403 : 500).json({
+                  error: `Upload failed: ${stderr.trim() || code}`,
+                  ...(denied ? { needsSudo: true } : {}),
+                });
+              });
+              fileStream.pipe(stream);
+            },
+          );
         };
 
         if (sshConn.scpLegacy) {
@@ -1426,14 +1441,20 @@ export function registerFileContentRoutes(
         }
 
         getLiveSessionSftp(sshConn)
-          .then((sftp) => {
+          .then(async (sftp) => {
             if (requestAborted) {
               fileStream.resume();
               return;
             }
-            const upload = pipelineWriteToSftp(sftp, fullPath, fileStream);
+            if (uploadRoot) {
+              await assertNoLinksBelow(sftp, uploadRoot, fullPath, "file");
+            }
+            const upload = pipelineWriteToSftp(sftp, fullPath, fileStream, {
+              flags: overwrite ? "w" : "wx",
+            });
             const removePartialFile = () => {
               upload.abort();
+              if (!upload.hasOpened()) return;
               sftp.unlink(fullPath, (err) => {
                 if (err) {
                   ctx.log.error(
@@ -1456,6 +1477,14 @@ export function registerFileContentRoutes(
             });
           })
           .catch((err: Error) => {
+            if (err instanceof UploadGuardError) {
+              fileStream.resume();
+              if (!resolved && !requestAborted) {
+                resolved = true;
+                res.status(400).json({ error: err.message });
+              }
+              return;
+            }
             if (/subsystem/i.test(err.message) && !requestAborted) {
               ctx.log.warn(
                 `No SFTP server on the host, uploading with cat: ${sessionId}`,
@@ -1541,6 +1570,7 @@ export function registerFileContentRoutes(
     let resolved = false;
     let bytesWritten = 0;
     const uploadStartTime = Date.now();
+    const uploadRoot = getRequiredQueryParam(req.query.uploadRoot as string);
 
     let destroyUpload: (() => void) | undefined;
     res.once("close", () => {
@@ -1550,17 +1580,30 @@ export function registerFileContentRoutes(
     });
 
     getLiveSessionSftp(sshConn)
-      .then((sftp) => {
+      .then(async (sftp) => {
         if (resolved) return;
+        if (uploadRoot) {
+          await assertNoLinksBelow(sftp, uploadRoot, fullPath, "file");
+          if (resolved) return;
+        }
         const writeStream = sftp.createWriteStream(fullPath, {
-          flags: offset === 0 ? "w" : "r+",
+          flags:
+            offset === 0
+              ? req.query.overwrite === "false"
+                ? "wx"
+                : "w"
+              : "r+",
           start: offset,
+        });
+        let opened = false;
+        writeStream.once("open", () => {
+          opened = true;
         });
         // The client went away mid-chunk (a cancel): drop the partial file.
         destroyUpload = () => {
           req.unpipe(writeStream as unknown as NodeJS.WritableStream);
           writeStream.destroy();
-          sftp.unlink(fullPath, () => {});
+          if (opened) sftp.unlink(fullPath, () => {});
         };
 
         const fail = (status: number, error: string) => {
@@ -1625,6 +1668,13 @@ export function registerFileContentRoutes(
       })
       .catch((err: Error) => {
         req.resume();
+        if (err instanceof UploadGuardError) {
+          if (!resolved) {
+            resolved = true;
+            res.status(400).json({ error: err.message });
+          }
+          return;
+        }
         ctx.log.error("SFTP session error during chunk upload:", err);
         if (!resolved) {
           resolved = true;

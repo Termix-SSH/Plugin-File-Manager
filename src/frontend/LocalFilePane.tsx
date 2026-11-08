@@ -26,7 +26,7 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { cn, ToolbarBand } from "@termix-ssh/plugin-sdk/ui";
 import { Button, Input } from "@termix-ssh/plugin-sdk/ui";
 import type { LocalFileEntry } from "./local-types";
 import {
@@ -193,12 +193,16 @@ export function LocalFilePane({
     overscan: 12,
   });
 
+  const loadSeqRef = useRef(0);
   const load = useCallback(
     async (dirPath: string) => {
+      // A slower earlier listing must not replace a newer one.
+      const seq = ++loadSeqRef.current;
       setLoading(true);
       setError(null);
       try {
         const listing = await listLocalDirectory(dirPath);
+        if (seq !== loadSeqRef.current) return null;
         setCurrentPath(listing.path);
         setParentPath(listing.parent);
         setEntries(listing.entries);
@@ -213,10 +217,11 @@ export function LocalFilePane({
         onPathChange?.(listing.path);
         return listing.path;
       } catch (err) {
+        if (seq !== loadSeqRef.current) return null;
         setError(err instanceof Error ? err.message : String(err));
         return null;
       } finally {
-        setLoading(false);
+        if (seq === loadSeqRef.current) setLoading(false);
       }
     },
     [onPathChange],
@@ -680,7 +685,7 @@ export function LocalFilePane({
       onDrop={handlePaneDrop}
     >
       {/* Header */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border">
+      <ToolbarBand>
         <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">
           {t("fileManager.localFiles")}
         </span>
@@ -801,7 +806,7 @@ export function LocalFilePane({
             <X className="size-4" />
           </Button>
         )}
-      </div>
+      </ToolbarBand>
 
       {/* Column headers */}
       <div

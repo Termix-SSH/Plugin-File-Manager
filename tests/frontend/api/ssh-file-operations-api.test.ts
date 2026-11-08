@@ -3,7 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const fileManagerApiMock = vi.hoisted(() => ({
   get: vi.fn(async () => ({ data: { files: [], path: "/data" } })),
   post: vi.fn(async () => ({ data: { complete: false } })),
-  postForm: vi.fn(async () => ({ data: {} })),
+  postForm: vi.fn(
+    async (_path?: string, _form?: FormData, _config?: unknown) => ({
+      data: {},
+    }),
+  ),
+  put: vi.fn(async () => ({ data: {} })),
   delete: vi.fn(async () => ({ data: {} })),
 }));
 
@@ -15,6 +20,8 @@ vi.mock("../../../src/frontend/api/client", () => ({
   },
   setSessionOrigin: vi.fn(),
   clearSessionOrigin: vi.fn(),
+  setSessionFtp: vi.fn(),
+  listHosts: async () => [],
 }));
 vi.mock("@termix-ssh/plugin-sdk/ui", async (importOriginal) => ({
   ...(await importOriginal<object>()),
@@ -40,6 +47,8 @@ import {
   downloadSSHFileStream,
   uploadSSHFile,
   listSSHFiles,
+  copySSHItem,
+  moveSSHItem,
 } from "../../../src/frontend/api/ssh-file-operations-api";
 import {
   getCachedFileList,
@@ -146,10 +155,6 @@ describe("chunked SSH file uploads", () => {
 
   it("removes the partial remote file when cancelled between chunks", async () => {
     const controller = new AbortController();
-    fileManagerApiMock.post.mockImplementationOnce(async () => {
-      controller.abort();
-      return { data: { complete: false } };
-    });
     const file = {
       size: 1.5 * 1024 * 1024 * 1024 + 1,
       slice: vi.fn(() => new Blob(["chunk"])),
@@ -163,7 +168,7 @@ describe("chunked SSH file uploads", () => {
         file,
         undefined,
         undefined,
-        undefined,
+        () => controller.abort(),
         controller.signal,
       ),
     ).rejects.toThrow();
@@ -196,6 +201,7 @@ describe("chunked SSH file uploads", () => {
           fileName: "archive.img",
           offset: 0,
           totalSize: fileSize,
+          overwrite: true,
         },
         headers: { "Content-Type": "application/octet-stream" },
         timeout: 0,
@@ -213,6 +219,58 @@ describe("chunked SSH file uploads", () => {
 });
 
 describe("upload cancellation", () => {
+  it("passes the protected overwrite decision before the multipart file", async () => {
+    await uploadSSHFile(
+      "s",
+      "/",
+      "renamed.txt",
+      new File(["data"], "original.txt"),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      false,
+    );
+    const form = fileManagerApiMock.postForm.mock.calls.at(-1)![1] as FormData;
+    expect(form.get("overwrite")).toBe("false");
+    expect((form.get("file") as File).name).toBe("renamed.txt");
+    expect([...form.keys()].indexOf("overwrite")).toBeLessThan(
+      [...form.keys()].indexOf("file"),
+    );
+  });
+
+  it("does not delete an existing file if the first exclusive chunk is rejected", async () => {
+    const controller = new AbortController();
+    fileManagerApiMock.delete.mockClear();
+    fileManagerApiMock.post.mockRejectedValueOnce(new Error("File exists"));
+    const file = {
+      size: 2 * 1024 ** 3,
+      slice: () => new Blob(["chunk"]),
+    } as unknown as File;
+    await expect(
+      uploadSSHFile(
+        "s",
+        "/",
+        "exists",
+        file,
+        undefined,
+        undefined,
+        undefined,
+        controller.signal,
+        false,
+      ),
+    ).rejects.toThrow("File exists");
+    controller.abort();
+    expect(fileManagerApiMock.delete).not.toHaveBeenCalled();
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/uploadFileChunk",
+      expect.any(Blob),
+      expect.objectContaining({
+        params: expect.objectContaining({ overwrite: false, offset: 0 }),
+      }),
+    );
+  });
+
   it("passes the signal to multipart uploads", async () => {
     const controller = new AbortController();
     await uploadSSHFile(
@@ -294,6 +352,43 @@ describe("download cancellation", () => {
       "/downloadFileStream",
       { sessionId: "s", path: "/a.txt" },
       expect.objectContaining({ signal: controller.signal }),
+    );
+  });
+});
+
+describe("copy/move destination decisions", () => {
+  it("sends a resolved copy name and explicit overwrite without changing older callers", async () => {
+    await copySSHItem("s", "/source/a", "/target", undefined, undefined, {
+      name: "a (1)",
+      overwrite: false,
+    });
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/copyItem",
+      expect.objectContaining({ targetName: "a (1)", overwrite: false }),
+      { timeout: 0 },
+    );
+    await copySSHItem("s", "/source/a", "/target", undefined, undefined, {
+      name: "a",
+      overwrite: true,
+    });
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/copyItem",
+      expect.objectContaining({ targetName: "a", overwrite: true }),
+      { timeout: 0 },
+    );
+  });
+  it("makes move/undo no-clobber by default and overwrite opt-in", async () => {
+    await moveSSHItem("s", "/a", "/b");
+    expect(fileManagerApiMock.put).toHaveBeenLastCalledWith(
+      "/moveItem",
+      expect.objectContaining({ overwrite: false }),
+      { timeout: 60000 },
+    );
+    await moveSSHItem("s", "/a", "/b", undefined, undefined, true);
+    expect(fileManagerApiMock.put).toHaveBeenLastCalledWith(
+      "/moveItem",
+      expect.objectContaining({ overwrite: true }),
+      { timeout: 60000 },
     );
   });
 });

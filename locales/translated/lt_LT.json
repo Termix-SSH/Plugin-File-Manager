@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Rodyti failų skydelį terminaluose",
         "description": "Leisti failų skydeliui atsiverti šio serverio SSH terminalo šone."
+      },
+      "enableFtp": {
+        "label": "Įjungti FTP"
+      },
+      "ftpPort": {
+        "label": "FTP prievadas"
+      },
+      "ftpSecure": {
+        "label": "FTP saugumas"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Leisti savarankiškai pasirašytą sertifikatą"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Failų tvarkyklė"
   },
   "fileManager": {
+    "nameConflictTitle": "Elementas jau egzistuoja",
+    "nameConflictDescription": "Šiame aplanke jau yra elementas su pavadinimu „{{name}}“.",
+    "nameConflictHint": "Perrašymo veiksmo negalima atšaukti. Įkelti ir nukopijuoti aplankai susilieja ir pakeičia juose esančius failus. Perkėlimas į jau esantį aplanką arba skirtingo tipo elemento pakeitimas yra atmestas; pasirinkite „Išsaugoti abu“.",
+    "conflict-overwrite": "Perrašyti",
+    "conflict-skip": "Praleisti",
+    "conflict-keep-both": "Išsaugoti abu",
+    "conflictBusy": "Pabaigite dabartinį pavadinimų konflikto langą, prieš pradėdami kitą veiksmą.",
+    "conflictApplyToAll": "Taikyti visiems likusiams konfliktams",
+    "conflictTypeMismatch": "Negalima perrašyti skirtingo tipo elemento ar simbolinės nuorodos. Vietoj to pasirinkite „Išsaugoti abu“.",
     "noHostSelected": "Nepasirinktas serveris",
     "initializingEditor": "Redaktorius inicializuojamas...",
     "file": "Failas",
@@ -228,6 +249,7 @@
     "columns": "Stulpeliai",
     "columnsHint": "Dešinysis pelės mygtukas, kad pasirinktumėte stulpelius",
     "emptyFolder": "Ši aplankas tuščias",
+    "noSearchResults": "Nieko nerasta pagal užklausą „{{query}}“",
     "searchFiles": "Ieškoti failų...",
     "upload": "Įkelti",
     "selectHostToStart": "Pasirinkite hostą, kad pradėtumėte failų valdymą",
@@ -491,6 +513,7 @@
     "octal": "Aštuntainė",
     "storage": "Saugykla",
     "disk": "Diskas",
+    "notAvailable": "N/A",
     "used": "Naudota",
     "of": "iš",
     "toggleSidebar": "Perjungti šoninę juostą",
@@ -518,6 +541,18 @@
     "folderDragUnsupported": "Apkarpų viliojimas į darbalaukį dar nepalaikomas",
     "saveToDesktopFailed": "Įrašymas nepavyko: {{error}}",
     "dragFailedDetail": "Vilimas nepavyko: {{error}}",
+    "desktopAppOnly": "Tai veikia tik darbalaukio programėlėje",
+    "onlyFilesToDesktop": "Į darbalaukį galima vilkti tik failus",
+    "onlyFoldersCanBeDragged": "Čia galima vilkti tik aplankus",
+    "savedToDownloads": "Jūsų naršyklė jį išsaugos į „Downloads“ aplanką",
+    "savedFile": "Išsaugota {{name}}",
+    "savedFilesZip_one": "Išsaugotas {{count}} failas zip archyve",
+    "savedFilesZip_few": "Išsaugoti {{count}} failai zip archyve",
+    "savedFilesZip_many": "Išsaugota {{count}} failų zip archyve",
+    "savedFilesZip_other": "Išsaugota {{count}} failų zip archyve",
+    "dropFileTooLarge": "{{name}} yra per didelis. Limitas yra {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} yra failo tipas, kuris čia nėra leidžiamas",
+    "lineNumbers": "Eilučių numeriai",
     "videoUnsupported": "Jūsų naršyklė negali atkurti šio vaizdo įrašo formato.",
     "downloadToPlay": "Atsisiųskite, kad atkurtumėte kitur",
     "cannotPreviewType": "Nepavyko peržiūrėti šio failo tipo",
@@ -718,5 +753,44 @@
     "syncNow": "Eiti į terminalo aplanką",
     "cdTerminal": "Pakeisti terminalo aplanką į šį",
     "terminalAt": "Terminalas:"
+  },
+  "operations": {
+    "list": {
+      "title": "Rodyti failus"
+    },
+    "info": {
+      "title": "Failo informacija"
+    },
+    "mkdir": {
+      "title": "Sukurti aplanką"
+    },
+    "delete": {
+      "title": "Ištrinti failą arba tuščią aplanką"
+    },
+    "path": "Kelias"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Naršykite failus šiame serveryje per FTP arba FTPS.",
+    "originNote": "FTP ryšiai yra nustatomi iš Termix serverio.",
+    "connection": "Ryšys",
+    "port": "Prievadas",
+    "security": "Saugumas",
+    "securityNone": "Nėra (paprastas FTP)",
+    "securityExplicit": "Eksplicitinis TLS (FTPS)",
+    "securityImplicit": "Implicitinis TLS (FTPS)",
+    "allowSelfSigned": "Leisti savarankiškai pasirašytą sertifikatą",
+    "allowSelfSignedDesc": "Šiam serveriui praleisti sertifikato tikrinimą.",
+    "login": "Prisijungimas",
+    "auth": {
+      "direct": "Tiesioginis",
+      "credential": "Pristatymas",
+      "none": "Anonimiškas"
+    },
+    "selectCredential": "Pasirinkite prisijungimo duomenis...",
+    "anonymousNote": "Prisijungia kaip anonimas be slaptažodžio.",
+    "username": "Vartotojo vardas",
+    "password": "Slaptažodis",
+    "passwordSaved": "Slaptažodis išsaugotas, įveskite norėdami pakeisti"
   }
 }

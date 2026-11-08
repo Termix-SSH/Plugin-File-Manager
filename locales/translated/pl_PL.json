@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Pokaż panel plików w terminalach",
         "description": "Otwieraj panel plików obok terminala SSH tego hosta."
+      },
+      "enableFtp": {
+        "label": "Włącz FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Zabezpieczenia FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Zezwól na certyfikat samopodpisany"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Menedżer plików"
   },
   "fileManager": {
+    "nameConflictTitle": "Element już istnieje",
+    "nameConflictDescription": "Element o nazwie „{{name}}” już istnieje w tym folderze.",
+    "nameConflictHint": "Nadpisanie nie może zostać cofnięte. Przesyłane i kopiowane foldery są scalane, a pliki w nich zawarte zastępowane. Przenoszenie na istniejący folder lub zastępowanie elementu innego typu jest odrzucane; wybierz opcję Zachowaj oba.",
+    "conflict-overwrite": "Nadpisz",
+    "conflict-skip": "Pomiń",
+    "conflict-keep-both": "Zachowaj oba",
+    "conflictBusy": "Zakończ bieżące okno konfliktu nazw, zanim rozpoczniesz kolejną operację.",
+    "conflictApplyToAll": "Zastosuj do wszystkich pozostałych konfliktów",
+    "conflictTypeMismatch": "Nie można nadpisać elementu innego typu ani dowiązania symbolicznego. Wybierz opcję Zachowaj oba.",
     "noHostSelected": "Nie wybrano hosta",
     "initializingEditor": "Inicjowanie edytora...",
     "file": "Plik",
@@ -228,6 +249,7 @@
     "columns": "Kolumny",
     "columnsHint": "Kliknij prawym przyciskiem myszy, aby wybrać kolumny",
     "emptyFolder": "Ten folder jest pusty",
+    "noSearchResults": "Nie znaleziono wyników dla „{{query}}”",
     "searchFiles": "Szukaj plików...",
     "upload": "Prześlij",
     "selectHostToStart": "Wybierz hosta, aby rozpocząć zarządzanie plikami",
@@ -491,6 +513,7 @@
     "octal": "Ósemkowy",
     "storage": "Przechowywanie",
     "disk": "Dysk",
+    "notAvailable": "N/A",
     "used": "Użyte",
     "of": "z",
     "toggleSidebar": "Przełącz pasek boczny",
@@ -518,6 +541,18 @@
     "folderDragUnsupported": "Przeciąganie folderów na pulpit nie jest jeszcze obsługiwane",
     "saveToDesktopFailed": "Zapis nie powiódł się: {{error}}",
     "dragFailedDetail": "Przeciąganie nie powiodło się: {{error}}",
+    "desktopAppOnly": "Działa to tylko w aplikacji desktopowej",
+    "onlyFilesToDesktop": "Tylko pliki można przeciągnąć na pulpit",
+    "onlyFoldersCanBeDragged": "Tylko foldery można przeciągnąć tutaj",
+    "savedToDownloads": "Przeglądarka zapisuje je w folderze Pobrane",
+    "savedFile": "Zapisano {{name}}",
+    "savedFilesZip_one": "Zapisano {{count}} plik w archiwum zip",
+    "savedFilesZip_few": "Zapisano {{count}} pliki w archiwum zip",
+    "savedFilesZip_many": "Zapisano {{count}} plików w archiwum zip",
+    "savedFilesZip_other": "Zapisano {{count}} plików w archiwum zip",
+    "dropFileTooLarge": "{{name}} jest zbyt duży. Limit to {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} to typ pliku, który nie jest tutaj dozwolony",
+    "lineNumbers": "Numery wierszy",
     "videoUnsupported": "Twoja przeglądarka nie może odtworzyć tego formatu wideo.",
     "downloadToPlay": "Pobierz, aby odtworzyć w innym miejscu",
     "cannotPreviewType": "Nie można wyświetlić podglądu tego typu pliku",
@@ -718,5 +753,44 @@
     "syncNow": "Przejdź do folderu terminala",
     "cdTerminal": "Zmień folder terminala na ten",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Lista plików"
+    },
+    "info": {
+      "title": "Informacje o pliku"
+    },
+    "mkdir": {
+      "title": "Utwórz folder"
+    },
+    "delete": {
+      "title": "Usuń plik lub pusty folder"
+    },
+    "path": "Ścieżka"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Przeglądaj pliki na tym hoście przez FTP lub FTPS.",
+    "originNote": "Połączenia FTP są nawiązywane z serwera Termix.",
+    "connection": "Połączenie",
+    "port": "Port",
+    "security": "Zabezpieczenia",
+    "securityNone": "Brak (zwykłe FTP)",
+    "securityExplicit": "TLS jawne (FTPS)",
+    "securityImplicit": "TLS niejawne (FTPS)",
+    "allowSelfSigned": "Zezwól na certyfikat samopodpisany",
+    "allowSelfSignedDesc": "Pomiń weryfikację certyfikatów dla tego hosta.",
+    "login": "Logowanie",
+    "auth": {
+      "direct": "Bezpośrednie",
+      "credential": "Dane logowania",
+      "none": "Anonimowe"
+    },
+    "selectCredential": "Wybierz dane logowania...",
+    "anonymousNote": "Loguje się jako anonimowy użytkownik bez hasła.",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "passwordSaved": "Hasło zapisane, wpisz, aby zmienić"
   }
 }

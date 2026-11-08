@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Rādīt failu paneli termināļos",
         "description": "Ļauj failu panelim atvērties blakus šī resursa SSH terminālim."
+      },
+      "enableFtp": {
+        "label": "Iespējot FTP"
+      },
+      "ftpPort": {
+        "label": "FTP ports"
+      },
+      "ftpSecure": {
+        "label": "FTP drošība"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Atļaut pašparakstītu sertifikātu"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Failu pārvaldnieks"
   },
   "fileManager": {
+    "nameConflictTitle": "Elements jau eksistē",
+    "nameConflictDescription": "Šajā mapē jau eksistē elements ar nosaukumu „{{name}}”.",
+    "nameConflictHint": "Pārrakstīšanu nevar atsaukt. Augšupielādētās un kopētās mapes tiek apvienotas, un faili tās tiek aizstāti. Pārvietošana uz esošu mapi vai cita veida elementa aizstāšana tiek noraidīta; izvēlieties opciju Saglabāt abus.",
+    "conflict-overwrite": "Pārrakstīt",
+    "conflict-skip": "Izlaist",
+    "conflict-keep-both": "Saglabāt abus",
+    "conflictBusy": "Pabeidziet pašreizējo nosaukuma konflikta dialoglodziņu, pirms sācāt citu darbību.",
+    "conflictApplyToAll": "Piemērot visiem atlikušajiem konfliktiem",
+    "conflictTypeMismatch": "Nevar pārrakstīt cita veida elementu vai simbolisko saiti. Izvēlieties opciju Saglabāt abus.",
     "noHostSelected": "Nav izvēlēts resursdators",
     "initializingEditor": "Inicializē redaktoru...",
     "file": "Fails",
@@ -214,6 +235,7 @@
     "columns": "Kolonnas",
     "columnsHint": "Labo klikšķi, lai izvēlētos kolonnas",
     "emptyFolder": "Šī mape ir tukša",
+    "noSearchResults": "Nav atrasts neviens rezultāts vaicājumam „{{query}}”",
     "searchFiles": "Meklēt failus...",
     "upload": "Augšupielādēt",
     "selectHostToStart": "Izvēlieties hostu, lai sāktu failu pārvaldību",
@@ -460,6 +482,7 @@
     "octal": "Oktāls",
     "storage": "Krātuve",
     "disk": "Diska",
+    "notAvailable": "Nav pieejams",
     "used": "Izmantots",
     "of": "no",
     "toggleSidebar": "Pārslēgt sānjoslu",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Mapju vilkšana uz darbvirsmu vēl netiek atbalstīta",
     "saveToDesktopFailed": "Saglabāšana neizdevās: {{error}}",
     "dragFailedDetail": "Vilkšana neizdevās: {{error}}",
+    "desktopAppOnly": "Tas darbojas tikai darbvirsmas lietotnē",
+    "onlyFilesToDesktop": "Uz darbvirsmu var vilkt tikai failus",
+    "onlyFoldersCanBeDragged": "Šeit var vilkt tikai mapes",
+    "savedToDownloads": "Jūsu pārlūks to saglabā mapē Downloads",
+    "savedFile": "Saglabāts {{name}}",
+    "savedFilesZip_zero": "Saglabāti {{count}} faili zip arhīvā",
+    "savedFilesZip_one": "Saglabāts {{count}} fails zip arhīvā",
+    "savedFilesZip_other": "Saglabāti {{count}} faili zip arhīvā",
+    "dropFileTooLarge": "{{name}} ir pārāk liels. Ierobežojums ir {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} ir faila tips, kas šeit nav atļauts",
+    "lineNumbers": "Rindu numuri",
     "videoUnsupported": "Jūsu pārlūks nevar atskaņot šo video formātu.",
     "downloadToPlay": "Lejupielādējiet, lai atskaņotu citur",
     "cannotPreviewType": "Nevar priekšskatīt šo faila tipu",
@@ -677,5 +711,44 @@
     "syncNow": "Doties uz termināļa mapi",
     "cdTerminal": "Mainīt termināļa mapi uz šo",
     "terminalAt": "Terminālis:"
+  },
+  "operations": {
+    "list": {
+      "title": "Sarakstīt failus"
+    },
+    "info": {
+      "title": "Faila informācija"
+    },
+    "mkdir": {
+      "title": "Izveidot mapi"
+    },
+    "delete": {
+      "title": "Dzēst failu vai tukšu mapi"
+    },
+    "path": "Ceļš"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Pārlūkojiet failus šajā hostā, izmantojot FTP vai FTPS.",
+    "originNote": "FTP savienojumi tiek izveidoti no Termix servera.",
+    "connection": "Savienojums",
+    "port": "Ports",
+    "security": "Drošība",
+    "securityNone": "Nav (parasts FTP)",
+    "securityExplicit": "Eksplicīts TLS (FTPS)",
+    "securityImplicit": "Implīcīts TLS (FTPS)",
+    "allowSelfSigned": "Atļaut pašparakstītu sertifikātu",
+    "allowSelfSignedDesc": "Izlaist sertifikātu pārbaudes šim hostam.",
+    "login": "Pieteikšanās",
+    "auth": {
+      "direct": "Tieša",
+      "credential": "Akreditatīvs",
+      "none": "Anonīms"
+    },
+    "selectCredential": "Izvēlieties akreditatīvu...",
+    "anonymousNote": "Piesakās kā anonīms bez paroles.",
+    "username": "Lietotājvārds",
+    "password": "Parole",
+    "passwordSaved": "Parole saglabāta, ierakstiet, lai mainītu"
   }
 }

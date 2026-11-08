@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "在終端機中顯示檔案面板",
         "description": "讓檔案面板在此主機的 SSH 終端機旁開啟。"
+      },
+      "enableFtp": {
+        "label": "啟用 FTP"
+      },
+      "ftpPort": {
+        "label": "FTP 連接埠"
+      },
+      "ftpSecure": {
+        "label": "FTP 安全性"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "允許自我簽署憑證"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "檔案管理員"
   },
   "fileManager": {
+    "nameConflictTitle": "項目已存在",
+    "nameConflictDescription": "此資料夾中已存在名為「{{name}}」的項目。",
+    "nameConflictHint": "覆蓋操作無法復原。上傳與複製的資料夾會合併並取代其中的檔案。若移至現有資料夾或取代不同類型的項目，系統將拒絕執行；請改為選擇「保留兩者」。",
+    "conflict-overwrite": "覆蓋",
+    "conflict-skip": "略過",
+    "conflict-keep-both": "保留兩者",
+    "conflictBusy": "請先完成目前的命名衝突提示，再開始其他操作。",
+    "conflictApplyToAll": "套用至所有剩餘的衝突",
+    "conflictTypeMismatch": "無法覆蓋不同類型的項目或符號連結。請改為選擇「保留兩者」。",
     "noHostSelected": "未選取主機",
     "initializingEditor": "正在初始化編輯器...",
     "file": "檔案",
@@ -186,6 +207,7 @@
     "columns": "欄位",
     "columnsHint": "右鍵點擊以選擇欄位",
     "emptyFolder": "此資料夾為空",
+    "noSearchResults": "找不到「{{query}}」的結果",
     "searchFiles": "搜尋檔案...",
     "upload": "上傳",
     "selectHostToStart": "選擇一台主機以開始檔案管理",
@@ -398,6 +420,7 @@
     "octal": "八進位",
     "storage": "儲存空間",
     "disk": "磁碟",
+    "notAvailable": "不適用",
     "used": "已使用",
     "of": "/",
     "toggleSidebar": "切換側邊欄",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "目前不支援將資料夾拖曳至桌面",
     "saveToDesktopFailed": "儲存失敗：{{error}}",
     "dragFailedDetail": "拖曳失敗：{{error}}",
+    "desktopAppOnly": "此功能僅適用於桌面版應用程式",
+    "onlyFilesToDesktop": "只有檔案可以拖曳至桌面",
+    "onlyFoldersCanBeDragged": "只有資料夾可以拖曳至此處",
+    "savedToDownloads": "您的瀏覽器會將其儲存至下載資料夾",
+    "savedFile": "已儲存 {{name}}",
+    "savedFilesZip_other": "已將 {{count}} 個檔案儲存為 zip 檔",
+    "dropFileTooLarge": "{{name}} 檔案過大。上限為 {{size}} MB。",
+    "dropFileTypeNotAllowed": "不允許在此處使用 {{name}} 這種檔案類型",
+    "lineNumbers": "行號",
     "videoUnsupported": "您的瀏覽器無法播放此影片格式。",
     "downloadToPlay": "下載後在其他地方播放",
     "cannotPreviewType": "無法預覽此類型的檔案",
@@ -595,5 +627,44 @@
     "syncNow": "前往終端機所在資料夾",
     "cdTerminal": "將終端機切換至此資料夾",
     "terminalAt": "終端機："
+  },
+  "operations": {
+    "list": {
+      "title": "列出檔案"
+    },
+    "info": {
+      "title": "檔案資訊"
+    },
+    "mkdir": {
+      "title": "建立資料夾"
+    },
+    "delete": {
+      "title": "刪除檔案或空資料夾"
+    },
+    "path": "路徑"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "透過 FTP 或 FTPS 瀏覽此主機上的檔案。",
+    "originNote": "FTP 連線由 Termix 伺服器發出。",
+    "connection": "連線",
+    "port": "連接埠",
+    "security": "安全性",
+    "securityNone": "無（一般 FTP）",
+    "securityExplicit": "明確 TLS（FTPS）",
+    "securityImplicit": "隱含 TLS（FTPS）",
+    "allowSelfSigned": "允許自我簽署憑證",
+    "allowSelfSignedDesc": "略過此主機的憑證檢查。",
+    "login": "登入",
+    "auth": {
+      "direct": "直接",
+      "credential": "憑證",
+      "none": "匿名"
+    },
+    "selectCredential": "選擇一個憑證...",
+    "anonymousNote": "以匿名身分登入，無需密碼。",
+    "username": "使用者名稱",
+    "password": "密碼",
+    "passwordSaved": "密碼已儲存，輸入即可變更"
   }
 }

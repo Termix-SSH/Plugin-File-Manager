@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Paparkan panel fail dalam terminal",
         "description": "Biarkan panel fail dibuka di sebelah terminal SSH hos ini."
+      },
+      "enableFtp": {
+        "label": "Dayakan FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Keselamatan FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Benarkan sijil tandatangan sendiri"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Pengurus Fail"
   },
   "fileManager": {
+    "nameConflictTitle": "Item sudah wujud",
+    "nameConflictDescription": "Item bernama \"{{name}}\" sudah wujud dalam folder ini.",
+    "nameConflictHint": "Tindihan tidak boleh dibatalkan. Folder yang dimuat naik dan disalin akan digabungkan dan menggantikan fail di dalamnya. Memindahkan ke folder yang sudah wujud atau menggantikan jenis item yang lain akan ditolak; pilih Kekalkan kedua-duanya sebagai gantinya.",
+    "conflict-overwrite": "Tindih",
+    "conflict-skip": "Langkau",
+    "conflict-keep-both": "Kekalkan kedua-duanya",
+    "conflictBusy": "Selesaikan permintaan konflik nama semasa sebelum memulakan operasi lain.",
+    "conflictApplyToAll": "Terapkan kepada semua konflik yang tinggal",
+    "conflictTypeMismatch": "Tidak boleh menindih jenis item yang berbeza atau pautan simbolik. Pilih Kekalkan kedua-duanya sebagai gantinya.",
     "noHostSelected": "Tiada hos dipilih",
     "initializingEditor": "Memulakan penyunting...",
     "file": "Fail",
@@ -186,6 +207,7 @@
     "columns": "Lajur",
     "columnsHint": "Klik kanan untuk memilih lajur",
     "emptyFolder": "Folder ini kosong",
+    "noSearchResults": "Tiada hasil ditemui untuk \"{{query}}\"",
     "searchFiles": "Cari fail...",
     "upload": "Muat Naik",
     "selectHostToStart": "Pilih hos untuk memulakan pengurusan fail",
@@ -398,6 +420,7 @@
     "octal": "Oktal",
     "storage": "Storan",
     "disk": "Cakera",
+    "notAvailable": "T/A",
     "used": "Digunakan",
     "of": "daripada",
     "toggleSidebar": "Togol Bar Sisi",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "Menyeret folder ke desktop belum disokong",
     "saveToDesktopFailed": "Simpan gagal: {{error}}",
     "dragFailedDetail": "Seret gagal: {{error}}",
+    "desktopAppOnly": "Ini hanya berfungsi dalam aplikasi desktop",
+    "onlyFilesToDesktop": "Hanya fail boleh diseret ke desktop",
+    "onlyFoldersCanBeDragged": "Hanya folder boleh diseret ke sini",
+    "savedToDownloads": "Pelayar anda menyimpannya ke folder Muat Turun",
+    "savedFile": "{{name}} disimpan",
+    "savedFilesZip_other": "{{count}} fail disimpan dalam zip",
+    "dropFileTooLarge": "{{name}} terlalu besar. Hadnya ialah {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} ialah jenis fail yang tidak dibenarkan di sini",
+    "lineNumbers": "Nombor baris",
     "videoUnsupported": "Pelayar anda tidak dapat memainkan format video ini.",
     "downloadToPlay": "Muat turun untuk memainkannya di tempat lain",
     "cannotPreviewType": "Tidak dapat pratonton jenis fail ini",
@@ -595,5 +627,44 @@
     "syncNow": "Pergi ke folder terminal",
     "cdTerminal": "Tukar terminal ke folder ini",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Senaraikan fail"
+    },
+    "info": {
+      "title": "Maklumat fail"
+    },
+    "mkdir": {
+      "title": "Buat folder"
+    },
+    "delete": {
+      "title": "Padam fail atau folder kosong"
+    },
+    "path": "Laluan"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Layari fail pada hos ini melalui FTP atau FTPS.",
+    "originNote": "Sambungan FTP dibuat dari pelayan Termix.",
+    "connection": "Sambungan",
+    "port": "Port",
+    "security": "Keselamatan",
+    "securityNone": "Tiada (FTP biasa)",
+    "securityExplicit": "TLS Eksplisit (FTPS)",
+    "securityImplicit": "TLS Implisit (FTPS)",
+    "allowSelfSigned": "Benarkan sijil tandatangan sendiri",
+    "allowSelfSignedDesc": "Langkau pemeriksaan sijil untuk hos ini.",
+    "login": "Log masuk",
+    "auth": {
+      "direct": "Langsung",
+      "credential": "Kredensial",
+      "none": "Anonim"
+    },
+    "selectCredential": "Pilih kredensial...",
+    "anonymousNote": "Log masuk sebagai anonim tanpa kata laluan.",
+    "username": "Nama pengguna",
+    "password": "Kata laluan",
+    "passwordSaved": "Kata laluan disimpan, taip untuk mengubah"
   }
 }

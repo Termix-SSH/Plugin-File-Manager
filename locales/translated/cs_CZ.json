@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Zobrazit panel souborů v terminálech",
         "description": "Umožní otevření panelu souborů vedle SSH terminálu tohoto hostitele."
+      },
+      "enableFtp": {
+        "label": "Povolit FTP"
+      },
+      "ftpPort": {
+        "label": "FTP port"
+      },
+      "ftpSecure": {
+        "label": "Zabezpečení FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Povolit self-signed certifikát"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Správce souborů"
   },
   "fileManager": {
+    "nameConflictTitle": "Položka již existuje",
+    "nameConflictDescription": "V této složce již existuje položka s názvem „{{name}}“.",
+    "nameConflictHint": "Přepsání nelze vrátit zpět. Nahrané a zkopírované složky se sloučí a nahradí soubory uvnitř. Přesunutí na existující složku nebo nahrazení jiného typu položky je zamítnuto; místo toho zvolte Zachovat obě.",
+    "conflict-overwrite": "Přepsat",
+    "conflict-skip": "Přeskočit",
+    "conflict-keep-both": "Zachovat obě",
+    "conflictBusy": "Dokončete aktuální výzvu k vyřešení konfliktu názvů, než zahájíte další operaci.",
+    "conflictApplyToAll": "Použít na všechny zbývající konflikty",
+    "conflictTypeMismatch": "Nelze přepsat jiný typ položky ani symbolický odkaz. Místo toho zvolte Zachovat obě.",
     "noHostSelected": "Nebyl vybrán žádný hostitel",
     "initializingEditor": "Inicializace editoru...",
     "file": "Soubor",
@@ -228,6 +249,7 @@
     "columns": "Sloupce",
     "columnsHint": "Kliknutím pravým tlačítkem vyberte sloupce",
     "emptyFolder": "Tato složka je prázdná",
+    "noSearchResults": "Pro „{{query}}“ nebyly nalezeny žádné výsledky",
     "searchFiles": "Hledat soubory...",
     "upload": "Nahrát",
     "selectHostToStart": "Vyberte hostitele pro spuštění správy souborů",
@@ -491,6 +513,7 @@
     "octal": "Osmičková soustava",
     "storage": "Úložiště",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Využito",
     "of": "z",
     "toggleSidebar": "Přepnout postranní panel",
@@ -518,6 +541,18 @@
     "folderDragUnsupported": "Tažení složek na plochu zatím není podporováno",
     "saveToDesktopFailed": "Uložení selhalo: {{error}}",
     "dragFailedDetail": "Tažení selhalo: {{error}}",
+    "desktopAppOnly": "Toto funguje pouze v desktopové aplikaci",
+    "onlyFilesToDesktop": "Na plochu lze přetahovat pouze soubory",
+    "onlyFoldersCanBeDragged": "Sem lze přetahovat pouze složky",
+    "savedToDownloads": "Váš prohlížeč uloží soubor do složky Stahování",
+    "savedFile": "Uloženo {{name}}",
+    "savedFilesZip_one": "Uložen {{count}} soubor do zipu",
+    "savedFilesZip_few": "Uloženo {{count}} souborů do zipu",
+    "savedFilesZip_many": "Uloženo {{count}} souborů do zipu",
+    "savedFilesZip_other": "Uloženo {{count}} souborů do zipu",
+    "dropFileTooLarge": "{{name}} je příliš velký. Limit je {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} je typ souboru, který zde není povolen",
+    "lineNumbers": "Čísla řádků",
     "videoUnsupported": "Váš prohlížeč neumí přehrávat tento formát videa.",
     "downloadToPlay": "Stáhněte si jej pro přehrávání jinde",
     "cannotPreviewType": "Nelze zobrazit náhled tohoto typu souboru",
@@ -718,5 +753,44 @@
     "syncNow": "Přejít do složky terminálu",
     "cdTerminal": "Přepnout terminál do této složky",
     "terminalAt": "Terminál:"
+  },
+  "operations": {
+    "list": {
+      "title": "Seznam souborů"
+    },
+    "info": {
+      "title": "Informace o souboru"
+    },
+    "mkdir": {
+      "title": "Vytvořit složku"
+    },
+    "delete": {
+      "title": "Smazat soubor nebo prázdnou složku"
+    },
+    "path": "Cesta"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Procházejte soubory na tomto hostiteli přes FTP nebo FTPS.",
+    "originNote": "FTP připojení jsou prováděna z Termix serveru.",
+    "connection": "Připojení",
+    "port": "Port",
+    "security": "Zabezpečení",
+    "securityNone": "Žádné (běžné FTP)",
+    "securityExplicit": "Explicitní TLS (FTPS)",
+    "securityImplicit": "Implicitní TLS (FTPS)",
+    "allowSelfSigned": "Povolit self-signed certifikát",
+    "allowSelfSignedDesc": "Přeskočit ověřování certifikátu pro tohoto hostitele.",
+    "login": "Přihlášení",
+    "auth": {
+      "direct": "Přímé",
+      "credential": "Přihlašovací údaje",
+      "none": "Anonymní"
+    },
+    "selectCredential": "Vyberte přihlašovací údaje...",
+    "anonymousNote": "Přihlásí se jako anonym bez hesla.",
+    "username": "Uživatelské jméno",
+    "password": "Heslo",
+    "passwordSaved": "Heslo uloženo, pro změnu zadejte nové"
   }
 }

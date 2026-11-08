@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Show files panel in terminals",
         "description": "Let the files panel open beside this host's SSH terminal."
+      },
+      "enableFtp": {
+        "label": "Enable FTP"
+      },
+      "ftpPort": {
+        "label": "FTP Port"
+      },
+      "ftpSecure": {
+        "label": "FTP Security"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Allow self-signed certificate"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "File Manager"
   },
   "fileManager": {
+    "nameConflictTitle": "Item already exists",
+    "nameConflictDescription": "An item named \"{{name}}\" already exists in this folder.",
+    "nameConflictHint": "Overwrite cannot be undone. Uploaded and copied folders merge and replace files inside. Moving onto an existing folder or replacing a different item type is refused; choose Keep both instead.",
+    "conflict-overwrite": "Overwrite",
+    "conflict-skip": "Skip",
+    "conflict-keep-both": "Keep both",
+    "conflictBusy": "Finish the current name conflict prompt before starting another operation.",
+    "conflictApplyToAll": "Apply to all remaining conflicts",
+    "conflictTypeMismatch": "Cannot overwrite a different item type or a symbolic link. Choose Keep both instead.",
     "noHostSelected": "No host selected",
     "initializingEditor": "Initializing editor...",
     "file": "File",
@@ -200,6 +221,7 @@
     "columns": "Columns",
     "columnsHint": "Right-click to choose columns",
     "emptyFolder": "This folder is empty",
+    "noSearchResults": "No results found for \"{{query}}\"",
     "searchFiles": "Search files...",
     "upload": "Upload",
     "selectHostToStart": "Select a host to start file management",
@@ -429,6 +451,7 @@
     "octal": "Octal",
     "storage": "Storage",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Used",
     "of": "of",
     "toggleSidebar": "Toggle Sidebar",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Dragging folders to the desktop is not supported yet",
     "saveToDesktopFailed": "Save failed: {{error}}",
     "dragFailedDetail": "Drag failed: {{error}}",
+    "desktopAppOnly": "This only works in the desktop app",
+    "onlyFilesToDesktop": "Only files can be dragged to the desktop",
+    "onlyFoldersCanBeDragged": "Only folders can be dragged here",
+    "savedToDownloads": "Your browser saves it to the Downloads folder",
+    "savedFile": "Saved {{name}}",
+    "savedFilesZip_one": "Saved {{count}} file in a zip",
+    "savedFilesZip_other": "Saved {{count}} files in a zip",
+    "dropFileTooLarge": "{{name}} is too large. The limit is {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} is a file type that is not allowed here",
+    "lineNumbers": "Line numbers",
     "videoUnsupported": "Your browser cannot play this video format.",
     "downloadToPlay": "Download to play it elsewhere",
     "cannotPreviewType": "Cannot preview this file type",
@@ -636,5 +669,44 @@
     "syncNow": "Go to the terminal folder",
     "cdTerminal": "Change the terminal to this folder",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "List files"
+    },
+    "info": {
+      "title": "File info"
+    },
+    "mkdir": {
+      "title": "Make folder"
+    },
+    "delete": {
+      "title": "Delete file or empty folder"
+    },
+    "path": "Path"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Browse files on this host over FTP or FTPS.",
+    "originNote": "FTP connections are made from the Termix server.",
+    "connection": "Connection",
+    "port": "Port",
+    "security": "Security",
+    "securityNone": "None (plain FTP)",
+    "securityExplicit": "Explicit TLS (FTPS)",
+    "securityImplicit": "Implicit TLS (FTPS)",
+    "allowSelfSigned": "Allow self-signed certificate",
+    "allowSelfSignedDesc": "Skip certificate checks for this host.",
+    "login": "Login",
+    "auth": {
+      "direct": "Direct",
+      "credential": "Credential",
+      "none": "Anonymous"
+    },
+    "selectCredential": "Select a credential...",
+    "anonymousNote": "Signs in as anonymous with no password.",
+    "username": "Username",
+    "password": "Password",
+    "passwordSaved": "Password saved, type to change"
   }
 }

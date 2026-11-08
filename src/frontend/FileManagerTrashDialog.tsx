@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { RotateCcw, Trash2 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { toast } from "sonner";
-import { Button, InlineView, useConfirm } from "@termix-ssh/plugin-sdk/ui";
+import {
+  Button,
+  InlineView,
+  useConfirm,
+  LoadingState,
+} from "@termix-ssh/plugin-sdk/ui";
 import {
   emptySSHTrash,
   getSSHTrash,
@@ -119,7 +124,7 @@ export function FileManagerTrashDialog({
             max={3650}
             value={retentionDays}
             onChange={(event) => setRetentionDays(Number(event.target.value))}
-            className="h-8 w-20 border border-border bg-background px-2"
+            className="h-8 w-20 border border-border bg-popover px-2"
           />
           <Button
             size="sm"
@@ -142,9 +147,7 @@ export function FileManagerTrashDialog({
 
       <div className="min-h-0 flex-1 overflow-y-auto border border-border">
         {loading ? (
-          <div className="p-6 text-center text-sm text-muted-foreground">
-            {t("common.loading")}
-          </div>
+          <LoadingState label={t("common.loading")} />
         ) : items.length === 0 ? (
           <div className="p-6 text-center text-sm text-muted-foreground">
             {t("fileManager.trashEmpty")}

@@ -26,6 +26,7 @@ import {
   Label,
   Select2,
   Checkbox,
+  PanelShell,
 } from "@termix-ssh/plugin-sdk/ui";
 import {
   addTransferRecent,
@@ -396,8 +397,8 @@ function RemotePane({
 
   return (
     <section
-      className={`flex min-h-0 flex-1 flex-col border bg-card transition-colors ${
-        acceptsDrop ? "border-accent-brand/50" : "border-border"
+      className={`flex min-h-0 flex-1 flex-col transition-shadow ${
+        acceptsDrop ? "ring-1 ring-inset ring-accent-brand/50" : ""
       }`}
       onDragOver={(event) => {
         if (!acceptsDrop) return;
@@ -421,6 +422,8 @@ function RemotePane({
           variant="ghost"
           size="icon"
           className="size-7 rounded-none"
+          title={t("fileManager.refresh")}
+          aria-label={t("fileManager.refresh")}
           disabled={!pane.sessionId || pane.loading}
           onClick={() =>
             pane.sessionId && void loadRemotePath(pane.sessionId, pane.path)
@@ -916,6 +919,8 @@ export function SftpTransferTab() {
       await refreshRemotePane(paneId);
       toast.success(t("sftpTransfer.itemsDeleted", { count: entries.length }));
     } catch (error) {
+      // Some items may already be gone, so show what is left.
+      void refreshRemotePane(paneId);
       toast.error(
         error instanceof Error ? error.message : t("sftpTransfer.deleteFailed"),
       );
@@ -967,17 +972,16 @@ export function SftpTransferTab() {
     : null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <header className="flex shrink-0 flex-col gap-3 border-b border-border px-4 py-3 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-sm font-bold uppercase tracking-widest">
-            {t("sftpTransfer.title")}
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t("sftpTransfer.description")}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+    <PanelShell
+      icon={<ArrowLeftRight className="size-4" />}
+      title={t("sftpTransfer.title")}
+      status={
+        hostsLoading
+          ? t("sftpTransfer.loadingHosts")
+          : t("sftpTransfer.itemsSelected", { count: sourceSelectionCount })
+      }
+      actions={
+        <>
           <Label className="flex items-center gap-2 border border-border px-3 py-1.5 text-xs">
             <Checkbox
               checked={move}
@@ -994,21 +998,15 @@ export function SftpTransferTab() {
             <ArrowLeftRight className="size-4" />
             {move ? t("sftpTransfer.move") : t("sftpTransfer.copy")}
           </Button>
-        </div>
-      </header>
+        </>
+      }
+      scroll={false}
+    >
+      <p className="shrink-0 border-b border-border px-3 py-2 text-xs text-muted-foreground">
+        {t("sftpTransfer.description")}
+      </p>
 
-      <div className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-2 text-xs text-muted-foreground">
-        <span>
-          {t("sftpTransfer.itemsSelected", { count: sourceSelectionCount })}
-        </span>
-        <span>
-          {hostsLoading
-            ? t("sftpTransfer.loadingHosts")
-            : t("sftpTransfer.ready")}
-        </span>
-      </div>
-
-      <main className="grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 lg:grid-cols-2">
+      <main className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-border lg:grid-cols-2 lg:divide-x lg:divide-y-0">
         <RemotePane
           title={t("sftpTransfer.sourceServer")}
           hosts={hosts}
@@ -1168,6 +1166,6 @@ export function SftpTransferTab() {
         onOpenChange={(open) => !open && setPermissionsTarget(null)}
         onSave={handlePermissionsSave}
       />
-    </div>
+    </PanelShell>
   );
 }

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "टर्मिनल में फ़ाइलें पैनल दिखाएं",
         "description": "इस होस्ट के SSH टर्मिनल के बगल में फ़ाइलें पैनल खुलने दें।"
+      },
+      "enableFtp": {
+        "label": "FTP सक्षम करें"
+      },
+      "ftpPort": {
+        "label": "FTP पोर्ट"
+      },
+      "ftpSecure": {
+        "label": "FTP सुरक्षा"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "सेल्फ-साइनड सर्टिफिकेट की अनुमति दें"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "फ़ाइल मैनेजर"
   },
   "fileManager": {
+    "nameConflictTitle": "आइटम पहले से मौजूद है",
+    "nameConflictDescription": "इस फ़ोल्डर में \"{{name}}\" नाम का एक आइटम पहले से मौजूद है।",
+    "nameConflictHint": "ओवरराइट करना पूर्ववत नहीं किया जा सकता। अपलोड और कॉपी किए गए फ़ोल्डर अंदर की फ़ाइलों को मर्ज और रिप्लेस करते हैं। मौजूदा फ़ोल्डर पर मूव करना या अलग आइटम टाइप को रिप्लेस करना अस्वीकार कर दिया जाता है; इसके बजाय 'दोनों रखें' चुनें।",
+    "conflict-overwrite": "ओवरराइट करें",
+    "conflict-skip": "स्किप करें",
+    "conflict-keep-both": "दोनों रखें",
+    "conflictBusy": "अगली ऑपरेशन शुरू करने से पहले वर्तमान नाम संघर्ष प्रॉम्प्ट को पूरा करें।",
+    "conflictApplyToAll": "शेष सभी संघर्षों पर लागू करें",
+    "conflictTypeMismatch": "अलग आइटम टाइप या सिंबोलिक लिंक को ओवरराइट नहीं किया जा सकता। इसके बजाय 'दोनों रखें' चुनें।",
     "noHostSelected": "कोई होस्ट चयनित नहीं",
     "initializingEditor": "एडिटर प्रारंभ हो रहा है...",
     "file": "फ़ाइल",
@@ -200,6 +221,7 @@
     "columns": "कॉलम",
     "columnsHint": "कॉलम चुनने के लिए राइट-क्लिक करें",
     "emptyFolder": "यह फ़ोल्डर खाली है",
+    "noSearchResults": "\"{{query}}\" के लिए कोई परिणाम नहीं मिला",
     "searchFiles": "फ़ाइलें खोजें...",
     "upload": "अपलोड",
     "selectHostToStart": "फ़ाइल प्रबंधन शुरू करने के लिए एक होस्ट चुनें",
@@ -429,6 +451,7 @@
     "octal": "अष्टमिक",
     "storage": "स्टोरेज",
     "disk": "डिस्क",
+    "notAvailable": "N/A",
     "used": "उपयोग किया गया",
     "of": "में से",
     "toggleSidebar": "साइडबार टॉगल करें",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "फ़ोल्डर्स को डेस्कटॉप पर खींचना अभी समर्थित नहीं है",
     "saveToDesktopFailed": "सेव विफल: {{error}}",
     "dragFailedDetail": "ड्रैग विफल: {{error}}",
+    "desktopAppOnly": "यह केवल डेस्कटॉप ऐप में काम करता है",
+    "onlyFilesToDesktop": "केवल फ़ाइलों को डेस्कटॉप पर ड्रैग किया जा सकता है",
+    "onlyFoldersCanBeDragged": "यहाँ केवल फ़ोल्डरों को ड्रैग किया जा सकता है",
+    "savedToDownloads": "आपका ब्राउज़र इसे डाउनलोड्स फ़ोल्डर में सेव करता है",
+    "savedFile": "{{name}} सेव किया गया",
+    "savedFilesZip_one": "ज़िप में {{count}} फ़ाइल सेव की गई",
+    "savedFilesZip_other": "ज़िप में {{count}} फ़ाइलें सेव की गईं",
+    "dropFileTooLarge": "{{name}} बहुत बड़ी है। सीमा {{size}} MB है।",
+    "dropFileTypeNotAllowed": "{{name}} एक फ़ाइल टाइप है जिसकी यहाँ अनुमति नहीं है",
+    "lineNumbers": "लाइन नंबर",
     "videoUnsupported": "आपका ब्राउज़र इस वीडियो प्रारूप को नहीं चला सकता।",
     "downloadToPlay": "इसे कहीं और चलाने के लिए डाउनलोड करें",
     "cannotPreviewType": "इस फ़ाइल प्रकार का पूर्वावलोकन नहीं किया जा सकता",
@@ -636,5 +669,44 @@
     "syncNow": "टर्मिनल फ़ोल्डर पर जाएं",
     "cdTerminal": "टर्मिनल को इस फ़ोल्डर में बदलें",
     "terminalAt": "टर्मिनल:"
+  },
+  "operations": {
+    "list": {
+      "title": "फ़ाइलों की सूची"
+    },
+    "info": {
+      "title": "फ़ाइल जानकारी"
+    },
+    "mkdir": {
+      "title": "फ़ोल्डर बनाएं"
+    },
+    "delete": {
+      "title": "फ़ाइल या खाली फ़ोल्डर हटाएं"
+    },
+    "path": "पथ"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "FTP या FTPS के माध्यम से इस होस्ट पर फ़ाइलों को ब्राउज़ करें।",
+    "originNote": "FTP कनेक्शन Termix सर्वर से बनाए जाते हैं।",
+    "connection": "कनेक्शन",
+    "port": "पोर्ट",
+    "security": "सुरक्षा",
+    "securityNone": "कोई नहीं (सादा FTP)",
+    "securityExplicit": "स्पष्ट TLS (FTPS)",
+    "securityImplicit": "अस्पष्ट TLS (FTPS)",
+    "allowSelfSigned": "सेल्फ-साइनड सर्टिफिकेट की अनुमति दें",
+    "allowSelfSignedDesc": "इस होस्ट के लिए सर्टिफिकेट जांच छोड़ें।",
+    "login": "लॉगिन",
+    "auth": {
+      "direct": "प्रत्यक्ष",
+      "credential": "क्रेडेंशियल",
+      "none": "अनाम"
+    },
+    "selectCredential": "एक क्रेडेंशियल चुनें...",
+    "anonymousNote": "बिना पासवर्ड के अनाम के रूप में साइन इन करता है।",
+    "username": "यूज़रनेम",
+    "password": "पासवर्ड",
+    "passwordSaved": "पासवर्ड सेव किया गया, बदलने के लिए टाइप करें"
   }
 }

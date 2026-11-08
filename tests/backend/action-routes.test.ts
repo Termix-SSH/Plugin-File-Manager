@@ -70,6 +70,42 @@ function setup(runs: Run[]) {
 }
 
 describe("copyItem", () => {
+  it.each([true, false, "true"])(
+    "uses the resolved name and requires boolean overwrite (%s)",
+    async (overwrite) => {
+      const { call, commands } = setup([{ stdout: "COPY_SUCCESS\n", code: 0 }]);
+      const result = await call("/copyItem", {
+        sessionId: "s",
+        sourcePath: "/source/a",
+        targetDir: "/target",
+        targetName: "a (1)",
+        overwrite,
+      });
+      expect(result.body.targetPath).toBe("/target/a (1)");
+      expect(commands[0]).toContain(
+        overwrite === true ? "cp -r --remove-destination -T --" : "mv -nT --",
+      );
+    },
+  );
+
+  it.each(["../outside", ".", "..", "", "bad\0name"])(
+    "rejects invalid destination basenames before executing (%s)",
+    async (targetName) => {
+      const { call, commands } = setup([]);
+      expect(
+        (
+          await call("/copyItem", {
+            sessionId: "s",
+            sourcePath: "/source/a",
+            targetDir: "/target",
+            targetName,
+          })
+        ).status,
+      ).toBe(400);
+      expect(commands).toHaveLength(0);
+    },
+  );
+
   it("copies folders recursively and reports success", async () => {
     const { call, commands } = setup([{ stdout: "COPY_SUCCESS\n", code: 0 }]);
     const result = await call("/copyItem", {
@@ -78,7 +114,7 @@ describe("copyItem", () => {
       targetDir: "/home/a",
     });
     expect(result.status).toBe(200);
-    expect(commands[0]).toMatch(/^cp -r '/);
+    expect(commands[0]).toContain("mv -nT --");
   });
 
   it("answers with the error when cp fails without output", async () => {

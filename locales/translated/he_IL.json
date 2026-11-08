@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "הצג לוח קבצים בטרמינלים",
         "description": "אפשר ללוח הקבצים להיפתח ליד הטרמינל של SSH עבור מארח זה."
+      },
+      "enableFtp": {
+        "label": "הפעל FTP"
+      },
+      "ftpPort": {
+        "label": "פורט FTP"
+      },
+      "ftpSecure": {
+        "label": "אבטחת FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "אפשר תעודה עצמית"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "מנהל קבצים"
   },
   "fileManager": {
+    "nameConflictTitle": "הפריט כבר קיים",
+    "nameConflictDescription": "פריט בשם \"{{name}}\" כבר קיים בתיקייה זו.",
+    "nameConflictHint": "החלפה אינה ניתנת לביטול. העלאה והעתקה של תיקיות משלבות ומחליפות קבצים בתוכן. העברה על גבי תיקיה קיימת או החלפת סוג פריט אחר תידחה; בחר במקום זאת 'שמור את שניהם'.",
+    "conflict-overwrite": "החלף",
+    "conflict-skip": "דלג",
+    "conflict-keep-both": "שמור את שניהם",
+    "conflictBusy": "השלם את בקשת הסתבכות השמות הנוכחית לפני תחילת פעולה נוספת.",
+    "conflictApplyToAll": "החל על כל שאר הסתבכויות",
+    "conflictTypeMismatch": "לא ניתן להחליף סוג פריט אחר או קישור סמלי. בחר במקום זאת 'שמור את שניהם'.",
     "noHostSelected": "לא נבחר מארח",
     "initializingEditor": "מאתחל עורך...",
     "file": "קובץ",
@@ -214,6 +235,7 @@
     "columns": "עמודות",
     "columnsHint": "לחץ לחיצה ימנית כדי לבחור עמודות",
     "emptyFolder": "תיקייה זו ריקה",
+    "noSearchResults": "לא נמצאו תוצאות עבור \"{{query}}\"",
     "searchFiles": "חיפוש קבצים...",
     "upload": "העלאה",
     "selectHostToStart": "בחר מארח כדי להתחיל ניהול קבצים",
@@ -460,6 +482,7 @@
     "octal": "שמוני",
     "storage": "אחסון",
     "disk": "דיסק",
+    "notAvailable": "לא זמין",
     "used": "בשימוש",
     "of": "מתוך",
     "toggleSidebar": "הצג/הסתר סרגל צד",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "גרירת תיקיות לשולחן העבודה אינה נתמכת כרגע",
     "saveToDesktopFailed": "השמירה נכשלה: {{error}}",
     "dragFailedDetail": "גרירה נכשלה: {{error}}",
+    "desktopAppOnly": "זה עובד רק באפליקציית שולחן העבודה",
+    "onlyFilesToDesktop": "רק קבצים ניתן לגרור לשולחן העבודה",
+    "onlyFoldersCanBeDragged": "רק תיקיות ניתן לגרור לכאן",
+    "savedToDownloads": "הדפדפן שלך שומר אותו בתיקיית ההורדות",
+    "savedFile": "נשמר {{name}}",
+    "savedFilesZip_one": "נשמר {{count}} קובץ ב-zip",
+    "savedFilesZip_two": "נשמרו {{count}} קבצים ב-zip",
+    "savedFilesZip_other": "נשמרו {{count}} קבצים ב-zip",
+    "dropFileTooLarge": "{{name}} גדול מדי. המגבלה היא {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} הוא סוג קובץ שאינו מותר כאן",
+    "lineNumbers": "מספרי שורות",
     "videoUnsupported": "הדפדפן שלך אינו יכול להפעיל פורמט וידאו זה.",
     "downloadToPlay": "הורד כדי להפעיל במקום אחר",
     "cannotPreviewType": "לא ניתן להציג תצוגה מקדימה מסוג קובץ זה",
@@ -677,5 +711,44 @@
     "syncNow": "עבור לתיקיית הטרמינל",
     "cdTerminal": "שנה את הטרמינל לתיקייה זו",
     "terminalAt": "טרמינל:"
+  },
+  "operations": {
+    "list": {
+      "title": "רשימת קבצים"
+    },
+    "info": {
+      "title": "מידע על הקובץ"
+    },
+    "mkdir": {
+      "title": "צור תיקיה"
+    },
+    "delete": {
+      "title": "מחק קובץ או תיקיה ריקה"
+    },
+    "path": "נתיב"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "דפדוף בקבצים במארח זה דרך FTP או FTPS.",
+    "originNote": "חיבורי FTP מתבצעים מהשרת של Termix.",
+    "connection": "חיבור",
+    "port": "פורט",
+    "security": "אבטחה",
+    "securityNone": "ללא (FTP רגיל)",
+    "securityExplicit": "TLS מפורש (FTPS)",
+    "securityImplicit": "TLS מרומז (FTPS)",
+    "allowSelfSigned": "אפשר תעודה עצמית",
+    "allowSelfSignedDesc": "דלג על בדיקות תעודה עבור מארח זה.",
+    "login": "התחברות",
+    "auth": {
+      "direct": "ישיר",
+      "credential": "אישור",
+      "none": "אנונימי"
+    },
+    "selectCredential": "בחר אישור...",
+    "anonymousNote": "מתחבר כאנונימי ללא סיסמה.",
+    "username": "שם משתמש",
+    "password": "סיסמה",
+    "passwordSaved": "הסיסמה נשמרה, הקלד כדי לשנות"
   }
 }

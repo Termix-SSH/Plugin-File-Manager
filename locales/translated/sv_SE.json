@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Visa filsfältet i terminaler",
         "description": "Låt filsfältet öppnas bredvid SSH-terminalen för denna värd."
+      },
+      "enableFtp": {
+        "label": "Aktivera FTP"
+      },
+      "ftpPort": {
+        "label": "FTP-port"
+      },
+      "ftpSecure": {
+        "label": "FTP-säkerhet"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Tillåt självsignerat certifikat"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Filhanterare"
   },
   "fileManager": {
+    "nameConflictTitle": "Objektet finns redan",
+    "nameConflictDescription": "Ett objekt med namnet \"{{name}}\" finns redan i denna mapp.",
+    "nameConflictHint": "Ersättning kan inte ångras. Uppladdade och kopierade mappar slås samman och ersätter filer inuti. Att flytta till en befintlig mapp eller ersätta en annan objekttyp nekas; välj Behåll båda istället.",
+    "conflict-overwrite": "Ersätt",
+    "conflict-skip": "Hoppa över",
+    "conflict-keep-both": "Behåll båda",
+    "conflictBusy": "Slutför den aktuella dialogrutan för namnkrock innan du startar en ny operation.",
+    "conflictApplyToAll": "Tillämpa på alla återstående krockar",
+    "conflictTypeMismatch": "Kan inte ersätta en annan objekttyp eller en symbolisk länk. Välj Behåll båda istället.",
     "noHostSelected": "Ingen värd vald",
     "initializingEditor": "Initierar redigerare...",
     "file": "Fil",
@@ -200,6 +221,7 @@
     "columns": "Kolumner",
     "columnsHint": "Högerklicka för att välja kolumner",
     "emptyFolder": "Den här mappen är tom",
+    "noSearchResults": "Inga resultat hittades för \"{{query}}\"",
     "searchFiles": "Sök efter filer...",
     "upload": "Ladda upp",
     "selectHostToStart": "Välj en värd för att starta filhanteraren",
@@ -429,6 +451,7 @@
     "octal": "Oktal",
     "storage": "Lagring",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Använt",
     "of": "av",
     "toggleSidebar": "Visa/dölj sidofält",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Det går inte att dra mappar till skrivbordet ännu",
     "saveToDesktopFailed": "Sparningen misslyckades: {{error}}",
     "dragFailedDetail": "Dra misslyckades: {{error}}",
+    "desktopAppOnly": "Detta fungerar bara i skrivbordsappen",
+    "onlyFilesToDesktop": "Endast filer kan dras till skrivbordet",
+    "onlyFoldersCanBeDragged": "Endast mappar kan dras hit",
+    "savedToDownloads": "Din webbläsare sparar den i mappen Nedladdningar",
+    "savedFile": "Sparade {{name}}",
+    "savedFilesZip_one": "Sparade {{count}} fil i en zip",
+    "savedFilesZip_other": "Sparade {{count}} filer i en zip",
+    "dropFileTooLarge": "{{name}} är för stor. Gränsen är {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} är en filtyp som inte är tillåten här",
+    "lineNumbers": "Radnummer",
     "videoUnsupported": "Din webbläsare kan inte spela den här videon.",
     "downloadToPlay": "Ladda ner för att spela den i en annan app",
     "cannotPreviewType": "Kan inte visa förhandsgranskning av den här filtypen",
@@ -636,5 +669,44 @@
     "syncNow": "Gå till terminalens mapp",
     "cdTerminal": "Ändra terminalen till denna mapp",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Lista filer"
+    },
+    "info": {
+      "title": "Filinformation"
+    },
+    "mkdir": {
+      "title": "Skapa mapp"
+    },
+    "delete": {
+      "title": "Ta bort fil eller tom mapp"
+    },
+    "path": "Sökväg"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Bläddra bland filer på denna värd via FTP eller FTPS.",
+    "originNote": "FTP-anslutningar görs från Termix-servern.",
+    "connection": "Anslutning",
+    "port": "Port",
+    "security": "Säkerhet",
+    "securityNone": "Ingen (vanlig FTP)",
+    "securityExplicit": "Explicit TLS (FTPS)",
+    "securityImplicit": "Implicit TLS (FTPS)",
+    "allowSelfSigned": "Tillåt självsignerat certifikat",
+    "allowSelfSignedDesc": "Hoppa över certifikatkontroller för denna värd.",
+    "login": "Inloggning",
+    "auth": {
+      "direct": "Direkt",
+      "credential": "Inloggningsuppgift",
+      "none": "Anonym"
+    },
+    "selectCredential": "Välj en inloggningsuppgift...",
+    "anonymousNote": "Loggar in som anonym utan lösenord.",
+    "username": "Användarnamn",
+    "password": "Lösenord",
+    "passwordSaved": "Lösenordet har sparats, skriv för att ändra"
   }
 }

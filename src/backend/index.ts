@@ -37,6 +37,7 @@ import { registerFileContentRoutes } from "./content-routes.js";
 import { registerFileOperationRoutes } from "./operation-routes.js";
 import { registerFileDownloadRoutes } from "./download-routes.js";
 import { registerFileActionRoutes } from "./action-routes.js";
+import { registerFtpRoutes } from "./ftp-routes.js";
 import { registerBookmarkRoutes } from "./bookmark-routes.js";
 import {
   startHostTransfer,
@@ -50,6 +51,7 @@ import {
   type HostTransferDeps,
 } from "./transfer-engine.js";
 import { createFilesService } from "./service.js";
+import { registerOperations } from "./operations.js";
 import { tables } from "./tables.js";
 import { registerLocalDesktop } from "./local-desktop.js";
 
@@ -1705,6 +1707,7 @@ export async function activate(ctx: PluginContext) {
     scheduleSessionCleanup,
     verifySessionOwnership,
   });
+  registerFtpRoutes(app, ctx);
   registerBookmarkRoutes(app, ctx, {
     table,
     pinnedTable,
@@ -2411,6 +2414,7 @@ export async function activate(ctx: PluginContext) {
 
   const service = createFilesService(ctx);
   ctx.services.provide("files.sftp", service);
+  registerOperations(ctx, service);
 
   ctx.log.info("File manager mounted at /plugin-api/file-manager");
 }

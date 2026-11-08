@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "إظهار لوحة الملفات في الطرفيات",
         "description": "اسمح بفتح لوحة الملفات بجانب طرفية SSH الخاصة بهذا المضيف."
+      },
+      "enableFtp": {
+        "label": "تفعيل FTP"
+      },
+      "ftpPort": {
+        "label": "منفذ FTP"
+      },
+      "ftpSecure": {
+        "label": "أمان FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "السماح بالشهادة الموقعة ذاتيًا"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "مدير الملفات"
   },
   "fileManager": {
+    "nameConflictTitle": "العنصر موجود بالفعل",
+    "nameConflictDescription": "يوجد عنصر باسم \"{{name}}\" بالفعل في هذا المجلد.",
+    "nameConflictHint": "لا يمكن التراجع عن الكتابة فوق الملف. يتم دمج المجلدات المرفوعة والمنسوخة واستبدال الملفات بداخلها. يتم رفض التحريك فوق مجلد موجود أو استبدال نوع عنصر مختلف؛ اختر \"إبقاء كلاهما\" بدلاً من ذلك.",
+    "conflict-overwrite": "الكتابة فوق",
+    "conflict-skip": "تخطي",
+    "conflict-keep-both": "إبقاء كلاهما",
+    "conflictBusy": "أنهِ مطالبة تعارض الاسم الحالية قبل بدء عملية أخرى.",
+    "conflictApplyToAll": "تطبيق على جميع التعارضات المتبقية",
+    "conflictTypeMismatch": "لا يمكن الكتابة فوق نوع عنصر مختلف أو رابط رمزي. اختر \"إبقاء كلاهما\" بدلاً من ذلك.",
     "noHostSelected": "لم يتم اختيار مضيف",
     "initializingEditor": "جارٍ تهيئة المحرر...",
     "file": "ملف",
@@ -256,6 +277,7 @@
     "columns": "الأعمدة",
     "columnsHint": "انقر بزر الماوس الأيمن لاختيار الأعمدة",
     "emptyFolder": "هذا المجلد فارغ",
+    "noSearchResults": "لم يتم العثور على نتائج لـ \"{{query}}\"",
     "searchFiles": "البحث في الملفات...",
     "upload": "رفع",
     "selectHostToStart": "اختر مضيفًا لبدء إدارة الملفات",
@@ -553,6 +575,7 @@
     "octal": "ثماني",
     "storage": "التخزين",
     "disk": "القرص",
+    "notAvailable": "غير متاح",
     "used": "المستخدم",
     "of": "من",
     "toggleSidebar": "تبديل الشريط الجانبي",
@@ -586,6 +609,20 @@
     "folderDragUnsupported": "سحب المجلدات إلى سطح المكتب غير مدعوم بعد",
     "saveToDesktopFailed": "فشل الحفظ: {{error}}",
     "dragFailedDetail": "فشل السحب: {{error}}",
+    "desktopAppOnly": "هذا يعمل فقط في تطبيق سطح المكتب",
+    "onlyFilesToDesktop": "يمكن سحب الملفات فقط إلى سطح المكتب",
+    "onlyFoldersCanBeDragged": "يمكن سحب المجلدات فقط هنا",
+    "savedToDownloads": "سيحفظ المتصفح الملف في مجلد التنزيلات",
+    "savedFile": "تم حفظ {{name}}",
+    "savedFilesZip_zero": "تم حفظ {{count}} ملف في ملف مضغوط",
+    "savedFilesZip_one": "تم حفظ ملف واحد في ملف مضغوط",
+    "savedFilesZip_two": "تم حفظ ملفين في ملف مضغوط",
+    "savedFilesZip_few": "تم حفظ {{count}} ملفات في ملف مضغوط",
+    "savedFilesZip_many": "تم حفظ {{count}} ملفًا في ملف مضغوط",
+    "savedFilesZip_other": "تم حفظ {{count}} ملف في ملف مضغوط",
+    "dropFileTooLarge": "{{name}} كبير جدًا. الحد الأقصى هو {{size}} ميجابايت.",
+    "dropFileTypeNotAllowed": "{{name}} هو نوع ملف غير مسموح به هنا",
+    "lineNumbers": "أرقام الأسطر",
     "videoUnsupported": "لا يمكن للمتصفح تشغيل هذا تنسيق الفيديو.",
     "downloadToPlay": "قم بالتنزيل لتشغيله في مكان آخر",
     "cannotPreviewType": "لا يمكن معاينة هذا النوع من الملفات",
@@ -800,5 +837,44 @@
     "syncNow": "الانتقال إلى مجلد الطرفية",
     "cdTerminal": "تغيير مجلد الطرفية إلى هذا المجلد",
     "terminalAt": "الطرفية:"
+  },
+  "operations": {
+    "list": {
+      "title": "قائمة الملفات"
+    },
+    "info": {
+      "title": "معلومات الملف"
+    },
+    "mkdir": {
+      "title": "إنشاء مجلد"
+    },
+    "delete": {
+      "title": "حذف ملف أو مجلد فارغ"
+    },
+    "path": "المسار"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "تصفح الملفات على هذا المضيف عبر FTP أو FTPS.",
+    "originNote": "تتم اتصالات FTP من خادم Termix.",
+    "connection": "الاتصال",
+    "port": "المنفذ",
+    "security": "الأمان",
+    "securityNone": "لا شيء (FTP عادي)",
+    "securityExplicit": "TLS صريح (FTPS)",
+    "securityImplicit": "TLS ضمني (FTPS)",
+    "allowSelfSigned": "السماح بالشهادة الموقعة ذاتيًا",
+    "allowSelfSignedDesc": "تخطي فحوصات الشهادة لهذا المضيف.",
+    "login": "تسجيل الدخول",
+    "auth": {
+      "direct": "مباشر",
+      "credential": "بيانات الاعتماد",
+      "none": "مجهول"
+    },
+    "selectCredential": "اختر بيانات اعتماد...",
+    "anonymousNote": "يسجل الدخول كمجهول بدون كلمة مرور.",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "passwordSaved": "تم حفظ كلمة المرور، اكتب لتغييرها"
   }
 }

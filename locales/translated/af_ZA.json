@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Wys lêe-paneel in terminale",
         "description": "Laat die lêe-paneel oopmaak langs hierdie gasheer se SSH-terminal."
+      },
+      "enableFtp": {
+        "label": "Aktiveer FTP"
+      },
+      "ftpPort": {
+        "label": "FTP-poort"
+      },
+      "ftpSecure": {
+        "label": "FTP-beveiliging"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Sta self-ondertekende sertifikaat toe"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Lêerbestuurder"
   },
   "fileManager": {
+    "nameConflictTitle": "Item bestaan reeds",
+    "nameConflictDescription": "Daar is reeds 'n item met die naam \"{{name}}\" in hierdie gids.",
+    "nameConflictHint": "Oorskryf kan nie ongedaan gemaak word nie. Opgelaai en gekopieëde gidse word saamgevoeg en vervang lêers binne-in. Verskuiwing na 'n bestaande gids of die vervanging van 'n ander itemtipe word verwerp; kies Behou albei in plaas daarvan.",
+    "conflict-overwrite": "Oorskryf",
+    "conflict-skip": "Slaan oor",
+    "conflict-keep-both": "Behou albei",
+    "conflictBusy": "Voltooi die huidige naamkonflik-aanvraag voordat jy 'n ander operasie begin.",
+    "conflictApplyToAll": "Pas toe op alle oorblywende konflikte",
+    "conflictTypeMismatch": "Kan nie 'n ander itemtipe of 'n simboliese skakel oorskryf nie. Kies Behou albei in plaas daarvan.",
     "noHostSelected": "Geen gasheer gekies nie",
     "initializingEditor": "Redigeerder word geïnisialiseer...",
     "file": "Lêer",
@@ -200,6 +221,7 @@
     "columns": "Kolomme",
     "columnsHint": "Klik regs om kolomme te kies",
     "emptyFolder": "Hierdie gids is leeg",
+    "noSearchResults": "Geen resultate gevind vir \"{{query}}\" nie",
     "searchFiles": "Soek lêers...",
     "upload": "Laai op",
     "selectHostToStart": "Kies 'n gasheer om lêerbestuur te begin",
@@ -429,6 +451,7 @@
     "octal": "Oktale",
     "storage": "Bergplek",
     "disk": "Skyf",
+    "notAvailable": "N/B",
     "used": "Gebruik",
     "of": "van",
     "toggleSidebar": "Wissel Sybalk",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Die sleep van vouers na die werkskerm word nog nie ondersteun nie",
     "saveToDesktopFailed": "Stoor het misluk: {{error}}",
     "dragFailedDetail": "Sleep het misluk: {{error}}",
+    "desktopAppOnly": "Dit werk slegs in die desktop-toepassing",
+    "onlyFilesToDesktop": "Slegs lêers kan na die bureblad gesleep word",
+    "onlyFoldersCanBeDragged": "Slegs gidse kan hierheen gesleep word",
+    "savedToDownloads": "Jou blaaier stoor dit in die Aflaai-gids",
+    "savedFile": "{{name}} gestoor",
+    "savedFilesZip_one": "{{count}} lêer in 'n zip gestoor",
+    "savedFilesZip_other": "{{count}} lêers in 'n zip gestoor",
+    "dropFileTooLarge": "{{name}} is te groot. Die limiet is {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} is 'n lêertipe wat hier nie toegelaat word nie",
+    "lineNumbers": "Regnommers",
     "videoUnsupported": "U blaaier kan nie hierdie videoformaat afspeel nie.",
     "downloadToPlay": "Laai dit af om elders af te speel",
     "cannotPreviewType": "Kan nie voorskou van hierdie lêertipe maak nie",
@@ -636,5 +669,44 @@
     "syncNow": "Gaan na die terminal se gids",
     "cdTerminal": "Verander die terminal na hierdie gids",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Lys lêers"
+    },
+    "info": {
+      "title": "Lêer-inligting"
+    },
+    "mkdir": {
+      "title": "Skep gids"
+    },
+    "delete": {
+      "title": "Vee lêer of leë gids uit"
+    },
+    "path": "Pad"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Deursoek lêers op hierdie gasheer oor FTP of FTPS.",
+    "originNote": "FTP-verbindinge word vanaf die Termix-bedienaar gemaak.",
+    "connection": "Verbinding",
+    "port": "Poort",
+    "security": "Beveiliging",
+    "securityNone": "Geen (gewone FTP)",
+    "securityExplicit": "Ekspresie TLS (FTPS)",
+    "securityImplicit": "Implisiete TLS (FTPS)",
+    "allowSelfSigned": "Sta self-ondertekende sertifikaat toe",
+    "allowSelfSignedDesc": "Slaan sertifikaatkontroles vir hierdie gasheer oor.",
+    "login": "Aanmeld",
+    "auth": {
+      "direct": "Direk",
+      "credential": "Aanmeldingsgegewens",
+      "none": "Anoniem"
+    },
+    "selectCredential": "Kies 'n aanmeldingsgegewens...",
+    "anonymousNote": "Meld aan as anoniem sonder wagwoord.",
+    "username": "Gebruikersnaam",
+    "password": "Wagwoord",
+    "passwordSaved": "Wagwoord gestoor, tik om te verander"
   }
 }

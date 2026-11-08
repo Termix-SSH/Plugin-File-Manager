@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Vis filer-panel i terminaler",
         "description": "Lad filer-panelet åbne ved siden af SSH-terminalen for denne vært."
+      },
+      "enableFtp": {
+        "label": "Aktivér FTP"
+      },
+      "ftpPort": {
+        "label": "FTP-port"
+      },
+      "ftpSecure": {
+        "label": "FTP-sikkerhed"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Tillad selvsignerede certifikater"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Filhåndtering"
   },
   "fileManager": {
+    "nameConflictTitle": "Elementet findes allerede",
+    "nameConflictDescription": "Et element med navnet \"{{name}}\" findes allerede i denne mappe.",
+    "nameConflictHint": "Overskrivning kan ikke fortrydes. Uploadede og kopierede mapper slås sammen og erstatter filer i dem. Flytning til en eksisterende mappe eller erstatning af en anden elementtype afvises; vælg Behold begge i stedet.",
+    "conflict-overwrite": "Overskriv",
+    "conflict-skip": "Spring over",
+    "conflict-keep-both": "Behold begge",
+    "conflictBusy": "Afslut den aktuelle dialog om navnekonflikt, før du starter en ny handling.",
+    "conflictApplyToAll": "Anvend på alle resterende konflikter",
+    "conflictTypeMismatch": "Kan ikke overskrive en anden elementtype eller et symbolisk link. Vælg Behold begge i stedet.",
     "noHostSelected": "Ingen vært valgt",
     "initializingEditor": "Initialiserer editor...",
     "file": "Fil",
@@ -200,6 +221,7 @@
     "columns": "Kolonner",
     "columnsHint": "Højreklik for at vælge kolonner",
     "emptyFolder": "Denne mappe er tom",
+    "noSearchResults": "Ingen resultater fundet for \"{{query}}\"",
     "searchFiles": "Søg i filer...",
     "upload": "Upload",
     "selectHostToStart": "Vælg en host for at starte filhåndtering",
@@ -429,6 +451,7 @@
     "octal": "Oktal",
     "storage": "Lagring",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Brugt",
     "of": "af",
     "toggleSidebar": "Skift sidebjælke",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Det understøttes endnu ikke at trække mapper til skrivebordet",
     "saveToDesktopFailed": "Gemning mislykkedes: {{error}}",
     "dragFailedDetail": "Træk mislykkedes: {{error}}",
+    "desktopAppOnly": "Dette fungerer kun i desktop-appen",
+    "onlyFilesToDesktop": "Kun filer kan trækkes til skrivebordet",
+    "onlyFoldersCanBeDragged": "Kun mapper kan trækkes hertil",
+    "savedToDownloads": "Din browser gemmer den i mappen Downloads",
+    "savedFile": "Gemte {{name}}",
+    "savedFilesZip_one": "Gemte {{count}} fil i en zip",
+    "savedFilesZip_other": "Gemte {{count}} filer i en zip",
+    "dropFileTooLarge": "{{name}} er for stor. Grænsen er {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} er en filtype, der ikke er tilladt her",
+    "lineNumbers": "Linjenumre",
     "videoUnsupported": "Din browser kan ikke afspille dette videoformat.",
     "downloadToPlay": "Download for at afspille det et andet sted",
     "cannotPreviewType": "Kan ikke forhåndsviser denne filtype",
@@ -636,5 +669,44 @@
     "syncNow": "Gå til terminalens mappe",
     "cdTerminal": "Skift terminal til denne mappe",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "List filer"
+    },
+    "info": {
+      "title": "Filinfo"
+    },
+    "mkdir": {
+      "title": "Opret mappe"
+    },
+    "delete": {
+      "title": "Slet fil eller tom mappe"
+    },
+    "path": "Sti"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Gennemse filer på denne host via FTP eller FTPS.",
+    "originNote": "FTP-forbindelser oprettes fra Termix-serveren.",
+    "connection": "Forbindelse",
+    "port": "Port",
+    "security": "Sikkerhed",
+    "securityNone": "Ingen (almindelig FTP)",
+    "securityExplicit": "Eksplicit TLS (FTPS)",
+    "securityImplicit": "Implicit TLS (FTPS)",
+    "allowSelfSigned": "Tillad selvsignerede certifikater",
+    "allowSelfSignedDesc": "Spring certifikatkontrol over for denne host.",
+    "login": "Login",
+    "auth": {
+      "direct": "Direkte",
+      "credential": "Legitimationsoplysninger",
+      "none": "Anonym"
+    },
+    "selectCredential": "Vælg en legitimationsoplysning...",
+    "anonymousNote": "Logger ind som anonym uden adgangskode.",
+    "username": "Brugernavn",
+    "password": "Adgangskode",
+    "passwordSaved": "Adgangskode gemt, skriv for at ændre"
   }
 }

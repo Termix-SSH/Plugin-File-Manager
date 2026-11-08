@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Suspense, lazy, useState, useEffect, useRef } from "react";
-import { cn } from "@termix-ssh/plugin-sdk/ui";
+import { cn, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import {
   FileText,
@@ -200,18 +200,18 @@ function getFileType(filename: string): {
 
 function formatFileSize(bytes?: number, t?: (key: string) => string): string {
   if (!bytes) return t ? t("fileManager.unknownSize") : "Unknown size";
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(
+    sizes.length - 1,
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+  );
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 }
 
 function PreviewFallback({ label }: { label: string }) {
   return (
     <div className="h-full flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-      </div>
+      <LoadingState label={label} />
     </div>
   );
 }
@@ -348,22 +348,17 @@ export function FileViewer({
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-sm text-muted-foreground">
-            {t("fileManager.loadingFile")}
-          </p>
-        </div>
+        <LoadingState label={t("fileManager.loadingFile")} />
       </div>
     );
   }
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="flex-shrink-0 bg-card border-b border-border p-4">
+      <div className="flex-shrink-0 border-b border-border px-3 py-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-lg bg-muted", fileTypeInfo.color)}>
+            <div className={cn("p-2 bg-muted", fileTypeInfo.color)}>
               {fileTypeInfo.icon}
             </div>
             <div>
@@ -396,6 +391,7 @@ export function FileViewer({
                 onClick={() => editorRef.current?.openSearchPanel()}
                 className="flex items-center gap-2"
                 title={t("fileManager.searchInFile")}
+                aria-label={t("fileManager.searchInFile")}
               >
                 <Search className="w-4 h-4" />
               </Button>
@@ -408,6 +404,7 @@ export function FileViewer({
                   onClick={decreaseFontSize}
                   disabled={editorFontSize <= MIN_FONT_SIZE}
                   title={t("fileManager.decreaseFontSize")}
+                  aria-label={t("fileManager.decreaseFontSize")}
                   className="w-7 h-7 p-0"
                 >
                   <ZoomOut className="w-4 h-4" />
@@ -421,6 +418,7 @@ export function FileViewer({
                   onClick={increaseFontSize}
                   disabled={editorFontSize >= MAX_FONT_SIZE}
                   title={t("fileManager.increaseFontSize")}
+                  aria-label={t("fileManager.increaseFontSize")}
                   className="w-7 h-7 p-0"
                 >
                   <ZoomIn className="w-4 h-4" />
@@ -434,6 +432,7 @@ export function FileViewer({
                 onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
                 className="flex items-center gap-2"
                 title={t("fileManager.showKeyboardShortcuts")}
+                aria-label={t("fileManager.showKeyboardShortcuts")}
               >
                 <Keyboard className="w-4 h-4" />
               </Button>
@@ -491,6 +490,7 @@ export function FileViewer({
                     onClick={onChooseExternalEditor}
                     className="h-8 w-8 p-0"
                     title={t("fileManager.chooseExternalEditor")}
+                    aria-label={t("fileManager.chooseExternalEditor")}
                   >
                     <Settings className="w-4 h-4" />
                   </Button>
@@ -512,6 +512,8 @@ export function FileViewer({
               size="sm"
               onClick={() => setShowKeyboardShortcuts(false)}
               className="h-6 w-6 p-0"
+              title={t("common.close")}
+              aria-label={t("common.close")}
             >
               ×
             </Button>
@@ -634,7 +636,7 @@ export function FileViewer({
       <div className="flex-1 overflow-hidden">
         {showLargeFileWarning && (
           <div className="h-full flex items-center justify-center bg-background">
-            <div className="bg-card border border-destructive/30 rounded-lg p-6 max-w-md mx-4 shadow-lg">
+            <div className="bg-card border border-destructive/30 p-6 max-w-md mx-4">
               <div className="flex items-start gap-3 mb-4">
                 <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
@@ -647,7 +649,7 @@ export function FileViewer({
                     })}
                   </p>
                   {isTooLarge ? (
-                    <div className="bg-destructive/10 border border-destructive/30 rounded p-3 mb-4">
+                    <div className="bg-destructive/10 border border-destructive/30 p-3 mb-4">
                       <p className="text-sm text-destructive font-medium">
                         {t("fileManager.fileTooLarge")}
                       </p>
@@ -765,7 +767,7 @@ export function FileViewer({
                   <div className="relative">
                     <video
                       controls
-                      className="w-full rounded-lg shadow-sm"
+                      className="w-full"
                       style={{
                         maxHeight: "calc(100vh - 200px)",
                         backgroundColor: "#000",
@@ -810,7 +812,7 @@ export function FileViewer({
 
         {fileTypeInfo.type === "markdown" && !showLargeFileWarning && (
           <div className="h-full flex flex-col">
-            <div className="flex-shrink-0 bg-muted/30 border-b border-border p-2">
+            <div className="flex-shrink-0 bg-background border-b border-border p-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Button
@@ -841,10 +843,9 @@ export function FileViewer({
                     <div className="h-full p-4 bg-background">
                       <textarea
                         value={editedContent}
-                        onChange={(e) => {
-                          setEditedContent(e.target.value);
-                          onContentChange?.(e.target.value);
-                        }}
+                        onChange={(e) => handleContentChange(e.target.value)}
+                        onFocus={() => setEditorFocused(true)}
+                        onBlur={() => setEditorFocused(false)}
                         className="w-full h-full resize-none border-0 bg-transparent text-foreground font-mono text-sm leading-relaxed focus:outline-none focus:ring-0"
                         placeholder={t("fileManager.startWritingMarkdown")}
                       />

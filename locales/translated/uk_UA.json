@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Показувати панель файлів у терміналах",
         "description": "Дозволити відкривати панель файлів поруч із SSH-терміналом цього хоста."
+      },
+      "enableFtp": {
+        "label": "Увімкнути FTP"
+      },
+      "ftpPort": {
+        "label": "Порт FTP"
+      },
+      "ftpSecure": {
+        "label": "Безпека FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Дозволити самопідписаний сертифікат"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Файловий менеджер"
   },
   "fileManager": {
+    "nameConflictTitle": "Елемент уже існує",
+    "nameConflictDescription": "Елемент із назвою «{{name}}» уже існує в цій теці.",
+    "nameConflictHint": "Дії скасувати неможливо. Завантажені та скопійовані теки об’єднуються, а файли всередині замінюються. Переміщення на існуючу теку або заміна елементу іншого типу неможливе; натомість оберіть Зберегти обидва.",
+    "conflict-overwrite": "Перезаписати",
+    "conflict-skip": "Пропустити",
+    "conflict-keep-both": "Зберегти обидва",
+    "conflictBusy": "Завершіть поточний діалог вирішення конфлікту назв, перш ніж починати іншу операцію.",
+    "conflictApplyToAll": "Застосувати до всіх решти конфліктів",
+    "conflictTypeMismatch": "Неможливо перезаписати елемент іншого типу або символьне посилання. Натомість оберіть Зберегти обидва.",
     "noHostSelected": "Хост не вибрано",
     "initializingEditor": "Ініціалізація редактора...",
     "file": "Файл",
@@ -228,6 +249,7 @@
     "columns": "Стовпці",
     "columnsHint": "Клацніть правою кнопкою миші, щоб вибрати стовпці",
     "emptyFolder": "Ця папка порожня",
+    "noSearchResults": "Нічого не знайдено для «{{query}}»",
     "searchFiles": "Пошук файлів...",
     "upload": "Завантажити",
     "selectHostToStart": "Виберіть хост, щоб почати керування файлами",
@@ -491,6 +513,7 @@
     "octal": "Восьмерковий",
     "storage": "Сховище",
     "disk": "Диск",
+    "notAvailable": "Н/Д",
     "used": "Використано",
     "of": "з",
     "toggleSidebar": "Перемкнути бічну панель",
@@ -518,6 +541,18 @@
     "folderDragUnsupported": "Перетягування папок на робочий стіл поки не підтримується",
     "saveToDesktopFailed": "Не вдалося зберегти: {{error}}",
     "dragFailedDetail": "Не вдалося перетягнути: {{error}}",
+    "desktopAppOnly": "Це працює лише в настільному додатку",
+    "onlyFilesToDesktop": "На стіл можна перетягувати лише файли",
+    "onlyFoldersCanBeDragged": "Сюди можна перетягувати лише теки",
+    "savedToDownloads": "Ваш браузер збереже його в теці «Завантаження»",
+    "savedFile": "Збережено {{name}}",
+    "savedFilesZip_one": "Збережено {{count}} файл у zip-архіві",
+    "savedFilesZip_few": "Збережено {{count}} файли в zip-архіві",
+    "savedFilesZip_many": "Збережено {{count}} файлів у zip-архіві",
+    "savedFilesZip_other": "Збережено {{count}} файлів у zip-архіві",
+    "dropFileTooLarge": "{{name}} занадто великий. Ліміт становить {{size}} МБ.",
+    "dropFileTypeNotAllowed": "{{name}} — це тип файлу, який тут не підтримується",
+    "lineNumbers": "Номери рядків",
     "videoUnsupported": "Ваш браузер не може відтворити цей формат відео.",
     "downloadToPlay": "Завантажте, щоб відтворити в іншому місці",
     "cannotPreviewType": "Неможливо переглянути цей тип файлу",
@@ -718,5 +753,44 @@
     "syncNow": "Перейти до теки терміналу",
     "cdTerminal": "Змінити теку терміналу на цю",
     "terminalAt": "Термінал:"
+  },
+  "operations": {
+    "list": {
+      "title": "Перелік файлів"
+    },
+    "info": {
+      "title": "Інформація про файл"
+    },
+    "mkdir": {
+      "title": "Створити теку"
+    },
+    "delete": {
+      "title": "Видалити файл або порожню теку"
+    },
+    "path": "Шлях"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Перегляд файлів на цьому хості через FTP або FTPS.",
+    "originNote": "З’єднання FTP встановлюються з сервера Termix.",
+    "connection": "З’єднання",
+    "port": "Порт",
+    "security": "Безпека",
+    "securityNone": "Немає (звичайний FTP)",
+    "securityExplicit": "Явний TLS (FTPS)",
+    "securityImplicit": "Неявний TLS (FTPS)",
+    "allowSelfSigned": "Дозволити самопідписаний сертифікат",
+    "allowSelfSignedDesc": "Пропустити перевірку сертифіката для цього хоста.",
+    "login": "Вхід",
+    "auth": {
+      "direct": "Прямий",
+      "credential": "Облікові дані",
+      "none": "Анонімний"
+    },
+    "selectCredential": "Оберіть облікові дані...",
+    "anonymousNote": "Вхід як анонімний користувач без пароля.",
+    "username": "Ім’я користувача",
+    "password": "Пароль",
+    "passwordSaved": "Пароль збережено, введіть, щоб змінити"
   }
 }

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Afficher le panneau de fichiers dans les terminaux",
         "description": "Permet d'ouvrir le panneau de fichiers à côté du terminal SSH de cet hôte."
+      },
+      "enableFtp": {
+        "label": "Activer FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Sécurité FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Autoriser les certificats auto-signés"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Gestionnaire de fichiers"
   },
   "fileManager": {
+    "nameConflictTitle": "L'élément existe déjà",
+    "nameConflictDescription": "Un élément nommé « {{name}} » existe déjà dans ce dossier.",
+    "nameConflictHint": "L'écrasement est irréversible. Les dossiers téléchargés et copiés fusionnent et remplacent les fichiers qu'ils contiennent. Le déplacement sur un dossier existant ou le remplacement d'un type d'élément différent est refusé ; choisissez plutôt « Conserver les deux ».",
+    "conflict-overwrite": "Écraser",
+    "conflict-skip": "Ignorer",
+    "conflict-keep-both": "Conserver les deux",
+    "conflictBusy": "Terminez la résolution du conflit de nom en cours avant de lancer une autre opération.",
+    "conflictApplyToAll": "Appliquer à tous les conflits restants",
+    "conflictTypeMismatch": "Impossible d'écraser un type d'élément différent ou un lien symbolique. Choisissez « Conserver les deux » à la place.",
     "noHostSelected": "Aucun hôte sélectionné",
     "initializingEditor": "Initialisation de l'éditeur...",
     "file": "Fichier",
@@ -214,6 +235,7 @@
     "columns": "Colonnes",
     "columnsHint": "Cliquez avec le bouton droit pour choisir les colonnes",
     "emptyFolder": "Ce dossier est vide",
+    "noSearchResults": "Aucun résultat pour « {{query}} »",
     "searchFiles": "Rechercher des fichiers...",
     "upload": "Téléverser",
     "selectHostToStart": "Sélectionnez un hôte pour démarrer la gestion des fichiers",
@@ -460,6 +482,7 @@
     "octal": "Octal",
     "storage": "Stockage",
     "disk": "Disque",
+    "notAvailable": "N/A",
     "used": "Utilisé",
     "of": "sur",
     "toggleSidebar": "Afficher/masquer la barre latérale",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Le glissement de dossiers vers le bureau n'est pas encore pris en charge",
     "saveToDesktopFailed": "Échec de l'enregistrement : {{error}}",
     "dragFailedDetail": "Échec du glissement : {{error}}",
+    "desktopAppOnly": "Cela ne fonctionne que dans l'application de bureau",
+    "onlyFilesToDesktop": "Seuls les fichiers peuvent être glissés sur le bureau",
+    "onlyFoldersCanBeDragged": "Seuls les dossiers peuvent être glissés ici",
+    "savedToDownloads": "Votre navigateur l'enregistre dans le dossier Téléchargements",
+    "savedFile": "{{name}} enregistré",
+    "savedFilesZip_one": "{{count}} fichier enregistré dans un zip",
+    "savedFilesZip_many": "{{count}} fichiers enregistrés dans un zip",
+    "savedFilesZip_other": "{{count}} fichiers enregistrés dans un zip",
+    "dropFileTooLarge": "{{name}} est trop volumineux. La limite est de {{size}} Mo.",
+    "dropFileTypeNotAllowed": "{{name}} est un type de fichier non autorisé ici",
+    "lineNumbers": "Numéros de ligne",
     "videoUnsupported": "Votre navigateur ne peut pas lire ce format vidéo.",
     "downloadToPlay": "Téléchargez-le pour le lire ailleurs",
     "cannotPreviewType": "Aperçu impossible pour ce type de fichier",
@@ -677,5 +711,44 @@
     "syncNow": "Aller au dossier du terminal",
     "cdTerminal": "Changer le dossier du terminal vers celui-ci",
     "terminalAt": "Terminal :"
+  },
+  "operations": {
+    "list": {
+      "title": "Lister les fichiers"
+    },
+    "info": {
+      "title": "Informations sur le fichier"
+    },
+    "mkdir": {
+      "title": "Créer un dossier"
+    },
+    "delete": {
+      "title": "Supprimer un fichier ou un dossier vide"
+    },
+    "path": "Chemin"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Parcourez les fichiers de cet hôte via FTP ou FTPS.",
+    "originNote": "Les connexions FTP sont établies depuis le serveur Termix.",
+    "connection": "Connexion",
+    "port": "Port",
+    "security": "Sécurité",
+    "securityNone": "Aucune (FTP classique)",
+    "securityExplicit": "TLS explicite (FTPS)",
+    "securityImplicit": "TLS implicite (FTPS)",
+    "allowSelfSigned": "Autoriser les certificats auto-signés",
+    "allowSelfSignedDesc": "Ignorer la vérification des certificats pour cet hôte.",
+    "login": "Connexion",
+    "auth": {
+      "direct": "Direct",
+      "credential": "Identifiant",
+      "none": "Anonyme"
+    },
+    "selectCredential": "Sélectionnez un identifiant...",
+    "anonymousNote": "Se connecte en tant qu'utilisateur anonyme sans mot de passe.",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordSaved": "Mot de passe enregistré, tapez pour le modifier"
   }
 }

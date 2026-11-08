@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "在终端中显示文件面板",
         "description": "让文件面板在此主机的 SSH 终端旁打开。"
+      },
+      "enableFtp": {
+        "label": "启用 FTP"
+      },
+      "ftpPort": {
+        "label": "FTP 端口"
+      },
+      "ftpSecure": {
+        "label": "FTP 安全设置"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "允许自签名证书"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "文件管理器"
   },
   "fileManager": {
+    "nameConflictTitle": "项目已存在",
+    "nameConflictDescription": "此文件夹中已存在名为“{{name}}”的项目。",
+    "nameConflictHint": "覆盖操作无法撤销。上传和复制的文件夹将合并并替换其中的文件。移动到现有文件夹或替换不同类型的项目将被拒绝；请选择“保留两者”。",
+    "conflict-overwrite": "覆盖",
+    "conflict-skip": "跳过",
+    "conflict-keep-both": "保留两者",
+    "conflictBusy": "在完成当前的名称冲突提示之前，请勿开始其他操作。",
+    "conflictApplyToAll": "应用于所有剩余冲突",
+    "conflictTypeMismatch": "无法覆盖不同类型的项目或符号链接。请选择“保留两者”。",
     "noHostSelected": "未选择主机",
     "initializingEditor": "正在初始化编辑器...",
     "file": "文件",
@@ -186,6 +207,7 @@
     "columns": "列",
     "columnsHint": "右键单击以选择列",
     "emptyFolder": "此文件夹为空",
+    "noSearchResults": "未找到“{{query}}”的结果",
     "searchFiles": "搜索文件...",
     "upload": "上传",
     "selectHostToStart": "选择一台主机以开始文件管理",
@@ -398,6 +420,7 @@
     "octal": "八进制",
     "storage": "存储",
     "disk": "磁盘",
+    "notAvailable": "不适用",
     "used": "已用",
     "of": "/",
     "toggleSidebar": "切换侧边栏",
@@ -416,6 +439,15 @@
     "folderDragUnsupported": "暂不支持将文件夹拖到桌面",
     "saveToDesktopFailed": "保存失败：{{error}}",
     "dragFailedDetail": "拖放失败：{{error}}",
+    "desktopAppOnly": "此功能仅在桌面应用中可用",
+    "onlyFilesToDesktop": "只有文件可以拖放到桌面",
+    "onlyFoldersCanBeDragged": "只有文件夹可以拖放到此处",
+    "savedToDownloads": "您的浏览器会将其保存到下载文件夹",
+    "savedFile": "已保存 {{name}}",
+    "savedFilesZip_other": "已将 {{count}} 个文件保存为 zip 压缩包",
+    "dropFileTooLarge": "{{name}} 太大。限制为 {{size}} MB。",
+    "dropFileTypeNotAllowed": "{{name}} 是不允许在此处使用的文件类型",
+    "lineNumbers": "行号",
     "videoUnsupported": "您的浏览器无法播放此视频格式。",
     "downloadToPlay": "下载后在其他地方播放",
     "cannotPreviewType": "无法预览此文件类型",
@@ -595,5 +627,44 @@
     "syncNow": "转到终端目录",
     "cdTerminal": "将终端切换到该目录",
     "terminalAt": "终端："
+  },
+  "operations": {
+    "list": {
+      "title": "列出文件"
+    },
+    "info": {
+      "title": "文件信息"
+    },
+    "mkdir": {
+      "title": "创建文件夹"
+    },
+    "delete": {
+      "title": "删除文件或空文件夹"
+    },
+    "path": "路径"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "通过 FTP 或 FTPS 浏览此主机上的文件。",
+    "originNote": "FTP 连接由 Termix 服务器发起。",
+    "connection": "连接",
+    "port": "端口",
+    "security": "安全设置",
+    "securityNone": "无（普通 FTP）",
+    "securityExplicit": "显式 TLS（FTPS）",
+    "securityImplicit": "隐式 TLS（FTPS）",
+    "allowSelfSigned": "允许自签名证书",
+    "allowSelfSignedDesc": "跳过对此主机的证书检查。",
+    "login": "登录",
+    "auth": {
+      "direct": "直接",
+      "credential": "凭据",
+      "none": "匿名"
+    },
+    "selectCredential": "选择凭据...",
+    "anonymousNote": "以匿名身份登录，无需密码。",
+    "username": "用户名",
+    "password": "密码",
+    "passwordSaved": "密码已保存，输入以更改"
   }
 }

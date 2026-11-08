@@ -1,14 +1,30 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, cleanup, render } from "@testing-library/react";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import { toast } from "sonner";
 import type { FileItem, SSHHost } from "../../src/frontend/host-types";
 
 const mocks = vi.hoisted(() => ({
   t: (key: string) => key,
   get: vi.fn(),
   connect: vi.fn(),
+  status: vi.fn(),
+  trash: vi.fn(),
+  error: vi.fn(),
   verifyTotp: vi.fn(),
   verifyBrowser: vi.fn(),
+  copyItem: vi.fn<
+    typeof import("../../src/frontend/api/ssh-file-operations-api").copySSHItem
+  >(async () => ({})),
+  moveItem: vi.fn<
+    typeof import("../../src/frontend/api/ssh-file-operations-api").moveSSHItem
+  >(async () => ({})),
+  uploadFile: vi.fn<
+    typeof import("../../src/frontend/api/ssh-file-operations-api").uploadSSHFile
+  >(async () => ({})),
+  createFolder: vi.fn<
+    typeof import("../../src/frontend/api/ssh-file-operations-api").createSSHFolder
+  >(async () => ({})),
   grid: vi.fn(
     (
       _props: React.ComponentProps<
@@ -21,7 +37,7 @@ const mocks = vi.hoisted(() => ({
       _props: React.ComponentProps<
         typeof import("../../src/frontend/FileManagerToolbar").FileManagerToolbar
       >,
-    ) => null,
+    ): React.ReactNode => null,
   ),
   dialogs: vi.fn(
     (
@@ -47,8 +63,14 @@ vi.mock(
   async (importOriginal) => ({
     ...(await importOriginal<object>()),
     connectSSH: mocks.connect,
+    getSSHStatus: mocks.status,
+    trashSSHItems: mocks.trash,
     verifySSHTOTP: mocks.verifyTotp,
     verifySSHBrowserSignIn: mocks.verifyBrowser,
+    copySSHItem: mocks.copyItem,
+    moveSSHItem: mocks.moveItem,
+    uploadSSHFile: mocks.uploadFile,
+    createSSHFolder: mocks.createFolder,
   }),
 );
 vi.mock("../../src/frontend/api/file-manager-data-api", () => ({
@@ -57,6 +79,7 @@ vi.mock("../../src/frontend/api/file-manager-data-api", () => ({
 vi.mock("@termix-ssh/plugin-sdk/frontend", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useTranslation: () => ({ t: mocks.t }),
+  useSettings: () => ({ values: { confirmBeforeTrash: false } }),
   usePluginUiPreferences: () => ({ values: {}, set: vi.fn() }),
   useConnectionRetry: ({ connect }: { connect: () => void }) => ({
     retryNow: connect,
@@ -127,6 +150,16 @@ vi.mock("../../src/frontend/hooks/useLocalTransfers", () => ({
   useLocalTransfers: () => ({}),
 }));
 
+vi.mock("sonner", () => ({
+  toast: {
+    loading: vi.fn(),
+    dismiss: vi.fn(),
+    success: vi.fn(),
+    info: vi.fn(),
+    error: mocks.error,
+  },
+}));
+
 import { FileManager } from "../../src/frontend/FileManager";
 import { invalidateCachedFileList } from "../../src/frontend/lib/file-list-request-cache";
 
@@ -161,6 +194,7 @@ beforeEach(() => {
   mocks.connect.mockResolvedValue({ status: "success" });
   mocks.verifyTotp.mockResolvedValue({ status: "success" });
   mocks.verifyBrowser.mockResolvedValue({ status: "success" });
+  mocks.status.mockResolvedValue({ connected: true });
   mocks.get.mockImplementation(async (_url, { params }) => ({
     data:
       params.path === "." || params.path === "/home/alice"
@@ -172,6 +206,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 describe("FileManager post-auth directory prefetch", () => {
@@ -380,4 +415,457 @@ describe("FileManager navigation joining a speculative listing", () => {
       "prefetch",
     );
   });
+});
+
+describe("FileManager mouse history ownership", () => {
+  it("routes back and forward once to the visible pane containing the target", async () => {
+    mocks.toolbar.mockImplementation(({ currentPath, navigateTo }) => (
+      <button onClick={() => navigateTo(`${currentPath}/child`)}>
+        {currentPath}
+      </button>
+    ));
+    const first = render(
+      <FileManager initialHost={host} initialPath="/first" compact />,
+    );
+    const second = render(
+      <FileManager
+        initialHost={{ ...host, id: 902 }}
+        initialPath="/second"
+        compact
+      />,
+    );
+    await tick();
+    await tick();
+    const firstButton = () => first.container.querySelector("button")!;
+    const secondButton = () => second.container.querySelector("button")!;
+    fireEvent.click(firstButton());
+    fireEvent.click(secondButton());
+    await tick();
+    fireEvent.click(firstButton());
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    expect(secondButton().textContent).toBe("/second/child");
+    const mouse = (target: EventTarget, type: string, button: number) => {
+      const event = new MouseEvent(type, {
+        button,
+        bubbles: true,
+        cancelable: true,
+      });
+      act(() => {
+        target.dispatchEvent(event);
+      });
+      return event.defaultPrevented;
+    };
+    expect(mouse(firstButton(), "mouseup", 3)).toBe(true);
+    expect(mouse(firstButton(), "auxclick", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child");
+    expect(secondButton().textContent).toBe("/second/child");
+    expect(mouse(firstButton(), "mouseup", 4)).toBe(true);
+    expect(mouse(firstButton(), "auxclick", 4)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    first.rerender(
+      <FileManager
+        initialHost={host}
+        initialPath="/first"
+        compact
+        isVisible={false}
+      />,
+    );
+    for (const target of [firstButton(), document.body, window]) {
+      for (const button of [3, 4]) {
+        expect(mouse(target, "mouseup", button)).toBe(false);
+        expect(mouse(target, "auxclick", button)).toBe(false);
+      }
+    }
+    expect(mouse(secondButton(), "mouseup", 0)).toBe(false);
+    expect(mouse(secondButton(), "mouseup", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child/child");
+    expect(secondButton().textContent).toBe("/second");
+    first.rerender(
+      <FileManager initialHost={host} initialPath="/first" compact />,
+    );
+    expect(mouse(firstButton(), "mouseup", 3)).toBe(true);
+    await tick();
+    expect(firstButton().textContent).toBe("/first/child");
+    const detached = firstButton();
+    first.unmount();
+    expect(mouse(detached, "mouseup", 3)).toBe(false);
+    expect(mouse(window, "auxclick", 4)).toBe(false);
+    mocks.toolbar.mockImplementation(() => null);
+  });
+});
+
+describe("FileManager deletion over HTTP", () => {
+  it.each([false, true])(
+    "finishes deletion without randomUUID (failure=%s)",
+    async (failed) => {
+      const getRandomValues = crypto.getRandomValues.bind(crypto);
+      vi.stubGlobal("crypto", { getRandomValues });
+      mocks.status.mockResolvedValue({ connected: true });
+      if (failed) mocks.trash.mockRejectedValue(new Error("Delete refused"));
+      else
+        mocks.trash.mockResolvedValue({
+          results: [{ path: child.path, success: true }],
+        });
+      render(
+        <FileManager initialHost={host} initialPath="/home/alice" compact />,
+      );
+      await tick();
+      await act(async () => {
+        await toolbar().handleDeleteFiles([child]);
+      });
+      expect(mocks.trash).toHaveBeenCalledWith(
+        String(host.id),
+        [child.path],
+        expect.objectContaining({
+          permanent: false,
+          opId: expect.any(String),
+        }),
+      );
+      expect(grid().deletingPaths?.has(child.path)).toBe(false);
+      if (failed)
+        expect(mocks.error).toHaveBeenCalledWith(
+          "fileManager.failedToDeleteItems",
+        );
+    },
+  );
+});
+
+describe("FileManager conflict integration", () => {
+  async function start(items: FileItem[] = []) {
+    mocks.get.mockImplementation(async (_url, { params }) => ({
+      data: {
+        path: params.path === "." ? "/home/alice" : params.path,
+        files: items,
+      },
+    }));
+    render(
+      <FileManager initialHost={host} initialPath="/home/alice" compact />,
+    );
+    await tick();
+    await tick();
+    mocks.get.mockClear();
+  }
+  async function begin(operation: () => unknown) {
+    let pending: unknown;
+    await act(async () => {
+      pending = operation();
+    });
+    return {
+      finish: async () => {
+        await act(async () => {
+          await pending;
+        });
+      },
+    };
+  }
+  const incoming = (name: string): FileItem => ({
+    name,
+    path: `/source/${name}`,
+    type: "file",
+  });
+  const current = (name: string): FileItem => ({
+    name,
+    path: `/home/alice/${name}`,
+    type: "file",
+  });
+
+  it("uses the loaded current directory for a conflict-free paste", async () => {
+    await start();
+    act(() => grid().onCopy!([incoming("new.txt")]));
+    await act(async () => {
+      await grid().onPaste!();
+    });
+    expect(mocks.copyItem).toHaveBeenCalledWith(
+      String(host.id),
+      "/source/new.txt",
+      "/home/alice",
+      host.id,
+      undefined,
+      { name: "new.txt", overwrite: false },
+    );
+    expect(dialogs().nameConflict).toBeNull();
+    // Any subsequent listing is the existing post-operation refresh, not a preflight.
+    expect(
+      mocks.get.mock.calls.filter(([, c]) => !c.params.force),
+    ).toHaveLength(0);
+  });
+
+  it("copies within the same directory using keep-both without prompting", async () => {
+    await start([current("a.txt")]);
+    act(() => grid().onCopy!([current("a.txt")]));
+    await act(async () => {
+      await grid().onPaste!();
+    });
+    expect(mocks.copyItem.mock.calls[0]?.[5]).toEqual({
+      name: "a (1).txt",
+      overwrite: false,
+    });
+    expect(dialogs().nameConflict).toBeNull();
+  });
+
+  it.each(["copy", "cut"] as const)(
+    "cancels %s before any requests, even preceding nonconflicts",
+    async (operation) => {
+      await start([current("a")]);
+      act(() =>
+        (operation === "copy" ? grid().onCopy! : grid().onCut!)([
+          incoming("new"),
+          incoming("a"),
+        ]),
+      );
+      const batch = await begin(() => grid().onPaste!());
+      expect(dialogs().nameConflict).toMatchObject({ name: "a", remaining: 1 });
+      expect(mocks.copyItem).not.toHaveBeenCalled();
+      expect(mocks.moveItem).not.toHaveBeenCalled();
+      act(() => dialogs().onResolveConflict(null));
+      await batch.finish();
+      expect(mocks.copyItem).not.toHaveBeenCalled();
+      expect(mocks.moveItem).not.toHaveBeenCalled();
+    },
+  );
+
+  it("lists a drag-move destination once and reuses keep-both for remaining conflicts", async () => {
+    await start();
+    mocks.get.mockResolvedValue({
+      data: { path: "/target", files: [incoming("a"), incoming("b")] },
+    });
+    const batch = await begin(() =>
+      grid().onFileDrop!([incoming("a"), incoming("b")], {
+        name: "target",
+        path: "/target",
+        type: "directory",
+      }),
+    );
+    expect(dialogs().nameConflict).toMatchObject({ name: "a", remaining: 2 });
+    expect(listCalls("/target")).toHaveLength(1);
+    act(() =>
+      dialogs().onResolveConflict({ action: "keep-both", applyToAll: true }),
+    );
+    await batch.finish();
+    expect(mocks.moveItem.mock.calls.map((args) => args[2])).toEqual([
+      "/target/a (1)",
+      "/target/b (1)",
+    ]);
+    expect(listCalls("/target")).toHaveLength(1);
+  });
+
+  it("passes explicit overwrite for cut paste and retains skipped clipboard items", async () => {
+    await start([current("a"), current("b")]);
+    act(() => grid().onCut!([incoming("a"), incoming("b")]));
+    const batch = await begin(() => grid().onPaste!());
+    act(() =>
+      dialogs().onResolveConflict({ action: "overwrite", applyToAll: false }),
+    );
+    await tick();
+    expect(dialogs().nameConflict).toMatchObject({ name: "b", remaining: 1 });
+    act(() =>
+      dialogs().onResolveConflict({ action: "skip", applyToAll: false }),
+    );
+    await batch.finish();
+    expect(mocks.moveItem.mock.calls.map((args) => [args[1], args[5]])).toEqual(
+      [["/source/a", true]],
+    );
+    expect(grid().hasClipboard).toBe(true);
+  });
+
+  it("renames a loose uploaded file and skips the next conflict before upload", async () => {
+    await start([current("a.txt"), current("b.txt")]);
+    const batch = await begin(() =>
+      toolbar().handleFilesDropped([
+        new File(["a"], "a.txt"),
+        new File(["b"], "b.txt"),
+      ] as unknown as FileList),
+    );
+    act(() =>
+      dialogs().onResolveConflict({ action: "keep-both", applyToAll: false }),
+    );
+    await tick();
+    act(() =>
+      dialogs().onResolveConflict({ action: "skip", applyToAll: false }),
+    );
+    await batch.finish();
+    expect(mocks.uploadFile).toHaveBeenCalledTimes(1);
+    expect(mocks.uploadFile.mock.calls[0]?.[2]).toBe("a (1).txt");
+    expect(mocks.uploadFile.mock.calls[0]?.[8]).toBe(false);
+  });
+
+  it("does not let an old undo action remove an overwritten item", async () => {
+    await start([current("a")]);
+    act(() => grid().onCut!([incoming("new")]));
+    await act(async () => {
+      await grid().onPaste!();
+    });
+    act(() => grid().onCut!([incoming("a")]));
+    const batch = await begin(() => grid().onPaste!());
+    act(() =>
+      dialogs().onResolveConflict({ action: "overwrite", applyToAll: false }),
+    );
+    await batch.finish();
+    expect(mocks.moveItem).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      await grid().onUndo!();
+    });
+    expect(mocks.moveItem).toHaveBeenCalledTimes(2);
+  });
+
+  it("records the actual successful move for undo after an earlier failure", async () => {
+    await start();
+    mocks.moveItem.mockRejectedValueOnce(new Error("cannot move a"));
+    await act(async () => {
+      await grid().onFileDrop!([incoming("a"), incoming("b")], {
+        name: "target",
+        path: "/target",
+        type: "directory",
+      });
+    });
+    expect(mocks.moveItem).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      await grid().onUndo!();
+    });
+    expect(mocks.moveItem.mock.calls.at(-1)?.slice(1, 3)).toEqual([
+      "/target/b",
+      "/source/b",
+    ]);
+  });
+
+  it("serializes duplicate loose uploads when overwrite was explicitly selected", async () => {
+    await start();
+    let finishFirst!: () => void;
+    mocks.uploadFile.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishFirst = () => resolve({});
+        }),
+    );
+    const batch = await begin(() =>
+      toolbar().handleFilesDropped([
+        new File(["a"], "a"),
+        new File(["b"], "a"),
+      ] as unknown as FileList),
+    );
+    act(() =>
+      dialogs().onResolveConflict({ action: "overwrite", applyToAll: false }),
+    );
+    await tick();
+    expect(mocks.uploadFile).toHaveBeenCalledTimes(1);
+    act(() => finishFirst());
+    await batch.finish();
+    expect(mocks.uploadFile.mock.calls.map((args) => args[8])).toEqual([
+      false,
+      true,
+    ]);
+  });
+
+  it("tells the user when another operation arrives during a prompt", async () => {
+    const info = vi.spyOn(toast, "info").mockReturnValue(1);
+    await start([current("a")]);
+    act(() => grid().onCopy!([incoming("a")]));
+    const batch = await begin(() => grid().onPaste!());
+    await act(async () => {
+      await grid().onPaste!();
+    });
+    expect(info).toHaveBeenCalledWith("fileManager.conflictBusy");
+    act(() => dialogs().onResolveConflict(null));
+    await batch.finish();
+  });
+
+  it("cancels a pending operation when the pane navigates elsewhere", async () => {
+    await start([current("a")]);
+    act(() => grid().onCopy!([incoming("a")]));
+    const batch = await begin(() => grid().onPaste!());
+    await act(async () => {
+      await grid().onFileOpen({
+        name: "elsewhere",
+        path: "/elsewhere",
+        type: "directory",
+      });
+    });
+    await batch.finish();
+    expect(mocks.copyItem).not.toHaveBeenCalled();
+    expect(dialogs().nameConflict).toBeNull();
+  });
+});
+
+describe("FileManager folder upload conflicts", () => {
+  function folder(name: string, children: FileSystemEntry[]): FileSystemEntry {
+    let read = false;
+    return {
+      name,
+      isDirectory: true,
+      createReader: () => ({
+        readEntries: (resolve: (entries: FileSystemEntry[]) => void) => {
+          resolve(read ? [] : children);
+          read = true;
+        },
+      }),
+    } as unknown as FileSystemEntry;
+  }
+  function fileEntry(name: string): FileSystemEntry {
+    return {
+      name,
+      isFile: true,
+      file: (resolve: (f: File) => void) =>
+        resolve(new File(["contents"], name)),
+    } as unknown as FileSystemEntry;
+  }
+  it.each(["overwrite", "keep-both", "skip"] as const)(
+    "resolves only the top-level folder with %s",
+    async (action) => {
+      mocks.get.mockImplementation(async (_url, { params }) => ({
+        data: {
+          path: "/home/alice",
+          files: [
+            { name: "folder", path: "/home/alice/folder", type: "directory" },
+          ],
+        },
+      }));
+      render(
+        <FileManager initialHost={host} initialPath="/home/alice" compact />,
+      );
+      await tick();
+      await tick();
+      let operation: unknown;
+      await act(async () => {
+        operation = grid().onUploadItems!([
+          folder("folder", [fileEntry("a.txt"), folder("empty", [])]),
+        ]);
+      });
+      expect(dialogs().nameConflict).toMatchObject({
+        name: "folder",
+        remaining: 1,
+      });
+      expect(mocks.createFolder).not.toHaveBeenCalled();
+      expect(mocks.uploadFile).not.toHaveBeenCalled();
+      act(() => dialogs().onResolveConflict({ action, applyToAll: false }));
+      await act(async () => {
+        await operation;
+      });
+      if (action === "skip") {
+        expect(mocks.createFolder).not.toHaveBeenCalled();
+        expect(mocks.uploadFile).not.toHaveBeenCalled();
+      } else {
+        const root = action === "keep-both" ? "folder (1)" : "folder";
+        expect(
+          mocks.createFolder.mock.calls.map((args) => [args[1], args[2]]),
+        ).toEqual([
+          ["/home/alice/", root],
+          [`/home/alice/${root}/`, "empty"],
+        ]);
+        expect(mocks.uploadFile.mock.calls[0]?.[1]).toBe(
+          `/home/alice/${root}/`,
+        );
+        expect(mocks.uploadFile.mock.calls[0]?.[2]).toBe("a.txt");
+        expect(mocks.uploadFile.mock.calls[0]?.[8]).toBe(
+          action === "overwrite",
+        );
+        // The dropped-into folder is the root nothing below may link out of.
+        expect(mocks.uploadFile.mock.calls[0]?.[9]).toBe("/home/alice");
+        expect(mocks.createFolder.mock.calls[0]?.[5]).toBe("/home/alice");
+      }
+    },
+  );
 });

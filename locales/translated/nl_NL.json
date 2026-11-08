@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Bestandenpaneel tonen in terminals",
         "description": "Laat het bestandenpaneel open naast de SSH-terminal van deze host."
+      },
+      "enableFtp": {
+        "label": "FTP inschakelen"
+      },
+      "ftpPort": {
+        "label": "FTP-poort"
+      },
+      "ftpSecure": {
+        "label": "FTP-beveiliging"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Zelfondertekend certificaat toestaan"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Bestandsbeheer"
   },
   "fileManager": {
+    "nameConflictTitle": "Item bestaat al",
+    "nameConflictDescription": "Er bestaat al een item met de naam \"{{name}}\" in deze map.",
+    "nameConflictHint": "Over schrijven kan niet ongedaan worden gemaakt. Geüploade en gekopieerde mappen worden samengevoegd en bestanden worden overschreven. Verplaatsen naar een bestaande map of het vervangen van een ander itemtype wordt geweigerd; kies in plaats daarvan Beide behouden.",
+    "conflict-overwrite": "Overschrijven",
+    "conflict-skip": "Overslaan",
+    "conflict-keep-both": "Beide behouden",
+    "conflictBusy": "Maak de huidige naamconflict-prompt af voordat je een andere bewerking start.",
+    "conflictApplyToAll": "Toepassen op alle resterende conflicten",
+    "conflictTypeMismatch": "Kan geen ander itemtype of symbolische link overschrijven. Kies in plaats daarvan Beide behouden.",
     "noHostSelected": "Geen host geselecteerd",
     "initializingEditor": "Editor initialiseren...",
     "file": "Bestand",
@@ -200,6 +221,7 @@
     "columns": "Kolommen",
     "columnsHint": "Klik met de rechtermuisknop om kolommen te kiezen",
     "emptyFolder": "Deze map is leeg",
+    "noSearchResults": "Geen resultaten gevonden voor \"{{query}}\"",
     "searchFiles": "Bestanden zoeken...",
     "upload": "Uploaden",
     "selectHostToStart": "Selecteer een host om het bestandsbeheer te starten",
@@ -429,6 +451,7 @@
     "octal": "Octaal",
     "storage": "Opslag",
     "disk": "Schijf",
+    "notAvailable": "N.v.t.",
     "used": "Gebruikt",
     "of": "van",
     "toggleSidebar": "Zijbalk in-/uitschakelen",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Mappen naar het bureaublad slepen wordt nog niet ondersteund",
     "saveToDesktopFailed": "Opslaan mislukt: {{error}}",
     "dragFailedDetail": "Slepen mislukt: {{error}}",
+    "desktopAppOnly": "Dit werkt alleen in de desktop-app",
+    "onlyFilesToDesktop": "Alleen bestanden kunnen naar het bureaublad worden gesleept",
+    "onlyFoldersCanBeDragged": "Alleen mappen kunnen hierheen worden gesleept",
+    "savedToDownloads": "Je browser slaat het op in de map Downloads",
+    "savedFile": "{{name}} opgeslagen",
+    "savedFilesZip_one": "{{count}} bestand opgeslagen in een zip",
+    "savedFilesZip_other": "{{count}} bestanden opgeslagen in een zip",
+    "dropFileTooLarge": "{{name}} is te groot. De limiet is {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} is een bestandstype dat hier niet is toegestaan",
+    "lineNumbers": "Regelnummers",
     "videoUnsupported": "Uw browser kan dit videoformaat niet afspelen.",
     "downloadToPlay": "Download om het elders af te spelen",
     "cannotPreviewType": "Kan geen voorbeeld van dit bestandstype tonen",
@@ -636,5 +669,44 @@
     "syncNow": "Ga naar de terminalmap",
     "cdTerminal": "Zet de terminal op deze map",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Bestanden weergeven"
+    },
+    "info": {
+      "title": "Bestandsinformatie"
+    },
+    "mkdir": {
+      "title": "Map maken"
+    },
+    "delete": {
+      "title": "Bestand of lege map verwijderen"
+    },
+    "path": "Pad"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Blader door bestanden op deze host via FTP of FTPS.",
+    "originNote": "FTP-verbindingen worden gemaakt vanaf de Termix-server.",
+    "connection": "Verbinding",
+    "port": "Poort",
+    "security": "Beveiliging",
+    "securityNone": "Geen (plain FTP)",
+    "securityExplicit": "Expliciete TLS (FTPS)",
+    "securityImplicit": "Impliciete TLS (FTPS)",
+    "allowSelfSigned": "Zelfondertekend certificaat toestaan",
+    "allowSelfSignedDesc": "Certificaatcontroles voor deze host overslaan.",
+    "login": "Inloggen",
+    "auth": {
+      "direct": "Direct",
+      "credential": "Inloggegevens",
+      "none": "Anoniem"
+    },
+    "selectCredential": "Selecteer inloggegevens...",
+    "anonymousNote": "Meldt zich aan als anoniem zonder wachtwoord.",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "passwordSaved": "Wachtwoord opgeslagen, typ om te wijzigen"
   }
 }

@@ -288,7 +288,15 @@ export function useLocalTransfers({
 
   /** Uploads local files/folders (by absolute path) into a remote directory. */
   const uploadLocalPaths = useCallback(
-    async (localPaths: string[], remoteDir: string) => {
+    async (
+      localPaths: string[],
+      remoteDir: string,
+      /** Resolves name conflicts; null cancels. Omitted = legacy overwrite. */
+      resolveConflicts?: (batch: LocalWalkResult) => Promise<{
+        files: (LocalWalkResult["files"][number] & { overwrite: boolean })[];
+        emptyDirs: string[];
+      } | null>,
+    ) => {
       if (!sshSessionId) {
         toast.error(t("fileManager.noSSHConnection"));
         return;
@@ -308,6 +316,23 @@ export function useLocalTransfers({
       if (plan.files.length === 0 && plan.emptyDirs.length === 0) {
         toast.info(t("fileManager.localNothingToTransfer"));
         return;
+      }
+
+      // Rename/skip decisions are made before anything is written.
+      const overwriteByPath = new Map<string, boolean>();
+      if (resolveConflicts) {
+        const resolved = await resolveConflicts(plan);
+        if (!resolved) return;
+        for (const f of resolved.files) {
+          overwriteByPath.set(f.relativePath, f.overwrite);
+        }
+        plan = {
+          ...plan,
+          files: resolved.files,
+          emptyDirs: resolved.emptyDirs,
+          totalBytes: resolved.files.reduce((n, f) => n + f.size, 0),
+        };
+        if (plan.files.length === 0 && plan.emptyDirs.length === 0) return;
       }
 
       const sessionId = sshSessionId;
@@ -330,7 +355,14 @@ export function useLocalTransfers({
             const name = dir.split("/").pop()!;
             // The backend tolerates existing directories (#1442), so a
             // failure here is real and should stop the batch up front.
-            await createSSHFolder(sessionId, parent, name, hostId);
+            await createSSHFolder(
+              sessionId,
+              parent,
+              name,
+              hostId,
+              undefined,
+              resolveConflicts ? remoteDir : undefined,
+            );
           }
 
           // Files go up several at a time (see "Simultaneous File Transfers"
@@ -357,6 +389,12 @@ export function useLocalTransfers({
                   fileName,
                   hostId,
                   transferId,
+                  ...(resolveConflicts
+                    ? {
+                        overwrite: overwriteByPath.get(file.relativePath),
+                        uploadRoot: remoteDir,
+                      }
+                    : {}),
                   onProgress: ({ transferred }) =>
                     progress(transferId, transferred),
                 });
@@ -390,7 +428,16 @@ export function useLocalTransfers({
       if (items.length === 0) return;
       const sessionId = sshSessionId;
 
-      const { separator } = await getLocalHome();
+      let separator: string;
+      try {
+        ({ separator } = await getLocalHome());
+      } catch (error) {
+        toast.error(
+          t("fileManager.localDownloadFailed"),
+          error instanceof Error ? { description: error.message } : undefined,
+        );
+        return;
+      }
       // Every remote name is validated for the local platform and the result
       // must stay inside `localDir`; anything else is reported and skipped.
       const toLocalPath = (relativePath: string) =>

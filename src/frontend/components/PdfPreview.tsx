@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { AlertCircle, Download } from "lucide-react";
-import { Button } from "@termix-ssh/plugin-sdk/ui";
+import { Button, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import pdfjsWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
@@ -117,11 +117,8 @@ export function PdfPreview({
                 setPdfError(true);
               }}
               loading={
-                <div className="text-center p-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("fileManager.loadingPdf")}
-                  </p>
+                <div className="p-8">
+                  <LoadingState label={t("fileManager.loadingPdf")} />
                 </div>
               }
             >
@@ -130,11 +127,8 @@ export function PdfPreview({
                 scale={pdfScale}
                 className="shadow-lg"
                 loading={
-                  <div className="text-center p-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                    <p className="text-xs text-muted-foreground">
-                      {t("fileManager.loadingPage")}
-                    </p>
+                  <div className="p-4">
+                    <LoadingState label={t("fileManager.loadingPage")} />
                   </div>
                 }
               />

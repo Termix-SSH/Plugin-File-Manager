@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Zobraziť panel súborov v termináloch",
         "description": "Nechajte panel súborov otvorený vedľa SSH terminálu tohto hostiteľa."
+      },
+      "enableFtp": {
+        "label": "Povoliť FTP"
+      },
+      "ftpPort": {
+        "label": "Port FTP"
+      },
+      "ftpSecure": {
+        "label": "Zabezpečenie FTP"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Povoliť samopodpísaný certifikát"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Správca súborov"
   },
   "fileManager": {
+    "nameConflictTitle": "Položka už existuje",
+    "nameConflictDescription": "V tejto priečinku už existuje položka s názvom „{{name}}“.",
+    "nameConflictHint": "Prepísanie nemožno vrátiť späť. Nahrané a skopírované priečinky sa zlúčia a nahradia súbory vo vnútri. Presunutie na existujúci priečinok alebo nahradenie iného typu položky je zamietnuté; namiesto toho vyberte Možnosť Zachovať obe.",
+    "conflict-overwrite": "Prepísať",
+    "conflict-skip": "Preskočiť",
+    "conflict-keep-both": "Zachovať obe",
+    "conflictBusy": "Pred začatím ďalšej operácie dokončite aktuálnu výzvu na riešenie konfliktu názvov.",
+    "conflictApplyToAll": "Použiť na všetky zostávajúce konflikty",
+    "conflictTypeMismatch": "Nemožno prepísať iný typ položky ani symbolický odkaz. Namiesto toho vyberte Zachovať obe.",
     "noHostSelected": "Nie je vybraný žiadny hostiteľ",
     "initializingEditor": "Inicializácia editora...",
     "file": "Súbor",
@@ -228,6 +249,7 @@
     "columns": "Stĺpce",
     "columnsHint": "Kliknutím pravým tlačidlom vyberte stĺpce",
     "emptyFolder": "Tento priečinok je prázdny",
+    "noSearchResults": "Pre „{{query}}“ sa nenašli žiadne výsledky",
     "searchFiles": "Vyhľadať súbory...",
     "upload": "Nahrať",
     "selectHostToStart": "Vyberte hostiteľa pre spustenie správy súborov",
@@ -491,6 +513,7 @@
     "octal": "Oktový",
     "storage": "Úložisko",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Použité",
     "of": "z",
     "toggleSidebar": "Prepnúť bočný panel",
@@ -518,6 +541,18 @@
     "folderDragUnsupported": "Ťahanie priečinkov na plochu zatiaľ nie je podporované",
     "saveToDesktopFailed": "Uloženie zlyhalo: {{error}}",
     "dragFailedDetail": "Ťahanie zlyhalo: {{error}}",
+    "desktopAppOnly": "Toto funguje len v desktopovej aplikácii",
+    "onlyFilesToDesktop": "Na plochu je možné pretiahnuť iba súbory",
+    "onlyFoldersCanBeDragged": "Sem je možné pretiahnuť iba priečinky",
+    "savedToDownloads": "Váš prehliadač uloží súbor do priečinka Stiahnuté",
+    "savedFile": "Uložené {{name}}",
+    "savedFilesZip_one": "Uložený {{count}} súbor do zip archívu",
+    "savedFilesZip_few": "Uložené {{count}} súbory do zip archívu",
+    "savedFilesZip_many": "Uložených {{count}} súborov do zip archívu",
+    "savedFilesZip_other": "Uložených {{count}} súborov do zip archívu",
+    "dropFileTooLarge": "{{name}} je príliš veľký. Limit je {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} je typ súboru, ktorý tu nie je povolený",
+    "lineNumbers": "Čísla riadkov",
     "videoUnsupported": "Váš prehliadač nepodporuje prehrávanie tohto formátu videa.",
     "downloadToPlay": "Stiahnite si ho na prehratie inde",
     "cannotPreviewType": "Nepodarilo sa zobraziť náhľad tohto typu súboru",
@@ -718,5 +753,44 @@
     "syncNow": "Prejsť do priečinka terminálu",
     "cdTerminal": "Zmeniť priečinok terminálu na tento",
     "terminalAt": "Terminál:"
+  },
+  "operations": {
+    "list": {
+      "title": "Zoznam súborov"
+    },
+    "info": {
+      "title": "Informácie o súbore"
+    },
+    "mkdir": {
+      "title": "Vytvoriť priečinok"
+    },
+    "delete": {
+      "title": "Odstrániť súbor alebo prázdny priečinok"
+    },
+    "path": "Cesta"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Prezeranie súborov na tomto hostiteľovi cez FTP alebo FTPS.",
+    "originNote": "FTP pripojenia sa vytvárajú zo servera Termix.",
+    "connection": "Pripojenie",
+    "port": "Port",
+    "security": "Zabezpečenie",
+    "securityNone": "Žiadne (obyčajné FTP)",
+    "securityExplicit": "Explicitné TLS (FTPS)",
+    "securityImplicit": "Implicitné TLS (FTPS)",
+    "allowSelfSigned": "Povoliť samopodpísaný certifikát",
+    "allowSelfSignedDesc": "Preskočiť overovanie certifikátov pre tohoto hostiteľa.",
+    "login": "Prihlásenie",
+    "auth": {
+      "direct": "Priame",
+      "credential": "Poverenie",
+      "none": "Anonymné"
+    },
+    "selectCredential": "Vyberte poverenie...",
+    "anonymousNote": "Prihlási sa ako anonymný bez hesla.",
+    "username": "Meno používateľa",
+    "password": "Heslo",
+    "passwordSaved": "Heslo bolo uložené, pre zmenu ho zadajte znova"
   }
 }

@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Terminallerde dosyalar panelini göster",
         "description": "Bu ana bilgisayarın SSH terminalinin yanında dosyalar panelinin açılmasına izin ver."
+      },
+      "enableFtp": {
+        "label": "FTP'yi Etkinleştir"
+      },
+      "ftpPort": {
+        "label": "FTP Bağlantı Noktası"
+      },
+      "ftpSecure": {
+        "label": "FTP Güvenliği"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Kendi kendine imzalı sertifikaya izin ver"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Dosya Yöneticisi"
   },
   "fileManager": {
+    "nameConflictTitle": "Öğe zaten mevcut",
+    "nameConflictDescription": "Bu klasörde \"{{name}}\" adlı bir öğe zaten mevcut.",
+    "nameConflictHint": "Üzerine yazma işlemi geri alınamaz. Yüklenen ve kopyalanan klasörler birleştirilir ve içindeki dosyaları değiştirir. Mevcut bir klasörün üzerine taşıma veya farklı bir öğe türünü değiştirme reddedilir; bunun yerine Her ikisini de tut seçeneğini kullanın.",
+    "conflict-overwrite": "Üzerine Yaz",
+    "conflict-skip": "Atla",
+    "conflict-keep-both": "Her ikisini de tut",
+    "conflictBusy": "Başka bir işlem başlatmadan önce geçerli isim çakışma istemini tamamlayın.",
+    "conflictApplyToAll": "Kalan tüm çakışmalara uygula",
+    "conflictTypeMismatch": "Farklı bir öğe türü veya sembolik bağlantı üzerine yazılamaz. Bunun yerine Her ikisini de tut seçeneğini kullanın.",
     "noHostSelected": "Ana bilgisayar seçilmedi",
     "initializingEditor": "Düzenleyici başlatılıyor...",
     "file": "Dosya",
@@ -200,6 +221,7 @@
     "columns": "Sütunlar",
     "columnsHint": "Sütunları seçmek için sağ tıklayın",
     "emptyFolder": "Bu klasör boş",
+    "noSearchResults": "\"{{query}}\" için sonuç bulunamadı",
     "searchFiles": "Dosya ara...",
     "upload": "Yükle",
     "selectHostToStart": "Dosya yönetimine başlamak için bir ana bilgisayar seçin",
@@ -429,6 +451,7 @@
     "octal": "Sekizlik",
     "storage": "Depolama",
     "disk": "Disk",
+    "notAvailable": "Yok",
     "used": "Kullanılan",
     "of": "/",
     "toggleSidebar": "Kenar Çubuğunu Aç/Kapat",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "Klasörlerin masaüstüne sürüklenmesi henüz desteklenmiyor",
     "saveToDesktopFailed": "Kaydetme başarısız: {{error}}",
     "dragFailedDetail": "Sürükleme başarısız: {{error}}",
+    "desktopAppOnly": "Bu yalnızca masaüstü uygulamasında çalışır",
+    "onlyFilesToDesktop": "Masaüstüne yalnızca dosyalar sürüklenip bırakılabilir",
+    "onlyFoldersCanBeDragged": "Buraya yalnızca klasörler sürüklenip bırakılabilir",
+    "savedToDownloads": "Tarayıcınız bunu İndirilenler klasörüne kaydeder",
+    "savedFile": "{{name}} kaydedildi",
+    "savedFilesZip_one": "{{count}} dosya bir zip dosyasına kaydedildi",
+    "savedFilesZip_other": "{{count}} dosya bir zip dosyasına kaydedildi",
+    "dropFileTooLarge": "{{name}} çok büyük. Limit {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} burada izin verilmeyen bir dosya türü",
+    "lineNumbers": "Satır numaraları",
     "videoUnsupported": "Tarayıcınız bu video formatını oynatamıyor.",
     "downloadToPlay": "Başka bir yerde oynatmak için indirin",
     "cannotPreviewType": "Bu dosya türü önizlenemiyor",
@@ -636,5 +669,44 @@
     "syncNow": "Terminal klasörüne git",
     "cdTerminal": "Terminali bu klasöre değiştir",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Dosyaları listele"
+    },
+    "info": {
+      "title": "Dosya bilgisi"
+    },
+    "mkdir": {
+      "title": "Klasör oluştur"
+    },
+    "delete": {
+      "title": "Dosya veya boş klasör sil"
+    },
+    "path": "Yol"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Bu ana makinedeki dosyalara FTP veya FTPS üzerinden göz atın.",
+    "originNote": "FTP bağlantıları Termix sunucusundan yapılır.",
+    "connection": "Bağlantı",
+    "port": "Bağlantı Noktası",
+    "security": "Güvenlik",
+    "securityNone": "Yok (düz FTP)",
+    "securityExplicit": "Açık TLS (FTPS)",
+    "securityImplicit": "Gizli TLS (FTPS)",
+    "allowSelfSigned": "Kendi kendine imzalı sertifikaya izin ver",
+    "allowSelfSignedDesc": "Bu ana makine için sertifika kontrollerini atla.",
+    "login": "Oturum Aç",
+    "auth": {
+      "direct": "Doğrudan",
+      "credential": "Kimlik Bilgisi",
+      "none": "Anonim"
+    },
+    "selectCredential": "Bir kimlik bilgisi seçin...",
+    "anonymousNote": "Şifresiz anonim olarak oturum açar.",
+    "username": "Kullanıcı Adı",
+    "password": "Şifre",
+    "passwordSaved": "Şifre kaydedildi, değiştirmek için yazın"
   }
 }

@@ -67,6 +67,12 @@ interface DirectoryItemData {
   [key: string]: unknown;
 }
 
+function isBookmark(item: SidebarItem): boolean {
+  return (
+    item.type === "recent" || item.type === "pinned" || item.type === "shortcut"
+  );
+}
+
 export interface SidebarItem {
   id: string;
   name: string;
@@ -145,7 +151,7 @@ function StorageMeter({
                     <span>
                       {fs.usedHuman && fs.totalHuman
                         ? `${fs.usedHuman}/${fs.totalHuman}`
-                        : "N/A"}
+                        : t("fileManager.notAvailable")}
                     </span>
                     {fs.percent != null && <span>{fs.percent}%</span>}
                   </span>
@@ -557,7 +563,10 @@ export function FileManagerSidebar({
   const handleItemContextMenu = (e: React.MouseEvent, item: SidebarItem) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onItemContextMenu) {
+    // Recent, pinned and shortcut rows are bookmarks: their menu removes the
+    // bookmark. Only real tree rows get the full file menu, where Delete
+    // deletes the file itself.
+    if (onItemContextMenu && !isBookmark(item)) {
       onItemContextMenu(e, item);
       return;
     }
@@ -580,7 +589,7 @@ export function FileManagerSidebar({
   };
 
   useEffect(() => {
-    if (!contextMenu.isVisible || onItemContextMenu) return;
+    if (!contextMenu.isVisible) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -602,7 +611,7 @@ export function FileManagerSidebar({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [contextMenu.isVisible, onItemContextMenu]);
+  }, [contextMenu.isVisible]);
 
   const { selectedTreeId, ancestorIds } = useMemo(() => {
     if (currentPath === "/")
@@ -713,8 +722,8 @@ export function FileManagerSidebar({
     selectedFs && selectedFs.percent !== null
       ? {
           percent: selectedFs.percent,
-          usedHuman: selectedFs.usedHuman ?? "N/A",
-          totalHuman: selectedFs.totalHuman ?? "N/A",
+          usedHuman: selectedFs.usedHuman ?? t("fileManager.notAvailable"),
+          totalHuman: selectedFs.totalHuman ?? t("fileManager.notAvailable"),
         }
       : diskInfo && diskInfo.percent !== null
         ? {
@@ -838,7 +847,7 @@ export function FileManagerSidebar({
       </div>
 
       {/* Fallback context menu when the parent does not supply one */}
-      {!onItemContextMenu && contextMenu.isVisible && contextMenu.item && (
+      {contextMenu.isVisible && contextMenu.item && (
         <>
           <div className="fixed inset-0 z-40" />
 

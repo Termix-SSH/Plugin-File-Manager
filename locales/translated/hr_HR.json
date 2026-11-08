@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Prikaži panel datoteka u terminalima",
         "description": "Otvori panel datoteka uz SSH terminal ovog hosta."
+      },
+      "enableFtp": {
+        "label": "Omogući FTP"
+      },
+      "ftpPort": {
+        "label": "FTP port"
+      },
+      "ftpSecure": {
+        "label": "FTP sigurnost"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Dopusti samopotpisani certifikat"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Upravitelj datoteka"
   },
   "fileManager": {
+    "nameConflictTitle": "Stavka već postoji",
+    "nameConflictDescription": "Stavka s imenom „{{name}}“ već postoji u ovoj mapi.",
+    "nameConflictHint": "Prepisivanje se ne može poništiti. Postavljene i kopirane mape se spajaju i zamjenjuju datoteke unutar njih. Pomicanje na postojeću mapu ili zamjena drugog tipa stavke odbija se; umjesto toga odaberite Zadrži obje.",
+    "conflict-overwrite": "Prepiši",
+    "conflict-skip": "Preskoči",
+    "conflict-keep-both": "Zadrži obje",
+    "conflictBusy": "Završite trenutni upit o sukobu imena prije pokretanja druge radnje.",
+    "conflictApplyToAll": "Primijeni na sve preostale sukobe",
+    "conflictTypeMismatch": "Nije moguće prepisati stavku drugog tipa ili simboličku poveznicu. Umjesto toga odaberite Zadrži obje.",
     "noHostSelected": "Nije odabran host",
     "initializingEditor": "Inicijalizacija uređivača...",
     "file": "Datoteka",
@@ -214,6 +235,7 @@
     "columns": "Stupci",
     "columnsHint": "Desni klik za odabir stupaca",
     "emptyFolder": "Ova mapa je prazna",
+    "noSearchResults": "Nema rezultata za „{{query}}“",
     "searchFiles": "Pretraži datoteke...",
     "upload": "Otpremi",
     "selectHostToStart": "Odaberite host za početak upravljanja datotekama",
@@ -460,6 +482,7 @@
     "octal": "Osmerički",
     "storage": "Skladište",
     "disk": "Disk",
+    "notAvailable": "N/A",
     "used": "Iskorišteno",
     "of": "od",
     "toggleSidebar": "Prikaži/sakrij bočnu traku",
@@ -484,6 +507,17 @@
     "folderDragUnsupported": "Povlačenje mapa na radnu površinu još nije podržano",
     "saveToDesktopFailed": "Neuspješno spremanje: {{error}}",
     "dragFailedDetail": "Neuspješno povlačenje: {{error}}",
+    "desktopAppOnly": "Ovo radi samo u desktop aplikaciji",
+    "onlyFilesToDesktop": "Samo datoteke se mogu povući na radnu površinu",
+    "onlyFoldersCanBeDragged": "Samo mape se mogu povući ovdje",
+    "savedToDownloads": "Vaš preglednik sprema datoteku u mapu Preuzimanja",
+    "savedFile": "Spremljeno {{name}}",
+    "savedFilesZip_one": "Spremljena {{count}} datoteka u zip arhivu",
+    "savedFilesZip_few": "Spremljene {{count}} datoteke u zip arhivu",
+    "savedFilesZip_other": "Spremljeno {{count}} datoteka u zip arhivu",
+    "dropFileTooLarge": "{{name}} je prevelika. Ograničenje je {{size}} MB.",
+    "dropFileTypeNotAllowed": "{{name}} je tip datoteke koji nije dopušten ovdje",
+    "lineNumbers": "Brojevi redaka",
     "videoUnsupported": "Vaš preglednik ne može reproducirati ovaj video format.",
     "downloadToPlay": "Preuzmite ga za reprodukciju drugdje",
     "cannotPreviewType": "Ne može se prikazati predviđanje ove vrste datoteke",
@@ -677,5 +711,44 @@
     "syncNow": "Idi u mapu terminala",
     "cdTerminal": "Promijeni terminal na ovu mapu",
     "terminalAt": "Terminal:"
+  },
+  "operations": {
+    "list": {
+      "title": "Popis datoteka"
+    },
+    "info": {
+      "title": "Informacije o datoteci"
+    },
+    "mkdir": {
+      "title": "Napravi mapu"
+    },
+    "delete": {
+      "title": "Izbriši datoteku ili praznu mapu"
+    },
+    "path": "Putanja"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Pregledavajte datoteke na ovom hostu putem FTP ili FTPS.",
+    "originNote": "FTP veze se uspostavljaju s Termix poslužitelja.",
+    "connection": "Veza",
+    "port": "Port",
+    "security": "Sigurnost",
+    "securityNone": "Nijedna (obični FTP)",
+    "securityExplicit": "Eksplicitni TLS (FTPS)",
+    "securityImplicit": "Implicitni TLS (FTPS)",
+    "allowSelfSigned": "Dopusti samopotpisani certifikat",
+    "allowSelfSignedDesc": "Preskoči provjere certifikata za ovaj host.",
+    "login": "Prijava",
+    "auth": {
+      "direct": "Izravna",
+      "credential": "Vjerodajnica",
+      "none": "Anonimno"
+    },
+    "selectCredential": "Odaberite vjerodajnicu...",
+    "anonymousNote": "Prijavljuje se kao anonimni korisnik bez lozinke.",
+    "username": "Korisničko ime",
+    "password": "Lozinka",
+    "passwordSaved": "Lozinka je spremljena, upišite za promjenu"
   }
 }

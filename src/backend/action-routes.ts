@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { execChannel, type SSHSession } from "./session.js";
+import { buildTransferCommand } from "./operation-commands.js";
 
 type FileActionRoutesDeps = {
   ctx: PluginContext;
@@ -52,11 +53,29 @@ export function registerFileActionRoutes(
    *         description: Failed to copy item.
    */
   app.post("/copyItem", async (req, res) => {
-    const { sessionId, sourcePath, targetDir, hostId } = req.body;
+    const { sessionId, sourcePath, targetDir, hostId, targetName, overwrite } =
+      req.body;
     const userId = ctx.currentActor()!;
 
-    if (!sessionId || !sourcePath || !targetDir) {
+    if (
+      !sessionId ||
+      typeof sourcePath !== "string" ||
+      !sourcePath ||
+      typeof targetDir !== "string" ||
+      !targetDir
+    ) {
       return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    if (
+      targetName !== undefined &&
+      (typeof targetName !== "string" ||
+        !targetName ||
+        targetName === "." ||
+        targetName === ".." ||
+        /[\/\0]/.test(targetName))
+    ) {
+      return res.status(400).json({ error: "Invalid target name" });
     }
 
     const sshConn = sshSessions[sessionId];
@@ -76,13 +95,14 @@ export function registerFileActionRoutes(
     const sourceName = sourcePath.split("/").pop() || "copied_item";
 
     const timestamp = Date.now().toString().slice(-8);
-    const uniqueName = `${sourceName}_copy_${timestamp}`;
-    const targetPath = `${targetDir}/${uniqueName}`;
-
-    const escapedSource = sourcePath.replace(/'/g, "'\"'\"'");
-    const escapedTarget = targetPath.replace(/'/g, "'\"'\"'");
-
-    const copyCommand = `cp -r '${escapedSource}' '${escapedTarget}' && echo "COPY_SUCCESS"`;
+    const uniqueName = targetName ?? `${sourceName}_copy_${timestamp}`;
+    const targetPath = `${targetDir.replace(/\/+$/, "")}/${uniqueName}`;
+    const copyCommand = buildTransferCommand(
+      "copy",
+      sourcePath,
+      targetPath,
+      overwrite === true,
+    );
 
     // No hard timeout: a big copy can take a long time. The session stays
     // open while it runs, and a client that goes away stops the wait.

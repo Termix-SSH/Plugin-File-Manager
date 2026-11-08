@@ -26,6 +26,18 @@
       "showPanel": {
         "label": "Fájlok panel megjelenítése a terminálokban",
         "description": "A fájlok panel nyitva marad ezen a hoszon a SSH terminál mellett."
+      },
+      "enableFtp": {
+        "label": "FTP engedélyezése"
+      },
+      "ftpPort": {
+        "label": "FTP-port"
+      },
+      "ftpSecure": {
+        "label": "FTP-biztonság"
+      },
+      "ftpAllowSelfSigned": {
+        "label": "Önaláírt tanúsítvány engedélyezése"
       }
     },
     "user": {
@@ -74,6 +86,15 @@
     "label": "Fájlkezelő"
   },
   "fileManager": {
+    "nameConflictTitle": "Az elem már létezik",
+    "nameConflictDescription": "Ebben a mappában már létezik egy „{{name}}” nevű elem.",
+    "nameConflictHint": "A felülírás nem vonható vissza. A feltöltött és másolt mappák egyesülnek, és felülírják a bennük lévő fájlokat. A meglévő mappára való áthelyezés vagy egy másik elem típusának felülírása nem lehetséges; válassza a Mindkettő megtartása lehetőséget.",
+    "conflict-overwrite": "Felülírás",
+    "conflict-skip": "Kihagyás",
+    "conflict-keep-both": "Mindkettő megtartása",
+    "conflictBusy": "Zárja be a jelenlegi névütközés figyelmeztetést, mielőtt új műveletet indítana.",
+    "conflictApplyToAll": "Alkalmazás a maradék ütközésekre",
+    "conflictTypeMismatch": "Más típusú elem vagy szimbolikus hivatkozás nem írható felül. Válassza a Mindkettő megtartása lehetőséget.",
     "noHostSelected": "Nincs kiválasztott hoszt",
     "initializingEditor": "Szerkesztő inicializálása...",
     "file": "Fájl",
@@ -200,6 +221,7 @@
     "columns": "Oszlopok",
     "columnsHint": "Jobb klikk az oszlopok kiválasztásához",
     "emptyFolder": "Ez a mappa üres",
+    "noSearchResults": "Nincs találat a(z) „{{query}}” kifejezésre",
     "searchFiles": "Fájlok keresése...",
     "upload": "Feltöltés",
     "selectHostToStart": "Válasszon egy gazdagépet a fájlkezelés indításához",
@@ -429,6 +451,7 @@
     "octal": "Nyolcos",
     "storage": "Tárhely",
     "disk": "Lemez",
+    "notAvailable": "N/A",
     "used": "Használt",
     "of": "/",
     "toggleSidebar": "Oldalsáv be/ki",
@@ -450,6 +473,16 @@
     "folderDragUnsupported": "A mappák asztalra húzása még nem támogatott",
     "saveToDesktopFailed": "A mentés sikertelen: {{error}}",
     "dragFailedDetail": "A húzás sikertelen: {{error}}",
+    "desktopAppOnly": "Ez csak az asztali alkalmazásban működik",
+    "onlyFilesToDesktop": "Csak fájlokat lehet húzni az asztalra",
+    "onlyFoldersCanBeDragged": "Csak mappákat lehet ide húzni",
+    "savedToDownloads": "A böngésző a Letöltések mappába menti",
+    "savedFile": "Mentve: {{name}}",
+    "savedFilesZip_one": "{{count}} fájl mentése zip-be",
+    "savedFilesZip_other": "{{count}} fájl mentése zip-be",
+    "dropFileTooLarge": "A(z) {{name}} túl nagy. A limit {{size}} MB.",
+    "dropFileTypeNotAllowed": "A(z) {{name}} egy itt nem engedélyezett fájltípus",
+    "lineNumbers": "Sorszámok",
     "videoUnsupported": "A böngészője nem tudja lejátszani ezt a videóformátumot.",
     "downloadToPlay": "Töltse le, hogy máshol tudja lejátszani",
     "cannotPreviewType": "Nem lehet előnézetet létrehozni ehhez a fájltípushoz",
@@ -636,5 +669,44 @@
     "syncNow": "Ugrás a terminál mappájába",
     "cdTerminal": "Terminál átváltása erre a mappára",
     "terminalAt": "Terminál:"
+  },
+  "operations": {
+    "list": {
+      "title": "Fájlok listázása"
+    },
+    "info": {
+      "title": "Fájl információ"
+    },
+    "mkdir": {
+      "title": "Mappa létrehozása"
+    },
+    "delete": {
+      "title": "Fájl vagy üres mappa törlése"
+    },
+    "path": "Útvonal"
+  },
+  "ftp": {
+    "title": "FTP",
+    "description": "Fájlböngészés ezen a hoszton FTP vagy FTPS protokollon keresztül.",
+    "originNote": "Az FTP-csatlakozásokat a Termix szerver kezdeményezi.",
+    "connection": "Csatlakozás",
+    "port": "Port",
+    "security": "Biztonság",
+    "securityNone": "Nincs (sima FTP)",
+    "securityExplicit": "Explicit TLS (FTPS)",
+    "securityImplicit": "Implicit TLS (FTPS)",
+    "allowSelfSigned": "Önaláírt tanúsítvány engedélyezése",
+    "allowSelfSignedDesc": "Tanúsítványellenőrzés kihagyása ezen a hoszton.",
+    "login": "Bejelentkezés",
+    "auth": {
+      "direct": "Közvetlen",
+      "credential": "Hitelesítő adat",
+      "none": "Névtelen"
+    },
+    "selectCredential": "Válasszon hitelesítő adatot...",
+    "anonymousNote": "Névtelen felhasználóként jelentkezik be jelszó nélkül.",
+    "username": "Felhasználónév",
+    "password": "Jelszó",
+    "passwordSaved": "Jelszó mentve, gépelés a módosításhoz"
   }
 }
