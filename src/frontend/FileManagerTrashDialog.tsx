@@ -124,7 +124,7 @@ export function FileManagerTrashDialog({
             max={3650}
             value={retentionDays}
             onChange={(event) => setRetentionDays(Number(event.target.value))}
-            className="h-8 w-20 border border-border bg-background px-2"
+            className="h-8 w-20 border border-border bg-popover px-2"
           />
           <Button
             size="sm"
