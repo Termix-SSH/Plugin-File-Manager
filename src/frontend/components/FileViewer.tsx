@@ -843,10 +843,9 @@ export function FileViewer({
                     <div className="h-full p-4 bg-background">
                       <textarea
                         value={editedContent}
-                        onChange={(e) => {
-                          setEditedContent(e.target.value);
-                          onContentChange?.(e.target.value);
-                        }}
+                        onChange={(e) => handleContentChange(e.target.value)}
+                        onFocus={() => setEditorFocused(true)}
+                        onBlur={() => setEditorFocused(false)}
                         className="w-full h-full resize-none border-0 bg-transparent text-foreground font-mono text-sm leading-relaxed focus:outline-none focus:ring-0"
                         placeholder={t("fileManager.startWritingMarkdown")}
                       />

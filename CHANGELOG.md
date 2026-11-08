@@ -18,6 +18,7 @@
 
 ### Fixed
 
+- Ctrl+S saves a Markdown file while you edit it
 - Password fields with the show button are the same height as the other fields next to them
 - The History, sync and change folder buttons at the top of the terminal files panel are one height
 - The selected files box with delete and copy is the same height as the path bar and search next to it
