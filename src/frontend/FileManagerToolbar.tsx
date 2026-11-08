@@ -355,7 +355,7 @@ export function FileManagerToolbar({
           className={`flex items-center gap-2 ${compact ? "min-w-0 flex-1 flex-wrap justify-end" : "shrink-0"}`}
         >
           {selectedFiles.length > 0 && (
-            <div className="flex items-center gap-1 border border-accent-brand/30 bg-accent-brand/10 pl-2 pr-1">
+            <div className="flex h-8 shrink-0 items-center gap-1 border border-accent-brand/30 bg-accent-brand/10 pl-2 pr-1">
               <span className="text-[10px] tabular-nums text-accent-brand">
                 {selectedFiles.length}
               </span>

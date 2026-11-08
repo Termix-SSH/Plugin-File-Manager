@@ -20,6 +20,7 @@
 
 - Password fields with the show button are the same height as the other fields next to them
 - The History, sync and change folder buttons at the top of the terminal files panel are one height
+- The selected files box with delete and copy is the same height as the path bar and search next to it
 - Deleting files works again when Termix is opened over plain HTTP on a local network
 - The mouse back and forward buttons only move the file pane under the pointer, not every open file tab
 - The Drop files overlay goes away when you cancel a drag with Escape or drop somewhere else
