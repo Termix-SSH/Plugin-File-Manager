@@ -1,0 +1,409 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Termix-SSH/Termix/main/scripts/authz/authz.schema.json",
+  "seed": [],
+  "routes": {
+    "GET /plugin-api/file-manager/activeTransfers": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/changePermissions": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/compressFiles": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/connect": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/connect-browser-sign-in": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/connect-totp": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/copyItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/createFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/createFolder": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/deleteItem": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/deleteItems": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/deleteItems/cancel": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/disconnect": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/downloadFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/downloadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/executeFile": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/extractArchive": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/connect": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/createFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/createFolder": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/ftp/deleteItem": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/ftp/deleteItems": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/ftp/deleteItems/cancel": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/ftp/disconnect": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/ftp/downloadFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/downloadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/ftp/identifySymlink": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "allowed": "any",
+      "note": "Needs a live FTP or transfer session"
+    },
+    "POST /plugin-api/file-manager/ftp/keepalive": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/ftp/listFiles": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/ftp/moveItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/ftp/readFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/ftp/renameItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/ftp/resolvePath": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/ftp/status": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/uploadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/ftp/writeFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/identifySymlink": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/keepalive": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/listFiles": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/cancel": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/local/create-file": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/download": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/editor/close": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/editor/open": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/ensure-dir": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/exists": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/local/home": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "allowed": "any",
+      "note": "Desktop app only; a server refuses everyone"
+    },
+    "POST /plugin-api/file-manager/local/list": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/mkdir": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/open": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/rename": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/reveal": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/trash": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/local/upload": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "resource": {
+        "kind": "host",
+        "min": "connect",
+        "key": "hostId"
+      }
+    },
+    "POST /plugin-api/file-manager/local/walk": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/moveItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/pinned": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "GET /plugin-api/file-manager/pinned": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/pinned": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/readFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/recent": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "GET /plugin-api/file-manager/recent": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/recent": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/renameItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/resolvePath": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/shortcuts": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "GET /plugin-api/file-manager/shortcuts": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/shortcuts": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/status": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/sudo-password": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/transfer-recent": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/transfer-recent": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/transferCancel/:transferId": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "note": "Keyed by a live transferId looked up with the caller; none exists in the test data",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/transferCleanup/:transferId": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "note": "Keyed by a live transferId looked up with the caller; none exists in the test data"
+    },
+    "POST /plugin-api/file-manager/transferMethodPreview": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/transferRetry/:transferId": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "note": "Keyed by a live transferId looked up with the caller; none exists in the test data"
+    },
+    "GET /plugin-api/file-manager/transferStatus/:transferId": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "note": "Needs a live FTP or transfer session",
+      "allowed": "any"
+    },
+    "POST /plugin-api/file-manager/transferToHost": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/trash": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "GET /plugin-api/file-manager/trash": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/trash-retention": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/trash/:id": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "resource": {
+        "kind": "own",
+        "fixture": "file-manager.trash"
+      },
+      "params": {
+        "id": "=authz-none"
+      },
+      "destructive": true,
+      "allowed": "any",
+      "note": "No trash in the test data (needs a deleted remote file); only session, permission and unknown id refusals are checked"
+    },
+    "POST /plugin-api/file-manager/trash/:id/restore": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "resource": {
+        "kind": "own",
+        "fixture": "file-manager.trash"
+      },
+      "params": {
+        "id": "=authz-none"
+      },
+      "destructive": true,
+      "allowed": "any",
+      "note": "No trash in the test data (needs a deleted remote file); only session, permission and unknown id refusals are checked"
+    },
+    "POST /plugin-api/file-manager/uploadFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/uploadFileChunk": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/uploadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/writeFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "WS /plugin-ws/file-manager/local-events": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "allowed": "any",
+      "note": "Desktop app only"
+    }
+  }
+}
