@@ -56,7 +56,9 @@ vi.mock("../../../src/frontend/components/FileViewer", () => ({
     <button onClick={onDownload}>download-preview</button>
   ),
 }));
-vi.mock("@monaco-editor/react", () => ({ DiffEditor: () => null }));
+vi.mock("../../../src/frontend/components/CodeDiff.tsx", () => ({
+  CodeDiff: () => null,
+}));
 
 const file1: FileItem = { name: "one.txt", path: "/one.txt", type: "file" };
 const file2: FileItem = { name: "two.txt", path: "/two.txt", type: "file" };

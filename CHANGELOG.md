@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Fixed
+
+- Comparing two files works again. The diff view now ships with the plugin instead of loading code from a CDN, which the Termix server blocks
+
 ## 1.2.0
 
 ### Added
