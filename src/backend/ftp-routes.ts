@@ -79,7 +79,8 @@ export function toItem(info: FileInfo, dir: string) {
 }
 
 export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
-  const sessions: Record<string, FtpSession> = {};
+  // No prototype, so an id like "__proto__" is only ever a missing key.
+  const sessions: Record<string, FtpSession> = Object.create(null);
 
   function close(sessionId: string): void {
     const session = sessions[sessionId];

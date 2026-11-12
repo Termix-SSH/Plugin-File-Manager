@@ -169,8 +169,10 @@ export async function activate(ctx: PluginContext) {
     })();
   });
 
-  const sshSessions: Record<string, SSHSession> = {};
-  const pendingTOTPSessions: Record<string, PendingTOTPSession> = {};
+  // No prototype, so an id like "__proto__" is only ever a missing key.
+  const sshSessions: Record<string, SSHSession> = Object.create(null);
+  const pendingTOTPSessions: Record<string, PendingTOTPSession> =
+    Object.create(null);
 
   function cleanupSession(sessionId: string) {
     const session = sshSessions[sessionId];

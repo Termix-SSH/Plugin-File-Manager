@@ -5,6 +5,7 @@
 ### Fixed
 
 - Comparing two files works again. The diff view now ships with the plugin instead of loading code from a CDN, which the Termix server blocks
+- A file session id that matches a built in object name is treated as unknown instead of reaching shared objects on the server
 
 ## 1.2.0
 
