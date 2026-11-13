@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { Readable, type Writable } from "node:stream";
 import express, { type Express, type Request, type Response } from "express";
+import { trimEnd } from "./trim.js";
 import type {
   PluginContext,
   PluginLocalResponse,
@@ -74,7 +75,7 @@ const LAUNCHABLE_EXTENSIONS = new Set([
 
 export function isLaunchableFileName(fileName: unknown): boolean {
   // Windows drops trailing dots and spaces, so "a.exe. " is saved as a.exe.
-  const name = path.basename(String(fileName || "")).replace(/[. ]+$/, "");
+  const name = trimEnd(path.basename(String(fileName || "")), ". ");
   return LAUNCHABLE_EXTENSIONS.has(path.extname(name).slice(1).toLowerCase());
 }
 
