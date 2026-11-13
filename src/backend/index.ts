@@ -19,6 +19,7 @@ import {
   hostAddressMismatch,
   HostAddressMismatchError,
   HostNotOnThisServerError,
+  HostLoginRequiredError,
   resolveServerHostId,
   type ConnectionStage,
   type FileLogger,
@@ -85,10 +86,11 @@ function hasSocks5Config(host: PluginSshHost): boolean {
 function assertResolvedHost(
   clientIp: unknown,
   hostSyncId: string | null | undefined,
-  resolvedHost: { ip?: string } | null | undefined,
+  resolvedHost: { ip?: string; loginRequired?: boolean } | null | undefined,
   hostId: number,
   userId: string,
 ): void {
+  if (resolvedHost?.loginRequired === true) throw new HostLoginRequiredError();
   if (hostSyncId) {
     if (resolvedHost) return;
     fileLogger.error(
@@ -617,7 +619,9 @@ export async function activate(ctx: PluginContext) {
     const resolveFrom = async () => {
       const resolvedHost = (await ctx.ssh.resolveHost(hostId, {
         syncId: hostSyncId,
-      })) as LooseHost | null;
+        // Newer than the SDK types; older cores ignore it.
+        allowMissingLogin: true,
+      } as { syncId?: string | null })) as LooseHost | null;
       assertResolvedHost(ip, hostSyncId, resolvedHost, hostId, userId);
       if (!resolvedHost) return;
       resolvedIp = resolvedHost.ip;
@@ -707,7 +711,9 @@ export async function activate(ctx: PluginContext) {
     if (hostSyncId && userId) {
       const resolvedHost = await ctx.ssh.resolveHost(hostId, {
         syncId: hostSyncId,
-      });
+        // Newer than the SDK types; older cores ignore it.
+        allowMissingLogin: true,
+      } as { syncId?: string | null });
       assertResolvedHost(ip, hostSyncId, resolvedHost, hostId, userId);
       serverHostId = resolveServerHostId(hostId, resolvedHost) ?? hostId;
     }

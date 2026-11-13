@@ -8,6 +8,7 @@
 - A file session id that matches a built in object name is treated as unknown instead of reaching shared objects on the server
 - An upload that stops partway answers with an error instead of leaving an error unhandled on the server
 - The API docs list every route, including FTP and desktop file routes, with their answers
+- Opening files on a shared host you have no login for says so, instead of saying the host is not on the sync server (needs Termix 26.11.2)
 
 ## 1.2.0
 
