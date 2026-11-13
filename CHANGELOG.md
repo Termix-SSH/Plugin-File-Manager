@@ -2,6 +2,10 @@
 
 ## 1.2.1
 
+### Changed
+
+- Warpgate sign-in prompts still show when that plugin runs in its own process (needs Termix 26.11.2)
+
 ### Fixed
 
 - Comparing two files works again. The diff view now ships with the plugin instead of loading code from a CDN, which the Termix server blocks

@@ -1052,16 +1052,19 @@ export async function activate(ctx: PluginContext) {
 
     client.on(
       "keyboard-interactive",
-      (
+      async (
         name: string,
         instructions: string,
         _instructionsLang: string,
         prompts: Array<{ prompt: string; echo: boolean }>,
         finish: (responses: string[]) => void,
       ) => {
-        const decision = ssh.classifyKeyboardInteractive(
-          { name, instructions, prompts },
-          connectTarget,
+        // A handler in a plugin process answers with a Promise.
+        const decision = await Promise.resolve(
+          ssh.classifyKeyboardInteractive(
+            { name, instructions, prompts },
+            connectTarget,
+          ),
         );
         const autoFinish = () =>
           finish(ssh.autoResponses(prompts, resolvedCredentials.password));
