@@ -476,6 +476,8 @@ export async function activate(ctx: PluginContext) {
    *                 type: string
    *               socks5ProxyChain:
    *                 type: array
+   *                 items:
+   *                   type: object
    *     responses:
    *       200:
    *         description: SSH connection established, or requires TOTP or a browser sign-in.

@@ -1529,6 +1529,9 @@ export function registerFileContentRoutes(
    *     description: Writes a raw request body to the remote file at the supplied byte offset, allowing browser clients to avoid multipart/FormData 2GB limits.
    *     tags:
    *       - File Manager
+   *     responses:
+   *       200:
+   *         description: Done.
    */
   app.post("/uploadFileChunk", (req: Request, res: Response) => {
     const userId = ctx.currentActor()!;
