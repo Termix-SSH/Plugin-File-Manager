@@ -1,5 +1,5 @@
 import http from "node:http";
-import type { AddressInfo } from "node:net";
+import net, { type AddressInfo } from "node:net";
 import {
   mkdtempSync,
   readFileSync,
@@ -18,7 +18,8 @@ import { registerFtpRoutes, toItem } from "../../src/backend/ftp-routes.js";
 import { FileInfo } from "basic-ftp";
 import { manifest } from "./helpers.js";
 
-const FTP_PORT = 2121;
+let FTP_PORT = 0;
+let PASV_MIN = 0;
 let root: string;
 let ftp: FtpSrv;
 let server: http.Server;
@@ -65,14 +66,37 @@ async function call(
   return { status: response.status, body: json, text };
 }
 
+function canBind(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const probe = net.createServer();
+    probe.once("error", () => resolve(false));
+    probe.listen(port, "127.0.0.1", () => probe.close(() => resolve(true)));
+  });
+}
+
+// Fixed ports can sit in a range Windows reserves for Hyper-V, so find a
+// block that binds: the control port, then the passive data ports.
+async function freeBlock(size: number): Promise<number> {
+  for (let base = 40000; base < 48000; base += size) {
+    let ok = true;
+    for (let port = base; port < base + size && ok; port++) {
+      ok = await canBind(port);
+    }
+    if (ok) return base;
+  }
+  throw new Error("no free port block");
+}
+
 beforeAll(async () => {
+  FTP_PORT = await freeBlock(21);
+  PASV_MIN = FTP_PORT + 1;
   root = mkdtempSync(join(tmpdir(), "ftp-fm-"));
   writeFileSync(join(root, "hello.txt"), "hello world");
   ftp = new FtpSrv({
     url: `ftp://127.0.0.1:${FTP_PORT}`,
     pasv_url: "127.0.0.1",
-    pasv_min: 2200,
-    pasv_max: 2300,
+    pasv_min: PASV_MIN,
+    pasv_max: PASV_MIN + 19,
     anonymous: false,
   });
   ftp.on("login", ({ username, password }, resolve, reject) => {

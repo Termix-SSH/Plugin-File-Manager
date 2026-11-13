@@ -1341,6 +1341,8 @@ export function registerFileContentRoutes(
         info: { filename: string; encoding: string; mimeType: string },
       ) => {
         fileName = info.filename;
+        // A cut short body fails the part too; bb's error handler answers.
+        fileStream.on("error", () => {});
 
         if (!sessionId || !remotePath || !fileName) {
           fileStream.resume();
@@ -1512,7 +1514,7 @@ export function registerFileContentRoutes(
       ctx.log.error("Busboy parse error during stream upload:", err);
       if (!resolved && !requestAborted) {
         resolved = true;
-        res.status(500).json({ error: `Upload parse error: ${err.message}` });
+        res.status(400).json({ error: "Upload body is not valid" });
       }
     });
 
