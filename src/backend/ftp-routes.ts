@@ -260,6 +260,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     res.json({ success: true, message: "FTP connected" });
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/disconnect:
+   *   post:
+   *     summary: Close an FTP session
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/disconnect", (req, res) => {
     const userId = ctx.currentActor();
     const sessionId = req.body?.sessionId;
@@ -271,6 +282,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     res.json({ status: "success", message: "FTP connection disconnected" });
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/status:
+   *   get:
+   *     summary: Whether an FTP session is still connected
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.get("/ftp/status", (req, res) => {
     const userId = ctx.currentActor();
     const session = sessions[req.query.sessionId as string];
@@ -283,6 +305,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     });
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/keepalive:
+   *   post:
+   *     summary: Keep an FTP session open
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/keepalive", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -297,6 +330,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/listFiles:
+   *   get:
+   *     summary: List a folder over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.get("/ftp/listFiles", async (req, res) => {
     const found = owned(req, res, "query");
     if (!found) return;
@@ -318,6 +362,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/resolvePath:
+   *   get:
+   *     summary: Turn an FTP path into an absolute one
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.get("/ftp/resolvePath", async (req, res) => {
     const found = owned(req, res, "query");
     if (!found) return;
@@ -332,6 +387,16 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/identifySymlink:
+   *   get:
+   *     summary: Links are not followed over FTP, so this always answers 404
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       404: { description: Links are not resolved over FTP. }
+   */
   app.get("/ftp/identifySymlink", (_req, res) => {
     res.status(404).json({ error: "Symlinks are not resolved over FTP" });
   });
@@ -358,6 +423,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     });
   }
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/readFile:
+   *   get:
+   *     summary: Read a file over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.get("/ftp/readFile", async (req, res) => {
     const found = owned(req, res, "query");
     if (!found) return;
@@ -387,6 +463,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     await run(session, (c) => c.uploadFrom(Readable.from([data]), path));
   }
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/writeFile:
+   *   post:
+   *     summary: Save a file over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/writeFile", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -407,6 +494,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/createFile:
+   *   post:
+   *     summary: Create an empty file over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/createFile", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -428,6 +526,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/createFolder:
+   *   post:
+   *     summary: Create a folder over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/createFolder", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -465,6 +574,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     });
   }
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/deleteItem:
+   *   delete:
+   *     summary: Delete a file or folder over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.delete("/ftp/deleteItem", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -480,6 +600,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
 
   const cancelled = new Set<string>();
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/deleteItems:
+   *   post:
+   *     summary: Delete several files or folders over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/deleteItems", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -515,6 +646,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     res.json({ results });
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/deleteItems/cancel:
+   *   post:
+   *     summary: Stop a running FTP delete
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/deleteItems/cancel", (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -539,6 +681,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   }
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/renameItem:
+   *   put:
+   *     summary: Rename a file or folder over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.put("/ftp/renameItem", (req, res) => {
     const { oldPath, newName } = req.body ?? {};
     if (!oldPath || !newName || String(newName).includes("/")) {
@@ -549,6 +702,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     return renameTo(req, res, oldPath, joinPath(parentOf(oldPath), newName));
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/moveItem:
+   *   put:
+   *     summary: Move a file or folder over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.put("/ftp/moveItem", (req, res) => {
     const { oldPath, newPath } = req.body ?? {};
     if (!oldPath || !newPath) {
@@ -557,6 +721,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     return renameTo(req, res, oldPath, newPath);
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/downloadFile:
+   *   post:
+   *     summary: Download a file over FTP
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/downloadFile", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -578,6 +753,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/downloadFileStream:
+   *   post:
+   *     summary: Download a file over FTP as a stream
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/downloadFileStream", async (req, res) => {
     const found = owned(req, res);
     if (!found) return;
@@ -627,6 +813,17 @@ export function registerFtpRoutes(app: Express, ctx: PluginContext): void {
     }
   });
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/ftp/uploadFileStream:
+   *   post:
+   *     summary: Upload a file over FTP from a form upload
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   */
   app.post("/ftp/uploadFileStream", (req, res) => {
     const userId = ctx.currentActor();
     if (!userId)
