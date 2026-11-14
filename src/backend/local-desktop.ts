@@ -1,7 +1,5 @@
-import { spawn } from "node:child_process";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { Readable, type Writable } from "node:stream";
 import express, { type Express, type Request, type Response } from "express";
@@ -13,11 +11,11 @@ import type {
 } from "@termix-ssh/plugin-sdk/backend";
 
 // The desktop app's own disk, for the dual-pane file manager and the external
-// editor. Everything here is refused outside the desktop app. The desktop
-// does not apply plugin process limits, so the editor can still use fs and
-// child_process directly.
+// editor. Everything here is refused outside the desktop app. The plugin
+// process is fenced like on a server: the user's files go through
+// ctx.desktop.local, and the editor's temp copy lives in the plugin's own data
+// folder.
 
-const EXTERNAL_EDITOR_SETTING = "fileManager.externalEditorPath";
 const PROGRESS_INTERVAL_MS = 150;
 const OPEN = 1;
 
@@ -691,20 +689,6 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }
   };
 
-  async function readEditorPath(): Promise<string | null> {
-    const info = await local.info();
-    try {
-      const raw = await fsp.readFile(
-        path.join(info.userDataDir, "settings.json"),
-        "utf8",
-      );
-      const value = JSON.parse(raw)[EXTERNAL_EDITOR_SETTING];
-      return typeof value === "string" && value ? value : null;
-    } catch {
-      return null;
-    }
-  }
-
   /**
    * @openapi
    * /plugin-api/file-manager/local/editor/open:
@@ -725,13 +709,16 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
         string,
         string
       >;
-      // The editor comes from the saved setting, never from the caller.
-      const editorPath = await readEditorPath();
-      if (!editorPath && isLaunchableFileName(fileName)) {
-        throw new Error("Choose an external editor to open this file type");
+      // The app starts the editor the person picked there, never one named
+      // by the caller, and refuses a program when none is picked.
+      const openInEditor = (
+        local.fs as { openInEditor?: (filePath: string) => Promise<void> }
+      ).openInEditor;
+      if (typeof openInEditor !== "function") {
+        throw new Error("Update Termix to open files in an external editor");
       }
 
-      const root = path.join(os.tmpdir(), "termix");
+      const root = path.join(await ctx.files.dataDir(), "editor");
       await fsp.mkdir(root, { recursive: true });
       const editId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const dir = await fsp.mkdtemp(path.join(root, `${editId}-`));
@@ -760,21 +747,7 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
       });
 
       try {
-        if (!editorPath) {
-          await local.fs.open(filePath);
-        } else {
-          await new Promise<void>((resolve, reject) => {
-            const child = spawn(editorPath, [filePath], {
-              detached: true,
-              stdio: "ignore",
-            });
-            child.once("error", reject);
-            child.once("spawn", () => {
-              child.unref();
-              resolve();
-            });
-          });
-        }
+        await openInEditor.call(local.fs, filePath);
       } catch (error) {
         closeEditor(editId);
         throw error;
