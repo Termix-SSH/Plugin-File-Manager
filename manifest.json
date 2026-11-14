@@ -23,7 +23,7 @@
   ],
   "engine": {
     "termix": ">=26.11.2-0",
-    "api": "^2.0.0"
+    "api": "^2.7.0"
   },
   "capabilities": [
     "hosts:read",
@@ -257,7 +257,12 @@
         "viewMode": "list"
       }
     },
-    "uses": ["homepage.widgets", "host-metrics.disk", "terminal.open"],
+    "uses": [
+      "homepage.widgets",
+      "host-metrics.disk",
+      "terminal.open",
+      "terminal.view"
+    ],
     "operations": {
       "actions": [
         {
