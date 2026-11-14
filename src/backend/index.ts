@@ -1,4 +1,4 @@
-import express, { type Router } from "express";
+import express, { type Express, type Router } from "express";
 import cookieParser from "cookie-parser";
 import { Client as SSHClient } from "ssh2";
 import type {
@@ -381,7 +381,11 @@ export async function activate(ctx: PluginContext) {
     delete sshSessions[sessionId];
   }
 
-  const app = express();
+  // Routes go straight on ctx's router: in a plugin process core only
+  // serves routes added to it, not ones on a mounted app.
+  const app = ctx.http.router<Router>({
+    bodyLimit: "1gb",
+  }) as unknown as Express;
   app.use(ctx.rbac.require("use") as never);
   app.use(cookieParser());
   // uploadFileChunk takes a raw octet-stream body. The browser sends 8 MiB
@@ -2422,8 +2426,6 @@ export async function activate(ctx: PluginContext) {
   });
 
   registerLocalDesktop(app, ctx);
-
-  ctx.http.router<Router>({ bodyLimit: "1gb" }).use(app);
 
   const service = createFilesService(ctx);
   ctx.services.provide("files.sftp", service);
