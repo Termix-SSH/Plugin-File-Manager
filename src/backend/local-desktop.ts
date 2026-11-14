@@ -153,25 +153,32 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }
   };
 
-  ctx.ws.route("/local-events", (connection: PluginWebSocketConnection) => {
-    const ws = connection.socket as Socket;
-    if (!connection.userId || !local.available()) {
-      ws.close(1008, "Desktop only");
-      return;
-    }
-    const userId = connection.userId;
-    let set = sockets.get(userId);
-    if (!set) sockets.set(userId, (set = new Set()));
-    const mine = set;
-    mine.add(ws);
-    ws.on("close", (() => {
-      mine.delete(ws);
-      if (mine.size === 0) sockets.delete(userId);
-    }) as never);
-  });
+  ctx.ws.route(
+    "/local-events",
+    async (connection: PluginWebSocketConnection) => {
+      const ws = connection.socket as Socket;
+      if (!connection.userId || !(await local.available())) {
+        ws.close(1008, "Desktop only");
+        return;
+      }
+      const userId = connection.userId;
+      let set = sockets.get(userId);
+      if (!set) sockets.set(userId, (set = new Set()));
+      const mine = set;
+      mine.add(ws);
+      ws.on("close", (() => {
+        mine.delete(ws);
+        if (mine.size === 0) sockets.delete(userId);
+      }) as never);
+    },
+  );
 
-  const desktopOnly = (_req: Request, res: Response, next: () => void) => {
-    if (!local.available()) {
+  const desktopOnly = async (
+    _req: Request,
+    res: Response,
+    next: () => void,
+  ) => {
+    if (!(await local.available())) {
       res.status(404).json({ error: "Only available in the desktop app" });
       return;
     }
