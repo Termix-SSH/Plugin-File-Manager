@@ -111,6 +111,7 @@ beforeAll(async () => {
   const mock = createMockCtx({
     pluginId: manifest.id,
     manifest,
+    sandbox: true,
     capabilities: manifest.capabilities,
     protocolTargets: { "7:ftp": target("secret"), "8:ftp": target("wrong") },
   });

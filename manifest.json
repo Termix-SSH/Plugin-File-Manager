@@ -22,8 +22,8 @@
     "A side by side local and remote view in the desktop app"
   ],
   "engine": {
-    "termix": ">=26.11.1-0",
-    "api": "^1.15"
+    "termix": ">=26.11.2-0",
+    "api": "^2.0.0"
   },
   "capabilities": [
     "hosts:read",
@@ -37,8 +37,12 @@
     "kv:own",
     "users:impersonate",
     "desktop:local",
-    "operations:provide"
+    "operations:provide",
+    "network:sockets"
   ],
+  "sandbox": {
+    "events": ["user.data_wiped"]
+  },
   "provides": [
     {
       "service": "files.sftp",

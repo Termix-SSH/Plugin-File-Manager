@@ -13,7 +13,9 @@ import type {
 } from "@termix-ssh/plugin-sdk/backend";
 
 // The desktop app's own disk, for the dual-pane file manager and the external
-// editor. Everything here is refused outside the desktop app.
+// editor. Everything here is refused outside the desktop app. The desktop
+// does not apply plugin process limits, so the editor can still use fs and
+// child_process directly.
 
 const EXTERNAL_EDITOR_SETTING = "fileManager.externalEditorPath";
 const PROGRESS_INTERVAL_MS = 150;

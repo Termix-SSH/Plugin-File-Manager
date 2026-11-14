@@ -16,6 +16,7 @@ beforeAll(async () => {
   const mock = createMockCtx({
     pluginId: manifest.id,
     manifest,
+    sandbox: true,
     capabilities: manifest.capabilities,
   });
   const app = express();

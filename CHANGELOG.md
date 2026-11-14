@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Runs in its own process with only the access it needs (plugin API 2, needs Termix 26.11.2)
 - Warpgate sign-in prompts still show when that plugin runs in its own process (needs Termix 26.11.2)
 
 ### Fixed
