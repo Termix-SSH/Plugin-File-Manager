@@ -145,6 +145,7 @@ import {
   renameOptimisticItem,
   restoreItems,
 } from "./optimistic-file-list";
+import { shortcutKey } from "./lib/shortcut-key";
 
 /** Paths per trash request, and requests in flight (backend adds its own pool). */
 const TRASH_BATCH_SIZE = 200;
@@ -1383,7 +1384,11 @@ function FileManagerContent({
         return;
       }
 
-      if (event.key === "T" && event.ctrlKey && event.shiftKey) {
+      if (
+        shortcutKey(event).toLowerCase() === "t" &&
+        event.ctrlKey &&
+        event.shiftKey
+      ) {
         // Every mounted tab listens, so only the visible one acts.
         if (!paneVisibleRef.current || isFtp) return;
         event.preventDefault();

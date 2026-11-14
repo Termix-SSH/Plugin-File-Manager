@@ -28,6 +28,7 @@ import {
   ViewToggle,
 } from "@termix-ssh/plugin-sdk/ui";
 import type { FileItem } from "./host-types";
+import { shortcutKey } from "./lib/shortcut-key";
 
 type SortBy = "name" | "modified" | "size";
 type SortOrder = "asc" | "desc";
@@ -252,7 +253,7 @@ export function FileManagerToolbar({
         !(event.ctrlKey || event.metaKey) ||
         event.altKey ||
         event.shiftKey ||
-        event.key.toLowerCase() !== "f"
+        shortcutKey(event).toLowerCase() !== "f"
       )
         return;
 

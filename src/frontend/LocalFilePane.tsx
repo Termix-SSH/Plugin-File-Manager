@@ -59,6 +59,7 @@ import {
   serializeLocalFilesDragPayload,
   sortLocalEntries,
 } from "./local-transfer-utils.ts";
+import { shortcutKey } from "./lib/shortcut-key";
 
 const LAST_PATH_STORAGE_KEY = "termix:file-manager:local-pane:path";
 const SHOW_HIDDEN_STORAGE_KEY = "termix:file-manager:local-pane:hidden";
@@ -639,7 +640,7 @@ export function LocalFilePane({
       setSelected(new Set());
       setAnchorPath(null);
     } else if (
-      event.key === "a" &&
+      shortcutKey(event) === "a" &&
       (event.metaKey || event.ctrlKey) &&
       visibleEntries.length > 0
     ) {

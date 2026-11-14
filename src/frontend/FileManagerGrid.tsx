@@ -44,6 +44,7 @@ import {
 } from "./hooks/useResizableColumns.ts";
 import { ColumnResizeHandle } from "./components/ColumnResizeHandle.tsx";
 import { ColumnVisibilityMenu } from "./components/ColumnVisibilityMenu.tsx";
+import { shortcutKey } from "./lib/shortcut-key";
 
 // Fixed list-view columns after the flexible name column; user-resizable.
 const LIST_COLUMNS: ResizableColumnSpec[] = [
@@ -1047,7 +1048,7 @@ export function FileManagerGrid({
         return;
       }
 
-      switch (event.key) {
+      switch (shortcutKey(event)) {
         case "Escape":
           onSelectionChange([]);
           break;
