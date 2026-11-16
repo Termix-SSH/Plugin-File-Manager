@@ -50,6 +50,8 @@ import {
   copySSHItem,
   moveSSHItem,
   compressSSHFiles,
+  startSSHArchiveExtraction,
+  getSSHArchiveExtractionStatus,
 } from "../../../src/frontend/api/ssh-file-operations-api";
 import {
   getCachedFileList,
@@ -395,6 +397,29 @@ describe("copy/move destination decisions", () => {
 });
 
 describe("archive operations", () => {
+  it("starts an extraction and polls it by operation id", async () => {
+    fileManagerApiMock.post.mockResolvedValueOnce({
+      data: { operationId: "op/1", extractPath: "/data" },
+    } as never);
+    await expect(
+      startSSHArchiveExtraction("s", "/data/big.zip"),
+    ).resolves.toEqual({ operationId: "op/1", extractPath: "/data" });
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/extractArchive/start",
+      { sessionId: "s", archivePath: "/data/big.zip", extractPath: undefined },
+    );
+    fileManagerApiMock.get.mockResolvedValueOnce({
+      data: { status: "running", extracted: 3, total: 9 },
+    } as never);
+    await expect(getSSHArchiveExtractionStatus("s", "op/1")).resolves.toEqual({
+      status: "running",
+      extracted: 3,
+      total: 9,
+    });
+    expect(fileManagerApiMock.get).toHaveBeenLastCalledWith(
+      "/extractArchive/status/op%2F1",
+    );
+  });
   it("compresses without a client timeout, since many files take minutes", async () => {
     await compressSSHFiles("s", ["/data/a", "/data/b"], "out.zip");
     expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(

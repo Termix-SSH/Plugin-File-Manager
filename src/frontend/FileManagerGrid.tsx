@@ -85,6 +85,8 @@ interface DragState {
 
 interface FileManagerGridProps {
   files: FileItem[];
+  /** Extra status drawn in the footer, between the item and selection counts. */
+  footerStatus?: React.ReactNode;
   /** Show a spinner instead of the empty-folder text while a listing is in flight. */
   isLoading?: boolean;
   /** Active name filter; when it leaves nothing to show, the empty state names it. */
@@ -233,6 +235,7 @@ const getFileIcon = (
 
 export function FileManagerGrid({
   files,
+  footerStatus,
   isLoading,
   searchQuery,
   selectedFiles,
@@ -1715,9 +1718,10 @@ export function FileManagerGrid({
       </div>
 
       <div className="px-3 py-1 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground shrink-0">
-        <span>
+        <span className="shrink-0">
           {files.length} {t("fileManager.items")}
         </span>
+        {footerStatus}
         {selectedFiles.length > 0 && (
           <span className="text-accent-brand">
             {selectedFiles.length} {t("fileManager.selected")}

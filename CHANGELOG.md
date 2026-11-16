@@ -2,6 +2,10 @@
 
 ## 1.2.1
 
+### Added
+
+- Extracting an archive shows its progress in the file list footer until it is done, with a file count for tar and zip archives and a percentage for zip
+
 ### Changed
 
 - Runs in its own process with only the access it needs (plugin API 2, needs Termix 26.11.2)
@@ -11,6 +15,7 @@
 
 ### Fixed
 
+- Extracting a large archive no longer fails with a timeout after 30 seconds
 - Compressing many files no longer fails with a timeout after 30 seconds
 - Says to open a terminal and trust the host when its key is not trusted yet, instead of a plain error (Termix 26.11.2)
 - Comparing two files works again. The diff view now ships with the plugin instead of loading code from a CDN, which the Termix server blocks

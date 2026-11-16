@@ -38,6 +38,11 @@ import { registerFileContentRoutes } from "./content-routes.js";
 import { registerFileOperationRoutes } from "./operation-routes.js";
 import { registerFileDownloadRoutes } from "./download-routes.js";
 import { registerFileActionRoutes } from "./action-routes.js";
+import {
+  buildExtractCommand,
+  friendlyExtractError,
+  registerExtractProgressRoutes,
+} from "./extract-archive.js";
 import { registerFtpRoutes } from "./ftp-routes.js";
 import { registerBookmarkRoutes } from "./bookmark-routes.js";
 import {
@@ -1730,6 +1735,12 @@ export async function activate(ctx: PluginContext) {
     scheduleSessionCleanup,
     verifySessionOwnership,
   });
+  registerExtractProgressRoutes(app, {
+    ctx,
+    sshSessions,
+    scheduleSessionCleanup,
+    verifySessionOwnership,
+  });
   registerFtpRoutes(app, ctx);
   registerBookmarkRoutes(app, ctx, {
     table,
@@ -1772,42 +1783,11 @@ export async function activate(ctx: PluginContext) {
     session.lastActive = Date.now();
     scheduleSessionCleanup(sessionId);
 
-    const fileName = archivePath.split("/").pop() || "";
-    const fileExt = fileName.toLowerCase();
-
-    let extractCommand: string;
-    const targetPath =
-      extractPath || archivePath.substring(0, archivePath.lastIndexOf("/"));
-
-    const escapedArchive = archivePath.replace(/'/g, "'\"'\"'");
-    const escapedTarget = targetPath.replace(/'/g, "'\"'\"'");
-    const escapedDecompressed = archivePath
-      .replace(/\.gz$/i, "")
-      .replace(/'/g, "'\"'\"'");
-
-    if (fileExt.endsWith(".tar.gz") || fileExt.endsWith(".tgz")) {
-      extractCommand = `tar -xzf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar.bz2") || fileExt.endsWith(".tbz2")) {
-      extractCommand = `tar -xjf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar.xz") || fileExt.endsWith(".txz")) {
-      extractCommand = `tar -xJf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar")) {
-      extractCommand = `tar -xf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".zip")) {
-      extractCommand = `unzip -o '${escapedArchive}' -d '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".gz") && !fileExt.endsWith(".tar.gz")) {
-      extractCommand = `gunzip -c '${escapedArchive}' > '${escapedDecompressed}'`;
-    } else if (fileExt.endsWith(".bz2") && !fileExt.endsWith(".tar.bz2")) {
-      extractCommand = `bunzip2 -k '${escapedArchive}'`;
-    } else if (fileExt.endsWith(".xz")) {
-      extractCommand = `unxz -k '${escapedArchive}'`;
-    } else if (fileExt.endsWith(".7z")) {
-      extractCommand = `7z x '${escapedArchive}' -o'${escapedTarget}'`;
-    } else if (fileExt.endsWith(".rar")) {
-      extractCommand = `unrar x '${escapedArchive}' '${escapedTarget}/'`;
-    } else {
+    const plan = buildExtractCommand(archivePath, extractPath);
+    if (!plan) {
       return res.status(400).json({ error: "Unsupported archive format" });
     }
+    const { command: extractCommand, targetPath } = plan;
 
     fileLogger.info("Extracting archive", {
       operation: "extract_archive",
@@ -1844,54 +1824,9 @@ export async function activate(ctx: PluginContext) {
             error: errorOutput,
           });
 
-          let friendlyError = errorOutput || "Failed to extract archive";
-          if (
-            errorOutput.includes("command not found") ||
-            errorOutput.includes("not found")
-          ) {
-            let missingCmd = "";
-            let installHint = "";
-            if (fileExt.endsWith(".zip")) {
-              missingCmd = "unzip";
-              installHint =
-                "apt install unzip / yum install unzip / brew install unzip";
-            } else if (
-              fileExt.endsWith(".tar.gz") ||
-              fileExt.endsWith(".tgz") ||
-              fileExt.endsWith(".tar.bz2") ||
-              fileExt.endsWith(".tbz2") ||
-              fileExt.endsWith(".tar.xz") ||
-              fileExt.endsWith(".txz") ||
-              fileExt.endsWith(".tar")
-            ) {
-              missingCmd = "tar";
-              installHint = "Usually pre-installed on Linux/Unix systems";
-            } else if (fileExt.endsWith(".gz")) {
-              missingCmd = "gunzip";
-              installHint =
-                "apt install gzip / yum install gzip / Usually pre-installed";
-            } else if (fileExt.endsWith(".bz2")) {
-              missingCmd = "bunzip2";
-              installHint =
-                "apt install bzip2 / yum install bzip2 / brew install bzip2";
-            } else if (fileExt.endsWith(".xz")) {
-              missingCmd = "unxz";
-              installHint =
-                "apt install xz-utils / yum install xz / brew install xz";
-            } else if (fileExt.endsWith(".7z")) {
-              missingCmd = "7z";
-              installHint =
-                "apt install p7zip-full / yum install p7zip / brew install p7zip";
-            } else if (fileExt.endsWith(".rar")) {
-              missingCmd = "unrar";
-              installHint =
-                "apt install unrar / yum install unrar / brew install unrar";
-            }
-            if (missingCmd) {
-              friendlyError = `Command '${missingCmd}' not found on remote server. Please install it first: ${installHint}`;
-            }
-          }
-          return res.status(500).json({ error: friendlyError });
+          return res
+            .status(500)
+            .json({ error: friendlyExtractError(archivePath, errorOutput) });
         }
 
         fileLogger.success("Archive extracted successfully", {
