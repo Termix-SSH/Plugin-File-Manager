@@ -169,7 +169,10 @@ export async function connectSSH(
         });
       }
       if (data.status === "host_key_changed") {
-        Object.assign(errorWithLogs, { status: "host_key_changed" });
+        Object.assign(errorWithLogs, {
+          status: "host_key_changed",
+          hostKey: data.reason,
+        });
       }
       throw errorWithLogs;
     }

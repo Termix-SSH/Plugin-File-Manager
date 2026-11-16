@@ -55,6 +55,11 @@ import { createFilesService } from "./service.js";
 import { registerOperations } from "./operations.js";
 import { tables } from "./tables.js";
 import { registerLocalDesktop } from "./local-desktop.js";
+import {
+  hostKeyRefusalReason,
+  hostKeyRefusalText,
+  isHostKeyRefusal,
+} from "./host-key-refusal.js";
 
 const TRANSFER_PROFILES_KEY = "transfer-profiles";
 
@@ -965,13 +970,13 @@ export async function activate(ctx: PluginContext) {
             `Authentication failed: ${err.message}`,
           ),
         );
-      } else if (err.message.includes("verification failed")) {
+      } else if (isHostKeyRefusal(err.message)) {
         errorStage = "handshake";
         connectionLogs.push(
           createConnectionLog(
             "error",
             errorStage,
-            "SSH host key has changed. For security, please open a Terminal connection to this host first to verify and accept the new key fingerprint.",
+            hostKeyRefusalText(err.message),
           ),
         );
       } else {
@@ -989,10 +994,11 @@ export async function activate(ctx: PluginContext) {
         err.message.includes("no passphrase")
       ) {
         res.json({ status: "passphrase_required", connectionLogs });
-      } else if (err.message.includes("verification failed")) {
+      } else if (isHostKeyRefusal(err.message)) {
         // Trying again gets the same answer until someone accepts the new key.
         res.status(409).json({
           status: "host_key_changed",
+          reason: hostKeyRefusalReason(err.message),
           message: err.message,
           connectionLogs,
         });

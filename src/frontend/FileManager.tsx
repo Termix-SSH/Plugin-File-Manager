@@ -848,7 +848,11 @@ function FileManagerContent({
         }
         if (sshError.status === "host_key_changed") {
           setHasConnectionError(true);
-          setLastConnectionError(t("fileManager.hostKeyChanged"));
+          setLastConnectionError(
+            sshError.hostKey === "unverified"
+              ? t("fileManager.hostKeyUnverified")
+              : t("fileManager.hostKeyChanged"),
+          );
           setHostKeyChanged(true);
           setIsLoading(false);
           return;
