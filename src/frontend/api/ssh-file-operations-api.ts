@@ -1016,6 +1016,8 @@ export async function compressSSHFiles(
         hostId,
         userId,
       },
+      // No client timeout: compressing many files can take minutes.
+      { timeout: 0 },
     );
 
     fileLogger.success("Files compressed successfully", {

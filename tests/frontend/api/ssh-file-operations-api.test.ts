@@ -49,6 +49,7 @@ import {
   listSSHFiles,
   copySSHItem,
   moveSSHItem,
+  compressSSHFiles,
 } from "../../../src/frontend/api/ssh-file-operations-api";
 import {
   getCachedFileList,
@@ -389,6 +390,17 @@ describe("copy/move destination decisions", () => {
       "/moveItem",
       expect.objectContaining({ overwrite: true }),
       { timeout: 60000 },
+    );
+  });
+});
+
+describe("archive operations", () => {
+  it("compresses without a client timeout, since many files take minutes", async () => {
+    await compressSSHFiles("s", ["/data/a", "/data/b"], "out.zip");
+    expect(fileManagerApiMock.post).toHaveBeenLastCalledWith(
+      "/compressFiles",
+      expect.objectContaining({ paths: ["/data/a", "/data/b"], format: "zip" }),
+      { timeout: 0 },
     );
   });
 });

@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- Compressing many files no longer fails with a timeout after 30 seconds
 - Says to open a terminal and trust the host when its key is not trusted yet, instead of a plain error (Termix 26.11.2)
 - Comparing two files works again. The diff view now ships with the plugin instead of loading code from a CDN, which the Termix server blocks
 - A file session id that matches a built in object name is treated as unknown instead of reaching shared objects on the server
