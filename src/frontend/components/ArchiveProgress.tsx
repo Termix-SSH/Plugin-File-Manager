@@ -47,7 +47,7 @@ export function ArchiveProgress({
         return (
           <div key={item.id} className="flex items-center gap-2 min-w-0">
             <span className="truncate">{label}</span>
-            <div className="w-32 shrink-0">
+            <div className="w-16 sm:w-32 shrink-0">
               <TransferProgressBar value={percent} label={label} />
             </div>
             {item.extracted !== undefined && (
