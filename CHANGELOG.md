@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2
+
+### Changed
+
+- Built with plugin SDK 2.10.1, so the release builds to the same file anywhere and can be checked
+
 ## 1.2.1
 
 ### Added
