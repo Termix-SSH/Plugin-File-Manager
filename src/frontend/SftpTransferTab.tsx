@@ -444,7 +444,7 @@ function RemotePane({
             );
             if (host) void connect(host);
           }}
-          className="h-8 w-full rounded-none border-border bg-background px-2 text-xs outline-none focus:ring-1 focus:ring-ring"
+          className="h-8 w-full rounded-none border-border bg-(--field) px-2 text-xs outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="" disabled>
             {t("sftpTransfer.selectHost")}

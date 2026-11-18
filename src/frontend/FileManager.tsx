@@ -89,7 +89,9 @@ import {
   keepSSHAlive,
   identifySSHSymlink,
   changeSSHPermissions,
-  extractSSHArchive,
+  startSSHArchiveExtraction,
+  getSSHArchiveExtractionStatus,
+  type ArchiveExtractionStatus,
   compressSSHFiles,
   setSudoPassword,
 } from "./api/ssh-file-operations-api";
@@ -120,6 +122,10 @@ import {
 } from "./file-preview-preload";
 import { beginTransferProgressMonitoring } from "./transferProgressMonitor.tsx";
 import { createFormatTransferMetrics } from "./transferMetricsFormat.ts";
+import {
+  ArchiveProgress,
+  type ArchiveProgressState,
+} from "./components/ArchiveProgress.tsx";
 import type {
   CreateIntent,
   FileManagerProps,
@@ -145,10 +151,15 @@ import {
   renameOptimisticItem,
   restoreItems,
 } from "./optimistic-file-list";
+import { shortcutKey } from "./lib/shortcut-key";
 
 /** Paths per trash request, and requests in flight (backend adds its own pool). */
 const TRASH_BATCH_SIZE = 200;
 const TRASH_BATCHES_IN_FLIGHT = 3;
+/** How often an extraction is polled, the polls it may miss in a row, and how long its error stays in the footer. */
+const EXTRACT_POLL_MS = 1000;
+const EXTRACT_MAX_FAILED_POLLS = 5;
+const EXTRACT_ERROR_SHOWN_MS = 10000;
 const LOCAL_PANE_OPEN_STORAGE_KEY = "termix:file-manager:local-pane:open";
 const SIDEBAR_OPEN_STORAGE_KEY = "termix:file-manager:sidebar:open";
 const LOCAL_PANE_WIDTH_STORAGE_KEY = "termix:file-manager:local-pane:width";
@@ -438,6 +449,16 @@ function FileManagerContent({
   const [editingFile, setEditingFile] = useState<FileItem | null>(null);
   const [permissionsDialogFile, setPermissionsDialogFile] =
     useState<FileItem | null>(null);
+  const [archiveProgress, setArchiveProgress] = useState<
+    ArchiveProgressState[]
+  >([]);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   const [compressDialogFiles, setCompressDialogFiles] = useState<FileItem[]>(
     [],
   );
@@ -848,7 +869,11 @@ function FileManagerContent({
         }
         if (sshError.status === "host_key_changed") {
           setHasConnectionError(true);
-          setLastConnectionError(t("fileManager.hostKeyChanged"));
+          setLastConnectionError(
+            sshError.hostKey === "unverified"
+              ? t("fileManager.hostKeyUnverified")
+              : t("fileManager.hostKeyChanged"),
+          );
           setHostKeyChanged(true);
           setIsLoading(false);
           return;
@@ -1383,7 +1408,11 @@ function FileManagerContent({
         return;
       }
 
-      if (event.key === "T" && event.ctrlKey && event.shiftKey) {
+      if (
+        shortcutKey(event).toLowerCase() === "t" &&
+        event.ctrlKey &&
+        event.shiftKey
+      ) {
         // Every mounted tab listens, so only the visible one acts.
         if (!paneVisibleRef.current || isFtp) return;
         event.preventDefault();
@@ -1998,7 +2027,10 @@ function FileManagerContent({
     toast.error(t("fileManager.failedToDeleteItems"));
   }
 
-  async function handleDeleteFiles(files: FileItem[]) {
+  async function handleDeleteFiles(
+    files: FileItem[],
+    options: { permanent?: boolean } = {},
+  ) {
     // Rows already being trashed can't be deleted again.
     files = files.filter((file) => !deletingPathsRef.current.has(file.path));
     if (!sshSessionId || files.length === 0) return;
@@ -2024,6 +2056,18 @@ function FileManagerContent({
       confirmMessage = t(translationKey, {
         count: files.length,
       });
+    }
+
+    // Shift+Delete skips the trash, so it always asks first.
+    if (options.permanent) {
+      if (!(await confirm({ title: confirmMessage }))) return;
+      const release = holdDeletes();
+      try {
+        await afterBulkDelete(await bulkDelete(files, true), true);
+      } finally {
+        release();
+      }
+      return;
     }
 
     const fullMessage = `${confirmMessage}\n\n${t("fileManager.moveToTrashWarning")}`;
@@ -2715,26 +2759,56 @@ function FileManagerContent({
 
   async function handleExtractArchive(file: FileItem) {
     if (!sshSessionId) return;
+    const sessionId = sshSessionId;
+    const id = `${Date.now()}:${file.path}`;
+    const update = (patch: Partial<ArchiveProgressState>) =>
+      setArchiveProgress((items) =>
+        items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+      );
+    const remove = () =>
+      setArchiveProgress((items) => items.filter((item) => item.id !== id));
 
+    // The footer line is the progress display: it stays up until the host
+    // says the extraction ended, however long that takes.
+    setArchiveProgress((items) => [...items, { id, name: file.name }]);
     try {
       await ensureSSHConnection();
-
-      toast.info(t("fileManager.extractingArchive", { name: file.name }));
-
-      await extractSSHArchive(
-        sshSessionId,
+      const { operationId } = await startSSHArchiveExtraction(
+        sessionId,
         file.path,
-        undefined,
-        currentHost?.id,
-        currentHost?.userId?.toString(),
       );
 
+      let failedPolls = 0;
+      for (;;) {
+        let status: ArchiveExtractionStatus;
+        try {
+          status = await getSSHArchiveExtractionStatus(sessionId, operationId);
+          failedPolls = 0;
+        } catch (error) {
+          // The extraction runs on the host either way; one dropped poll
+          // is not a failed extraction.
+          if (++failedPolls >= EXTRACT_MAX_FAILED_POLLS) throw error;
+          await new Promise((r) => setTimeout(r, EXTRACT_POLL_MS));
+          continue;
+        }
+        if (status.status === "error") {
+          throw new Error(status.error || t("fileManager.extractFailed"));
+        }
+        update({ extracted: status.extracted, total: status.total });
+        if (status.status === "done") break;
+        await new Promise((r) => setTimeout(r, EXTRACT_POLL_MS));
+        if (!mountedRef.current) return;
+      }
+
+      remove();
       toast.success(
         t("fileManager.archiveExtractedSuccessfully", { name: file.name }),
       );
       handleRefreshDirectory();
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error, String(error));
+      update({ error: errorMessage });
+      setTimeout(remove, EXTRACT_ERROR_SHOWN_MS);
       toast.error(`${t("fileManager.extractFailed")}: ${errorMessage}`);
     }
   }
@@ -3990,6 +4064,7 @@ function FileManagerContent({
             <div className="flex-1 relative min-h-0 h-full">
               <FileManagerGrid
                 files={filteredFiles}
+                footerStatus={<ArchiveProgress items={archiveProgress} t={t} />}
                 searchQuery={searchQuery}
                 isLoading={isLoading}
                 selectedFiles={selectedFiles}

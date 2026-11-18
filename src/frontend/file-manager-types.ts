@@ -30,6 +30,8 @@ export type SSHConnectionError = Error & {
   label?: string;
   status?: string;
   reason?: "no_keyboard" | "auth_failed" | "timeout";
+  /** With host_key_changed: no key saved for the host yet, or it differs. */
+  hostKey?: "unverified" | "changed";
 };
 
 export interface CreateIntent {

@@ -726,7 +726,7 @@ export function TransferToHostDialog({
                 <Select2
                   value={selectedHostId}
                   onChange={(e) => handleHostChange(e.target.value)}
-                  className="w-full appearance-none px-2.5 py-1.5 text-xs bg-background border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
+                  className="w-full appearance-none px-2.5 py-1.5 text-xs bg-(--field) border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
                 >
                   <option value="" disabled>
                     {t("transfer.selectDestinationHost")}
@@ -961,7 +961,7 @@ export function TransferToHostDialog({
                           e.target.value as TransferMethodPreference,
                         )
                       }
-                      className="w-full appearance-none px-2.5 py-1.5 text-xs bg-background border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
+                      className="w-full appearance-none px-2.5 py-1.5 text-xs bg-(--field) border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
                     >
                       <option value="auto">{t("transfer.methodAuto")}</option>
                       <option value="tar">{t("transfer.methodTar")}</option>
@@ -987,7 +987,7 @@ export function TransferToHostDialog({
                     <Select2
                       value={parallelSegmentCount}
                       onChange={(e) => setParallelSegmentCount(e.target.value)}
-                      className="w-full appearance-none px-2.5 py-1.5 text-xs bg-background border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
+                      className="w-full appearance-none px-2.5 py-1.5 text-xs bg-(--field) border border-border text-foreground outline-none focus:ring-1 focus:ring-ring pr-7"
                     >
                       <option value="auto">{t("transfer.methodAuto")}</option>
                       {[1, 2, 3, 4].map((n) => (

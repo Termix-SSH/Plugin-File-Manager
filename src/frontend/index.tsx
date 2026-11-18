@@ -169,6 +169,8 @@ export function activate(app: TermixApp): void {
     icon: FolderInput,
     order: 14,
     visible: (protocols) => !!protocols.enableFtp,
+    // Shown in the simple host editor (SDK 2.10.0).
+    ...{ simple: true },
     component: FtpHostSection,
   });
 

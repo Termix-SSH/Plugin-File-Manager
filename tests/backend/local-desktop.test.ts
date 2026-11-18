@@ -5,7 +5,7 @@ import path from "node:path";
 import type { AddressInfo } from "node:net";
 import { PassThrough, Readable } from "node:stream";
 import express from "express";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   isLaunchableFileName,
   registerLocalDesktop,
@@ -61,12 +61,14 @@ async function setup(available = true): Promise<Harness> {
       trash: vi.fn(),
       reveal: vi.fn(),
       open: vi.fn(async () => {}),
+      openInEditor: vi.fn(async () => {}),
       openRead: vi.fn(),
       openDownload: vi.fn(),
     },
   };
   const ctx = {
     desktop: { local },
+    files: { dataDir: async () => tmp },
     currentActor: () => "user-1",
     ws: { route: (p: string, h: (c: unknown) => void) => wsRoutes.set(p, h) },
     disposables: { add: (fn: () => void) => disposables.push(fn) },
@@ -339,53 +341,53 @@ describe("transfers", () => {
 });
 
 describe("external editor", () => {
-  const savedEditor = (dir: string, value: string | null) => {
-    if (value === null) return;
-    fs.writeFileSync(
-      path.join(dir, "settings.json"),
-      JSON.stringify({ "fileManager.externalEditorPath": value }),
-    );
-  };
-
-  beforeEach(() => {
-    userDataDir = "";
-  });
-
-  it("refuses a launchable file with no editor configured", async () => {
-    harness = await setup();
-    const res = await harness.call("/local/editor/open", {
-      fileName: "run.sh",
-      content: "x",
-    });
-    expect(res.body).toMatchObject({ success: false });
-    expect(String(res.body.error)).toMatch(/external editor/);
-    expect(harness.local.fs.open).not.toHaveBeenCalled();
-  });
-
-  it("opens a plain file with the OS when no editor is set", async () => {
+  it("writes the copy in its own data folder and has the app open it", async () => {
     harness = await setup();
     const res = await harness.call("/local/editor/open", {
       fileName: "../notes.txt",
       content: "hi",
     });
     expect(res.body).toMatchObject({ success: true });
-    const opened = harness.local.fs.open.mock.calls[0][0] as string;
+    const opened = harness.local.fs.openInEditor.mock.calls[0][0] as string;
+    expect(opened.startsWith(path.join(harness.tmp, "editor"))).toBe(true);
     expect(path.basename(opened)).toBe("notes.txt");
     expect(fs.readFileSync(opened, "utf8")).toBe("hi");
+    expect(harness.local.fs.open).not.toHaveBeenCalled();
     await harness.call("/local/editor/close", { editId: res.body.editId });
   });
 
-  it("takes the editor from the saved setting, never from the caller", async () => {
+  it("never passes an editor from the caller to the app", async () => {
     harness = await setup();
-    savedEditor(harness.tmp, process.execPath);
-    const res = await harness.call("/local/editor/open", {
+    await harness.call("/local/editor/open", {
       fileName: "notes.txt",
       content: "hi",
       editorPath: "/evil",
     });
-    // The saved editor (node) runs and exits on its own; the OS opener is not used.
-    expect(harness.local.fs.open).not.toHaveBeenCalled();
-    expect(res.body).toMatchObject({ success: true });
-    await harness.call("/local/editor/close", { editId: res.body.editId });
+    expect(harness.local.fs.openInEditor.mock.calls[0]).toHaveLength(1);
+  });
+
+  it("reports the app's refusal and drops the copy", async () => {
+    harness = await setup();
+    harness.local.fs.openInEditor.mockRejectedValueOnce(
+      new Error("Choose an external editor to open this file type"),
+    );
+    const res = await harness.call("/local/editor/open", {
+      fileName: "run.sh",
+      content: "x",
+    });
+    expect(res.body).toMatchObject({ success: false });
+    expect(String(res.body.error)).toMatch(/external editor/);
+    await new Promise((r) => setTimeout(r, 20));
+    expect(fs.readdirSync(path.join(harness.tmp, "editor"))).toEqual([]);
+  });
+
+  it("asks for a newer Termix when the app can't open editors", async () => {
+    harness = await setup();
+    delete (harness.local.fs as Record<string, unknown>).openInEditor;
+    const res = await harness.call("/local/editor/open", {
+      fileName: "notes.txt",
+      content: "x",
+    });
+    expect(String(res.body.error)).toMatch(/Update Termix/);
   });
 });

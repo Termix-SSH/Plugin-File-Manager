@@ -1,4 +1,5 @@
 import { quotePosixPath } from "./operation-commands.js";
+import { trimEnd } from "./trim.js";
 
 type SFTPWrapper = import("ssh2").SFTPWrapper;
 
@@ -8,7 +9,7 @@ const OUTSIDE = "Upload path is outside the selected upload folder";
 
 /** Path components of `fullPath` below `root`, or null when it escapes it. */
 export function pathBelowRoot(root: string, fullPath: string): string[] | null {
-  const base = root.replace(/\/+$/, "");
+  const base = trimEnd(root);
   if (!fullPath.startsWith(`${base}/`)) return null;
   const parts = fullPath
     .slice(base.length + 1)
@@ -21,7 +22,7 @@ export function pathBelowRoot(root: string, fullPath: string): string[] | null {
 }
 
 function prefixes(root: string, parts: string[]) {
-  const base = root.replace(/\/+$/, "");
+  const base = trimEnd(root);
   return parts.map((_, i) => `${base}/${parts.slice(0, i + 1).join("/")}`);
 }
 

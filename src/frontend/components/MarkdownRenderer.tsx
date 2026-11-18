@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark as syntaxTheme } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { shortcutKey } from "../lib/shortcut-key";
 
 interface MarkdownRendererProps {
   content: string;
@@ -53,7 +54,10 @@ export function MarkdownRenderer({
       tabIndex={0}
       onKeyDown={(event) => {
         // Keep native text copying out of the file grid's global shortcuts.
-        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "c")
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          shortcutKey(event).toLowerCase() === "c"
+        )
           event.stopPropagation();
       }}
     >

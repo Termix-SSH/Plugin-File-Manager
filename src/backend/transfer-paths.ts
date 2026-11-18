@@ -1,3 +1,4 @@
+import { trimEnd } from "./trim.js";
 export type TransferPlatform = "windows" | "unix";
 
 /** OpenSSH SFTP on Windows commonly uses `/C:/...` or `C:/...` style paths. */
@@ -15,20 +16,20 @@ export function inferPlatformFromPath(path: string): TransferPlatform | null {
 }
 
 export function normalizeSftpPath(path: string): string {
-  const normalized = path.replace(/\\/g, "/").replace(/\/+$/, "");
+  const normalized = trimEnd(path.replace(/\\/g, "/"));
   if (!normalized) return path.startsWith("/") ? "/" : ".";
   return normalized.replace(/([^:])\/+/g, "$1/");
 }
 
 export function basename(path: string): string {
-  const normalized = path.replace(/\\/g, "/").replace(/\/+$/, "");
+  const normalized = trimEnd(path.replace(/\\/g, "/"));
   const idx = normalized.lastIndexOf("/");
   if (idx < 0) return normalized;
   return normalized.substring(idx + 1) || normalized;
 }
 
 export function dirname(path: string): string {
-  const normalized = path.replace(/\\/g, "/").replace(/\/+$/, "");
+  const normalized = trimEnd(path.replace(/\\/g, "/"));
   if (!normalized) return normalized;
 
   const idx = normalized.lastIndexOf("/");

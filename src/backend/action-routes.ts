@@ -2,6 +2,7 @@ import type { Express } from "express";
 import type { PluginContext } from "@termix-ssh/plugin-sdk/backend";
 import { execChannel, type SSHSession } from "./session.js";
 import { buildTransferCommand } from "./operation-commands.js";
+import { trimEnd } from "./trim.js";
 
 type FileActionRoutesDeps = {
   ctx: PluginContext;
@@ -96,7 +97,7 @@ export function registerFileActionRoutes(
 
     const timestamp = Date.now().toString().slice(-8);
     const uniqueName = targetName ?? `${sourceName}_copy_${timestamp}`;
-    const targetPath = `${targetDir.replace(/\/+$/, "")}/${uniqueName}`;
+    const targetPath = `${trimEnd(targetDir)}/${uniqueName}`;
     const copyCommand = buildTransferCommand(
       "copy",
       sourcePath,

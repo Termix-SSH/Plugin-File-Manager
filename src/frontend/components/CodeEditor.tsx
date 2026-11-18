@@ -30,7 +30,7 @@ interface CodeEditorProps {
   fontSize?: number;
 }
 
-function getLanguageExtension(filename: string) {
+export function getLanguageExtension(filename: string) {
   const ext = filename.split(".").pop()?.toLowerCase() || "";
   const baseName = filename.toLowerCase();
 

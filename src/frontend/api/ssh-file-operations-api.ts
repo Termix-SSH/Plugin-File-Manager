@@ -169,7 +169,10 @@ export async function connectSSH(
         });
       }
       if (data.status === "host_key_changed") {
-        Object.assign(errorWithLogs, { status: "host_key_changed" });
+        Object.assign(errorWithLogs, {
+          status: "host_key_changed",
+          hostKey: data.reason,
+        });
       }
       throw errorWithLogs;
     }
@@ -942,44 +945,43 @@ export async function changeSSHPermissions(
   }
 }
 
-export async function extractSSHArchive(
+export type ArchiveExtractionStatus = {
+  status: "running" | "done" | "error";
+  extracted?: number;
+  total?: number;
+  error?: string;
+  extractPath: string;
+};
+
+/** Starts an extraction and returns at once; poll the status for progress. */
+export async function startSSHArchiveExtraction(
   sessionId: string,
   archivePath: string,
   extractPath?: string,
-  hostId?: number,
-  userId?: string,
-): Promise<{ success: boolean; message: string; extractPath: string }> {
+): Promise<{ operationId: string; extractPath: string }> {
   try {
-    fileLogger.info("Extracting archive", {
-      operation: "extract_archive",
-      sessionId,
-      archivePath,
-      extractPath,
-      hostId,
-      userId,
-    });
-
     const response = await getFileManagerApiForSession(sessionId).post(
-      "/extractArchive",
-      { sessionId, archivePath, extractPath, hostId, userId },
+      "/extractArchive/start",
+      { sessionId, archivePath, extractPath },
     );
-
-    fileLogger.success("Archive extracted successfully", {
-      operation: "extract_archive",
-      sessionId,
-      archivePath,
-      extractPath: response.data.extractPath,
-    });
-
     return response.data;
   } catch (error) {
-    fileLogger.error("Failed to extract archive", error, {
-      operation: "extract_archive",
-      sessionId,
-      archivePath,
-      extractPath,
-    });
     handleApiError(error, "extract archive");
+    throw error;
+  }
+}
+
+export async function getSSHArchiveExtractionStatus(
+  sessionId: string,
+  operationId: string,
+): Promise<ArchiveExtractionStatus> {
+  try {
+    const response = await getFileManagerApiForSession(sessionId).get(
+      `/extractArchive/status/${encodeURIComponent(operationId)}`,
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "get extract status");
     throw error;
   }
 }
@@ -1013,6 +1015,7 @@ export async function compressSSHFiles(
         hostId,
         userId,
       },
+      { timeout: 0 },
     );
 
     fileLogger.success("Files compressed successfully", {

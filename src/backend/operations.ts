@@ -3,6 +3,7 @@ import type {
   PluginOperationContext,
 } from "@termix-ssh/plugin-sdk/backend";
 import type { FilesService } from "./service.js";
+import { trimEnd } from "./trim.js";
 
 function requireHost(context: PluginOperationContext): number {
   if (context.hostId === undefined) throw new Error("This needs a host");
@@ -14,7 +15,7 @@ export function cleanPath(value: unknown): string {
   if (!path.startsWith("/"))
     throw new Error("Use a full path that starts with /");
   if (path.includes("\0")) throw new Error("The path is not valid");
-  return path.length > 1 ? path.replace(/\/+$/, "") : path;
+  return path.length > 1 ? trimEnd(path) : path;
 }
 
 function deletable(value: unknown): string {

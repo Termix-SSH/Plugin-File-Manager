@@ -82,6 +82,17 @@ export class HostNotOnThisServerError extends Error {
   }
 }
 
+/** A shared host the user can reach but has no login for. */
+export class HostLoginRequiredError extends HostNotOnThisServerError {
+  constructor() {
+    super();
+    this.message =
+      "You have no login for this shared host, so the connection was refused. " +
+      'Ask its owner to turn on "Share SSH Authentication" for it, or set your own personal login for it.';
+    this.name = "HostLoginRequiredError";
+  }
+}
+
 type Meta = Record<string, unknown>;
 
 export interface FileLogger {

@@ -75,6 +75,16 @@
       "access": "user",
       "permission": "file-manager.use"
     },
+    "POST /plugin-api/file-manager/extractArchive/start": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/extractArchive/status/:operationId": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "note": "Needs a running extraction",
+      "allowed": "any"
+    },
     "POST /plugin-api/file-manager/ftp/connect": {
       "access": "user",
       "permission": "file-manager.use"

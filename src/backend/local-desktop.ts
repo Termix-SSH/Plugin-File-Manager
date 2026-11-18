@@ -1,10 +1,9 @@
-import { spawn } from "node:child_process";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { Readable, type Writable } from "node:stream";
 import express, { type Express, type Request, type Response } from "express";
+import { trimEnd } from "./trim.js";
 import type {
   PluginContext,
   PluginLocalResponse,
@@ -12,9 +11,11 @@ import type {
 } from "@termix-ssh/plugin-sdk/backend";
 
 // The desktop app's own disk, for the dual-pane file manager and the external
-// editor. Everything here is refused outside the desktop app.
+// editor. Everything here is refused outside the desktop app. The plugin
+// process is fenced like on a server: the user's files go through
+// ctx.desktop.local, and the editor's temp copy lives in the plugin's own data
+// folder.
 
-const EXTERNAL_EDITOR_SETTING = "fileManager.externalEditorPath";
 const PROGRESS_INTERVAL_MS = 150;
 const OPEN = 1;
 
@@ -74,7 +75,7 @@ const LAUNCHABLE_EXTENSIONS = new Set([
 
 export function isLaunchableFileName(fileName: unknown): boolean {
   // Windows drops trailing dots and spaces, so "a.exe. " is saved as a.exe.
-  const name = path.basename(String(fileName || "")).replace(/[. ]+$/, "");
+  const name = trimEnd(path.basename(String(fileName || "")), ". ");
   return LAUNCHABLE_EXTENSIONS.has(path.extname(name).slice(1).toLowerCase());
 }
 
@@ -150,25 +151,32 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }
   };
 
-  ctx.ws.route("/local-events", (connection: PluginWebSocketConnection) => {
-    const ws = connection.socket as Socket;
-    if (!connection.userId || !local.available()) {
-      ws.close(1008, "Desktop only");
-      return;
-    }
-    const userId = connection.userId;
-    let set = sockets.get(userId);
-    if (!set) sockets.set(userId, (set = new Set()));
-    const mine = set;
-    mine.add(ws);
-    ws.on("close", (() => {
-      mine.delete(ws);
-      if (mine.size === 0) sockets.delete(userId);
-    }) as never);
-  });
+  ctx.ws.route(
+    "/local-events",
+    async (connection: PluginWebSocketConnection) => {
+      const ws = connection.socket as Socket;
+      if (!connection.userId || !(await local.available())) {
+        ws.close(1008, "Desktop only");
+        return;
+      }
+      const userId = connection.userId;
+      let set = sockets.get(userId);
+      if (!set) sockets.set(userId, (set = new Set()));
+      const mine = set;
+      mine.add(ws);
+      ws.on("close", (() => {
+        mine.delete(ws);
+        if (mine.size === 0) sockets.delete(userId);
+      }) as never);
+    },
+  );
 
-  const desktopOnly = (_req: Request, res: Response, next: () => void) => {
-    if (!local.available()) {
+  const desktopOnly = async (
+    _req: Request,
+    res: Response,
+    next: () => void,
+  ) => {
+    if (!(await local.available())) {
       res.status(404).json({ error: "Only available in the desktop app" });
       return;
     }
@@ -192,6 +200,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
 
   app.use("/local", desktopOnly as never, express.json({ limit: "64mb" }));
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/home:
+   *   get:
+   *     summary: The desktop user's home folder
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.get(
     "/local/home",
     handle(async () => {
@@ -203,54 +224,184 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
       };
     }),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/list:
+   *   post:
+   *     summary: List a folder on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/list",
     handle(async (req) => local.fs.list(req.body.path)),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/mkdir:
+   *   post:
+   *     summary: Create a folder on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/mkdir",
     handle(async (req) => ({
       path: await local.fs.mkdir(req.body.parent, req.body.name),
     })),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/create-file:
+   *   post:
+   *     summary: Create an empty file on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/create-file",
     handle(async (req) => ({
       path: await local.fs.createFile(req.body.parent, req.body.name),
     })),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/rename:
+   *   post:
+   *     summary: Rename a file or folder on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/rename",
     handle(async (req) => ({
       path: await local.fs.rename(req.body.path, req.body.name),
     })),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/trash:
+   *   post:
+   *     summary: Move files on this computer to the trash
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/trash",
     handle(async (req) => local.fs.trash(req.body.paths)),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/ensure-dir:
+   *   post:
+   *     summary: Create a folder on this computer if it is missing
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/ensure-dir",
     handle(async (req) => ({
       path: await local.fs.ensureDir(req.body.path, req.body.root),
     })),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/exists:
+   *   post:
+   *     summary: Which of the given paths exist on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/exists",
     handle(async (req) => ({
       existing: await local.fs.exists(req.body.paths),
     })),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/walk:
+   *   post:
+   *     summary: List every file under the given paths on this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/walk",
     handle(async (req) => local.fs.walk(req.body.paths)),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/reveal:
+   *   post:
+   *     summary: Show a file in Explorer or Finder
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/reveal",
     handle(async (req) => {
       await local.fs.reveal(req.body.path);
     }),
   );
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/open:
+   *   post:
+   *     summary: Open a file with its default app
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/open",
     handle(async (req) => {
@@ -296,6 +447,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     return response.text().catch(() => "");
   }
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/upload:
+   *   post:
+   *     summary: Copy a file from this computer to a host
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/upload",
     handle(async (req, userId) => {
@@ -380,6 +544,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }),
   );
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/download:
+   *   post:
+   *     summary: Copy a file from a host to this computer
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/download",
     handle(async (req, userId) => {
@@ -447,6 +624,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }),
   );
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/cancel:
+   *   post:
+   *     summary: Stop a running copy
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/cancel",
     handle(async (req, userId) => {
@@ -499,20 +689,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }
   };
 
-  async function readEditorPath(): Promise<string | null> {
-    const info = await local.info();
-    try {
-      const raw = await fsp.readFile(
-        path.join(info.userDataDir, "settings.json"),
-        "utf8",
-      );
-      const value = JSON.parse(raw)[EXTERNAL_EDITOR_SETTING];
-      return typeof value === "string" && value ? value : null;
-    } catch {
-      return null;
-    }
-  }
-
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/editor/open:
+   *   post:
+   *     summary: Open a host file in a desktop editor
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/editor/open",
     handle(async (req, userId) => {
@@ -520,13 +709,16 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
         string,
         string
       >;
-      // The editor comes from the saved setting, never from the caller.
-      const editorPath = await readEditorPath();
-      if (!editorPath && isLaunchableFileName(fileName)) {
-        throw new Error("Choose an external editor to open this file type");
+      // The app starts the editor the person picked there, never one named
+      // by the caller, and refuses a program when none is picked.
+      const openInEditor = (
+        local.fs as { openInEditor?: (filePath: string) => Promise<void> }
+      ).openInEditor;
+      if (typeof openInEditor !== "function") {
+        throw new Error("Update Termix to open files in an external editor");
       }
 
-      const root = path.join(os.tmpdir(), "termix");
+      const root = path.join(await ctx.files.dataDir(), "editor");
       await fsp.mkdir(root, { recursive: true });
       const editId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const dir = await fsp.mkdtemp(path.join(root, `${editId}-`));
@@ -555,21 +747,7 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
       });
 
       try {
-        if (!editorPath) {
-          await local.fs.open(filePath);
-        } else {
-          await new Promise<void>((resolve, reject) => {
-            const child = spawn(editorPath, [filePath], {
-              detached: true,
-              stdio: "ignore",
-            });
-            child.once("error", reject);
-            child.once("spawn", () => {
-              child.unref();
-              resolve();
-            });
-          });
-        }
+        await openInEditor.call(local.fs, filePath);
       } catch (error) {
         closeEditor(editId);
         throw error;
@@ -578,6 +756,19 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
     }),
   );
 
+  /**
+   * @openapi
+   * /plugin-api/file-manager/local/editor/close:
+   *   post:
+   *     summary: Stop watching a file opened in a desktop editor
+   *     description: Desktop app only. A server answers 404.
+   *     tags:
+   *       - File Manager
+   *     responses:
+   *       200: { description: Done. }
+   *       400: { description: Missing or invalid parameters. }
+   *       404: { description: Not the desktop app. }
+   */
   app.post(
     "/local/editor/close",
     handle(async (req, userId) => {

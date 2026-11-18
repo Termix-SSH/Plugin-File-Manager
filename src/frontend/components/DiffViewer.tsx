@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { DiffEditor } from "@monaco-editor/react";
+import { CodeDiff } from "./CodeDiff.tsx";
 import { Button, LoadingState } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
 import { DownloadProgressToast } from "./DownloadProgressToast";
@@ -186,40 +186,6 @@ export function DiffViewer({
     }
   };
 
-  const getFileLanguage = (fileName: string): string => {
-    const ext = fileName.split(".").pop()?.toLowerCase();
-    const languageMap: Record<string, string> = {
-      js: "javascript",
-      jsx: "javascript",
-      ts: "typescript",
-      tsx: "typescript",
-      py: "python",
-      java: "java",
-      c: "c",
-      cpp: "cpp",
-      cs: "csharp",
-      php: "php",
-      rb: "ruby",
-      go: "go",
-      rs: "rust",
-      html: "html",
-      css: "css",
-      scss: "scss",
-      less: "less",
-      json: "json",
-      xml: "xml",
-      yaml: "yaml",
-      yml: "yaml",
-      md: "markdown",
-      sql: "sql",
-      sh: "shell",
-      bash: "shell",
-      ps1: "powershell",
-      dockerfile: "dockerfile",
-    };
-    return languageMap[ext || ""] || "plaintext";
-  };
-
   useEffect(() => {
     loadFileContents();
   }, [file1, file2, sshSessionId]);
@@ -327,34 +293,13 @@ export function DiffViewer({
         </div>
       </div>
 
-      <div className="flex-1">
-        <DiffEditor
+      <div className="min-h-0 flex-1">
+        <CodeDiff
+          fileName={file1.name}
           original={content1}
           modified={content2}
-          language={getFileLanguage(file1.name)}
-          theme="vs-dark"
-          options={{
-            renderSideBySide: diffMode === "side-by-side",
-            lineNumbers: showLineNumbers ? "on" : "off",
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            fontSize: 13,
-            wordWrap: "off",
-            automaticLayout: true,
-            readOnly: true,
-            originalEditable: false,
-            scrollbar: {
-              vertical: "visible",
-              horizontal: "visible",
-            },
-            diffWordWrap: "off",
-            ignoreTrimWhitespace: false,
-          }}
-          loading={
-            <div className="h-full flex items-center justify-center">
-              <LoadingState label={t("fileManager.initializingEditor")} />
-            </div>
-          }
+          sideBySide={diffMode === "side-by-side"}
+          showLineNumbers={showLineNumbers}
         />
       </div>
     </div>

@@ -1,7 +1,7 @@
 {
   "id": "file-manager",
   "name": "File Manager",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Browse, edit and move files over SFTP, including straight from one server to another.",
   "author": {
     "name": "Termix"
@@ -22,8 +22,8 @@
     "A side by side local and remote view in the desktop app"
   ],
   "engine": {
-    "termix": ">=26.11.1-0",
-    "api": "^1.15"
+    "termix": ">=26.11.2-0",
+    "api": "^2.7.0"
   },
   "capabilities": [
     "hosts:read",
@@ -35,10 +35,15 @@
     "ui:surface",
     "events:core",
     "kv:own",
+    "files:own",
     "users:impersonate",
     "desktop:local",
-    "operations:provide"
+    "operations:provide",
+    "network:sockets"
   ],
+  "sandbox": {
+    "events": ["user.data_wiped"]
+  },
   "provides": [
     {
       "service": "files.sftp",
@@ -252,7 +257,12 @@
         "viewMode": "list"
       }
     },
-    "uses": ["homepage.widgets", "host-metrics.disk", "terminal.open"],
+    "uses": [
+      "homepage.widgets",
+      "host-metrics.disk",
+      "terminal.open",
+      "terminal.view"
+    ],
     "operations": {
       "actions": [
         {

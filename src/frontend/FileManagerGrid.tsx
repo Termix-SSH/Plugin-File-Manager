@@ -44,6 +44,7 @@ import {
 } from "./hooks/useResizableColumns.ts";
 import { ColumnResizeHandle } from "./components/ColumnResizeHandle.tsx";
 import { ColumnVisibilityMenu } from "./components/ColumnVisibilityMenu.tsx";
+import { shortcutKey } from "./lib/shortcut-key";
 
 // Fixed list-view columns after the flexible name column; user-resizable.
 const LIST_COLUMNS: ResizableColumnSpec[] = [
@@ -85,6 +86,8 @@ interface DragState {
 
 interface FileManagerGridProps {
   files: FileItem[];
+  /** Extra status drawn in the footer, between the item and selection counts. */
+  footerStatus?: React.ReactNode;
   /** Show a spinner instead of the empty-folder text while a listing is in flight. */
   isLoading?: boolean;
   /** Active name filter; when it leaves nothing to show, the empty state names it. */
@@ -111,7 +114,8 @@ interface FileManagerGridProps {
   editingFile?: FileItem | null;
   onStartEdit?: (file: FileItem) => void;
   onCancelEdit?: () => void;
-  onDelete?: (files: FileItem[]) => void;
+  /** Shift+Delete asks for `permanent`, skipping the trash. */
+  onDelete?: (files: FileItem[], options?: { permanent?: boolean }) => void;
   onCopy?: (files: FileItem[]) => void;
   onCut?: (files: FileItem[]) => void;
   onPaste?: () => void;
@@ -233,6 +237,7 @@ const getFileIcon = (
 
 export function FileManagerGrid({
   files,
+  footerStatus,
   isLoading,
   searchQuery,
   selectedFiles,
@@ -1047,7 +1052,7 @@ export function FileManagerGrid({
         return;
       }
 
-      switch (event.key) {
+      switch (shortcutKey(event)) {
         case "Escape":
           onSelectionChange([]);
           break;
@@ -1132,7 +1137,7 @@ export function FileManagerGrid({
           break;
         case "Delete":
           if (selectedFiles.length > 0 && onDelete) {
-            onDelete(selectedFiles);
+            onDelete(selectedFiles, { permanent: event.shiftKey });
           }
           break;
         case "F2":
@@ -1715,9 +1720,10 @@ export function FileManagerGrid({
       </div>
 
       <div className="px-3 py-1 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground shrink-0">
-        <span>
+        <span className="shrink-0">
           {files.length} {t("fileManager.items")}
         </span>
+        {footerStatus}
         {selectedFiles.length > 0 && (
           <span className="text-accent-brand">
             {selectedFiles.length} {t("fileManager.selected")}

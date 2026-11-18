@@ -30,7 +30,7 @@ const EMPTY: HostProtocolAuthForm = {
 const LABEL =
   "text-[10px] font-bold uppercase tracking-widest text-muted-foreground";
 const SELECT =
-  "flex h-9 w-full border border-border bg-background px-3 py-1 text-xs outline-none focus:ring-1 focus:ring-ring";
+  "flex h-8 w-full border border-border bg-(--field) px-3 py-1 text-xs outline-none focus:ring-1 focus:ring-ring";
 
 export function FtpHostSection(props: HostEditorSectionProps) {
   const { t } = useTranslation();

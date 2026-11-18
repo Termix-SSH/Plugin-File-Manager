@@ -1,4 +1,4 @@
-import express, { type Router } from "express";
+import express, { type Express, type Router } from "express";
 import cookieParser from "cookie-parser";
 import { Client as SSHClient } from "ssh2";
 import type {
@@ -19,6 +19,7 @@ import {
   hostAddressMismatch,
   HostAddressMismatchError,
   HostNotOnThisServerError,
+  HostLoginRequiredError,
   resolveServerHostId,
   type ConnectionStage,
   type FileLogger,
@@ -37,6 +38,11 @@ import { registerFileContentRoutes } from "./content-routes.js";
 import { registerFileOperationRoutes } from "./operation-routes.js";
 import { registerFileDownloadRoutes } from "./download-routes.js";
 import { registerFileActionRoutes } from "./action-routes.js";
+import {
+  buildExtractCommand,
+  friendlyExtractError,
+  registerExtractProgressRoutes,
+} from "./extract-archive.js";
 import { registerFtpRoutes } from "./ftp-routes.js";
 import { registerBookmarkRoutes } from "./bookmark-routes.js";
 import {
@@ -54,6 +60,11 @@ import { createFilesService } from "./service.js";
 import { registerOperations } from "./operations.js";
 import { tables } from "./tables.js";
 import { registerLocalDesktop } from "./local-desktop.js";
+import {
+  hostKeyRefusalReason,
+  hostKeyRefusalText,
+  isHostKeyRefusal,
+} from "./host-key-refusal.js";
 
 const TRANSFER_PROFILES_KEY = "transfer-profiles";
 
@@ -85,10 +96,11 @@ function hasSocks5Config(host: PluginSshHost): boolean {
 function assertResolvedHost(
   clientIp: unknown,
   hostSyncId: string | null | undefined,
-  resolvedHost: { ip?: string } | null | undefined,
+  resolvedHost: { ip?: string; loginRequired?: boolean } | null | undefined,
   hostId: number,
   userId: string,
 ): void {
+  if (resolvedHost?.loginRequired === true) throw new HostLoginRequiredError();
   if (hostSyncId) {
     if (resolvedHost) return;
     fileLogger.error(
@@ -169,8 +181,10 @@ export async function activate(ctx: PluginContext) {
     })();
   });
 
-  const sshSessions: Record<string, SSHSession> = {};
-  const pendingTOTPSessions: Record<string, PendingTOTPSession> = {};
+  // No prototype, so an id like "__proto__" is only ever a missing key.
+  const sshSessions: Record<string, SSHSession> = Object.create(null);
+  const pendingTOTPSessions: Record<string, PendingTOTPSession> =
+    Object.create(null);
 
   function cleanupSession(sessionId: string) {
     const session = sshSessions[sessionId];
@@ -377,7 +391,11 @@ export async function activate(ctx: PluginContext) {
     delete sshSessions[sessionId];
   }
 
-  const app = express();
+  // Routes go straight on ctx's router: in a plugin process core only
+  // serves routes added to it, not ones on a mounted app.
+  const app = ctx.http.router<Router>({
+    bodyLimit: "1gb",
+  }) as unknown as Express;
   app.use(ctx.rbac.require("use") as never);
   app.use(cookieParser());
   // uploadFileChunk takes a raw octet-stream body. The browser sends 8 MiB
@@ -474,6 +492,8 @@ export async function activate(ctx: PluginContext) {
    *                 type: string
    *               socks5ProxyChain:
    *                 type: array
+   *                 items:
+   *                   type: object
    *     responses:
    *       200:
    *         description: SSH connection established, or requires TOTP or a browser sign-in.
@@ -613,7 +633,9 @@ export async function activate(ctx: PluginContext) {
     const resolveFrom = async () => {
       const resolvedHost = (await ctx.ssh.resolveHost(hostId, {
         syncId: hostSyncId,
-      })) as LooseHost | null;
+        // Newer than the SDK types; older cores ignore it.
+        allowMissingLogin: true,
+      } as { syncId?: string | null })) as LooseHost | null;
       assertResolvedHost(ip, hostSyncId, resolvedHost, hostId, userId);
       if (!resolvedHost) return;
       resolvedIp = resolvedHost.ip;
@@ -703,7 +725,9 @@ export async function activate(ctx: PluginContext) {
     if (hostSyncId && userId) {
       const resolvedHost = await ctx.ssh.resolveHost(hostId, {
         syncId: hostSyncId,
-      });
+        // Newer than the SDK types; older cores ignore it.
+        allowMissingLogin: true,
+      } as { syncId?: string | null });
       assertResolvedHost(ip, hostSyncId, resolvedHost, hostId, userId);
       serverHostId = resolveServerHostId(hostId, resolvedHost) ?? hostId;
     }
@@ -951,13 +975,13 @@ export async function activate(ctx: PluginContext) {
             `Authentication failed: ${err.message}`,
           ),
         );
-      } else if (err.message.includes("verification failed")) {
+      } else if (isHostKeyRefusal(err.message)) {
         errorStage = "handshake";
         connectionLogs.push(
           createConnectionLog(
             "error",
             errorStage,
-            "SSH host key has changed. For security, please open a Terminal connection to this host first to verify and accept the new key fingerprint.",
+            hostKeyRefusalText(err.message),
           ),
         );
       } else {
@@ -975,10 +999,11 @@ export async function activate(ctx: PluginContext) {
         err.message.includes("no passphrase")
       ) {
         res.json({ status: "passphrase_required", connectionLogs });
-      } else if (err.message.includes("verification failed")) {
+      } else if (isHostKeyRefusal(err.message)) {
         // Trying again gets the same answer until someone accepts the new key.
         res.status(409).json({
           status: "host_key_changed",
+          reason: hostKeyRefusalReason(err.message),
           message: err.message,
           connectionLogs,
         });
@@ -1042,16 +1067,19 @@ export async function activate(ctx: PluginContext) {
 
     client.on(
       "keyboard-interactive",
-      (
+      async (
         name: string,
         instructions: string,
         _instructionsLang: string,
         prompts: Array<{ prompt: string; echo: boolean }>,
         finish: (responses: string[]) => void,
       ) => {
-        const decision = ssh.classifyKeyboardInteractive(
-          { name, instructions, prompts },
-          connectTarget,
+        // A handler in a plugin process answers with a Promise.
+        const decision = await Promise.resolve(
+          ssh.classifyKeyboardInteractive(
+            { name, instructions, prompts },
+            connectTarget,
+          ),
         );
         const autoFinish = () =>
           finish(ssh.autoResponses(prompts, resolvedCredentials.password));
@@ -1707,6 +1735,12 @@ export async function activate(ctx: PluginContext) {
     scheduleSessionCleanup,
     verifySessionOwnership,
   });
+  registerExtractProgressRoutes(app, {
+    ctx,
+    sshSessions,
+    scheduleSessionCleanup,
+    verifySessionOwnership,
+  });
   registerFtpRoutes(app, ctx);
   registerBookmarkRoutes(app, ctx, {
     table,
@@ -1749,42 +1783,11 @@ export async function activate(ctx: PluginContext) {
     session.lastActive = Date.now();
     scheduleSessionCleanup(sessionId);
 
-    const fileName = archivePath.split("/").pop() || "";
-    const fileExt = fileName.toLowerCase();
-
-    let extractCommand: string;
-    const targetPath =
-      extractPath || archivePath.substring(0, archivePath.lastIndexOf("/"));
-
-    const escapedArchive = archivePath.replace(/'/g, "'\"'\"'");
-    const escapedTarget = targetPath.replace(/'/g, "'\"'\"'");
-    const escapedDecompressed = archivePath
-      .replace(/\.gz$/i, "")
-      .replace(/'/g, "'\"'\"'");
-
-    if (fileExt.endsWith(".tar.gz") || fileExt.endsWith(".tgz")) {
-      extractCommand = `tar -xzf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar.bz2") || fileExt.endsWith(".tbz2")) {
-      extractCommand = `tar -xjf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar.xz") || fileExt.endsWith(".txz")) {
-      extractCommand = `tar -xJf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".tar")) {
-      extractCommand = `tar -xf '${escapedArchive}' -C '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".zip")) {
-      extractCommand = `unzip -o '${escapedArchive}' -d '${escapedTarget}'`;
-    } else if (fileExt.endsWith(".gz") && !fileExt.endsWith(".tar.gz")) {
-      extractCommand = `gunzip -c '${escapedArchive}' > '${escapedDecompressed}'`;
-    } else if (fileExt.endsWith(".bz2") && !fileExt.endsWith(".tar.bz2")) {
-      extractCommand = `bunzip2 -k '${escapedArchive}'`;
-    } else if (fileExt.endsWith(".xz")) {
-      extractCommand = `unxz -k '${escapedArchive}'`;
-    } else if (fileExt.endsWith(".7z")) {
-      extractCommand = `7z x '${escapedArchive}' -o'${escapedTarget}'`;
-    } else if (fileExt.endsWith(".rar")) {
-      extractCommand = `unrar x '${escapedArchive}' '${escapedTarget}/'`;
-    } else {
+    const plan = buildExtractCommand(archivePath, extractPath);
+    if (!plan) {
       return res.status(400).json({ error: "Unsupported archive format" });
     }
+    const { command: extractCommand, targetPath } = plan;
 
     fileLogger.info("Extracting archive", {
       operation: "extract_archive",
@@ -1821,54 +1824,9 @@ export async function activate(ctx: PluginContext) {
             error: errorOutput,
           });
 
-          let friendlyError = errorOutput || "Failed to extract archive";
-          if (
-            errorOutput.includes("command not found") ||
-            errorOutput.includes("not found")
-          ) {
-            let missingCmd = "";
-            let installHint = "";
-            if (fileExt.endsWith(".zip")) {
-              missingCmd = "unzip";
-              installHint =
-                "apt install unzip / yum install unzip / brew install unzip";
-            } else if (
-              fileExt.endsWith(".tar.gz") ||
-              fileExt.endsWith(".tgz") ||
-              fileExt.endsWith(".tar.bz2") ||
-              fileExt.endsWith(".tbz2") ||
-              fileExt.endsWith(".tar.xz") ||
-              fileExt.endsWith(".txz") ||
-              fileExt.endsWith(".tar")
-            ) {
-              missingCmd = "tar";
-              installHint = "Usually pre-installed on Linux/Unix systems";
-            } else if (fileExt.endsWith(".gz")) {
-              missingCmd = "gunzip";
-              installHint =
-                "apt install gzip / yum install gzip / Usually pre-installed";
-            } else if (fileExt.endsWith(".bz2")) {
-              missingCmd = "bunzip2";
-              installHint =
-                "apt install bzip2 / yum install bzip2 / brew install bzip2";
-            } else if (fileExt.endsWith(".xz")) {
-              missingCmd = "unxz";
-              installHint =
-                "apt install xz-utils / yum install xz / brew install xz";
-            } else if (fileExt.endsWith(".7z")) {
-              missingCmd = "7z";
-              installHint =
-                "apt install p7zip-full / yum install p7zip / brew install p7zip";
-            } else if (fileExt.endsWith(".rar")) {
-              missingCmd = "unrar";
-              installHint =
-                "apt install unrar / yum install unrar / brew install unrar";
-            }
-            if (missingCmd) {
-              friendlyError = `Command '${missingCmd}' not found on remote server. Please install it first: ${installHint}`;
-            }
-          }
-          return res.status(500).json({ error: friendlyError });
+          return res
+            .status(500)
+            .json({ error: friendlyExtractError(archivePath, errorOutput) });
         }
 
         fileLogger.success("Archive extracted successfully", {
@@ -2409,8 +2367,6 @@ export async function activate(ctx: PluginContext) {
   });
 
   registerLocalDesktop(app, ctx);
-
-  ctx.http.router<Router>({ bodyLimit: "1gb" }).use(app);
 
   const service = createFilesService(ctx);
   ctx.services.provide("files.sftp", service);

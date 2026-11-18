@@ -53,6 +53,7 @@ import {
   loadPdfPreview,
   resolveFilePreviewKind,
 } from "../file-preview-preload";
+import { shortcutKey } from "../lib/shortcut-key";
 
 const CodeEditor = lazy(loadCodeEditor);
 const ImagePreview = lazy(loadImagePreview);
@@ -322,7 +323,7 @@ export function FileViewer({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const isCtrl = e.ctrlKey || e.metaKey;
-      if (isCtrl && e.key.toLowerCase() === "s") {
+      if (isCtrl && shortcutKey(e).toLowerCase() === "s") {
         e.preventDefault();
         e.stopPropagation();
         handleSave();

@@ -328,3 +328,34 @@ describe("directory prefetch intent", () => {
     expect(onFileIntent).toHaveBeenCalledExactlyOnceWith(file);
   });
 });
+
+describe("shortcuts on a non-Latin layout", () => {
+  it("copies with Ctrl+C typed on a Russian layout", () => {
+    vi.spyOn(HTMLElement.prototype, "offsetParent", "get").mockReturnValue(
+      document.body,
+    );
+    const onCopy = vi.fn();
+    render(<FileManagerGrid {...props} onCopy={onCopy} />);
+    // The C key types "с" (Cyrillic es) there.
+    fireEvent.keyDown(document, { key: "с", code: "KeyC", ctrlKey: true });
+    expect(onCopy).toHaveBeenCalledWith([file]);
+  });
+});
+
+describe("the Delete key", () => {
+  it("moves to the trash, and Shift+Delete asks to skip it", () => {
+    vi.spyOn(HTMLElement.prototype, "offsetParent", "get").mockReturnValue(
+      document.body,
+    );
+    const onDelete = vi.fn();
+    render(<FileManagerGrid {...props} onDelete={onDelete} />);
+    fireEvent.keyDown(document, { key: "Delete", code: "Delete" });
+    expect(onDelete).toHaveBeenLastCalledWith([file], { permanent: false });
+    fireEvent.keyDown(document, {
+      key: "Delete",
+      code: "Delete",
+      shiftKey: true,
+    });
+    expect(onDelete).toHaveBeenLastCalledWith([file], { permanent: true });
+  });
+});

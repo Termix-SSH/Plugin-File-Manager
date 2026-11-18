@@ -1,3 +1,4 @@
+import { trimEnd } from "./trim.js";
 export interface DirectTransferEndpoint {
   host: string;
   port: number;
@@ -46,7 +47,7 @@ export function buildDirectRsyncCommand(
   const sshTransport = buildDirectSshCommand(endpoint).replace(/ '[^']+'$/, "");
   const targetHost = `${endpoint.username}@${formatHost(endpoint.host)}`;
   const targetPath = destIsDirectory
-    ? `${destPath.replace(/\/+$/, "") || "/"}/`
+    ? `${trimEnd(destPath) || "/"}/`
     : destPath;
   const sources = sourcePaths.map(quoteShell).join(" ");
   const target = quoteShell(`${targetHost}:${targetPath}`);
