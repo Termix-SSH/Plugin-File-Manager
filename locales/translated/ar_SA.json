@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "السماح بالشهادة الموقعة ذاتيًا"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "منفذ WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV عبر HTTPS"
+      },
+      "webdavPath": {
+        "label": "مسار WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "السماح بشهادة WebDAV موقعة ذاتياً"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "منفذ SMB"
+      },
+      "smbShare": {
+        "label": "مشاركة SMB"
+      },
+      "smbDomain": {
+        "label": "نطاق SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "حجم سجل المجلدات",
         "description": "عدد المجلدات التي تتذكرها لوحة الملفات لكل مضيف."
+      },
+      "openExternallyTypes": {
+        "label": "فتح أنواع الملفات هذه خارج Termix",
+        "description": "متاح لتطبيق سطح المكتب فقط. امتدادات الملفات، مثل psd وjpg وpdf، التي تفتح في محرر خارجي، أو في تطبيق النظام عند عدم اختيار محرر، عند فتحها. افصل بينها بفاصلة، أو استخدم * لجميع الملفات."
       }
     }
   },
@@ -145,7 +176,6 @@
     "newFolder": "مجلد جديد",
     "rename": "إعادة تسمية",
     "uploading": "جارٍ الرفع...",
-    "externalEditorTextOnly": "يمكن فتح الملفات النصية فقط خارجياً، لأن عمليات الحفظ تُعاد كتابتها كنص.",
     "uploadFilesDone": "{{done}} / {{total}} ملفات",
     "uploadingFile": "جارٍ رفع {{name}}...",
     "uploadingChunk": "جارٍ رفع {{name}}: {{percent}}% (الجزء {{chunk}} من {{total}})",
@@ -287,6 +317,9 @@
     "noSearchResults": "لم يتم العثور على نتائج لـ \"{{query}}\"",
     "searchFiles": "البحث في الملفات...",
     "upload": "رفع",
+    "lockChanges": "قفل التغييرات",
+    "unlockChanges": "إلغاء قفل التغييرات",
+    "lockedNotice": "التغييرات مقفلة. قم بإلغاء القفل من شريط الأدوات لتعديل الملفات هنا.",
     "selectHostToStart": "اختر مضيفًا لبدء إدارة الملفات",
     "sshRequiredForFileManager": "يتطلب مدير الملفات SSH. هذا المضيف لا يحتوي على SSH مفعّل.",
     "failedToConnect": "فشل الاتصال بـ SSH",
@@ -376,21 +409,21 @@
     "serverError": "خطأ في الخادم",
     "fileSavedSuccessfully": "تم حفظ الملف بنجاح",
     "failedToSaveFile": "فشل حفظ الملف",
-    "confirmDeleteSingleItem": "هل أنت متأكد أنك تريد حذف \"{{name}}\" نهائيًا؟",
-    "confirmDeleteMultipleItems_zero": "هل أنت متأكد من رغبتك في حذف 0 عناصر نهائيًا؟",
-    "confirmDeleteMultipleItems_one": "هل أنت متأكد من رغبتك في حذف عنصر واحد نهائيًا؟",
-    "confirmDeleteMultipleItems_two": "هل أنت متأكد من رغبتك في حذف عنصرين نهائيًا؟",
-    "confirmDeleteMultipleItems_few": "هل أنت متأكد من رغبتك في حذف {{count}} عناصر نهائيًا؟",
-    "confirmDeleteMultipleItems_many": "هل أنت متأكد من رغبتك في حذف {{count}} عنصرًا نهائيًا؟",
-    "confirmDeleteMultipleItems_other": "هل أنت متأكد من رغبتك في حذف {{count}} عنصر نهائيًا؟",
-    "confirmDeleteMultipleItemsWithFolders_zero": "هل أنت متأكد من رغبتك في حذف 0 عناصر نهائيًا؟ يتضمن ذلك مجلدات ومحتوياتها.",
-    "confirmDeleteMultipleItemsWithFolders_one": "هل أنت متأكد من رغبتك في حذف عنصر واحد نهائيًا؟ يتضمن ذلك مجلدًا ومحتوياته.",
-    "confirmDeleteMultipleItemsWithFolders_two": "هل أنت متأكد من رغبتك في حذف عنصرين نهائيًا؟ يتضمن ذلك مجلدًا ومحتوياته.",
-    "confirmDeleteMultipleItemsWithFolders_few": "هل أنت متأكد من رغبتك في حذف {{count}} عناصر نهائيًا؟ يتضمن ذلك مجلدات ومحتوياتها.",
-    "confirmDeleteMultipleItemsWithFolders_many": "هل أنت متأكد من رغبتك في حذف {{count}} عنصرًا نهائيًا؟ يتضمن ذلك مجلدات ومحتوياتها.",
-    "confirmDeleteMultipleItemsWithFolders_other": "هل أنت متأكد من رغبتك في حذف {{count}} عنصر نهائيًا؟ يتضمن ذلك مجلدات ومحتوياتها.",
-    "confirmDeleteFolder": "هل أنت متأكد أنك تريد حذف المجلد \"{{name}}\" وجميع محتوياته نهائيًا؟",
-    "moveToTrashWarning": "سيتم نقل العنصر(ات) إلى سلة مهملات Termix ويمكن استعادتها قبل انتهاء فترة الاحتفاظ.",
+    "confirmDeleteSingleItem": "هل تريد حذف \"{{name}}\"؟",
+    "confirmDeleteMultipleItems_zero": "هل تريد حذف {{count}} عنصر؟",
+    "confirmDeleteMultipleItems_one": "هل تريد حذف عنصر واحد؟",
+    "confirmDeleteMultipleItems_two": "هل تريد حذف عنصرين؟",
+    "confirmDeleteMultipleItems_few": "هل تريد حذف {{count}} عناصر؟",
+    "confirmDeleteMultipleItems_many": "هل تريد حذف {{count}} عنصرًا؟",
+    "confirmDeleteMultipleItems_other": "هل تريد حذف {{count}} عنصر؟",
+    "confirmDeleteMultipleItemsWithFolders_zero": "هل تريد حذف {{count}} عنصر؟ يتضمن ذلك مجلدات ومحتوياتها.",
+    "confirmDeleteMultipleItemsWithFolders_one": "هل تريد حذف عنصر واحد؟ يتضمن ذلك مجلدًا ومحتوياته.",
+    "confirmDeleteMultipleItemsWithFolders_two": "هل تريد حذف عنصرين؟ يتضمن ذلك مجلدات ومحتوياتها.",
+    "confirmDeleteMultipleItemsWithFolders_few": "هل تريد حذف {{count}} عناصر؟ يتضمن ذلك مجلدات ومحتوياتها.",
+    "confirmDeleteMultipleItemsWithFolders_many": "هل تريد حذف {{count}} عنصرًا؟ يتضمن ذلك مجلدات ومحتوياتها.",
+    "confirmDeleteMultipleItemsWithFolders_other": "هل تريد حذف {{count}} عنصر؟ يتضمن ذلك مجلدات ومحتوياتها.",
+    "confirmDeleteFolder": "هل تريد حذف المجلد \"{{name}}\" وجميع محتوياته؟",
+    "moveToTrashWarning": "سيتم نقله إلى سلة مهملات Termix ويمكن استعادته حتى انتهاء فترة الاحتفاظ.",
     "itemsMovedToTrash_zero": "تم نقل 0 عناصر إلى سلة المحذوفات",
     "itemsMovedToTrash_one": "تم نقل عنصر واحد إلى سلة المحذوفات",
     "itemsMovedToTrash_two": "تم نقل عنصرين إلى سلة المحذوفات",
@@ -645,7 +678,22 @@
     "openAsText": "فتح كنص",
     "confirmOpenAsText": "هل تريد المتابعة في فتح هذا الملف كنص؟ قد يؤدي ذلك إلى إبطاء متصفحك.",
     "removeShortcutConfirm": "إزالة الاختصار {{name}}؟",
-    "clearRecentConfirm": "مسح جميع الملفات الأخيرة؟"
+    "clearRecentConfirm": "مسح جميع الملفات الأخيرة؟",
+    "deletePermanently": "حذف نهائي",
+    "deletePermanentlyWarning": "سيتم حذفه نهائيًا ولا يمكن استعادته.",
+    "moveToTrash": "نقل إلى سلة المهملات",
+    "askUsername": {
+      "title": "تسجيل الدخول باسم",
+      "description": "يطلب {{host}} اسم المستخدم في كل مرة. اكتب الاسم الذي تريد تسجيل الدخول به.",
+      "connect": "اتصال"
+    },
+    "protocol": "البروتوكول",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -884,5 +932,24 @@
     "username": "اسم المستخدم",
     "password": "كلمة المرور",
     "passwordSaved": "تم حفظ كلمة المرور، اكتب لتغييرها"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "تصفح الملفات على هذا المضيف عبر WebDAV، مثل Nextcloud أو ownCloud أو جهاز NAS.",
+    "originNote": "تتم اتصالات WebDAV من خادم Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "قم بإيقاف التشغيل فقط للخادم الذي لا يدعم HTTPS.",
+    "path": "المسار",
+    "pathHint": "الموقع الذي يوجد فيه WebDAV على الخادم. يستخدم Nextcloud المسار /remote.php/dav/files/<user>. اتركه فارغًا للوصول إلى الجذر.",
+    "anonymousNote": "يتصل دون تسجيل دخول."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "تصفح مشاركة Windows أو Samba على هذا المضيف.",
+    "originNote": "تتم اتصالات SMB من خادم Termix.",
+    "share": "مشاركة",
+    "domain": "النطاق أو مجموعة العمل",
+    "limits": "يستخدم SMB 2 مع NTLMv2. لا تدعم الإصدارات الحالية بعد المشاركات التي تتطلب SMB 3 أو التشفير أو التوقيع، مثل إعدادات Windows 11 24H2 الافتراضية.",
+    "guestNote": "يتصل كضيف بدون كلمة مرور."
   }
 }

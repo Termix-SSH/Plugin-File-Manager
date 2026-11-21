@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Povoliť samopodpísaný certifikát"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Port WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV cez HTTPS"
+      },
+      "webdavPath": {
+        "label": "Cesta WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Povoliť samopodpísaný certifikát WebDAV"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Port SMB"
+      },
+      "smbShare": {
+        "label": "Zdieľaný adresár SMB"
+      },
+      "smbDomain": {
+        "label": "Doména SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Veľkosť histórie priečinkov",
         "description": "Koľko priečinkov si panel súborov pamätá pre každého hostiteľa."
+      },
+      "openExternallyTypes": {
+        "label": "Otvoriť tieto typy súborov mimo Termix",
+        "description": "Len pre desktopovú aplikáciu. Koncovky súborov, ako napr. psd, jpg, pdf, ktoré sa otvoria vo vašom externom editore alebo v systémovej aplikácii, ak nie je vybraná iná. Oddelte ich čiarkami alebo použite * pre všetky súbory."
       }
     }
   },
@@ -139,7 +170,6 @@
     "newFolder": "Nový priečinok",
     "rename": "Premenovať",
     "uploading": "Nahrávanie...",
-    "externalEditorTextOnly": "Externé otvorenie je možné len pre textové súbory, pretože zmeny sa ukladajú späť ako text.",
     "uploadFilesDone": "{{done}} / {{total}} súborov",
     "uploadingFile": "Nahrávanie {{name}}...",
     "uploadingChunk": "Nahrávanie {{name}}: {{percent}}% (časť {{chunk}} z {{total}})",
@@ -257,6 +287,9 @@
     "noSearchResults": "Pre „{{query}}“ sa nenašli žiadne výsledky",
     "searchFiles": "Vyhľadať súbory...",
     "upload": "Nahrať",
+    "lockChanges": "Uzamknúť zmeny",
+    "unlockChanges": "Odomknúť zmeny",
+    "lockedNotice": "Zmeny sú uzamknuté. Odomknite ich v paneli nástrojov, aby ste mohli upravovať súbory.",
     "selectHostToStart": "Vyberte hostiteľa pre spustenie správy súborov",
     "sshRequiredForFileManager": "Správca súborov vyžaduje SSH. Tento hostiteľ nemá SSH povolené.",
     "failedToConnect": "Nepodarilo sa pripojiť k SSH",
@@ -330,17 +363,17 @@
     "serverError": "Chyba servera",
     "fileSavedSuccessfully": "Súbor úspešne uložený",
     "failedToSaveFile": "Nepodarilo sa uložiť súbor",
-    "confirmDeleteSingleItem": "Ste si istý, že chcete trvalo odstrániť \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Naozaj chcete trvalo vymazať {{count}} položku?",
-    "confirmDeleteMultipleItems_few": "Naozaj chcete trvalo vymazať {{count}} položky?",
-    "confirmDeleteMultipleItems_many": "Naozaj chcete trvalo vymazať {{count}} položiek?",
-    "confirmDeleteMultipleItems_other": "Naozaj chcete trvalo vymazať {{count}} položiek?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Naozaj chcete trvalo vymazať {{count}} položku? Zahŕňa to priečinok a jeho obsah.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Naozaj chcete trvalo vymazať {{count}} položky? Zahŕňa to priečinky a ich obsah.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Naozaj chcete trvalo vymazať {{count}} položiek? Zahŕňa to priečinky a ich obsah.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Naozaj chcete trvalo vymazať {{count}} položiek? Zahŕňa to priečinky a ich obsah.",
-    "confirmDeleteFolder": "Ste si istý, že chcete trvalo odstrániť priečinok \"{{name}}\" a všetok jeho obsah?",
-    "moveToTrashWarning": "Položky budú presunuté do Kôša Termix a môžu byť obnovené pred uplynutím doby uchovávania.",
+    "confirmDeleteSingleItem": "Vymazať „{{name}}“?",
+    "confirmDeleteMultipleItems_one": "Vymazať {{count}} položku?",
+    "confirmDeleteMultipleItems_few": "Vymazať {{count}} položky?",
+    "confirmDeleteMultipleItems_many": "Vymazať {{count}} položiek?",
+    "confirmDeleteMultipleItems_other": "Vymazať {{count}} položiek?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Vymazať {{count}} položku? Zahŕňa priečinok a jeho obsah.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Vymazať {{count}} položky? Zahŕňa priečinky a ich obsah.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Vymazať {{count}} položiek? Zahŕňa priečinky a ich obsah.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Vymazať {{count}} položiek? Zahŕňa priečinky a ich obsah.",
+    "confirmDeleteFolder": "Vymazať priečinok „{{name}}“ a celý jeho obsah?",
+    "moveToTrashWarning": "Súbor sa presunie do Kôša Termix a bude možné ho obnoviť do konca obdobia uchovávania.",
     "itemsMovedToTrash_one": "{{count}} položka presunutá do Kôša",
     "itemsMovedToTrash_few": "{{count}} položky presunuté do Kôša",
     "itemsMovedToTrash_many": "{{count}} položiek presunutých do Kôša",
@@ -573,7 +606,22 @@
     "openAsText": "Otvoriť ako text",
     "confirmOpenAsText": "Chcete pokračovať v otváraní tohto súboru ako textu? Môže to spomaliť váš prehliadač.",
     "removeShortcutConfirm": "Odstrániť odkaz {{name}}?",
-    "clearRecentConfirm": "Vymazať všetky nedávne súbory?"
+    "clearRecentConfirm": "Vymazať všetky nedávne súbory?",
+    "deletePermanently": "Trvalo vymazať",
+    "deletePermanentlyWarning": "Súbor sa trvalo vymaže a nebude možné ho obnoviť.",
+    "moveToTrash": "Presunúť do Kôša",
+    "askUsername": {
+      "title": "Prihlásiť sa ako",
+      "description": "{{host}} žiada o používateľské meno pri každom pripojení. Zadajte meno, pod ktorým sa chcete prihlásiť.",
+      "connect": "Pripojiť"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -798,5 +846,24 @@
     "username": "Meno používateľa",
     "password": "Heslo",
     "passwordSaved": "Heslo bolo uložené, pre zmenu ho zadajte znova"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Prezeranie súborov na tomto hostiteľovi cez WebDAV, napríklad Nextcloud, ownCloud alebo NAS.",
+    "originNote": "Pripojenia WebDAV sa vytvárajú zo servera Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Vypnite iba pre server, ktorý nemá HTTPS.",
+    "path": "Cesta",
+    "pathHint": "Kde sa nachádza WebDAV na serveri. Nextcloud používa /remote.php/dav/files/<user>. Nechajte prázdne pre koreňový adresár.",
+    "anonymousNote": "Pripojenie bez prihlásenia."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Prezeranie zdieľaného adresára Windows alebo Samba na tomto hostiteľovi.",
+    "originNote": "Pripojenia SMB sa vytvárajú zo servera Termix.",
+    "share": "Zdieľaný adresár",
+    "domain": "Doména alebo pracovná skupina",
+    "limits": "Používa SMB 2 s NTLMv2. Zdieľané adresáre, ktoré vyžadujú SMB 3, šifrovanie alebo podpisovanie (ako napríklad Windows 11 24H2 predvolene), zatiaľ nie sú podporované.",
+    "guestNote": "Pripojenie ako hosť bez hesla."
   }
 }

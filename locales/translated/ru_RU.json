@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Разрешить самоподписанный сертификат"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Порт WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV через HTTPS"
+      },
+      "webdavPath": {
+        "label": "Путь WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Разрешить самоподписанный сертификат WebDAV"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Порт SMB"
+      },
+      "smbShare": {
+        "label": "Общая папка SMB"
+      },
+      "smbDomain": {
+        "label": "Домен SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Размер истории папок",
         "description": "Сколько папок панель файлов запоминает для каждого хоста."
+      },
+      "openExternallyTypes": {
+        "label": "Открывать эти типы файлов вне Termix",
+        "description": "Только для настольного приложения. Расширения файлов, например psd, jpg, pdf, которые открываются в внешнем редакторе или системном приложении, если редактор не выбран. Разделяйте их запятыми или используйте * для всех файлов."
       }
     }
   },
@@ -139,7 +170,6 @@
     "newFolder": "Новая папка",
     "rename": "Переименовать",
     "uploading": "Загрузка...",
-    "externalEditorTextOnly": "Внешним редактором можно открывать только текстовые файлы, так как сохранение происходит в текстовом формате.",
     "uploadFilesDone": "{{done}} / {{total}} файлов",
     "uploadingFile": "Загрузка {{name}}...",
     "uploadingChunk": "Загрузка {{name}}: {{percent}}% (часть {{chunk}} из {{total}})",
@@ -257,6 +287,9 @@
     "noSearchResults": "По запросу «{{query}}» ничего не найдено",
     "searchFiles": "Поиск файлов...",
     "upload": "Загрузить",
+    "lockChanges": "Заблокировать изменения",
+    "unlockChanges": "Разблокировать изменения",
+    "lockedNotice": "Изменения заблокированы. Разблокируйте их на панели инструментов, чтобы редактировать файлы здесь.",
     "selectHostToStart": "Выберите хост, чтобы начать работу с файлами",
     "sshRequiredForFileManager": "Для файлового менеджера требуется SSH. На этом хосте SSH не включен.",
     "failedToConnect": "Не удалось подключиться по SSH",
@@ -330,17 +363,17 @@
     "serverError": "Ошибка сервера",
     "fileSavedSuccessfully": "Файл успешно сохранен",
     "failedToSaveFile": "Не удалось сохранить файл",
-    "confirmDeleteSingleItem": "Вы уверены, что хотите безвозвратно удалить «{{name}}»?",
-    "confirmDeleteMultipleItems_one": "Вы уверены, что хотите безвозвратно удалить {{count}} элемент?",
-    "confirmDeleteMultipleItems_few": "Вы уверены, что хотите безвозвратно удалить {{count}} элемента?",
-    "confirmDeleteMultipleItems_many": "Вы уверены, что хотите безвозвратно удалить {{count}} элементов?",
-    "confirmDeleteMultipleItems_other": "Вы уверены, что хотите безвозвратно удалить {{count}} элементов?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Вы уверены, что хотите безвозвратно удалить {{count}} элемент? Это включает папку и её содержимое.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Вы уверены, что хотите безвозвратно удалить {{count}} элемента? Это включает папки и их содержимое.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Вы уверены, что хотите безвозвратно удалить {{count}} элементов? Это включает папки и их содержимое.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Вы уверены, что хотите безвозвратно удалить {{count}} элементов? Это включает папки и их содержимое.",
-    "confirmDeleteFolder": "Вы уверены, что хотите безвозвратно удалить папку «{{name}}» и все её содержимое?",
-    "moveToTrashWarning": "Элементы будут перемещены в корзину Termix и могут быть восстановлены до истечения срока хранения.",
+    "confirmDeleteSingleItem": "Удалить «{{name}}»?",
+    "confirmDeleteMultipleItems_one": "Удалить {{count}} элемент?",
+    "confirmDeleteMultipleItems_few": "Удалить {{count}} элемента?",
+    "confirmDeleteMultipleItems_many": "Удалить {{count}} элементов?",
+    "confirmDeleteMultipleItems_other": "Удалить {{count}} элементов?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Удалить {{count}} элемент? Это включает папку и её содержимое.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Удалить {{count}} элемента? Это включает папки и их содержимое.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Удалить {{count}} элементов? Это включает папки и их содержимое.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Удалить {{count}} элементов? Это включает папки и их содержимое.",
+    "confirmDeleteFolder": "Удалить папку «{{name}}» и всё её содержимое?",
+    "moveToTrashWarning": "Файл попадет в корзину Termix и может быть восстановлен до истечения срока хранения.",
     "itemsMovedToTrash_one": "{{count}} элемент перемещен в Корзину",
     "itemsMovedToTrash_few": "{{count}} элемента перемещены в Корзину",
     "itemsMovedToTrash_many": "{{count}} элементов перемещены в Корзину",
@@ -573,7 +606,22 @@
     "openAsText": "Открыть как текст",
     "confirmOpenAsText": "Открыть этот файл как текст? Это может замедлить работу браузера.",
     "removeShortcutConfirm": "Удалить ярлык {{name}}?",
-    "clearRecentConfirm": "Очистить список последних файлов?"
+    "clearRecentConfirm": "Очистить список последних файлов?",
+    "deletePermanently": "Удалить навсегда",
+    "deletePermanentlyWarning": "Файл будет удалён безвозвратно и не может быть восстановлен.",
+    "moveToTrash": "Переместить в корзину",
+    "askUsername": {
+      "title": "Войти как",
+      "description": "{{host}} запрашивает имя пользователя каждый раз. Введите имя для входа.",
+      "connect": "Подключиться"
+    },
+    "protocol": "Протокол",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -798,5 +846,24 @@
     "username": "Имя пользователя",
     "password": "Пароль",
     "passwordSaved": "Пароль сохранён, введите новый для изменения"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Просмотр файлов на этом хосте через WebDAV, например Nextcloud, ownCloud или NAS.",
+    "originNote": "Подключения WebDAV осуществляются с сервера Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Отключайте только для серверов без HTTPS.",
+    "path": "Путь",
+    "pathHint": "Где находится WebDAV на сервере. Nextcloud использует /remote.php/dav/files/<user>. Оставьте пустым для корня.",
+    "anonymousNote": "Подключение без входа."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Просмотр общей папки Windows или Samba на этом хосте.",
+    "originNote": "Подключения SMB осуществляются с сервера Termix.",
+    "share": "Общая папка",
+    "domain": "Домен или рабочая группа",
+    "limits": "Использует SMB 2 с NTLMv2. Общие папки, требующие SMB 3, шифрования или подписи (например, Windows 11 24H2 по умолчанию), пока не поддерживаются.",
+    "guestNote": "Подключение как гость без пароля."
   }
 }

@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Permet certificats autofirmats"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Port WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV a través d'HTTPS"
+      },
+      "webdavPath": {
+        "label": "Camí WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Permetre un certificat WebDAV autofirmat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Port SMB"
+      },
+      "smbShare": {
+        "label": "Recurs compartit SMB"
+      },
+      "smbDomain": {
+        "label": "Domini SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Mida de l'historial de carpetes",
         "description": "Quantes carpetes recorda el panell de fitxers per a cada amfitrió."
+      },
+      "openExternallyTypes": {
+        "label": "Obrir aquests tipus de fitxers fora de Termix",
+        "description": "Només per a l'aplicació d'escriptori. Extensions de fitxer, com psd, jpg, pdf, que s'obren amb l'editor extern o l'aplicació del sistema si no en seleccioneu cap, en obrir-los. Separeu-les amb comes o utilitzeu * per a tots els fitxers."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Carpeta nova",
     "rename": "Canvia el nom",
     "uploading": "Pujant...",
-    "externalEditorTextOnly": "Només es poden obrir fitxers de text externament, perquè les desades s'escriuen de nou com a text.",
     "uploadFilesDone": "{{done}} / {{total}} fitxers",
     "uploadingFile": "Pujant {{name}}...",
     "uploadingChunk": "Pujant {{name}}: {{percent}}% (part {{chunk}} de {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "No s'han trobat resultats per a «{{query}}»",
     "searchFiles": "Cerca fitxers...",
     "upload": "Pujar",
+    "lockChanges": "Bloquejar canvis",
+    "unlockChanges": "Desbloquejar canvis",
+    "lockedNotice": "Els canvis estan bloquejats. Desbloquegeu-los a la barra d'eines per editar fitxers aquí.",
     "selectHostToStart": "Selecciona un host per començar a gestionar fitxers",
     "sshRequiredForFileManager": "El gestor de fitxers requereix SSH. Aquest host no té SSH habilitat.",
     "failedToConnect": "No s'ha pogut connectar a SSH",
@@ -307,15 +340,15 @@
     "serverError": "Error del servidor",
     "fileSavedSuccessfully": "Fitxer desat correctament",
     "failedToSaveFile": "No s'ha pogut desar el fitxer",
-    "confirmDeleteSingleItem": "Estàs segur que vols suprimir permanentment «{{name}}»?",
-    "confirmDeleteMultipleItems_one": "Estàs segur que vols eliminar permanentment {{count}} element?",
-    "confirmDeleteMultipleItems_many": "Estàs segur que vols eliminar permanentment {{count}} elements?",
-    "confirmDeleteMultipleItems_other": "Estàs segur que vols eliminar permanentment {{count}} elements?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Estàs segur que vols eliminar permanentment {{count}} element? Això inclou una carpeta i el seu contingut.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Estàs segur que vols eliminar permanentment {{count}} elements? Això inclou carpetes i el seu contingut.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Estàs segur que vols eliminar permanentment {{count}} elements? Això inclou carpetes i el seu contingut.",
-    "confirmDeleteFolder": "Estàs segur que vols suprimir permanentment la carpeta «{{name}}» i tot el seu contingut?",
-    "moveToTrashWarning": "L'element o els elements es mouran a la Paperera de Termix i es podran restaurar abans que expiri el període de retenció.",
+    "confirmDeleteSingleItem": "Voleu suprimir «{{name}}»?",
+    "confirmDeleteMultipleItems_one": "Voleu suprimir {{count}} element?",
+    "confirmDeleteMultipleItems_many": "Voleu suprimir {{count}} elements?",
+    "confirmDeleteMultipleItems_other": "Voleu suprimir {{count}} elements?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Voleu suprimir {{count}} element? Això inclou una carpeta i el seu contingut.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Voleu suprimir {{count}} elements? Això inclou carpetes i el seu contingut.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Voleu suprimir {{count}} elements? Això inclou carpetes i el seu contingut.",
+    "confirmDeleteFolder": "Voleu suprimir la carpeta «{{name}}» i tot el seu contingut?",
+    "moveToTrashWarning": "Es mou a la Paperera de Termix i es pot restaurar fins que acabi el període de retenció.",
     "itemsMovedToTrash_one": "{{count}} element s'ha mogut a la Paperera",
     "itemsMovedToTrash_many": "{{count}} elements s'han mogut a la Paperera",
     "itemsMovedToTrash_other": "{{count}} elements s'han mogut a la Paperera",
@@ -537,7 +570,22 @@
     "openAsText": "Obrir com a text",
     "confirmOpenAsText": "Vols continuar obrint aquest fitxer com a text? Això pot alentir el navegador.",
     "removeShortcutConfirm": "Vols eliminar l'accés directe {{name}}?",
-    "clearRecentConfirm": "Vols esborrar tots els fitxers recents?"
+    "clearRecentConfirm": "Vols esborrar tots els fitxers recents?",
+    "deletePermanently": "Suprimeix de manera permanent",
+    "deletePermanentlyWarning": "S'ha eliminat definitivament i no es pot restaurar.",
+    "moveToTrash": "Mou a la paperera",
+    "askUsername": {
+      "title": "Inicia sessió com a",
+      "description": "{{host}} demana un nom d'usuari cada vegada. Introdueix el que vols utilitzar per iniciar sessió.",
+      "connect": "Connecta"
+    },
+    "protocol": "Protocol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Nom d'usuari",
     "password": "Contrasenya",
     "passwordSaved": "Contrasenya desada, escriu per canviar-la"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Navega pels fitxers d'aquest amfitrió a través de WebDAV, com ara Nextcloud, ownCloud o un NAS.",
+    "originNote": "Les connexions WebDAV s'estableixen des del servidor Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Desactiva-ho només per a servidors que no tinguin HTTPS.",
+    "path": "Camí",
+    "pathHint": "On es troba WebDAV al servidor. Nextcloud utilitza /remote.php/dav/files/<user>. Deixa-ho buit per a l'arrel.",
+    "anonymousNote": "Es connecta sense iniciar sessió."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Navega per una compartició de Windows o Samba en aquest amfitrió.",
+    "originNote": "Les connexions SMB s'estableixen des del servidor Termix.",
+    "share": "Recurs compartit",
+    "domain": "Domini o grup de treball",
+    "limits": "Utilitza SMB 2 amb NTLMv2. Els recursos compartits que requereixen SMB 3, xifratge o signatura, com ara Windows 11 24H2 de manera predeterminada, encara no són compatibles.",
+    "guestNote": "Es connecta com a convidat sense contrasenya."
   }
 }

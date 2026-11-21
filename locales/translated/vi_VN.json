@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Cho phép chứng chỉ tự ký"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Cổng WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV qua HTTPS"
+      },
+      "webdavPath": {
+        "label": "Đường dẫn WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Cho phép chứng chỉ WebDAV tự ký"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Cổng SMB"
+      },
+      "smbShare": {
+        "label": "Thư mục chia sẻ SMB"
+      },
+      "smbDomain": {
+        "label": "Tên miền SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Kích thước lịch sử thư mục",
         "description": "Số lượng thư mục mà bảng điều khiển tệp ghi nhớ cho mỗi máy chủ."
+      },
+      "openExternallyTypes": {
+        "label": "Mở các loại tệp này bên ngoài Termix",
+        "description": "Chỉ dành cho ứng dụng máy tính để bàn. Các phần mở rộng tệp, như psd, jpg, pdf, sẽ mở trong trình chỉnh sửa bên ngoài hoặc ứng dụng hệ thống khi không chọn trình chỉnh sửa nào, khi bạn mở chúng. Tách chúng bằng dấu phẩy, hoặc dùng * cho mọi tệp."
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "Thư mục mới",
     "rename": "Đổi tên",
     "uploading": "Đang tải lên...",
-    "externalEditorTextOnly": "Chỉ các tệp văn bản mới có thể được mở bên ngoài, vì dữ liệu lưu lại sẽ được ghi dưới dạng văn bản.",
     "uploadFilesDone": "{{done}} / {{total}} tệp",
     "uploadingFile": "Đang tải lên {{name}}...",
     "uploadingChunk": "Đang tải lên {{name}}: {{percent}}% (phần {{chunk}} trong tổng số {{total}})",
@@ -212,6 +242,9 @@
     "noSearchResults": "Không tìm thấy kết quả cho \"{{query}}\"",
     "searchFiles": "Tìm kiếm tệp...",
     "upload": "Tải lên",
+    "lockChanges": "Khóa thay đổi",
+    "unlockChanges": "Mở khóa thay đổi",
+    "lockedNotice": "Thay đổi đang bị khóa. Mở khóa trong thanh công cụ để chỉnh sửa tệp ở đây.",
     "selectHostToStart": "Chọn một host để bắt đầu quản lý tệp",
     "sshRequiredForFileManager": "Trình quản lý tệp yêu cầu SSH. Host này chưa bật SSH.",
     "failedToConnect": "Không thể kết nối SSH",
@@ -261,11 +294,11 @@
     "serverError": "Lỗi máy chủ",
     "fileSavedSuccessfully": "Đã lưu tệp thành công",
     "failedToSaveFile": "Không thể lưu tệp",
-    "confirmDeleteSingleItem": "Bạn có chắc chắn muốn xóa vĩnh viễn \"{{name}}\" không?",
-    "confirmDeleteMultipleItems_other": "Bạn có chắc chắn muốn xóa vĩnh viễn {{count}} mục không?",
-    "confirmDeleteMultipleItemsWithFolders_other": "Bạn có chắc chắn muốn xóa vĩnh viễn {{count}} mục không? Điều này bao gồm các thư mục và nội dung của chúng.",
-    "confirmDeleteFolder": "Bạn có chắc chắn muốn xóa vĩnh viễn thư mục \"{{name}}\" và tất cả nội dung của nó không?",
-    "moveToTrashWarning": "Mục sẽ được di chuyển vào Thùng rác Termix và có thể khôi phục trước khi hết thời gian lưu trữ.",
+    "confirmDeleteSingleItem": "Xóa \"{{name}}\"?",
+    "confirmDeleteMultipleItems_other": "Xóa {{count}} mục?",
+    "confirmDeleteMultipleItemsWithFolders_other": "Xóa {{count}} mục? Điều này bao gồm thư mục và nội dung của chúng.",
+    "confirmDeleteFolder": "Xóa thư mục \"{{name}}\" và tất cả nội dung của nó?",
+    "moveToTrashWarning": "Nó sẽ được chuyển vào Thùng rác Termix và có thể khôi phục cho đến khi hết thời gian lưu trữ.",
     "itemsMovedToTrash_other": "Đã di chuyển {{count}} mục vào Thùng rác",
     "deletingItems": "Đang xóa: {{done}} / {{total}}. Vui lòng đợi hoàn tất trước khi dán hoặc tải lên.",
     "movingToTrash": "Đang chuyển vào Thùng rác: {{done}} / {{total}}. Vui lòng đợi hoàn tất trước khi dán hoặc tải lên.",
@@ -465,7 +498,22 @@
     "openAsText": "Mở dưới dạng văn bản",
     "confirmOpenAsText": "Bạn có muốn tiếp tục mở tệp này dưới dạng văn bản không? Điều này có thể làm chậm trình duyệt của bạn.",
     "removeShortcutConfirm": "Xóa lối tắt {{name}}?",
-    "clearRecentConfirm": "Xóa tất cả tệp gần đây?"
+    "clearRecentConfirm": "Xóa tất cả tệp gần đây?",
+    "deletePermanently": "Xóa vĩnh viễn",
+    "deletePermanentlyWarning": "Nó sẽ bị xóa hoàn toàn và không thể khôi phục.",
+    "moveToTrash": "Chuyển vào Thùng rác",
+    "askUsername": {
+      "title": "Đăng nhập với tư cách",
+      "description": "{{host}} yêu cầu tên người dùng mỗi lần. Nhập tên người dùng để đăng nhập.",
+      "connect": "Kết nối"
+    },
+    "protocol": "Giao thức",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "Tên người dùng",
     "password": "Mật khẩu",
     "passwordSaved": "Mật khẩu đã được lưu, nhập để thay đổi"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Duyệt tệp trên máy chủ này qua WebDAV, như Nextcloud, ownCloud hoặc NAS.",
+    "originNote": "Kết nối WebDAV được thực hiện từ máy chủ Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Chỉ tắt nếu máy chủ không có HTTPS.",
+    "path": "Đường dẫn",
+    "pathHint": "Nơi WebDAV tồn tại trên máy chủ. Nextcloud sử dụng /remote.php/dav/files/<user>. Để trống cho thư mục gốc.",
+    "anonymousNote": "Kết nối mà không cần đăng nhập."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Duyệt thư mục chia sẻ Windows hoặc Samba trên máy chủ này.",
+    "originNote": "Kết nối SMB được thực hiện từ máy chủ Termix.",
+    "share": "Thư mục chia sẻ",
+    "domain": "Tên miền hoặc nhóm làm việc",
+    "limits": "Sử dụng SMB 2 với NTLMv2. Các thư mục chia sẻ yêu cầu SMB 3, mã hóa hoặc ký, như Windows 11 24H2 theo mặc định, hiện chưa được hỗ trợ.",
+    "guestNote": "Kết nối với tư cách khách mà không cần mật khẩu."
   }
 }

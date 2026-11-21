@@ -1,4 +1,5 @@
 import express, { type Express, type Router } from "express";
+import { isAskUsername, isValidLoginName } from "./ask-username.js";
 import cookieParser from "cookie-parser";
 import { Client as SSHClient } from "ssh2";
 import type {
@@ -44,6 +45,9 @@ import {
   registerExtractProgressRoutes,
 } from "./extract-archive.js";
 import { registerFtpRoutes } from "./ftp-routes.js";
+import { registerRemoteRoutes } from "./remote-fs/routes.js";
+import { webdavProtocol } from "./remote-fs/webdav.js";
+import { smbProtocol } from "./remote-fs/smb.js";
 import { registerBookmarkRoutes } from "./bookmark-routes.js";
 import {
   startHostTransfer,
@@ -290,9 +294,21 @@ export async function activate(ctx: PluginContext) {
       throw new Error("Cannot open transfer connection: unknown host");
     }
 
-    const host = await ctx.asUser(userId, () => ctx.ssh.resolveHost(hostId));
-    if (!host) {
+    const resolved = await ctx.asUser(userId, () =>
+      ctx.ssh.resolveHost(hostId),
+    );
+    if (!resolved) {
       throw new Error("Host not found for transfer connection");
+    }
+    // A "$ask" host transfers as the user the browse session logged in as.
+    const host = isAskUsername(resolved.username)
+      ? {
+          ...resolved,
+          username: sshSessions[browseSessionId ?? ""]?.username ?? "",
+        }
+      : resolved;
+    if (!host.username || isAskUsername(host.username)) {
+      throw new Error("Open the folder again to pick a username");
     }
 
     const existingSession = sshSessions[dedicatedSessionId];
@@ -641,6 +657,14 @@ export async function activate(ctx: PluginContext) {
       resolvedIp = resolvedHost.ip;
       resolvedPort = resolvedHost.port;
       resolvedUsername = resolvedHost.username;
+      // A host saved as "$ask" logs in as whoever the person typed.
+      if (isAskUsername(resolvedHost.username)) {
+        const typed = String(username ?? "").trim();
+        if (!isValidLoginName(typed)) {
+          throw new Error("Type the username to log in as");
+        }
+        resolvedUsername = typed;
+      }
       resolvedCredentials = {
         password: resolvedHost.password,
         sshKey: resolvedHost.key,
@@ -1742,6 +1766,8 @@ export async function activate(ctx: PluginContext) {
     verifySessionOwnership,
   });
   registerFtpRoutes(app, ctx);
+  registerRemoteRoutes(app, ctx, webdavProtocol);
+  registerRemoteRoutes(app, ctx, smbProtocol);
   registerBookmarkRoutes(app, ctx, {
     table,
     pinnedTable,

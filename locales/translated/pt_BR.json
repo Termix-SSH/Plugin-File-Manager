@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Permitir certificado autoassinado"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Porta do WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV via HTTPS"
+      },
+      "webdavPath": {
+        "label": "Caminho do WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Permitir certificado WebDAV autoassinado"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Porta do SMB"
+      },
+      "smbShare": {
+        "label": "Compartilhamento SMB"
+      },
+      "smbDomain": {
+        "label": "Domínio SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Tamanho do histórico de pastas",
         "description": "Quantas pastas o painel de arquivos lembra para cada host."
+      },
+      "openExternallyTypes": {
+        "label": "Abrir esses tipos de arquivo fora do Termix",
+        "description": "Apenas no aplicativo desktop. Extensões de arquivo, como psd, jpg, pdf, que abrem em seu editor externo ou no aplicativo do sistema quando nenhum é escolhido, ao abri-los. Separe-os com vírgulas ou use * para todos os arquivos."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Nova Pasta",
     "rename": "Renomear",
     "uploading": "Enviando...",
-    "externalEditorTextOnly": "Apenas arquivos de texto podem ser abertos externamente, pois as salvamentos são gravados de volta como texto.",
     "uploadFilesDone": "{{done}} / {{total}} arquivos",
     "uploadingFile": "Enviando {{name}}...",
     "uploadingChunk": "Enviando {{name}}: {{percent}}% (parte {{chunk}} de {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "Nenhum resultado encontrado para \"{{query}}\"",
     "searchFiles": "Pesquisar arquivos...",
     "upload": "Enviar",
+    "lockChanges": "Bloquear alterações",
+    "unlockChanges": "Desbloquear alterações",
+    "lockedNotice": "As alterações estão bloqueadas. Desbloqueie-as na barra de ferramentas para editar arquivos aqui.",
     "selectHostToStart": "Selecione um host para iniciar o gerenciador de arquivos",
     "sshRequiredForFileManager": "O gerenciador de arquivos requer SSH. Este host não tem SSH habilitado.",
     "failedToConnect": "Falha ao conectar ao SSH",
@@ -307,15 +340,15 @@
     "serverError": "Erro do Servidor",
     "fileSavedSuccessfully": "Arquivo salvo com sucesso",
     "failedToSaveFile": "Falha ao salvar o arquivo",
-    "confirmDeleteSingleItem": "Tem certeza de que deseja excluir permanentemente \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Tem certeza de que deseja excluir permanentemente {{count}} item?",
-    "confirmDeleteMultipleItems_many": "Tem certeza de que deseja excluir permanentemente {{count}} itens?",
-    "confirmDeleteMultipleItems_other": "Tem certeza de que deseja excluir permanentemente {{count}} itens?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Tem certeza de que deseja excluir permanentemente {{count}} item? Isso inclui uma pasta e seu conteúdo.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Tem certeza de que deseja excluir permanentemente {{count}} itens? Isso inclui pastas e seu conteúdo.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Tem certeza de que deseja excluir permanentemente {{count}} itens? Isso inclui pastas e seu conteúdo.",
-    "confirmDeleteFolder": "Tem certeza de que deseja excluir permanentemente a pasta \"{{name}}\" e todo o seu conteúdo?",
-    "moveToTrashWarning": "Os itens serão movidos para a Lixeira do Termix e podem ser restaurados antes do vencimento do período de retenção.",
+    "confirmDeleteSingleItem": "Excluir \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Excluir {{count}} item?",
+    "confirmDeleteMultipleItems_many": "Excluir {{count}} itens?",
+    "confirmDeleteMultipleItems_other": "Excluir {{count}} itens?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Excluir {{count}} item? Isso inclui uma pasta e seu conteúdo.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Excluir {{count}} itens? Isso inclui pastas e seus conteúdos.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Excluir {{count}} itens? Isso inclui pastas e seus conteúdos.",
+    "confirmDeleteFolder": "Excluir a pasta \"{{name}}\" e todo o seu conteúdo?",
+    "moveToTrashWarning": "Ele vai para a Lixeira do Termix e pode ser restaurado até o fim do período de retenção.",
     "itemsMovedToTrash_one": "{{count}} item movido para a Lixeira",
     "itemsMovedToTrash_many": "{{count}} itens movidos para a Lixeira",
     "itemsMovedToTrash_other": "{{count}} itens movidos para a Lixeira",
@@ -537,7 +570,22 @@
     "openAsText": "Abrir como Texto",
     "confirmOpenAsText": "Deseja continuar abrindo este arquivo como texto? Isso pode deixar o navegador mais lento.",
     "removeShortcutConfirm": "Remover o atalho {{name}}?",
-    "clearRecentConfirm": "Limpar todos os arquivos recentes?"
+    "clearRecentConfirm": "Limpar todos os arquivos recentes?",
+    "deletePermanently": "Excluir permanentemente",
+    "deletePermanentlyWarning": "Ele é excluído para sempre e não pode ser restaurado.",
+    "moveToTrash": "Mover para a Lixeira",
+    "askUsername": {
+      "title": "Entrar como",
+      "description": "{{host}} pede um nome de usuário a cada vez. Digite o que deseja usar para entrar.",
+      "connect": "Conectar"
+    },
+    "protocol": "Protocolo",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Nome de usuário",
     "password": "Senha",
     "passwordSaved": "Senha salva, digite para alterar"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Navegue pelos arquivos neste host via WebDAV, como Nextcloud, ownCloud ou um NAS.",
+    "originNote": "As conexões WebDAV são feitas a partir do servidor Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Desative apenas para um servidor que não tenha HTTPS.",
+    "path": "Caminho",
+    "pathHint": "Onde o WebDAV está localizado no servidor. O Nextcloud usa /remote.php/dav/files/<user>. Deixe vazio para a raiz.",
+    "anonymousNote": "Conecta sem login."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Navegue por um compartilhamento Windows ou Samba neste host.",
+    "originNote": "As conexões SMB são feitas a partir do servidor Termix.",
+    "share": "Compartilhamento",
+    "domain": "Domínio ou grupo de trabalho",
+    "limits": "Usa SMB 2 com NTLMv2. Compartilhamentos que exigem SMB 3, criptografia ou assinatura, como o Windows 11 24H2 por padrão, ainda não são suportados.",
+    "guestNote": "Conecta como convidado, sem senha."
   }
 }

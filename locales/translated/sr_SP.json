@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Дозволи само-потписани сертификат"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV порт"
+      },
+      "webdavHttps": {
+        "label": "WebDAV преко HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV путања"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Дозволи само-потписани WebDAV сертификат"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB порт"
+      },
+      "smbShare": {
+        "label": "SMB дељена mappa"
+      },
+      "smbDomain": {
+        "label": "SMB домен"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Величина историје фолдера",
         "description": "Кoliko фолдера панел датотека памти за сваки хост."
+      },
+      "openExternallyTypes": {
+        "label": "Отвори ове врсте фајлова ван Termix-а",
+        "description": "Само за десктоп апликацију. Завршеци фајлова, као што су psd, jpg, pdf, који се отварају у вашем спољном уређивачу или системској апликацији ако ништа није изабрано. Раздвојите их зарезима или користите * за све фајлове."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Нови фолдер",
     "rename": "Преименуј",
     "uploading": "Шаље се...",
-    "externalEditorTextOnly": "Само текстуалне датотеке могу се отворити спољно, јер се садржај чува назад као текст.",
     "uploadFilesDone": "{{done}} / {{total}} датотека",
     "uploadingFile": "Шаље се {{name}}...",
     "uploadingChunk": "Шаље се {{name}}: {{percent}}% (део {{chunk}} од {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "Нема резултата за „{{query}}“",
     "searchFiles": "Претрага фајлова...",
     "upload": "Отпреми",
+    "lockChanges": "Закључај промене",
+    "unlockChanges": "Откључај промене",
+    "lockedNotice": "Промене су закључане. Откључајте их у траци алата да бисте уређивали фајлове овде.",
     "selectHostToStart": "Изаберите хост за почетак управљања фајловима",
     "sshRequiredForFileManager": "Менаџер фајлова захтева SSH. Овај хост нема укључен SSH.",
     "failedToConnect": "Повезивање на SSH није успело",
@@ -307,15 +340,15 @@
     "serverError": "Грешка сервера",
     "fileSavedSuccessfully": "Фајл је успешно сачуван",
     "failedToSaveFile": "Чување фајла није успело",
-    "confirmDeleteSingleItem": "Да ли сте сигурни да желите трајно да обришете \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Да ли сте сигурни да желите трајно да обришете {{count}} ставку?",
-    "confirmDeleteMultipleItems_few": "Да ли сте сигурни да желите трајно да обришете {{count}} ставке?",
-    "confirmDeleteMultipleItems_other": "Да ли сте сигурни да желите трајно да обришете {{count}} ставки?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Да ли сте сигурни да желите трајно да обришете {{count}} ставку? Ово укључује фасциклу и њен садржај.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Да ли сте сигурни да желите трајно да обришете {{count}} ставке? Ово укључује фасцикле и њихов садржај.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Да ли сте сигурни да желите трајно да обришете {{count}} ставки? Ово укључује фасцикле и њихов садржај.",
-    "confirmDeleteFolder": "Да ли сте сигурни да желите трајно да обришете фасциклу \"{{name}}\" и св њен садржај?",
-    "moveToTrashWarning": "Ставке ће бити премештене у Termix смеће и могу се вратити пре истека периода задржавања.",
+    "confirmDeleteSingleItem": "Обриши „{{name}}“?",
+    "confirmDeleteMultipleItems_one": "Обриши {{count}} ставку?",
+    "confirmDeleteMultipleItems_few": "Обриши {{count}} ставке?",
+    "confirmDeleteMultipleItems_other": "Обриши {{count}} ставки?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Обриши {{count}} ставку? Ово укључује фасциклу и њен садржај.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Обриши {{count}} ставке? Ово укључује фасцикле и њихов садржај.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Обриши {{count}} ставки? Ово укључује фасцикле и њихов садржај.",
+    "confirmDeleteFolder": "Обриши фасциклу „{{name}}“ и цео њен садржај?",
+    "moveToTrashWarning": "Фајл иде у Termix Канти и може се вратити док не истекне период задржавања.",
     "itemsMovedToTrash_one": "{{count}} ставка је премештена у Кору",
     "itemsMovedToTrash_few": "{{count}} ставке су премештене у Кору",
     "itemsMovedToTrash_other": "{{count}} ставки је премештено у Кору",
@@ -537,7 +570,22 @@
     "openAsText": "Отвори као текст",
     "confirmOpenAsText": "Да ли желите да наставите са отварањем овог фајла као текста? Ово може успорити ваш прегледач.",
     "removeShortcutConfirm": "Уклонити пречицу {{name}}?",
-    "clearRecentConfirm": "Очистити све недавне фајлове?"
+    "clearRecentConfirm": "Очистити све недавне фајлове?",
+    "deletePermanently": "Обриши трајно",
+    "deletePermanentlyWarning": "Фајл се трајно брише и не може се вратити.",
+    "moveToTrash": "Премести у Канти",
+    "askUsername": {
+      "title": "Пријави се као",
+      "description": "{{host}} тражи корисничко име сваки пут. Унесите оно за пријаву.",
+      "connect": "Повези"
+    },
+    "protocol": "Протокол",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Корисничко име",
     "password": "Лозинка",
     "passwordSaved": "Лозинка је сачувана, куцајте да је промените"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Прегледајте фајлове на овом хосту преко WebDAV-а, као што су Nextcloud, ownCloud или NAS.",
+    "originNote": "WebDAV везе се успостављају са Termix сервера.",
+    "https": "HTTPS",
+    "httpsDesc": "Искључите само за сервере који немају HTTPS.",
+    "path": "Путања",
+    "pathHint": "Где се WebDAV налази на серверу. Nextcloud користи /remote.php/dav/files/<user>. Оставите празно за корен.",
+    "anonymousNote": "Повезује се без пријаве."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Прегледајте Windows или Samba дељену мappу на овом хосту.",
+    "originNote": "SMB везе се успостављају са Termix сервера.",
+    "share": "Дељена mappa",
+    "domain": "Домен или радна група",
+    "limits": "Користи SMB 2 са NTLMv2. Дељене мappе које захтевају SMB 3, шифровање или потписивање, као што је Windows 11 24H2 подразумевано, још нису подржане.",
+    "guestNote": "Повезује се као гост без лозинке."
   }
 }

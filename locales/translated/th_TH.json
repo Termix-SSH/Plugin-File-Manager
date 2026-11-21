@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "อนุญาตใบรับรองที่ลงนามด้วยตนเอง"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "พอร์ต WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV ผ่าน HTTPS"
+      },
+      "webdavPath": {
+        "label": "พาธ WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "อนุญาตให้ใช้ใบรับรอง WebDAV ที่ลงนามเอง"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "พอร์ต SMB"
+      },
+      "smbShare": {
+        "label": "แชร์ SMB"
+      },
+      "smbDomain": {
+        "label": "โดเมน SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "ขนาดประวัติโฟลเดอร์",
         "description": "จำนวนโฟลเดอร์ที่แผงไฟล์จะจดจำสำหรับแต่ละโฮสต์"
+      },
+      "openExternallyTypes": {
+        "label": "เปิดไฟล์ประเภทเหล่านี้ภายนอก Termix",
+        "description": "เฉพาะแอปเดสก์ท็อปเท่านั้น ขยายชื่อไฟล์ เช่น psd, jpg, pdf ที่จะเปิดในโปรแกรมแก้ไขภายนอก หรือแอปของระบบเมื่อไม่ได้เลือกโปรแกรมแก้ไขใด ๆ เมื่อคุณเปิดไฟล์เหล่านั้น แยกด้วยเครื่องหมายจุลภาค หรือใช้ * สำหรับทุกไฟล์"
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "โฟลเดอร์ใหม่",
     "rename": "เปลี่ยนชื่อ",
     "uploading": "กำลังอัปโหลด...",
-    "externalEditorTextOnly": "สามารถเปิดไฟล์ข้อความภายนอกได้เท่านั้น เนื่องจากข้อมูลที่บันทึกจะถูกเขียนกลับเป็นข้อความ",
     "uploadFilesDone": "{{done}} / {{total}} ไฟล์",
     "uploadingFile": "กำลังอัปโหลด {{name}}...",
     "uploadingChunk": "กำลังอัปโหลด {{name}}: {{percent}}% (ส่วนที่ {{chunk}} จาก {{total}})",
@@ -212,6 +242,9 @@
     "noSearchResults": "ไม่พบผลลัพธ์สำหรับ \"{{query}}\"",
     "searchFiles": "ค้นหาไฟล์...",
     "upload": "อัปโหลด",
+    "lockChanges": "ล็อกการเปลี่ยนแปลง",
+    "unlockChanges": "ปลดล็อกการเปลี่ยนแปลง",
+    "lockedNotice": "การเปลี่ยนแปลงถูกล็อกไว้ ปลดล็อกในแถบเครื่องมือเพื่อแก้ไขไฟล์ที่นี่",
     "selectHostToStart": "เลือกโฮสต์เพื่อเริ่มจัดการไฟล์",
     "sshRequiredForFileManager": "ตัวจัดการไฟล์ต้องใช้ SSH โฮสต์นี้ไม่ได้เปิดใช้งาน SSH",
     "failedToConnect": "ไม่สามารถเชื่อมต่อกับ SSH ได้",
@@ -261,11 +294,11 @@
     "serverError": "ข้อผิดพลาดของเซิร์ฟเวอร์",
     "fileSavedSuccessfully": "บันทึกไฟล์สำเร็จ",
     "failedToSaveFile": "ไม่สามารถบันทึกไฟล์ได้",
-    "confirmDeleteSingleItem": "คุณแน่ใจหรือไม่ว่าต้องการลบ \"{{name}}\" อย่างถาวร?",
-    "confirmDeleteMultipleItems_other": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{count}} รายการอย่างถาวร?",
-    "confirmDeleteMultipleItemsWithFolders_other": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{count}} รายการอย่างถาวร? รวมถึงโฟลเดอร์และเนื้อหาภายใน",
-    "confirmDeleteFolder": "คุณแน่ใจหรือไม่ว่าต้องการลบโฟลเดอร์ \"{{name}}\" และเนื้อหาทั้งหมดอย่างถาวร?",
-    "moveToTrashWarning": "รายการจะถูกย้ายไปยังถังขยะของ Termix และสามารถกู้คืนได้ก่อนหมดระยะเวลาเก็บรักษา",
+    "confirmDeleteSingleItem": "ลบ \"{{name}}\" หรือไม่?",
+    "confirmDeleteMultipleItems_other": "ลบ {{count}} รายการหรือไม่?",
+    "confirmDeleteMultipleItemsWithFolders_other": "ลบ {{count}} รายการหรือไม่? รวมถึงโฟลเดอร์และเนื้อหาภายใน",
+    "confirmDeleteFolder": "ลบโฟลเดอร์ \"{{name}}\" และเนื้อหาทั้งหมดหรือไม่?",
+    "moveToTrashWarning": "ไฟล์จะถูกย้ายไปยังถังขยะของ Termix และสามารถกู้คืนได้จนกว่าจะหมดระยะเวลาการเก็บรักษา",
     "itemsMovedToTrash_other": "ย้าย {{count}} รายการไปยังถังขยะแล้ว",
     "deletingItems": "กำลังลบ: {{done}} / {{total}} โปรดรอจนกว่าจะเสร็จสิ้นก่อนวางหรืออัปโหลดไฟล์",
     "movingToTrash": "กำลังย้ายไปยังถังขยะ: {{done}} / {{total}} โปรดรอจนกว่าจะเสร็จสิ้นก่อนวางหรืออัปโหลดไฟล์",
@@ -465,7 +498,22 @@
     "openAsText": "เปิดเป็นข้อความ",
     "confirmOpenAsText": "ต้องการเปิดไฟล์นี้เป็นข้อความหรือไม่? การดำเนินการนี้อาจทำให้เบราว์เซอร์ทำงานช้าลง",
     "removeShortcutConfirm": "ต้องการลัดทางลัด {{name}} หรือไม่?",
-    "clearRecentConfirm": "ต้องการล้างไฟล์ล่าสุดทั้งหมดหรือไม่?"
+    "clearRecentConfirm": "ต้องการล้างไฟล์ล่าสุดทั้งหมดหรือไม่?",
+    "deletePermanently": "ลบถาวร",
+    "deletePermanentlyWarning": "ไฟล์จะถูกลบอย่างถาวรและไม่สามารถกู้คืนได้",
+    "moveToTrash": "ย้ายไปยังถังขยะ",
+    "askUsername": {
+      "title": "เข้าสู่ระบบเป็น",
+      "description": "{{host}} ขอชื่อผู้ใช้ทุกครั้ง กรุณาพิมพ์ชื่อผู้ใช้ที่จะใช้เข้าสู่ระบบ",
+      "connect": "เชื่อมต่อ"
+    },
+    "protocol": "โปรโตคอล",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "ชื่อผู้ใช้",
     "password": "รหัสผ่าน",
     "passwordSaved": "บันทึกรหัสผ่านแล้ว พิมพ์เพื่อเปลี่ยน"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "เรียกดูไฟล์บนโฮสต์นี้ผ่าน WebDAV เช่น Nextcloud, ownCloud หรือ NAS",
+    "originNote": "การเชื่อมต่อ WebDAV จะดำเนินการจากเซิร์ฟเวอร์ Termix",
+    "https": "HTTPS",
+    "httpsDesc": "ปิดใช้งานเฉพาะสำหรับเซิร์ฟเวอร์ที่ไม่มี HTTPS",
+    "path": "พาธ",
+    "pathHint": "ตำแหน่งของ WebDAV บนเซิร์ฟเวอร์ Nextcloud ใช้ /remote.php/dav/files/<user> เว้นว่างไว้สำหรับรูท",
+    "anonymousNote": "เชื่อมต่อโดยไม่ต้องเข้าสู่ระบบ"
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "เรียกดูแชร์ Windows หรือ Samba บนโฮสต์นี้",
+    "originNote": "การเชื่อมต่อ SMB จะดำเนินการจากเซิร์ฟเวอร์ Termix",
+    "share": "แชร์",
+    "domain": "โดเมนหรือเวิร์กกรุ๊ป",
+    "limits": "ใช้ SMB 2 กับ NTLMv2 ยังไม่รองรับแชร์ที่ต้องการ SMB 3 การเข้ารหัส หรือการเซ็นชื่อ เช่น Windows 11 24H2 โดยค่าเริ่มต้น",
+    "guestNote": "เชื่อมต่อในฐานะแขกโดยไม่ต้องใช้รหัสผ่าน"
   }
 }

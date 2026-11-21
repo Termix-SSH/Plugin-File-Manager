@@ -381,6 +381,7 @@ export function registerFileListingRoutes(
 
               const lines = data.split("\n").filter((line) => line.trim());
               const files = [];
+              let sawSelf = false;
 
               for (let i = 1; i < lines.length; i++) {
                 const line = lines[i];
@@ -402,6 +403,7 @@ export function registerFileListingRoutes(
                   const isDirectory = permissions.startsWith("d");
                   const isLink = permissions.startsWith("l");
 
+                  if (name === ".") sawSelf = true;
                   if (name === "." || name === "..") continue;
 
                   let actualName = name;
@@ -429,6 +431,20 @@ export function registerFileListingRoutes(
                         : false,
                   });
                 }
+              }
+
+              // ls -la always lists "." itself. Without it the output was
+              // something else, so say so instead of showing an empty folder.
+              if (files.length === 0 && !sawSelf) {
+                const detail =
+                  (errorData || data).trim().split("\n")[0]?.slice(0, 200) ||
+                  "no output";
+                ctx.log.warn(
+                  `listFiles got no listing for ${sshPath}: ${detail}`,
+                );
+                return finish(500, {
+                  error: `Could not read this folder: ${detail}`,
+                });
               }
 
               finish(200, { files, path: sshPath });

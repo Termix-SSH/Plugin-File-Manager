@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Atļaut pašparakstītu sertifikātu"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV ports"
+      },
+      "webdavHttps": {
+        "label": "WebDAV pār HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV ceļš"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Atļaut pašparakstītu WebDAV sertifikātu"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB ports"
+      },
+      "smbShare": {
+        "label": "SMB koplietojums"
+      },
+      "smbDomain": {
+        "label": "SMB domēns"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Mapju vēstures izmērs",
         "description": "Cik daudz mapju failu panelis atceras katram resursam."
+      },
+      "openExternallyTypes": {
+        "label": "Atvērt šādus failu tipus ārpus Termix",
+        "description": "Tikai darbvirsmas lietotnei. Failu paplašinājumi, piemēram, psd, jpg, pdf, kas tiek atvērti jūsu ārējā redaktora vai sistēmas lietotnē, ja nav izvēlēts cits. Atdaliet tos ar komatiem vai izmantojiet * visiem failiem."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Jauna mape",
     "rename": "Pārsaukt",
     "uploading": "Augšupielādē...",
-    "externalEditorTextOnly": "Ārēji var atvērt tikai teksta failus, jo saglabātie dati tiek rakstīti atpakaļ kā teksts.",
     "uploadFilesDone": "{{done}} / {{total}} faili",
     "uploadingFile": "Augšupielādē {{name}}...",
     "uploadingChunk": "Augšupielādē {{name}}: {{percent}}% (daļa {{chunk}} no {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "Nav atrasts neviens rezultāts vaicājumam „{{query}}”",
     "searchFiles": "Meklēt failus...",
     "upload": "Augšupielādēt",
+    "lockChanges": "Bloķēt izmaiņas",
+    "unlockChanges": "Atbloķēt izmaiņas",
+    "lockedNotice": "Izmaiņas ir bloķētas. Atbloķējiet tās rīkjoslā, lai rediģētu failus šeit.",
     "selectHostToStart": "Izvēlieties hostu, lai sāktu failu pārvaldību",
     "sshRequiredForFileManager": "Failu pārvaldnīkam ir nepieciešams SSH. Šim hostam SSH nav iespējots.",
     "failedToConnect": "Neizdevās izveidot savienojumu ar SSH",
@@ -307,15 +340,15 @@
     "serverError": "Servera kļūda",
     "fileSavedSuccessfully": "Fails veiksmīgi saglabāts",
     "failedToSaveFile": "Neizdevās saglabāt failu",
-    "confirmDeleteSingleItem": "Vai tiešām vēlaties neatgriezeniski dzēst \"{{name}}\"?",
-    "confirmDeleteMultipleItems_zero": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementus?",
-    "confirmDeleteMultipleItems_one": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementu?",
-    "confirmDeleteMultipleItems_other": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementus?",
-    "confirmDeleteMultipleItemsWithFolders_zero": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementus? Tas ietver mapes un to saturu.",
-    "confirmDeleteMultipleItemsWithFolders_one": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementu? Tas ietver mapi un tās saturu.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Vai tiešām vēlaties neatgriezeniski dzēst {{count}} elementus? Tas ietver mapes un to saturu.",
-    "confirmDeleteFolder": "Vai tiešām vēlaties neatgriezeniski dzēst mapi \"{{name}}\" un visu tās saturu?",
-    "moveToTrashWarning": "Elementi tiks pārvietoti uz Termix Lūkaku un varēs tikt atjaunoti, pirms beidzas glabāšanas periods.",
+    "confirmDeleteSingleItem": "Dzēst \"{{name}}\"?",
+    "confirmDeleteMultipleItems_zero": "Dzēst {{count}} vienumus?",
+    "confirmDeleteMultipleItems_one": "Dzēst {{count}} vienumu?",
+    "confirmDeleteMultipleItems_other": "Dzēst {{count}} vienumus?",
+    "confirmDeleteMultipleItemsWithFolders_zero": "Dzēst {{count}} vienumus? Tas ietver mapes un to saturu.",
+    "confirmDeleteMultipleItemsWithFolders_one": "Dzēst {{count}} vienumu? Tas ietver mapi un tās saturu.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Dzēst {{count}} vienumus? Tas ietver mapes un to saturu.",
+    "confirmDeleteFolder": "Dzēst mapi \"{{name}}\" un visu tās saturu?",
+    "moveToTrashWarning": "Tas nonāk Termix Lūkā un var tikt atjaunots, līdz beidzas glabāšanas periods.",
     "itemsMovedToTrash_zero": "{{count}} elementi pārvietoti uz Lūkaku",
     "itemsMovedToTrash_one": "{{count}} elements pārvietots uz Lūkaku",
     "itemsMovedToTrash_other": "{{count}} elementi pārvietoti uz Lūkaku",
@@ -537,7 +570,22 @@
     "openAsText": "Atvērt kā tekstu",
     "confirmOpenAsText": "Vai vēlaties turpināt šī faila atvēršanu kā tekstu? Tas var palēnināt jūsu pārlūkprogrammu.",
     "removeShortcutConfirm": "Vai noņemt saīsni {{name}}?",
-    "clearRecentConfirm": "Vai iztīrīt visus nesenos failus?"
+    "clearRecentConfirm": "Vai iztīrīt visus nesenos failus?",
+    "deletePermanently": "Neatgriezeniski dzēst",
+    "deletePermanentlyWarning": "Tas tiek neatgriezeniski dzēsts un nevar tikt atjaunots.",
+    "moveToTrash": "Pārvietot uz Lūku",
+    "askUsername": {
+      "title": "Pieslēgties kā",
+      "description": "{{host}} katru reizi prasa lietotājvārdu. Ievadiet to, ar kuru vēlaties pieslēgties.",
+      "connect": "Pieslēgties"
+    },
+    "protocol": "Protokols",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Lietotājvārds",
     "password": "Parole",
     "passwordSaved": "Parole saglabāta, ierakstiet, lai mainītu"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Pārlūkojiet failus šajā hostā caur WebDAV, piemēram, Nextcloud, ownCloud vai NAS.",
+    "originNote": "WebDAV savienojumi tiek izveidoti no Termix servera.",
+    "https": "HTTPS",
+    "httpsDesc": "Izslēdziet tikai tad, ja serverim nav HTTPS.",
+    "path": "Ceļš",
+    "pathHint": "Kur atrodas WebDAV serverī. Nextcloud izmanto /remote.php/dav/files/<user>. Atstājiet tukšu, lai izmantotu sakni.",
+    "anonymousNote": "Pieslēdzas bez pieteikšanās."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Pārlūkojiet Windows vai Samba koplietojumu šajā hostā.",
+    "originNote": "SMB savienojumi tiek izveidoti no Termix servera.",
+    "share": "Koplietojums",
+    "domain": "Domēns vai darba grupa",
+    "limits": "Izmanto SMB 2 ar NTLMv2. Koplietojumi, kuriem nepieciešams SMB 3, šifrēšana vai parakstīšana, piemēram, Windows 11 24H2 pēc noklusējuma, vēl netiek atbalstīti.",
+    "guestNote": "Pieslēdzas kā viesis bez paroles."
   }
 }

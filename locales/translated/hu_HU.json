@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Önaláírt tanúsítvány engedélyezése"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV HTTPS-en keresztül"
+      },
+      "webdavPath": {
+        "label": "WebDAV-útvonal"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Önmagát aláíró WebDAV-tanúsítvány engedélyezése"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-port"
+      },
+      "smbShare": {
+        "label": "SMB-megosztás"
+      },
+      "smbDomain": {
+        "label": "SMB-domén"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Mappa előzmények mérete",
         "description": "Hány mappát emlékezik meg a fájlok panel minden hoszhoz."
+      },
+      "openExternallyTypes": {
+        "label": "Ezeket a fájltípusokat nyisd meg Termixen kívül",
+        "description": "Csak asztali alkalmazásban. Fájlkiterjesztések, például psd, jpg, pdf, amelyek megnyitásakor a kiválasztott külső szerkesztőben, vagy ha nincs kiválasztva, a rendszeralkalmazásban nyílnak meg. Vesszővel válaszd el őket, vagy használj *-t minden fájlra."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Új mappa",
     "rename": "Átnevezés",
     "uploading": "Feltöltés...",
-    "externalEditorTextOnly": "Csak szöveges fájlok nyithatók meg külsőleg, mert a mentések szövegként íródnak vissza.",
     "uploadFilesDone": "{{done}} / {{total}} fájl",
     "uploadingFile": "{{name}} feltöltése...",
     "uploadingChunk": "{{name}} feltöltése: {{percent}}% ({{chunk}}/{{total}} rész)",
@@ -227,6 +257,9 @@
     "noSearchResults": "Nincs találat a(z) „{{query}}” kifejezésre",
     "searchFiles": "Fájlok keresése...",
     "upload": "Feltöltés",
+    "lockChanges": "Változtatások zárolása",
+    "unlockChanges": "Változtatások feloldása",
+    "lockedNotice": "A változtatások zárolva vannak. Oldd fel őket az eszköztáron a fájlok szerkesztéséhez.",
     "selectHostToStart": "Válasszon egy gazdagépet a fájlkezelés indításához",
     "sshRequiredForFileManager": "A fájlkezelőhöz SSH szükséges. Ennél a gazdagépnél nincs engedélyezve az SSH.",
     "failedToConnect": "Nem sikerült csatlakozni az SSH-hoz",
@@ -284,13 +317,13 @@
     "serverError": "Szerverhiba",
     "fileSavedSuccessfully": "A fájl sikeresen mentve",
     "failedToSaveFile": "Nem sikerült menteni a fájlt",
-    "confirmDeleteSingleItem": "Biztosan véglegesen törölni szeretné a(z) \"{{name}}\" elemet?",
-    "confirmDeleteMultipleItems_one": "Biztosan véglegesen törölni szeretné ezt a {{count}} elemet?",
-    "confirmDeleteMultipleItems_other": "Biztosan véglegesen törölni szeretné ezeket a {{count}} elemet?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Biztosan véglegesen törölni szeretné ezt a {{count}} elemet? Ez tartalmaz egy mappát és annak tartalmát.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Biztosan véglegesen törölni szeretné ezeket a {{count}} elemet? Ez tartalmaz mappákat és azok tartalmát.",
-    "confirmDeleteFolder": "Biztosan véglegesen törölni szeretné a(z) \"{{name}}\" mappát és annak összes tartalmát?",
-    "moveToTrashWarning": "Az elemek a Termix Kukaiba kerülnek, és visszaállíthatók a megőrzési idő letelte előtt.",
+    "confirmDeleteSingleItem": "Töröld a(z) \"{{name}}\" fájlt?",
+    "confirmDeleteMultipleItems_one": "Töröld a(z) {{count}} elemet?",
+    "confirmDeleteMultipleItems_other": "Töröld a(z) {{count}} elemet?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Töröld a(z) {{count}} elemet? Ez tartalmaz egy mappát és annak tartalmát.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Töröld a(z) {{count}} elemet? Ez tartalmaz mappákat és azok tartalmát.",
+    "confirmDeleteFolder": "Töröld a(z) \"{{name}}\" mappát és annak összes tartalmát?",
+    "moveToTrashWarning": "A Termix Kukaiba kerül, és a megőrzési idő lejárta előtt visszaállítható.",
     "itemsMovedToTrash_one": "{{count}} elem áthelyezve a Kuka mappába",
     "itemsMovedToTrash_other": "{{count}} elem áthelyezve a Kuka mappába",
     "deletingItems": "Törlés: {{done}} / {{total}}. Várjon, amíg befejeződik, mielőtt beillesztene vagy feltöltené.",
@@ -501,7 +534,22 @@
     "openAsText": "Megnyitás szövegként",
     "confirmOpenAsText": "Folytatja a fájl megnyitását szövegként? Ez lelassíthatja a böngészőt.",
     "removeShortcutConfirm": "Törli a(z) {{name}} parancsikon?",
-    "clearRecentConfirm": "Törli az összes legutóbbi fájlt?"
+    "clearRecentConfirm": "Törli az összes legutóbbi fájlt?",
+    "deletePermanently": "Végleges törlés",
+    "deletePermanentlyWarning": "Véglegesen törlődik, és nem állítható vissza.",
+    "moveToTrash": "Kukába helyezése",
+    "askUsername": {
+      "title": "Bejelentkezés mint",
+      "description": "A(z) {{host}} minden alkalommal felhasználónevet kér. Írd be azt, aként be szeretnél jelentkezni.",
+      "connect": "Csatlakozás"
+    },
+    "protocol": "Protokoll",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Felhasználónév",
     "password": "Jelszó",
     "passwordSaved": "Jelszó mentve, gépelés a módosításhoz"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Fájlböngészés ezen a gazdagépen WebDAV-on keresztül, például Nextcloud, ownCloud vagy NAS esetén.",
+    "originNote": "A WebDAV-csatlakozások a Termix szerverről indulnak.",
+    "https": "HTTPS",
+    "httpsDesc": "Csak olyan szerver esetén kapcsold ki, amelyiknek nincs HTTPS-je.",
+    "path": "Útvonal",
+    "pathHint": "Ahol a WebDAV található a szerveren. A Nextcloud a /remote.php/dav/files/<user> útvonalat használja. Hagyd üresen a gyökérkönyvtár esetén.",
+    "anonymousNote": "Bejelentkezés nélkül csatlakozik."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Windows vagy Samba megosztás böngészése ezen a gazdagépen.",
+    "originNote": "Az SMB-csatlakozások a Termix szerverről indulnak.",
+    "share": "Megosztás",
+    "domain": "Domén vagy munkacsoport",
+    "limits": "SMB 2-t használ NTLMv2-vel. Azok a megosztások, amelyekhez SMB 3, titkosítás vagy aláírás szükséges, például a Windows 11 24H2 alapértelmezett beállításai, még nem támogatottak.",
+    "guestNote": "Vendégként csatlakozik jelszó nélkül."
   }
 }

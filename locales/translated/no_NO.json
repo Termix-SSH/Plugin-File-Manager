@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Tillat selvsignert sertifikat"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV over HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV-sti"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Tillat selvsignert WebDAV-sertifikat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-port"
+      },
+      "smbShare": {
+        "label": "SMB-delingsressurs"
+      },
+      "smbDomain": {
+        "label": "SMB-domene"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Størrelse på mappehistorikk",
         "description": "Hvor mange mapper filpanelet husker for hver vert."
+      },
+      "openExternallyTypes": {
+        "label": "Åpne disse filtypene utenfor Termix",
+        "description": "Kun skrivebordsapp. Filendelser, som psd, jpg, pdf, som åpnes i din eksterne redigerer, eller systemappen når ingen er valgt, når du åpner dem. Skill dem med kommaer, eller bruk * for alle filer."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Ny mappe",
     "rename": "Gi nytt navn",
     "uploading": "Laster opp...",
-    "externalEditorTextOnly": "Kun tekstfiler kan åpnes eksternt, fordi lagring skjer som tekst.",
     "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Laster opp {{name}}...",
     "uploadingChunk": "Laster opp {{name}}: {{percent}}% (del {{chunk}} av {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Ingen resultater funnet for \"{{query}}\"",
     "searchFiles": "Søk etter filer...",
     "upload": "Last opp",
+    "lockChanges": "Lås endringer",
+    "unlockChanges": "Lås opp endringer",
+    "lockedNotice": "Endringer er låst. Lås dem opp i verktøylinjen for å redigere filer her.",
     "selectHostToStart": "Velg en vert for å starte filbehandling",
     "sshRequiredForFileManager": "Filbehandler krever SSH. Denne verten har ikke SSH aktivert.",
     "failedToConnect": "Kunne ikke koble til SSH",
@@ -284,13 +317,13 @@
     "serverError": "Serverfeil",
     "fileSavedSuccessfully": "Filen er lagret",
     "failedToSaveFile": "Kunne ikke lagre filen",
-    "confirmDeleteSingleItem": "Er du sikker på at du vil slette «{{name}}» permanent?",
-    "confirmDeleteMultipleItems_one": "Er du sikker på at du vil slette {{count}} element permanent?",
-    "confirmDeleteMultipleItems_other": "Er du sikker på at du vil slette {{count}} elementer permanent?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Er du sikker på at du vil slette {{count}} element permanent? Dette inkluderer en mappe og innholdet i den.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Er du sikker på at du vil slette {{count}} elementer permanent? Dette inkluderer mapper og innholdet i dem.",
-    "confirmDeleteFolder": "Er du sikker på at du vil slette mappen «{{name}}» og alt innholdet permanent?",
-    "moveToTrashWarning": "Elementene vil bli flyttet til Termix Papirkurv og kan gjenopprettes før beholdningsperioden utløper.",
+    "confirmDeleteSingleItem": "Slett «{{name}}»?",
+    "confirmDeleteMultipleItems_one": "Slett {{count}} element?",
+    "confirmDeleteMultipleItems_other": "Slett {{count}} elementer?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Slett {{count}} element? Dette inkluderer en mappe og innholdet i den.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Slett {{count}} elementer? Dette inkluderer mapper og innholdet i dem.",
+    "confirmDeleteFolder": "Slett mappen «{{name}}» og alt innholdet i den?",
+    "moveToTrashWarning": "Den flyttes til Termix Papirkurv og kan gjenopprettes til beholdningsperioden utløper.",
     "itemsMovedToTrash_one": "{{count}} element flyttet til Papirkurv",
     "itemsMovedToTrash_other": "{{count}} elementer flyttet til Papirkurv",
     "deletingItems": "Sletter: {{done}} / {{total}}. Vent til det er ferdig før du limer inn eller laster opp.",
@@ -501,7 +534,22 @@
     "openAsText": "Åpne som tekst",
     "confirmOpenAsText": "Vil du fortsette å åpne denne filen som tekst? Dette kan bremse ned nettleseren din.",
     "removeShortcutConfirm": "Fjern snarveien {{name}}?",
-    "clearRecentConfirm": "Slett alle nylige filer?"
+    "clearRecentConfirm": "Slett alle nylige filer?",
+    "deletePermanently": "Slett permanent",
+    "deletePermanentlyWarning": "Den slettes for godt og kan ikke gjenopprettes.",
+    "moveToTrash": "Flytt til Papirkurv",
+    "askUsername": {
+      "title": "Logg inn som",
+      "description": "{{host}} ber om brukernavn hver gang. Skriv inn det du vil logge inn med.",
+      "connect": "Koble til"
+    },
+    "protocol": "Protokoll",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Brukernavn",
     "password": "Passord",
     "passwordSaved": "Passord lagret, skriv for å endre"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Bla gjennom filer på denne verten over WebDAV, som Nextcloud, ownCloud eller en NAS.",
+    "originNote": "WebDAV-tilkoblinger opprettes fra Termix-serveren.",
+    "https": "HTTPS",
+    "httpsDesc": "Slå av kun for en server som ikke har HTTPS.",
+    "path": "Sti",
+    "pathHint": "Hvor WebDAV befinner seg på serveren. Nextcloud bruker /remote.php/dav/files/<user>. La stå tomt for roten.",
+    "anonymousNote": "Kobler til uten pålogging."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Bla gjennom en Windows- eller Samba-delingsressurs på denne verten.",
+    "originNote": "SMB-tilkoblinger opprettes fra Termix-serveren.",
+    "share": "Delingsressurs",
+    "domain": "Domene eller arbeidsgruppe",
+    "limits": "Bruker SMB 2 med NTLMv2. Delingsressurser som krever SMB 3, kryptering eller signering, som Windows 11 24H2 som standard, støttes ennå ikke.",
+    "guestNote": "Kobler til som gjest uten passord."
   }
 }

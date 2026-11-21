@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "אפשר תעודה עצמית"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "פורט WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV דרך HTTPS"
+      },
+      "webdavPath": {
+        "label": "נתיב WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "אפשר תעודת WebDAV חתומה עצמית"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "פורט SMB"
+      },
+      "smbShare": {
+        "label": "שיתוף SMB"
+      },
+      "smbDomain": {
+        "label": "דומיין SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "גודל היסטוריית תיקיות",
         "description": "כמה תיקיות לוח הקבצים זוכר עבור כל מארח."
+      },
+      "openExternallyTypes": {
+        "label": "פתח סוגי קבצים אלה מחוץ ל-Termix",
+        "description": "יישומון שולחן עבודה בלבד. סיומות קבצים, כמו psd, jpg, pdf, שנפתחות בעורך חיצוני, או באפליקציית המערכת כאשר לא נבחרה אחרת, בעת פתיחתן. הפרד ביניהם בפסיקים, או השתמש ב-* לכל הקבצים."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "תיקייה חדשה",
     "rename": "שנה שם",
     "uploading": "מעלה...",
-    "externalEditorTextOnly": "רק קבצי טקסט ניתן לפתוח בחיצוני, כי שמירות נכתבות חזרה כטקסט.",
     "uploadFilesDone": "{{done}} / {{total}} קבצים",
     "uploadingFile": "מעלה את {{name}}...",
     "uploadingChunk": "מעלה את {{name}}: {{percent}}% (חלק {{chunk}} מתוך {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "לא נמצאו תוצאות עבור \"{{query}}\"",
     "searchFiles": "חיפוש קבצים...",
     "upload": "העלאה",
+    "lockChanges": "נעל שינויים",
+    "unlockChanges": "בטל נעילת שינויים",
+    "lockedNotice": "השינויים נעולים. בטל את הנעילה בסרגל הכלים כדי לערוך קבצים כאן.",
     "selectHostToStart": "בחר מארח כדי להתחיל ניהול קבצים",
     "sshRequiredForFileManager": "מנהל הקבצים דורש SSH. מארח זה אינו כולל SSH פעיל.",
     "failedToConnect": "החיבור ל-SSH נכשל",
@@ -307,15 +340,15 @@
     "serverError": "שגיאת שרת",
     "fileSavedSuccessfully": "הקובץ נשמר בהצלחה",
     "failedToSaveFile": "שמירת הקובץ נכשלה",
-    "confirmDeleteSingleItem": "האם אתה בטוח שברצונך למחוק לצמיתות את \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "האם אתה בטוח שברצונך למחוק לצמיתות פריט אחד?",
-    "confirmDeleteMultipleItems_two": "האם אתה בטוח שברצונך למחוק לצמיתות {{count}} פריטים?",
-    "confirmDeleteMultipleItems_other": "האם אתה בטוח שברצונך למחוק לצמיתות {{count}} פריטים?",
-    "confirmDeleteMultipleItemsWithFolders_one": "האם אתה בטוח שברצונך למחוק לצמיתות פריט אחד? פעולה זו כוללת תיקייה ותוכניה.",
-    "confirmDeleteMultipleItemsWithFolders_two": "האם אתה בטוח שברצונך למחוק לצמיתות {{count}} פריטים? פעולה זו כוללת תיקיות ותוכניהן.",
-    "confirmDeleteMultipleItemsWithFolders_other": "האם אתה בטוח שברצונך למחוק לצמיתות {{count}} פריטים? פעולה זו כוללת תיקיות ותוכניהן.",
-    "confirmDeleteFolder": "האם אתה בטוח שברצונך למחוק לצמיתות את התיקייה \"{{name}}\" ואת כל תוכנה?",
-    "moveToTrashWarning": "הפריטים יועברו לפח של Termix וניתן לשחזר אותם לפני תום תקופת השמירה.",
+    "confirmDeleteSingleItem": "למחוק את \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "למחוק פריט אחד?",
+    "confirmDeleteMultipleItems_two": "למחוק {{count}} פריטים?",
+    "confirmDeleteMultipleItems_other": "למחוק {{count}} פריטים?",
+    "confirmDeleteMultipleItemsWithFolders_one": "למחוק פריט אחד? זה כולל תיקייה ותוכניה.",
+    "confirmDeleteMultipleItemsWithFolders_two": "למחוק {{count}} פריטים? זה כולל תיקיות ותוכנן.",
+    "confirmDeleteMultipleItemsWithFolders_other": "למחוק {{count}} פריטים? זה כולל תיקיות ותוכנן.",
+    "confirmDeleteFolder": "למחוק את התיקייה \"{{name}}\" ואת כל תוכניה?",
+    "moveToTrashWarning": "הקובץ יועבר לפח של Termix וניתן לשחזר אותו עד לסיום תקופת השמירה.",
     "itemsMovedToTrash_one": "פריט אחד הועבר לפח",
     "itemsMovedToTrash_two": "{{count}} פריטים הועברו לפח",
     "itemsMovedToTrash_other": "{{count}} פריטים הועברו לפח",
@@ -537,7 +570,22 @@
     "openAsText": "פתיחה כטקסט",
     "confirmOpenAsText": "האם ברצונך להמשיך ולפתוח את הקובץ כטקסט? פעולה זו עשויה להאט את הדפדפן שלך.",
     "removeShortcutConfirm": "הסרת הקיצור {{name}}?",
-    "clearRecentConfirm": "ניקוי כל הקבצים האחרונים?"
+    "clearRecentConfirm": "ניקוי כל הקבצים האחרונים?",
+    "deletePermanently": "מחק לצמיתות",
+    "deletePermanentlyWarning": "הקובץ יימחק לצמיתות ולא ניתן יהיה לשחזר אותו.",
+    "moveToTrash": "העבר לפח",
+    "askUsername": {
+      "title": "התחבר כ",
+      "description": "{{host}} מבקש שם משתמש בכל פעם. הקלד את השם שבו תרצה להתחבר.",
+      "connect": "התחבר"
+    },
+    "protocol": "פרוטוקול",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "שם משתמש",
     "password": "סיסמה",
     "passwordSaved": "הסיסמה נשמרה, הקלד כדי לשנות"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "דפדוף בקבצים על המארח הזה דרך WebDAV, כמו Nextcloud, ownCloud או NAS.",
+    "originNote": "חיבורי WebDAV מתבצעים מהשרת של Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "כבה רק עבור שרת שאין לו HTTPS.",
+    "path": "נתיב",
+    "pathHint": "איפה WebDAV נמצא בשרת. Nextcloud משתמש ב-/remote.php/dav/files/<user>. השאר ריק עבור השורש.",
+    "anonymousNote": "מתחבר ללא התחברות."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "דפדוף בשיתוף Windows או Samba על המארח הזה.",
+    "originNote": "חיבורי SMB מתבצעים מהשרת של Termix.",
+    "share": "שיתוף",
+    "domain": "דומיין או קבוצת עבודה",
+    "limits": "משתמש ב-SMB 2 עם NTLMv2. שיתופים הדורשים SMB 3, הצפנה או חתימה, כמו Windows 11 24H2 כברירת מחדל, אינם נתמכים עדיין.",
+    "guestNote": "מתחבר כאורח ללא סיסמה."
   }
 }

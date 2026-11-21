@@ -3,6 +3,8 @@ import {
   canBrowseFiles,
   canOpenFiles,
   ftpEnabled,
+  availableProtocols,
+  fileProtocol,
   usesFtp,
 } from "../../src/frontend/host-settings";
 
@@ -40,5 +42,34 @@ describe("ftp hosts", () => {
   it("stays closed without FTP or SSH", () => {
     expect(canOpenFiles({ enableSsh: false })).toBe(false);
     expect(ftpEnabled(null)).toBe(false);
+  });
+});
+
+describe("protocols", () => {
+  const all = {
+    "file-manager": { enableFtp: true, enableWebdav: true, enableSmb: true },
+  };
+
+  it("lists SFTP first, then the others in a fixed order", () => {
+    expect(
+      availableProtocols({ enableSsh: true, pluginSettings: all }),
+    ).toEqual(["sftp", "ftp", "webdav", "smb"]);
+    expect(
+      availableProtocols({
+        enableSsh: false,
+        pluginSettings: { "file-manager": { enableSmb: true } },
+      }),
+    ).toEqual(["smb"]);
+  });
+
+  it("uses the picked protocol only while it is still on", () => {
+    const host = { enableSsh: true, pluginSettings: all };
+    expect(fileProtocol(host)).toBe("sftp");
+    expect(fileProtocol(host, "webdav")).toBe("webdav");
+    expect(usesFtp(host, "smb")).toBe(true);
+    const sftpOnly = { enableSsh: true };
+    expect(fileProtocol(sftpOnly, "smb")).toBe("sftp");
+    expect(fileProtocol({ enableSsh: false })).toBeNull();
+    expect(canOpenFiles({ enableSsh: false })).toBe(false);
   });
 });

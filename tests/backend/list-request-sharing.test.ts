@@ -617,3 +617,47 @@ describe("list request sharing", () => {
     await next.done;
   });
 });
+
+describe("ls fallback output", () => {
+  function fakeLs(stdout: string, stderr = "", code = 0) {
+    vi.mocked(execChannel).mockImplementation(((
+      _session: unknown,
+      _command: string,
+      cb: (err: Error | undefined, stream: unknown) => void,
+    ) => {
+      const stream = Object.assign(new EventEmitter(), {
+        stderr: new EventEmitter(),
+      });
+      cb(undefined, stream);
+      stream.emit("data", Buffer.from(stdout));
+      if (stderr) stream.stderr.emit("data", Buffer.from(stderr));
+      stream.emit("close", code);
+    }) as never);
+  }
+
+  it("reports output that is not a listing instead of an empty folder (#57)", async () => {
+    fakeLs("Welcome to the server\n");
+    const { request } = setup();
+    const { res, done } = request("/etc");
+    await reads(1);
+    complete(0, new Error("sftp readdir failed"));
+    await done;
+    expect(res.statusCode).toBe(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Could not read this folder: Welcome to the server",
+    });
+  });
+
+  it("still returns a real empty folder as empty", async () => {
+    fakeLs(
+      "total 0\ndrwxr-xr-x 2 root root 40 Nov 19 10:00 .\ndrwxr-xr-x 9 root root 180 Nov 19 10:00 ..\n",
+    );
+    const { request } = setup();
+    const { res, done } = request("/empty");
+    await reads(1);
+    complete(0, new Error("sftp readdir failed"));
+    await done;
+    expect(res.statusCode).toBe(200);
+    expect(res.json).toHaveBeenCalledWith({ files: [], path: "/empty" });
+  });
+});

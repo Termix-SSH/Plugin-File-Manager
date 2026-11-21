@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Tillad selvsignerede certifikater"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV over HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV-sti"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Tillad et selvsigneret WebDAV-certifikat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-port"
+      },
+      "smbShare": {
+        "label": "SMB-del"
+      },
+      "smbDomain": {
+        "label": "SMB-domæne"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Størrelse på mappehistorik",
         "description": "Hvor mange mapper filer-panelet husker for hver vært."
+      },
+      "openExternallyTypes": {
+        "label": "Åbn disse filtyper uden for Termix",
+        "description": "Kun desktop-app. Filendelser som psd, jpg, pdf, der åbnes i din eksterne editor eller systemapp, når ingen er valgt. Adskil dem med kommaer, eller brug * for alle filer."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Ny mappe",
     "rename": "Omdøb",
     "uploading": "Uploader...",
-    "externalEditorTextOnly": "Kun tekstfiler kan åbnes eksternt, da gemninger skrives tilbage som tekst.",
     "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Uploader {{name}}...",
     "uploadingChunk": "Uploader {{name}}: {{percent}}% (del {{chunk}} af {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Ingen resultater fundet for \"{{query}}\"",
     "searchFiles": "Søg i filer...",
     "upload": "Upload",
+    "lockChanges": "Lås ændringer",
+    "unlockChanges": "Lås ændringer op",
+    "lockedNotice": "Ændringer er låst. Lås dem op i værktøjslinjen for at redigere filer her.",
     "selectHostToStart": "Vælg en host for at starte filhåndtering",
     "sshRequiredForFileManager": "Filhåndtering kræver SSH. Denne host har ikke SSH aktiveret.",
     "failedToConnect": "Kunne ikke oprette forbindelse til SSH",
@@ -284,13 +317,13 @@
     "serverError": "Serverfejl",
     "fileSavedSuccessfully": "Fil gemt med succes",
     "failedToSaveFile": "Kunne ikke gemme fil",
-    "confirmDeleteSingleItem": "Er du sikker på, at du vil slette \"{{name}}\" permanent?",
-    "confirmDeleteMultipleItems_one": "Er du sikker på, at du vil slette {{count}} element permanent?",
-    "confirmDeleteMultipleItems_other": "Er du sikker på, at du vil slette {{count}} elementer permanent?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Er du sikker på, at du vil slette {{count}} element permanent? Dette inkluderer en mappe og dens indhold.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Er du sikker på, at du vil slette {{count}} elementer permanent? Dette inkluderer mapper og deres indhold.",
-    "confirmDeleteFolder": "Er du sikker på, at du vil slette mappen \"{{name}}\" og alt dens indhold permanent?",
-    "moveToTrashWarning": "Elementerne vil blive flyttet til Termix Papirkurv og kan gendannes, før opbevaringsperioden udløber.",
+    "confirmDeleteSingleItem": "Slet \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Slet {{count}} element?",
+    "confirmDeleteMultipleItems_other": "Slet {{count}} elementer?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Slet {{count}} element? Dette inkluderer en mappe og dens indhold.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Slet {{count}} elementer? Dette inkluderer mapper og deres indhold.",
+    "confirmDeleteFolder": "Slet mappen \"{{name}}\" og alt dens indhold?",
+    "moveToTrashWarning": "Den flyttes til Termix-papirkurven og kan gendannes, indtil opbevaringsperioden udløber.",
     "itemsMovedToTrash_one": "{{count}} element flyttet til Papirkurv",
     "itemsMovedToTrash_other": "{{count}} elementer flyttet til Papirkurv",
     "deletingItems": "Sletter: {{done}} / {{total}}. Vent til det er færdigt, før du indsætter eller uploader.",
@@ -501,7 +534,22 @@
     "openAsText": "Åbn som tekst",
     "confirmOpenAsText": "Vil du fortsætte med at åbne denne fil som tekst? Det kan bremse din browser.",
     "removeShortcutConfirm": "Fjern genvejen {{name}}?",
-    "clearRecentConfirm": "Ryd alle seneste filer?"
+    "clearRecentConfirm": "Ryd alle seneste filer?",
+    "deletePermanently": "Slet permanent",
+    "deletePermanentlyWarning": "Den slettes permanent og kan ikke gendannes.",
+    "moveToTrash": "Flyt til papirkurv",
+    "askUsername": {
+      "title": "Log ind som",
+      "description": "{{host}} beder om et brugernavn hver gang. Indtast det, du vil logge ind som.",
+      "connect": "Forbind"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Brugernavn",
     "password": "Adgangskode",
     "passwordSaved": "Adgangskode gemt, skriv for at ændre"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Gennemse filer på denne vært via WebDAV, f.eks. Nextcloud, ownCloud eller en NAS.",
+    "originNote": "WebDAV-forbindelser oprettes fra Termix-serveren.",
+    "https": "HTTPS",
+    "httpsDesc": "Sluk kun, hvis serveren ikke har HTTPS.",
+    "path": "Sti",
+    "pathHint": "Hvor WebDAV befinder sig på serveren. Nextcloud bruger /remote.php/dav/files/<user>. Lad være tomt for roden.",
+    "anonymousNote": "Forbindes uden login."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Gennemse en Windows- eller Samba-del på denne vært.",
+    "originNote": "SMB-forbindelser oprettes fra Termix-serveren.",
+    "share": "Del",
+    "domain": "Domæne eller arbejdsgruppe",
+    "limits": "Bruger SMB 2 med NTLMv2. Dele, der kræver SMB 3, kryptering eller signering, som Windows 11 24H2 som standard, understøttes endnu ikke.",
+    "guestNote": "Forbindes som gæst uden adgangskode."
   }
 }

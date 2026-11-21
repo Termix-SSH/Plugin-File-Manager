@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Kendi kendine imzalı sertifikaya izin ver"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV bağlantı noktası"
+      },
+      "webdavHttps": {
+        "label": "HTTPS üzerinden WebDAV"
+      },
+      "webdavPath": {
+        "label": "WebDAV yolu"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Kendi kendine imzalı WebDAV sertifikasına izin ver"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB bağlantı noktası"
+      },
+      "smbShare": {
+        "label": "SMB paylaşımı"
+      },
+      "smbDomain": {
+        "label": "SMB alanı"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Klasör geçmişi boyutu",
         "description": "Dosyalar panelinin her ana bilgisayar için kaç klasörü hatırlayacağı."
+      },
+      "openExternallyTypes": {
+        "label": "Bu dosya türlerini Termix dışında aç",
+        "description": "Sadece masaüstü uygulaması. psd, jpg, pdf gibi dosya uzantıları, bunları açtığınızda harici düzenleyicinizde veya hiçbir şey seçilmediğinde sistem uygulamasında açılır. Virgülle ayırın veya tüm dosyalar için * kullanın."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Yeni Klasör",
     "rename": "Yeniden Adlandır",
     "uploading": "Yükleniyor...",
-    "externalEditorTextOnly": "Sadece metin dosyaları harici olarak açılabilir, çünkü kaydetme işlemleri metin olarak geri yazılır.",
     "uploadFilesDone": "{{done}} / {{total}} dosya",
     "uploadingFile": "{{name}} yükleniyor...",
     "uploadingChunk": "{{name}} yükleniyor: {{percent}}% ({{total}} parçadan {{chunk}}. parça)",
@@ -227,6 +257,9 @@
     "noSearchResults": "\"{{query}}\" için sonuç bulunamadı",
     "searchFiles": "Dosya ara...",
     "upload": "Yükle",
+    "lockChanges": "Değişiklikleri kilitle",
+    "unlockChanges": "Değişikliklerin kilidini aç",
+    "lockedNotice": "Değişiklikler kilitli. Buradaki dosyaları düzenlemek için araç çubuğunda kilidini açın.",
     "selectHostToStart": "Dosya yönetimine başlamak için bir ana bilgisayar seçin",
     "sshRequiredForFileManager": "Dosya yöneticisi SSH gerektirir. Bu ana bilgisayarda SSH etkin değil.",
     "failedToConnect": "SSH'ya bağlanılamadı",
@@ -284,13 +317,13 @@
     "serverError": "Sunucu Hatası",
     "fileSavedSuccessfully": "Dosya başarıyla kaydedildi",
     "failedToSaveFile": "Dosya kaydedilemedi",
-    "confirmDeleteSingleItem": "\"{{name}}\" öğesini kalıcı olarak silmek istediğinize emin misiniz?",
-    "confirmDeleteMultipleItems_one": "{{count}} öğeyi kalıcı olarak silmek istediğinize emin misiniz?",
-    "confirmDeleteMultipleItems_other": "{{count}} öğeyi kalıcı olarak silmek istediğinize emin misiniz?",
-    "confirmDeleteMultipleItemsWithFolders_one": "{{count}} öğeyi kalıcı olarak silmek istediğinize emin misiniz? Bu, bir klasörü ve içeriğini içerir.",
-    "confirmDeleteMultipleItemsWithFolders_other": "{{count}} öğeyi kalıcı olarak silmek istediğinize emin misiniz? Bu, klasörleri ve içeriklerini içerir.",
-    "confirmDeleteFolder": "\"{{name}}\" klasörünü ve tüm içeriklerini kalıcı olarak silmek istediğinize emin misiniz?",
-    "moveToTrashWarning": "Öğe(ler) Termix Çöp Kutusu'na taşınacak ve saklama süresi dolmadan önce geri yüklenebilir.",
+    "confirmDeleteSingleItem": "\"{{name}}\" silinsin mi?",
+    "confirmDeleteMultipleItems_one": "{{count}} öğe silinsin mi?",
+    "confirmDeleteMultipleItems_other": "{{count}} öğe silinsin mi?",
+    "confirmDeleteMultipleItemsWithFolders_one": "{{count}} öğe silinsin mi? Bu, bir klasörü ve içeriğini içerir.",
+    "confirmDeleteMultipleItemsWithFolders_other": "{{count}} öğe silinsin mi? Bu, klasörleri ve içeriklerini içerir.",
+    "confirmDeleteFolder": "\"{{name}}\" klasörü ve tüm içeriği silinsin mi?",
+    "moveToTrashWarning": "Termix Çöp Kutusu'na gider ve saklama süresi sona erene kadar geri yüklenebilir.",
     "itemsMovedToTrash_one": "{{count}} öğe Çöp Kutusuna taşındı",
     "itemsMovedToTrash_other": "{{count}} öğe Çöp Kutusuna taşındı",
     "deletingItems": "Siliniyor: {{done}} / {{total}}. Yapıştırma veya yükleme işlemi yapmadan önce tamamlanmasını bekleyin.",
@@ -501,7 +534,22 @@
     "openAsText": "Metin Olarak Aç",
     "confirmOpenAsText": "Bu dosyayı metin olarak açmaya devam etmek istiyor musunuz? Bu işlem tarayıcınızı yavaşlatabilir.",
     "removeShortcutConfirm": "{{name}} kısayolu kaldırılsın mı?",
-    "clearRecentConfirm": "Tüm son dosyalar temizlensin mi?"
+    "clearRecentConfirm": "Tüm son dosyalar temizlensin mi?",
+    "deletePermanently": "Kalıcı olarak sil",
+    "deletePermanentlyWarning": "Kalıcı olarak silinir ve geri yüklenemez.",
+    "moveToTrash": "Çöp Kutusu'na taşı",
+    "askUsername": {
+      "title": "Giriş yap",
+      "description": "{{host}} her seferinde bir kullanıcı adı ister. Giriş yapmak için olanı yazın.",
+      "connect": "Bağlan"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Kullanıcı Adı",
     "password": "Şifre",
     "passwordSaved": "Şifre kaydedildi, değiştirmek için yazın"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Nextcloud, ownCloud veya bir NAS gibi bu ana makinedeki dosyalara WebDAV üzerinden göz atın.",
+    "originNote": "WebDAV bağlantıları Termix sunucusundan yapılır.",
+    "https": "HTTPS",
+    "httpsDesc": "Sadece HTTPS'i olmayan bir sunucu için kapatın.",
+    "path": "Yol",
+    "pathHint": "WebDAV'in sunucudaki konumu. Nextcloud /remote.php/dav/files/<user> kullanır. Kök için boş bırakın.",
+    "anonymousNote": "Giriş olmadan bağlanır."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Bu ana makinedeki bir Windows veya Samba paylaşımına göz atın.",
+    "originNote": "SMB bağlantıları Termix sunucusundan yapılır.",
+    "share": "Paylaşım",
+    "domain": "Alan veya iş grubu",
+    "limits": "NTLMv2 ile SMB 2 kullanır. Varsayılan olarak Windows 11 24H2 gibi SMB 3, şifreleme veya imzalama gerektiren paylaşımlar henüz desteklenmiyor.",
+    "guestNote": "Şifresiz misafir olarak bağlanır."
   }
 }

@@ -414,6 +414,170 @@
       "permission": "file-manager.use",
       "allowed": "any",
       "note": "Desktop app only"
+    },
+    "POST /plugin-api/file-manager/webdav/connect": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/webdav/createFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/webdav/createFolder": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/webdav/deleteItem": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/webdav/deleteItems": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/webdav/deleteItems/cancel": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/webdav/disconnect": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/webdav/downloadFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/webdav/downloadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/webdav/identifySymlink": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "allowed": "any",
+      "note": "Needs a live WebDAV or transfer session"
+    },
+    "POST /plugin-api/file-manager/webdav/keepalive": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/webdav/listFiles": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/webdav/moveItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/webdav/readFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/webdav/renameItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/webdav/resolvePath": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/webdav/status": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/webdav/uploadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/webdav/writeFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/connect": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/createFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/createFolder": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "DELETE /plugin-api/file-manager/smb/deleteItem": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/smb/deleteItems": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/smb/deleteItems/cancel": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/smb/disconnect": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "destructive": true
+    },
+    "POST /plugin-api/file-manager/smb/downloadFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/downloadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/smb/identifySymlink": {
+      "access": "user",
+      "permission": "file-manager.use",
+      "allowed": "any",
+      "note": "Needs a live SMB or transfer session"
+    },
+    "POST /plugin-api/file-manager/smb/keepalive": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/smb/listFiles": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/smb/moveItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/smb/readFile": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "PUT /plugin-api/file-manager/smb/renameItem": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/smb/resolvePath": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "GET /plugin-api/file-manager/smb/status": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/uploadFileStream": {
+      "access": "user",
+      "permission": "file-manager.use"
+    },
+    "POST /plugin-api/file-manager/smb/writeFile": {
+      "access": "user",
+      "permission": "file-manager.use"
     }
   }
 }

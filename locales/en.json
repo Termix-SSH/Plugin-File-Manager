@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Allow self-signed certificate"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV over HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV path"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Allow a self-signed WebDAV certificate"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB port"
+      },
+      "smbShare": {
+        "label": "SMB share"
+      },
+      "smbDomain": {
+        "label": "SMB domain"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Folder history size",
         "description": "How many folders the files panel remembers for each host."
+      },
+      "openExternallyTypes": {
+        "label": "Open these file types outside Termix",
+        "description": "Desktop app only. File endings, like psd, jpg, pdf, that open in your external editor, or the system app when none is chosen, when you open them. Separate them with commas, or use * for every file."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "New Folder",
     "rename": "Rename",
     "uploading": "Uploading...",
-    "externalEditorTextOnly": "Only text files can be opened externally, because saves are written back as text.",
     "uploadFilesDone": "{{done}} / {{total}} files",
     "uploadingFile": "Uploading {{name}}...",
     "uploadingChunk": "Uploading {{name}}: {{percent}}% (part {{chunk}} of {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "No results found for \"{{query}}\"",
     "searchFiles": "Search files...",
     "upload": "Upload",
+    "lockChanges": "Lock changes",
+    "unlockChanges": "Unlock changes",
+    "lockedNotice": "Changes are locked. Unlock them in the toolbar to edit files here.",
     "selectHostToStart": "Select a host to start file management",
     "sshRequiredForFileManager": "File manager requires SSH. This host does not have SSH enabled.",
     "failedToConnect": "Failed to connect to SSH",
@@ -284,13 +317,13 @@
     "serverError": "Server Error",
     "fileSavedSuccessfully": "File saved successfully",
     "failedToSaveFile": "Failed to save file",
-    "confirmDeleteSingleItem": "Are you sure you want to permanently delete \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Are you sure you want to permanently delete {{count}} item?",
-    "confirmDeleteMultipleItems_other": "Are you sure you want to permanently delete {{count}} items?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Are you sure you want to permanently delete {{count}} item? This includes a folder and its contents.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Are you sure you want to permanently delete {{count}} items? This includes folders and their contents.",
-    "confirmDeleteFolder": "Are you sure you want to permanently delete the folder \"{{name}}\" and all its contents?",
-    "moveToTrashWarning": "The item(s) will be moved to the Termix Trash and can be restored before the retention period expires.",
+    "confirmDeleteSingleItem": "Delete \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Delete {{count}} item?",
+    "confirmDeleteMultipleItems_other": "Delete {{count}} items?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Delete {{count}} item? This includes a folder and its contents.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Delete {{count}} items? This includes folders and their contents.",
+    "confirmDeleteFolder": "Delete the folder \"{{name}}\" and all its contents?",
+    "moveToTrashWarning": "It goes to the Termix Trash and can be restored until the retention period ends.",
     "itemsMovedToTrash_one": "{{count}} item moved to Trash",
     "itemsMovedToTrash_other": "{{count}} items moved to Trash",
     "deletingItems": "Deleting: {{done}} / {{total}}. Wait until it finishes before pasting or uploading.",
@@ -501,7 +534,22 @@
     "openAsText": "Open as Text",
     "confirmOpenAsText": "Do you want to continue opening this file as text? This may slow down your browser.",
     "removeShortcutConfirm": "Remove the shortcut {{name}}?",
-    "clearRecentConfirm": "Clear all recent files?"
+    "clearRecentConfirm": "Clear all recent files?",
+    "deletePermanently": "Delete permanently",
+    "deletePermanentlyWarning": "It is deleted for good and can't be restored.",
+    "moveToTrash": "Move to Trash",
+    "askUsername": {
+      "title": "Log in as",
+      "description": "{{host}} asks for a username each time. Type the one to log in as.",
+      "connect": "Connect"
+    },
+    "protocol": "Protocol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Username",
     "password": "Password",
     "passwordSaved": "Password saved, type to change"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Browse files on this host over WebDAV, like Nextcloud, ownCloud or a NAS.",
+    "originNote": "WebDAV connections are made from the Termix server.",
+    "https": "HTTPS",
+    "httpsDesc": "Turn off only for a server that has no HTTPS.",
+    "path": "Path",
+    "pathHint": "Where WebDAV lives on the server. Nextcloud uses /remote.php/dav/files/<user>. Leave empty for the root.",
+    "anonymousNote": "Connects without a login."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Browse a Windows or Samba share on this host.",
+    "originNote": "SMB connections are made from the Termix server.",
+    "share": "Share",
+    "domain": "Domain or workgroup",
+    "limits": "Uses SMB 2 with NTLMv2. Shares that require SMB 3, encryption or signing, like Windows 11 24H2 by default, are not supported yet.",
+    "guestNote": "Connects as a guest with no password."
   }
 }

@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Salli itseallekirjoitettu varmenne"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-portti"
+      },
+      "webdavHttps": {
+        "label": "WebDAV HTTPS-yhteydellä"
+      },
+      "webdavPath": {
+        "label": "WebDAV-reitti"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Salli itse allekirjoitettu WebDAV-varmenne"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-portti"
+      },
+      "smbShare": {
+        "label": "SMB-jako"
+      },
+      "smbDomain": {
+        "label": "SMB-verkko"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Kansioiden historian koko",
         "description": "Kuinka monta kansiota tiedostopaneeli muistaa jokaiselle isäntäpalvelimelle."
+      },
+      "openExternallyTypes": {
+        "label": "Avaa nämä tiedostotyypit Termixin ulkopuolella",
+        "description": "Vain työpöytäsovelluksessa. Tiedostopääteet, kuten psd, jpg, pdf, jotka avautuvat ulkoisessa muokkausohjelmassa tai järjestelmän oletussovelluksessa, jos et ole valinnut muuta. Erota pääteet pilkuilla tai käytä *-merkkiä kaikille tiedostoille."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Uusi kansio",
     "rename": "Nimeä uudelleen",
     "uploading": "Ladataan...",
-    "externalEditorTextOnly": "Vain tekstitiedostoja voidaan avata ulkoisesti, koska tallennukset kirjoitetaan takaisin tekstinä.",
     "uploadFilesDone": "{{done}} / {{total}} tiedostoa",
     "uploadingFile": "Ladataan {{name}}...",
     "uploadingChunk": "Ladataan {{name}}: {{percent}} % (osa {{chunk}} / {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Ei tuloksia haulle \"{{query}}\"",
     "searchFiles": "Hae tiedostoja...",
     "upload": "Lataa",
+    "lockChanges": "Lukitse muutokset",
+    "unlockChanges": "Avaa muutosten lukitus",
+    "lockedNotice": "Muutokset on lukittu. Avaa lukitus työkaluriviltä muokataksesi tiedostoja täällä.",
     "selectHostToStart": "Valitse isäntä aloittaaksesi tiedostonhallinnan",
     "sshRequiredForFileManager": "Tiedostonhallinta vaatii SSH:n. Tässä isännässä SSH ei ole käytössä.",
     "failedToConnect": "SSH-yhteys epäonnistui",
@@ -284,13 +317,13 @@
     "serverError": "Palvelinvirhe",
     "fileSavedSuccessfully": "Tiedosto tallennettu onnistuneesti",
     "failedToSaveFile": "Tiedoston tallennus epäonnistui",
-    "confirmDeleteSingleItem": "Haluatko varmasti poistaa kohteen \"{{name}}\" pysyvästi?",
-    "confirmDeleteMultipleItems_one": "Haluatko varmasti poistaa {{count}} kohteen pysyvästi?",
-    "confirmDeleteMultipleItems_other": "Haluatko varmasti poistaa {{count}} kohdetta pysyvästi?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Haluatko varmasti poistaa {{count}} kohteen pysyvästi? Tämä sisältää kansion ja sen sisällön.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Haluatko varmasti poistaa {{count}} kohdetta pysyvästi? Tämä sisältää kansiot ja niiden sisällön.",
-    "confirmDeleteFolder": "Haluatko varmasti poistaa kansion \"{{name}}\" ja kaikki sen sisällöt pysyvästi?",
-    "moveToTrashWarning": "Kohteet siirretään Termixin roskakoriin, ja ne voidaan palauttaa ennen säilytysajan päättymistä.",
+    "confirmDeleteSingleItem": "Haluatko poistaa \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Haluatko poistaa {{count}} kohteen?",
+    "confirmDeleteMultipleItems_other": "Haluatko poistaa {{count}} kohdetta?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Haluatko poistaa {{count}} kohteen? Tämä sisältää kansion ja sen sisällön.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Haluatko poistaa {{count}} kohdetta? Tämä sisältää kansiot ja niiden sisällön.",
+    "confirmDeleteFolder": "Haluatko poistaa kansion \"{{name}}\" ja kaikki sen sisällön?",
+    "moveToTrashWarning": "Tiedosto siirretään Termixin roskakoriin, ja se voidaan palauttaa, kunnes säilytysaika päättyy.",
     "itemsMovedToTrash_one": "{{count}} kohde siirretty roskakoriin",
     "itemsMovedToTrash_other": "{{count}} kohdetta siirretty roskakoriin",
     "deletingItems": "Poistetaan: {{done}} / {{total}}. Odota, kunnes toimenpide on valmis, ennen kuin liität tai lataat tiedostoja.",
@@ -501,7 +534,22 @@
     "openAsText": "Avaa tekstinä",
     "confirmOpenAsText": "Haluatko jatkaa tämän tiedoston avaamista tekstinä? Tämä voi hidastaa selaintasi.",
     "removeShortcutConfirm": "Poistetaanko pikakuvake {{name}}?",
-    "clearRecentConfirm": "Tyhjennetäänkö kaikki viimeisimmät tiedostot?"
+    "clearRecentConfirm": "Tyhjennetäänkö kaikki viimeisimmät tiedostot?",
+    "deletePermanently": "Poista pysyvästi",
+    "deletePermanentlyWarning": "Se poistetaan pysyvästi eikä sitä voi palauttaa.",
+    "moveToTrash": "Siirrä roskakoriin",
+    "askUsername": {
+      "title": "Kirjaudu sisään nimellä",
+      "description": "{{host}} pyytää käyttäjänimeä joka kerta. Kirjoita nimi, jolla haluat kirjautua sisään.",
+      "connect": "Yhdistä"
+    },
+    "protocol": "Protokolla",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Käyttäjätunnus",
     "password": "Salasana",
     "passwordSaved": "Salasana tallennettu, kirjoita vaihtaaksesi"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Selaa tämän isäntäkonemien tiedostoja WebDAV:n kautta, kuten Nextcloud, ownCloud tai NAS.",
+    "originNote": "WebDAV-yhteydet muodostetaan Termix-palvelimelta.",
+    "https": "HTTPS",
+    "httpsDesc": "Kytke pois päältä vain, jos palvelimella ei ole HTTPS-tukea.",
+    "path": "Polku",
+    "pathHint": "Missä WebDAV sijaitsee palvelimella. Nextcloud käyttää polkua /remote.php/dav/files/<user>. Jätä tyhjäksi, jos haluat käyttää juurikansiota.",
+    "anonymousNote": "Yhdistää ilman kirjautumista."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Selaa Windows- tai Samba-jakoa tässä isäntäkonessa.",
+    "originNote": "SMB-yhteydet muodostetaan Termix-palvelimelta.",
+    "share": "Jakoresurssi",
+    "domain": "Domain tai työryhmä",
+    "limits": "Käyttää SMB 2 -protokollaa NTLMv2:lla. SMB 3:ta, salauksia tai allekirjoituksia vaativat jakoresurssit, kuten Windows 11 24H2 oletuksena, eivät vielä tueta.",
+    "guestNote": "Yhdistää vieraskäyttäjänä ilman salasanaa."
   }
 }

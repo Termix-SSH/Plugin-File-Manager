@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Zezwól na certyfikat samopodpisany"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Port WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV przez HTTPS"
+      },
+      "webdavPath": {
+        "label": "Ścieżka WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Zezwól na certyfikat WebDAV podpisany własnoręcznie"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Port SMB"
+      },
+      "smbShare": {
+        "label": "Udostępnienie SMB"
+      },
+      "smbDomain": {
+        "label": "Domena SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Rozmiar historii folderów",
         "description": "Ile folderów panel plików zapamiętuje dla każdego hosta."
+      },
+      "openExternallyTypes": {
+        "label": "Otwieraj te typy plików poza Termix",
+        "description": "Tylko w aplikacji desktopowej. Rozszerzenia plików, takie jak psd, jpg, pdf, które otwierają się w zewnętrznym edytorze lub domyślnej aplikacji systemowej, jeśli nie wybrano innej. Oddziel je przecinkami lub użyj * dla wszystkich plików."
       }
     }
   },
@@ -139,7 +170,6 @@
     "newFolder": "Nowy katalog",
     "rename": "Zmień nazwę",
     "uploading": "Przesyłanie...",
-    "externalEditorTextOnly": "Tylko pliki tekstowe można otwierać zewnętrznie, ponieważ zapisywane są one jako tekst.",
     "uploadFilesDone": "{{done}} / {{total}} plików",
     "uploadingFile": "Przesyłanie {{name}}...",
     "uploadingChunk": "Przesyłanie {{name}}: {{percent}}% (część {{chunk}} z {{total}})",
@@ -257,6 +287,9 @@
     "noSearchResults": "Nie znaleziono wyników dla „{{query}}”",
     "searchFiles": "Szukaj plików...",
     "upload": "Prześlij",
+    "lockChanges": "Zablokuj zmiany",
+    "unlockChanges": "Odblokuj zmiany",
+    "lockedNotice": "Zmiany są zablokowane. Odblokuj je na pasku narzędzi, aby edytować pliki tutaj.",
     "selectHostToStart": "Wybierz hosta, aby rozpocząć zarządzanie plikami",
     "sshRequiredForFileManager": "Menedżer plików wymaga SSH. Na tym hoście SSH nie jest włączone.",
     "failedToConnect": "Nie udało się połączyć z SSH",
@@ -330,17 +363,17 @@
     "serverError": "Błąd serwera",
     "fileSavedSuccessfully": "Plik zapisany pomyślnie",
     "failedToSaveFile": "Nie udało się zapisać pliku",
-    "confirmDeleteSingleItem": "Czy na pewno chcesz trwale usunąć „{{name}}”?",
-    "confirmDeleteMultipleItems_one": "Czy na pewno chcesz trwale usunąć {{count}} element?",
-    "confirmDeleteMultipleItems_few": "Czy na pewno chcesz trwale usunąć {{count}} elementy?",
-    "confirmDeleteMultipleItems_many": "Czy na pewno chcesz trwale usunąć {{count}} elementów?",
-    "confirmDeleteMultipleItems_other": "Czy na pewno chcesz trwale usunąć {{count}} elementów?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Czy na pewno chcesz trwale usunąć {{count}} element? Obejmuje to folder i jego zawartość.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Czy na pewno chcesz trwale usunąć {{count}} elementy? Obejmuje to foldery i ich zawartość.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Czy na pewno chcesz trwale usunąć {{count}} elementów? Obejmuje to foldery i ich zawartość.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Czy na pewno chcesz trwale usunąć {{count}} elementów? Obejmuje to foldery i ich zawartość.",
-    "confirmDeleteFolder": "Czy na pewno chcesz trwale usunąć folder „{{name}}” i całą jego zawartość?",
-    "moveToTrashWarning": "Element(y) zostaną przeniesione do Kosza Termix i mogą zostać przywrócone przed upływem okresu przechowywania.",
+    "confirmDeleteSingleItem": "Usunąć „{{name}}”?",
+    "confirmDeleteMultipleItems_one": "Usunąć {{count}} element?",
+    "confirmDeleteMultipleItems_few": "Usunąć {{count}} elementy?",
+    "confirmDeleteMultipleItems_many": "Usunąć {{count}} elementów?",
+    "confirmDeleteMultipleItems_other": "Usunąć {{count}} elementów?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Usunąć {{count}} element? Obejmuje to folder i jego zawartość.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Usunąć {{count}} elementy? Obejmuje to foldery i ich zawartość.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Usunąć {{count}} elementów? Obejmuje to foldery i ich zawartość.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Usunąć {{count}} elementów? Obejmuje to foldery i ich zawartość.",
+    "confirmDeleteFolder": "Usunąć folder „{{name}}” i całą jego zawartość?",
+    "moveToTrashWarning": "Trafia do Kosza Termix i może zostać przywrócony do końca okresu przechowywania.",
     "itemsMovedToTrash_one": "{{count}} element przeniesiony do Kosza",
     "itemsMovedToTrash_few": "{{count}} elementy przeniesione do Kosza",
     "itemsMovedToTrash_many": "{{count}} elementów przeniesionych do Kosza",
@@ -573,7 +606,22 @@
     "openAsText": "Otwórz jako tekst",
     "confirmOpenAsText": "Czy chcesz kontynuować otwieranie tego pliku jako tekstu? Może to spowolnić działanie przeglądarki.",
     "removeShortcutConfirm": "Usunąć skrót {{name}}?",
-    "clearRecentConfirm": "Wyczyścić wszystkie ostatnie pliki?"
+    "clearRecentConfirm": "Wyczyścić wszystkie ostatnie pliki?",
+    "deletePermanently": "Usuń trwale",
+    "deletePermanentlyWarning": "Zostanie usunięty na stałe i nie będzie można go przywrócić.",
+    "moveToTrash": "Przenieś do Kosza",
+    "askUsername": {
+      "title": "Zaloguj się jako",
+      "description": "{{host}} pyta o nazwę użytkownika za każdym razem. Wpisz tę, pod którą chcesz się zalogować.",
+      "connect": "Połącz"
+    },
+    "protocol": "Protokół",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -798,5 +846,24 @@
     "username": "Nazwa użytkownika",
     "password": "Hasło",
     "passwordSaved": "Hasło zapisane, wpisz, aby zmienić"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Przeglądaj pliki na tym hoście przez WebDAV, np. Nextcloud, ownCloud lub NAS.",
+    "originNote": "Połączenia WebDAV są nawiązywane z serwera Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Wyłącz tylko dla serwera, który nie obsługuje HTTPS.",
+    "path": "Ścieżka",
+    "pathHint": "Gdzie znajduje się WebDAV na serwerze. Nextcloud używa /remote.php/dav/files/<user>. Pozostaw puste dla katalogu głównego.",
+    "anonymousNote": "Łączy się bez logowania."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Przeglądaj udostępnienie Windows lub Samba na tym hoście.",
+    "originNote": "Połączenia SMB są nawiązywane z serwera Termix.",
+    "share": "Udostępnienie",
+    "domain": "Domena lub grupa robocza",
+    "limits": "Używa SMB 2 z NTLMv2. Udostępnienia wymagające SMB 3, szyfrowania lub podpisu, takie jak domyślnie w Windows 11 24H2, nie są jeszcze obsługiwane.",
+    "guestNote": "Łączy się jako gość bez hasła."
   }
 }

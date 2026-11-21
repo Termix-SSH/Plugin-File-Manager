@@ -1,7 +1,7 @@
 {
   "name": "@termix-plugin/file-manager",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.3.0",
   "type": "module",
   "scripts": {
     "build": "termix-plugin build",
@@ -28,6 +28,7 @@
     "jszip": "^3.10.2",
     "lucide-react": "^1.72.0",
     "motion": "^14.13.0",
+    "node-smb2": "^1.3.5",
     "pdfjs-dist": "6.5.438",
     "react-h5-audio-player": "^3.10.2",
     "react-icons": "^5.7.0",

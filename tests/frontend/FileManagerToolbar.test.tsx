@@ -150,3 +150,22 @@ describe("selection actions", () => {
     expect(screen.getByTitle("fileManager.delete")).toBeInTheDocument();
   });
 });
+
+describe("FileManagerToolbar edit lock", () => {
+  afterEach(cleanup);
+
+  it("toggles the lock and blocks upload and new while locked", () => {
+    const onToggleEditLock = vi.fn();
+    render(
+      <FileManagerToolbar
+        {...props}
+        editLocked
+        onToggleEditLock={onToggleEditLock}
+      />,
+    );
+    fireEvent.click(screen.getByLabelText("fileManager.unlockChanges"));
+    expect(onToggleEditLock).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText("fileManager.upload")).toBeDisabled();
+    expect(screen.getByLabelText("fileManager.new")).toBeDisabled();
+  });
+});

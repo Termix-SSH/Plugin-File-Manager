@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Izinkan sertifikat tanda tangan sendiri"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Port WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV melalui HTTPS"
+      },
+      "webdavPath": {
+        "label": "Path WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Izinkan sertifikat WebDAV yang ditandatangani sendiri"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Port SMB"
+      },
+      "smbShare": {
+        "label": "Share SMB"
+      },
+      "smbDomain": {
+        "label": "Domain SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Ukuran riwayat folder",
         "description": "Berapa banyak folder yang diingat oleh panel file untuk setiap host."
+      },
+      "openExternallyTypes": {
+        "label": "Buka tipe file ini di luar Termix",
+        "description": "Hanya aplikasi desktop. Akhiran file, seperti psd, jpg, pdf, yang akan dibuka di editor eksternal Anda, atau aplikasi sistem jika tidak ada yang dipilih, saat Anda membukanya. Pisahkan dengan koma, atau gunakan * untuk semua file."
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "Folder Baru",
     "rename": "Ubah Nama",
     "uploading": "Mengunggah...",
-    "externalEditorTextOnly": "Hanya file teks yang bisa dibuka secara eksternal, karena penyimpanan ditulis kembali sebagai teks.",
     "uploadFilesDone": "{{done}} / {{total}} file",
     "uploadingFile": "Mengunggah {{name}}...",
     "uploadingChunk": "Mengunggah {{name}}: {{percent}}% (bagian {{chunk}} dari {{total}})",
@@ -212,6 +242,9 @@
     "noSearchResults": "Tidak ada hasil untuk \"{{query}}\"",
     "searchFiles": "Cari file...",
     "upload": "Unggah",
+    "lockChanges": "Kunci perubahan",
+    "unlockChanges": "Buka kunci perubahan",
+    "lockedNotice": "Perubahan dikunci. Buka kunci di toolbar untuk mengedit file di sini.",
     "selectHostToStart": "Pilih host untuk memulai manajemen file",
     "sshRequiredForFileManager": "Manajer file memerlukan SSH. Host ini tidak mengaktifkan SSH.",
     "failedToConnect": "Gagal terhubung ke SSH",
@@ -261,11 +294,11 @@
     "serverError": "Kesalahan Server",
     "fileSavedSuccessfully": "File berhasil disimpan",
     "failedToSaveFile": "Gagal menyimpan file",
-    "confirmDeleteSingleItem": "Apakah Anda yakin ingin menghapus \"{{name}}\" secara permanen?",
-    "confirmDeleteMultipleItems_other": "Apakah Anda yakin ingin menghapus {{count}} item secara permanen?",
-    "confirmDeleteMultipleItemsWithFolders_other": "Apakah Anda yakin ingin menghapus {{count}} item secara permanen? Ini termasuk folder dan isinya.",
-    "confirmDeleteFolder": "Apakah Anda yakin ingin menghapus folder \"{{name}}\" dan semua isinya secara permanen?",
-    "moveToTrashWarning": "Item akan dipindahkan ke Sampah Termix dan dapat dipulihkan sebelum masa retensi berakhir.",
+    "confirmDeleteSingleItem": "Hapus \"{{name}}\"?",
+    "confirmDeleteMultipleItems_other": "Hapus {{count}} item?",
+    "confirmDeleteMultipleItemsWithFolders_other": "Hapus {{count}} item? Ini termasuk folder dan isinya.",
+    "confirmDeleteFolder": "Hapus folder \"{{name}}\" dan semua isinya?",
+    "moveToTrashWarning": "File akan masuk ke Sampah Termix dan dapat dipulihkan hingga masa retensi berakhir.",
     "itemsMovedToTrash_other": "{{count}} item dipindahkan ke Sampah",
     "deletingItems": "Menghapus: {{done}} / {{total}}. Tunggu hingga selesai sebelum menempel atau mengunggah.",
     "movingToTrash": "Memindahkan ke Sampah: {{done}} / {{total}}. Tunggu hingga selesai sebelum menempel atau mengunggah.",
@@ -465,7 +498,22 @@
     "openAsText": "Buka sebagai Teks",
     "confirmOpenAsText": "Apakah Anda ingin melanjutkan membuka file ini sebagai teks? Ini mungkin memperlambat browser Anda.",
     "removeShortcutConfirm": "Hapus pintasan {{name}}?",
-    "clearRecentConfirm": "Hapus semua file terbaru?"
+    "clearRecentConfirm": "Hapus semua file terbaru?",
+    "deletePermanently": "Hapus permanen",
+    "deletePermanentlyWarning": "File akan dihapus selamanya dan tidak dapat dipulihkan.",
+    "moveToTrash": "Pindahkan ke Sampah",
+    "askUsername": {
+      "title": "Masuk sebagai",
+      "description": "{{host}} meminta nama pengguna setiap kali. Ketik nama pengguna yang ingin Anda gunakan untuk masuk.",
+      "connect": "Sambungkan"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "Nama pengguna",
     "password": "Kata sandi",
     "passwordSaved": "Kata sandi disimpan, ketik untuk mengubah"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Jelajahi file di host ini melalui WebDAV, seperti Nextcloud, ownCloud, atau NAS.",
+    "originNote": "Koneksi WebDAV dibuat dari server Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Matikan hanya untuk server yang tidak memiliki HTTPS.",
+    "path": "Path",
+    "pathHint": "Di mana WebDAV berada di server. Nextcloud menggunakan /remote.php/dav/files/<user>. Kosongkan untuk root.",
+    "anonymousNote": "Terhubung tanpa login."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Jelajahi share Windows atau Samba di host ini.",
+    "originNote": "Koneksi SMB dibuat dari server Termix.",
+    "share": "Share",
+    "domain": "Domain atau workgroup",
+    "limits": "Menggunakan SMB 2 dengan NTLMv2. Share yang memerlukan SMB 3, enkripsi, atau penandatanganan, seperti Windows 11 24H2 secara default, belum didukung.",
+    "guestNote": "Terhubung sebagai tamu tanpa kata sandi."
   }
 }

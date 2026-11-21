@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Zelfondertekend certificaat toestaan"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-poort"
+      },
+      "webdavHttps": {
+        "label": "WebDAV via HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV-pad"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Sta een zelfondertekend WebDAV-certificaat toe"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-poort"
+      },
+      "smbShare": {
+        "label": "SMB-share"
+      },
+      "smbDomain": {
+        "label": "SMB-domein"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Grootte mapgeschiedenis",
         "description": "Hoeveel mappen het bestandenpaneel voor elke host onthoudt."
+      },
+      "openExternallyTypes": {
+        "label": "Open deze bestandstypes buiten Termix",
+        "description": "Alleen desktop-app. Bestandeindingen, zoals psd, jpg, pdf, die openen in je externe editor, of de systeemapp als er geen is gekozen, wanneer je ze opent. Scheid ze met komma's, of gebruik * voor elk bestand."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Nieuwe map",
     "rename": "Hernoemen",
     "uploading": "Uploaden...",
-    "externalEditorTextOnly": "Alleen tekstbestanden kunnen extern worden geopend, omdat wijzigingen als tekst worden opgeslagen.",
     "uploadFilesDone": "{{done}} / {{total}} bestanden",
     "uploadingFile": "{{name}} uploaden...",
     "uploadingChunk": "{{name}} uploaden: {{percent}}% (deel {{chunk}} van {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Geen resultaten gevonden voor \"{{query}}\"",
     "searchFiles": "Bestanden zoeken...",
     "upload": "Uploaden",
+    "lockChanges": "Wijzigingen vergrendelen",
+    "unlockChanges": "Wijzigingen ontgrendelen",
+    "lockedNotice": "Wijzigingen zijn vergrendeld. Ontgrendel ze in de werkbalk om bestanden hier te bewerken.",
     "selectHostToStart": "Selecteer een host om het bestandsbeheer te starten",
     "sshRequiredForFileManager": "Bestandsbeheer vereist SSH. SSH is niet ingeschakeld op deze host.",
     "failedToConnect": "Verbinding met SSH mislukt",
@@ -284,13 +317,13 @@
     "serverError": "Serverfout",
     "fileSavedSuccessfully": "Bestand succesvol opgeslagen",
     "failedToSaveFile": "Bestand opslaan mislukt",
-    "confirmDeleteSingleItem": "Weet u zeker dat u \"{{name}}\" permanent wilt verwijderen?",
-    "confirmDeleteMultipleItems_one": "Weet u zeker dat u {{count}} item permanent wilt verwijderen?",
-    "confirmDeleteMultipleItems_other": "Weet u zeker dat u {{count}} items permanent wilt verwijderen?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Weet u zeker dat u {{count}} item permanent wilt verwijderen? Dit omvat een map en de inhoud daarvan.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Weet u zeker dat u {{count}} items permanent wilt verwijderen? Dit omvat mappen en hun inhoud.",
-    "confirmDeleteFolder": "Weet u zeker dat u de map \"{{name}}\" en al haar inhoud permanent wilt verwijderen?",
-    "moveToTrashWarning": "De item(s) worden verplaatst naar de Termix Prullenbak en kunnen worden hersteld voordat de bewaartermijn verstrijkt.",
+    "confirmDeleteSingleItem": "\"{{name}}\" verwijderen?",
+    "confirmDeleteMultipleItems_one": "{{count}} item verwijderen?",
+    "confirmDeleteMultipleItems_other": "{{count}} items verwijderen?",
+    "confirmDeleteMultipleItemsWithFolders_one": "{{count}} item verwijderen? Dit omvat een map en de inhoud ervan.",
+    "confirmDeleteMultipleItemsWithFolders_other": "{{count}} items verwijderen? Dit omvat mappen en hun inhoud.",
+    "confirmDeleteFolder": "De map \"{{name}}\" en al haar inhoud verwijderen?",
+    "moveToTrashWarning": "Het gaat naar de Termix-prullenbak en kan worden hersteld tot de bewaarperiode is verstreken.",
     "itemsMovedToTrash_one": "{{count}} item naar Prullenbak verplaatst",
     "itemsMovedToTrash_other": "{{count}} items naar Prullenbak verplaatst",
     "deletingItems": "Verwijderen: {{done}} / {{total}}. Wacht tot het klaar is voordat je plakt of uploadt.",
@@ -501,7 +534,22 @@
     "openAsText": "Openen als tekst",
     "confirmOpenAsText": "Weet je zeker dat je dit bestand als tekst wilt openen? Dit kan je browser vertragen.",
     "removeShortcutConfirm": "Snelkoppeling {{name}} verwijderen?",
-    "clearRecentConfirm": "Alle recente bestanden wissen?"
+    "clearRecentConfirm": "Alle recente bestanden wissen?",
+    "deletePermanently": "Permanent verwijderen",
+    "deletePermanentlyWarning": "Het wordt definitief verwijderd en kan niet worden hersteld.",
+    "moveToTrash": "Verplaatsen naar prullenbak",
+    "askUsername": {
+      "title": "Inloggen als",
+      "description": "{{host}} vraagt elke keer om een gebruikersnaam. Typ de naam waarmee je wilt inloggen.",
+      "connect": "Verbinden"
+    },
+    "protocol": "Protocol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
     "passwordSaved": "Wachtwoord opgeslagen, typ om te wijzigen"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Blader door bestanden op deze host via WebDAV, zoals Nextcloud, ownCloud of een NAS.",
+    "originNote": "WebDAV-verbindingen worden gemaakt vanaf de Termix-server.",
+    "https": "HTTPS",
+    "httpsDesc": "Schakel dit alleen uit voor een server zonder HTTPS.",
+    "path": "Pad",
+    "pathHint": "Waar WebDAV op de server staat. Nextcloud gebruikt /remote.php/dav/files/<user>. Laat leeg voor de root.",
+    "anonymousNote": "Verbindt zonder inloggegevens."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Blader door een Windows- of Samba-share op deze host.",
+    "originNote": "SMB-verbindingen worden gemaakt vanaf de Termix-server.",
+    "share": "Share",
+    "domain": "Domein of werkgroep",
+    "limits": "Gebruikt SMB 2 met NTLMv2. Shares die SMB 3, encryptie of ondertekening vereisen, zoals Windows 11 24H2 standaard, worden nog niet ondersteund.",
+    "guestNote": "Verbindt als gast zonder wachtwoord."
   }
 }

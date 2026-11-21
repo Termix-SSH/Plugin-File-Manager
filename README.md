@@ -4,7 +4,7 @@
 
 <h1>File Manager</h1>
 
-<p>Browse, edit and move files over SFTP, including straight from one server to another</p>
+<p>Browse, edit and move files over SFTP, FTP, WebDAV and SMB, including straight from one server to another</p>
 
 <!-- VIDEO:START -->
 
@@ -18,7 +18,7 @@
 
 ## Overview
 
-File Manager lets you work with the files on your hosts over SFTP, and copy files straight from one server to another.
+File Manager lets you work with the files on your hosts over SFTP, FTP, WebDAV and SMB, and copy files straight from one server to another.
 
 Read the [docs](https://docs.termix.site/plugins/file-manager) to set it up and use it.
 

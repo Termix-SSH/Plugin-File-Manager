@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Sta self-ondertekende sertifikaat toe"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-poort"
+      },
+      "webdavHttps": {
+        "label": "WebDAV oor HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV-pad"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Sta 'n self-ondertekende WebDAV-sertifikaat toe"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-poort"
+      },
+      "smbShare": {
+        "label": "SMB-deel"
+      },
+      "smbDomain": {
+        "label": "SMB-domein"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Gidsgeskiedenis-grootte",
         "description": "Hoeveel gidse die lêe-paneel vir elke gasheer onthou."
+      },
+      "openExternallyTypes": {
+        "label": "Maak hierdie lêertipes buite Termix oop",
+        "description": "Slegs desktop-toepassing. Lêieindings, soos psd, jpg, pdf, wat in jou eksterne redigeerder of die stelseltoepassing (wanneer geen gekies is nie) oopgemaak word wanneer jy hulle oopmaak. Skei hulle met kommas, of gebruik * vir elke lêer."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Nuwe Gids",
     "rename": "Hernoem",
     "uploading": "Laai op...",
-    "externalEditorTextOnly": "Slegs tekslêers kan eksterne oopgemaak word, aangesien stoorwerk as teks teruggeskryf word.",
     "uploadFilesDone": "{{done}} / {{total}} lêers",
     "uploadingFile": "Laai {{name}} op...",
     "uploadingChunk": "Laai {{name}} op: {{percent}}% (deel {{chunk}} van {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Geen resultate gevind vir \"{{query}}\" nie",
     "searchFiles": "Soek lêers...",
     "upload": "Laai op",
+    "lockChanges": "Veranderinge vaslê",
+    "unlockChanges": "Veranderinge ontgrendel",
+    "lockedNotice": "Veranderinge is vasgelê. Ontgrendel hulle in die werkbalk om lêers hier te redigeer.",
     "selectHostToStart": "Kies 'n gasheer om lêerbestuur te begin",
     "sshRequiredForFileManager": "Lêerbestuur vereis SSH. Hierdie gasheer het nie SSH geaktiveer nie.",
     "failedToConnect": "Kon nie met SSH verbind nie",
@@ -284,13 +317,13 @@
     "serverError": "Bedienerfout",
     "fileSavedSuccessfully": "Lêer suksesvol gestoor",
     "failedToSaveFile": "Kon nie lêer stoor nie",
-    "confirmDeleteSingleItem": "Is jy seker jy wil \"{{name}}\" permanent vee uit?",
-    "confirmDeleteMultipleItems_one": "Is u seker u wil {{count}} item permanent verwyder?",
-    "confirmDeleteMultipleItems_other": "Is u seker u wil {{count}} items permanent verwyder?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Is u seker u wil {{count}} item permanent verwyder? Dit sluit 'n gids en sy inhoud in.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Is u seker u wil {{count}} items permanent verwyder? Dit sluit gidse en hul inhoud in.",
-    "confirmDeleteFolder": "Is jy seker jy wil die gids \"{{name}}\" en al sy inhoud permanent vee uit?",
-    "moveToTrashWarning": "Die item(s) sal na die Termix-prulbak verskuif word en kan herstel word voordat die behoudstermyn verstryk.",
+    "confirmDeleteSingleItem": "Verwyder \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Verwyder {{count}} item?",
+    "confirmDeleteMultipleItems_other": "Verwyder {{count}} items?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Verwyder {{count}} item? Dit sluit ’n gids en sy inhoud in.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Verwyder {{count}} items? Dit sluit gidse en hul inhoud in.",
+    "confirmDeleteFolder": "Verwyder die gids \"{{name}}\" en al sy inhoud?",
+    "moveToTrashWarning": "Dit gaan na die Termix-pruim en kan herstel word tot die behoudstermyn verstryk.",
     "itemsMovedToTrash_one": "{{count}} item na Prulblik geskuif",
     "itemsMovedToTrash_other": "{{count}} items na Prulblik geskuif",
     "deletingItems": "Verwyder: {{done}} / {{total}}. Wag tot dit klaar is voordat jy plak of oplaai.",
@@ -501,7 +534,22 @@
     "openAsText": "Maak oop as teks",
     "confirmOpenAsText": "Wil jy voortgaan om hierdie lêer as teks oop te maak? Dit kan jou blaaier vertraag.",
     "removeShortcutConfirm": "Verwyder die kortpad {{name}}?",
-    "clearRecentConfirm": "Vee alle onlangse lêers uit?"
+    "clearRecentConfirm": "Vee alle onlangse lêers uit?",
+    "deletePermanently": "Permanent verwyder",
+    "deletePermanentlyWarning": "Dit word permanent verwyder en kan nie herstel word nie.",
+    "moveToTrash": "Na prulblik skuif",
+    "askUsername": {
+      "title": "Meld aan as",
+      "description": "{{host}} vra elke keer vir 'n gebruikersnaam. Teken die een in om mee aan te meld.",
+      "connect": "Koppel"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Gebruikersnaam",
     "password": "Wagwoord",
     "passwordSaved": "Wagwoord gestoor, tik om te verander"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Blader deur lêers op hierdie gasheer oor WebDAV, soos Nextcloud, ownCloud of 'n NAS.",
+    "originNote": "WebDAV-verbindings word vanaf die Termix-bedienaar gemaak.",
+    "https": "HTTPS",
+    "httpsDesc": "Skakel slegs af vir 'n bedienaar wat geen HTTPS het nie.",
+    "path": "Pad",
+    "pathHint": "Waar WebDAV op die bedienaar geleë is. Nextcloud gebruik /remote.php/dav/files/<user>. Laat leeg vir die wortel.",
+    "anonymousNote": "Maak verbinding sonder 'n aanmelding."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Blader deur 'n Windows- of Samba-deel op hierdie gasheer.",
+    "originNote": "SMB-verbindings word vanaf die Termix-bedienaar gemaak.",
+    "share": "Deel",
+    "domain": "Domein of werkgroep",
+    "limits": "Gebruik SMB 2 met NTLMv2. Dele wat SMB 3, versleuteling of ondertekening vereis, soos Windows 11 24H2 by verstek, word nog nie ondersteun nie.",
+    "guestNote": "Maak verbinding as gas sonder wagwoord."
   }
 }

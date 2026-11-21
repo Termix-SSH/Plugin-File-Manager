@@ -52,9 +52,13 @@ describe(`${manifest.id} activate`, () => {
     );
   });
 
-  it("only adds a host editor section for FTP", async () => {
+  it("only adds host editor sections for FTP, WebDAV and SMB", async () => {
     rendered = await renderWithApp(plugin, { manifest, locales });
-    expect(rendered.registered.hostEditorSections()).toEqual(["ftp"]);
+    expect(rendered.registered.hostEditorSections()).toEqual([
+      "ftp",
+      "webdav",
+      "smb",
+    ]);
   });
 
   it("registers its open actions and the tab menu entry", async () => {

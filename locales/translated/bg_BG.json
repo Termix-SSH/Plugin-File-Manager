@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Разреши самоподписан сертификат"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Порт за WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV през HTTPS"
+      },
+      "webdavPath": {
+        "label": "Път за WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Разрешаване на самоподписан WebDAV сертификат"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Порт за SMB"
+      },
+      "smbShare": {
+        "label": "SMB споделена папка"
+      },
+      "smbDomain": {
+        "label": "SMB домейн"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Размер на историята на папките",
         "description": "Колко папки си спомня панелът с файлове за всеки хост."
+      },
+      "openExternallyTypes": {
+        "label": "Отваряне на тези типове файлове извън Termix",
+        "description": "Само за десктоп приложение. Разширения на файлове, като psd, jpg, pdf, които се отварят във външен редактор или в системното приложение, ако не е избрано друго, когато ги отворите. Разделете ги със запетаи или използвайте * за всеки файл."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Нова папка",
     "rename": "Преименуване",
     "uploading": "Качване...",
-    "externalEditorTextOnly": "Само текстови файлове могат да се отварят външно, тъй като запазванията се записват обратно като текст.",
     "uploadFilesDone": "{{done}} / {{total}} файла",
     "uploadingFile": "Качване на {{name}}...",
     "uploadingChunk": "Качване на {{name}}: {{percent}}% (част {{chunk}} от {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Няма намерени резултати за \"{{query}}\"",
     "searchFiles": "Търсене на файлове...",
     "upload": "Качване",
+    "lockChanges": "Заключване на промените",
+    "unlockChanges": "Отключване на промените",
+    "lockedNotice": "Промените са заключени. Отключете ги от лентата с инструменти, за да редактирате файлове тук.",
     "selectHostToStart": "Изберете хост, за да започнете управлението на файлове",
     "sshRequiredForFileManager": "Файловият мениджър изисква SSH. Този хост няма активиран SSH.",
     "failedToConnect": "Неуспешно свързване към SSH",
@@ -284,13 +317,13 @@
     "serverError": "Грешка на сървъра",
     "fileSavedSuccessfully": "Файлът е запазен успешно",
     "failedToSaveFile": "Неуспешно запазване на файла",
-    "confirmDeleteSingleItem": "Сигурни ли сте, че искате да изтриете завинаги \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Сигурни ли сте, че искате да изтриете завинаги {{count}} елемент?",
-    "confirmDeleteMultipleItems_other": "Сигурни ли сте, че искате да изтриете завинаги {{count}} елемента?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Сигурни ли сте, че искате да изтриете завинаги {{count}} елемент? Това включва папка и съдържанието ѝ.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Сигурни ли сте, че искате да изтриете завинаги {{count}} елемента? Това включва папки и съдържанието им.",
-    "confirmDeleteFolder": "Сигурни ли сте, че искате да изтриете завинаги папката \"{{name}}\" и цялото ѝ съдържание?",
-    "moveToTrashWarning": "Елементите ще бъдат преместени в кошчето на Termix и могат да бъдат възстановени преди изтичане на периода на съхранение.",
+    "confirmDeleteSingleItem": "Изтриване на „{{name}}“?",
+    "confirmDeleteMultipleItems_one": "Изтриване на {{count}} елемент?",
+    "confirmDeleteMultipleItems_other": "Изтриване на {{count}} елемента?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Изтриване на {{count}} елемент? Това включва папка и съдържанието ѝ.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Изтриване на {{count}} елемента? Това включва папки и съдържанието им.",
+    "confirmDeleteFolder": "Изтриване на папката „{{name}}“ и цялото ѝ съдържание?",
+    "moveToTrashWarning": "Ще бъде преместено в кошчето на Termix и може да бъде възстановено, докато периодът за задържане не изтече.",
     "itemsMovedToTrash_one": "Преместени {{count}} елемент в Кошчето",
     "itemsMovedToTrash_other": "Преместени {{count}} елемента в Кошчето",
     "deletingItems": "Изтриване: {{done}} / {{total}}. Изчакайте да приключи, преди да поставяте или качвате файлове.",
@@ -501,7 +534,22 @@
     "openAsText": "Отваряне като текст",
     "confirmOpenAsText": "Искате ли да продължите да отваряте този файл като текст? Това може да забави браузъра ви.",
     "removeShortcutConfirm": "Премахване на пряк път {{name}}?",
-    "clearRecentConfirm": "Изчистване на всички скорошни файлове?"
+    "clearRecentConfirm": "Изчистване на всички скорошни файлове?",
+    "deletePermanently": "Изтриване завинаги",
+    "deletePermanentlyWarning": "Файлът е изтрит завинаги и не може да бъде възстановен.",
+    "moveToTrash": "Премести в кошчето",
+    "askUsername": {
+      "title": "Влез като",
+      "description": "{{host}} изисква въвеждане на потребителско име всеки път. Въведете името, с което искате да влезете.",
+      "connect": "Свържи"
+    },
+    "protocol": "Протокол",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Потребителско име",
     "password": "Парола",
     "passwordSaved": "Паролата е запазена, въведете нова за промяна"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Преглеждайте файлове на този хост чрез WebDAV, като Nextcloud, ownCloud или NAS.",
+    "originNote": "WebDAV връзките се извършват от сървъра на Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Изключвайте само за сървър, който няма HTTPS.",
+    "path": "Път",
+    "pathHint": "Къде се намира WebDAV на сървъра. Nextcloud използва /remote.php/dav/files/<user>. Оставете празно за корена.",
+    "anonymousNote": "Свързва се без вход."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Преглеждайте споделена папка на Windows или Samba на този хост.",
+    "originNote": "SMB връзките се извършват от сървъра на Termix.",
+    "share": "Споделяне",
+    "domain": "Домейн или работна група",
+    "limits": "Използва SMB 2 с NTLMv2. Споделянията, които изискват SMB 3, криптиране или подписване, като тези във Windows 11 24H2 по подразбиране, все още не се поддържат.",
+    "guestNote": "Връзката се извършва като гост без парола."
   }
 }

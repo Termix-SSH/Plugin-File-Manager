@@ -112,6 +112,8 @@ interface EditorSession {
   watcher: fs.FSWatcher;
   timer: NodeJS.Timeout | null;
   lastMtimeMs: number;
+  /** Binary files go both ways as base64. */
+  encoding: "utf8" | "base64";
 }
 
 function fail(error: unknown): {
@@ -674,12 +676,16 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
       const stat = await fsp.stat(session.path);
       if (stat.mtimeMs === session.lastMtimeMs) return;
       session.lastMtimeMs = stat.mtimeMs;
-      const content = await fsp.readFile(session.path, "utf8");
+      const binary = session.encoding === "base64";
+      const content = await fsp.readFile(
+        session.path,
+        binary ? "base64" : "utf8",
+      );
       emit(session.userId, {
         type: "editor-saved",
         editId,
         content,
-        encoding: "utf8",
+        encoding: binary ? "base64" : "utf8",
         path: session.path,
       });
     } catch (error) {
@@ -744,6 +750,7 @@ export function registerLocalDesktop(app: Express, ctx: PluginContext) {
         watcher,
         timer: null,
         lastMtimeMs: stat.mtimeMs,
+        encoding: encoding === "base64" ? "base64" : "utf8",
       });
 
       try {

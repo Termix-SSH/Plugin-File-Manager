@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Luba isesertifitseeritud sertifikaat"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV üle HTTPS-i"
+      },
+      "webdavPath": {
+        "label": "WebDAV-i asukoht"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Luba isesertifitseeritud WebDAV-i sertifikaat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-port"
+      },
+      "smbShare": {
+        "label": "SMB-jagamine"
+      },
+      "smbDomain": {
+        "label": "SMB-domeen"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Kausta ajaloo suurus",
         "description": "Kui palju kaustu failide paneel igale hostile mäletab."
+      },
+      "openExternallyTypes": {
+        "label": "Ava need failitüübid Termixist väljaspool",
+        "description": "Ainult lauaarvuti rakendus. Faililaiendid, nagu psd, jpg, pdf, mis avanevad teie välises redaktoris või süsteemi rakenduses, kui ühtegi ei ole valitud. Eralda need komadega või kasuta * kõigi failide jaoks."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Uus kaust",
     "rename": "Nimeta ümber",
     "uploading": "Üleslaadimine...",
-    "externalEditorTextOnly": "Väliselt saab avada ainult tekstifaile, kuna salvestused kirjutatakse tagasi tekstina.",
     "uploadFilesDone": "{{done}} / {{total}} faili",
     "uploadingFile": "Laaditakse üles faili {{name}}...",
     "uploadingChunk": "Laaditakse üles faili {{name}}: {{percent}}% (osa {{chunk}} / {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Päringule \"{{query}}\" ei leitud tulemusi",
     "searchFiles": "Otsi faile...",
     "upload": "Laadi üles",
+    "lockChanges": "Lukusta muudatused",
+    "unlockChanges": "Avasta muudatused",
+    "lockedNotice": "Muudatused on lukustatud. Ava lukk tööriistaribal, et redigeerida faile siin.",
     "selectHostToStart": "Failihalduse alustamiseks vali host",
     "sshRequiredForFileManager": "Failihaldus nõuab SSH-d. Sellel hostil ei ole SSH-d lubatud.",
     "failedToConnect": "SSH-ühenduse loomine ebaõnnestus",
@@ -284,13 +317,13 @@
     "serverError": "Serveri viga",
     "fileSavedSuccessfully": "Fail salvestati edukalt",
     "failedToSaveFile": "Faili salvestamine ebaõnnestus",
-    "confirmDeleteSingleItem": "Kas soovid kindlasti püsivalt kustutada \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Kas soovid {{count}} üksuse püsivalt kustutada?",
-    "confirmDeleteMultipleItems_other": "Kas soovid {{count}} üksust püsivalt kustutada?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Kas soovid {{count}} üksuse püsivalt kustutada? See hõlmab kausta ja selle sisu.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Kas soovid {{count}} üksust püsivalt kustutada? See hõlmab kaustu ja nende sisu.",
-    "confirmDeleteFolder": "Kas soovid kindlasti püsivalt kustutada kausta \"{{name}}\" ja kogu selle sisu?",
-    "moveToTrashWarning": "Element(id) liigutatakse Termix prügikasti ja saab taastada enne säilitusaja aegumist.",
+    "confirmDeleteSingleItem": "Kas kustutada \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Kas kustutada {{count}} element?",
+    "confirmDeleteMultipleItems_other": "Kas kustutada {{count}} elementi?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Kas kustutada {{count}} element? See hõlmab kausta ja selle sisu.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Kas kustutada {{count}} elementi? See hõlmab kaustu ja nende sisu.",
+    "confirmDeleteFolder": "Kas kustutada kaust \"{{name}}\" ja kogu selle sisu?",
+    "moveToTrashWarning": "See liigub Termixi prügikasti ja seda saab taastada kuni säilitusaja lõpuni.",
     "itemsMovedToTrash_one": "{{count}} üksus Prügikasti liigutatud",
     "itemsMovedToTrash_other": "{{count}} üksust Prügikasti liigutatud",
     "deletingItems": "Kustutamine: {{done}} / {{total}}. Oota, kuni protsess on lõpule jõudnud, enne kui midagi kleebid või üles laadid.",
@@ -501,7 +534,22 @@
     "openAsText": "Ava tekstina",
     "confirmOpenAsText": "Kas soovid seda faili tekstina avada? See võib sinu brauserit aeglustada.",
     "removeShortcutConfirm": "Kas eemaldada otsetee {{name}}?",
-    "clearRecentConfirm": "Kas kustutada kõik hiljutised failid?"
+    "clearRecentConfirm": "Kas kustutada kõik hiljutised failid?",
+    "deletePermanently": "Kustuta püsivalt",
+    "deletePermanentlyWarning": "See kustutatakse lõplikult ja seda ei saa taastada.",
+    "moveToTrash": "Liiguta prügikasti",
+    "askUsername": {
+      "title": "Logi sisse kui",
+      "description": "{{host}} küsib kasutajat iga kord. Sisestage kasutajanimi, mille nime all soovite sisse logida.",
+      "connect": "Ühendu"
+    },
+    "protocol": "Protokoll",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Kasutajanimi",
     "password": "Parool",
     "passwordSaved": "Parool on salvestatud, muutmiseks kirjuta uus"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Sirvi faile sellel hostil WebDAV-i kaudu, nagu Nextcloud, ownCloud või NAS.",
+    "originNote": "WebDAV-i ühendused tehakse Termixi serverist.",
+    "https": "HTTPS",
+    "httpsDesc": "Lülita välja ainult siis, kui serveril pole HTTPS-i.",
+    "path": "Asukoht",
+    "pathHint": "Kus WebDAV serveris asub. Nextcloud kasutab /remote.php/dav/files/<user>. Jäta tühjaks juuremappa jaoks.",
+    "anonymousNote": "Ühendub ilma sisselogimiseta."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Sirvi Windowsi või Samba jagamist sellel hostil.",
+    "originNote": "SMB-ühendused tehakse Termixi serverist.",
+    "share": "Jagamine",
+    "domain": "Domeen või töögrupp",
+    "limits": "Kasutab SMB 2 koos NTLMv2-ga. Jagamised, mis nõuavad SMB 3, krüpteerimist või allkirjastamist, nagu Windows 11 24H2 vaikimisi, ei ole veel toetatud.",
+    "guestNote": "Ühendub külalisena ilma paroolita."
   }
 }

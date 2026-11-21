@@ -1,6 +1,24 @@
 import { Folder } from "lucide-react";
-import { canOpenFiles, fileManagerHostSetting, usesFtp } from "./host-settings";
+import {
+  availableProtocols,
+  canOpenFiles,
+  fileManagerHostSetting,
+  fileProtocol,
+} from "./host-settings";
+import {
+  setPreferredProtocol,
+  usePreferredProtocol,
+  type FileProtocol,
+} from "./lib/file-protocol";
 import { getErrorMessage } from "./lib/error-message";
+import { deletePrompt } from "./lib/delete-prompt";
+import {
+  needsUsername,
+  rememberUsername,
+  setAskedUsername,
+} from "./lib/ask-username";
+import { AskUsernamePrompt } from "./AskUsernamePrompt";
+import { opensExternally } from "./lib/open-externally";
 import { fileManagerApi } from "./api/client";
 import { subscribeLocalEvents } from "./lib/local-events";
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -32,6 +50,7 @@ import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
 import { useNativeDragOut } from "./hooks/useNativeDragOut";
 import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
+import { isEditLocked, setEditLocked, useEditLocked } from "./lib/edit-lock";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
 import {
@@ -58,7 +77,7 @@ import {
   useConnectionLog,
   ConnectionScreen,
 } from "@termix-ssh/plugin-sdk/ui";
-import { ConnectionLogPanel } from "@termix-ssh/plugin-sdk/ui";
+import { ConnectionLogPanel, ToolbarSelect } from "@termix-ssh/plugin-sdk/ui";
 import {
   usePluginUiPreferences,
   invokeAction,
@@ -189,12 +208,23 @@ function FileManagerContent({
     [t],
   );
   const confirm = useConfirm();
-  const confirmBeforeTrash =
-    useSettings("user").values.confirmBeforeTrash !== false;
+  const userSettings = useSettings("user").values;
+  const confirmBeforeTrash = userSettings.confirmBeforeTrash !== false;
+  const openExternallyTypes = userSettings.openExternallyTypes;
   const { addLog, clearLogs } = useConnectionLog();
 
   const [currentHost] = useState<SSHHost | null>(initialHost || null);
-  const isFtp = usesFtp(currentHost);
+  const preferredProtocol = usePreferredProtocol(currentHost?.id);
+  const protocol = fileProtocol(currentHost, preferredProtocol);
+  const isFtp = !!protocol && protocol !== "sftp";
+  const protocolOptions = availableProtocols(currentHost);
+  const editLocked = useEditLocked(currentHost?.id);
+  // Reads storage each time so callbacks made before a toggle still see it.
+  const blockedByLock = () => {
+    if (!isEditLocked(currentHost?.id)) return false;
+    toast.info(t("fileManager.lockedNotice"));
+    return true;
+  };
   const [currentPath, setCurrentPath] = useState(
     initialPath ||
       fileManagerHostSetting(initialHost, "defaultPath", "") ||
@@ -467,6 +497,7 @@ function FileManagerContent({
   const [transferMove, setTransferMove] = useState(false);
 
   const [sudoDialogOpen, setSudoDialogOpen] = useState(false);
+  const [askingUsername, setAskingUsername] = useState(false);
   const [deletingPaths, setDeletingPaths] = useState<ReadonlySet<string>>(
     new Set(),
   );
@@ -743,6 +774,12 @@ function FileManagerContent({
         message: t("fileManager.sshRequiredForFileManager"),
       });
       setIsLoading(false);
+      return;
+    }
+
+    if (needsUsername(currentHost.id.toString(), currentHost.username)) {
+      setIsLoading(false);
+      setAskingUsername(true);
       return;
     }
 
@@ -1351,6 +1388,7 @@ function FileManagerContent({
   // its folders) upload into that folder, preserving directory structure.
   const handleLocalFilesDrop = useCallback(
     (localPaths: string[], targetDir?: FileItem) => {
+      if (blockedByLock()) return;
       const remoteDir = targetDir?.path ?? currentPathRef.current;
       void waitForDeletes(pendingDeleteRef).then(() =>
         localTransfers.uploadLocalPaths(localPaths, remoteDir, (batch) =>
@@ -1425,6 +1463,7 @@ function FileManagerContent({
   }, [currentPath, isFtp]);
 
   async function handleItemsDropped(entries: FileSystemEntry[]) {
+    if (blockedByLock()) return;
     if (!sshSessionId) {
       toast.error(t("fileManager.noSSHConnection"));
       return;
@@ -1679,6 +1718,7 @@ function FileManagerContent({
   }
 
   async function handleFilesDropped(fileList: FileList) {
+    if (blockedByLock()) return;
     if (!sshSessionId) {
       toast.error(t("fileManager.noSSHConnection"));
       return;
@@ -2031,6 +2071,7 @@ function FileManagerContent({
     files: FileItem[],
     options: { permanent?: boolean } = {},
   ) {
+    if (blockedByLock()) return;
     // Rows already being trashed can't be deleted again.
     files = files.filter((file) => !deletingPathsRef.current.has(file.path));
     if (!sshSessionId || files.length === 0) return;
@@ -2058,36 +2099,28 @@ function FileManagerContent({
       });
     }
 
-    // Shift+Delete skips the trash, so it always asks first.
-    if (options.permanent) {
-      if (!(await confirm({ title: confirmMessage }))) return;
+    const run = async (permanent: boolean) => {
       const release = holdDeletes();
       try {
-        await afterBulkDelete(await bulkDelete(files, true), true);
-      } finally {
-        release();
-      }
-      return;
-    }
-
-    const fullMessage = `${confirmMessage}\n\n${t("fileManager.moveToTrashWarning")}`;
-
-    const moveToTrash = async () => {
-      const release = holdDeletes();
-      try {
-        await afterBulkDelete(await bulkDelete(files, false), false);
+        await afterBulkDelete(await bulkDelete(files, permanent), permanent);
       } finally {
         release();
       }
     };
-    if (confirmBeforeTrash) {
-      confirm({ title: fullMessage }).then((ok) => {
-        if (ok) void moveToTrash();
-        return ok;
-      });
-    } else {
-      await moveToTrash();
+
+    // Shift+Delete skips the trash, so it always asks first, with Delete
+    // permanently already ticked.
+    if (!options.permanent && !confirmBeforeTrash) {
+      await run(false);
+      return;
     }
+    let permanent = options.permanent === true;
+    const ok = await confirm(
+      deletePrompt(t, confirmMessage, permanent, (checked) => {
+        permanent = checked;
+      }) as Parameters<typeof confirm>[0],
+    );
+    if (ok) await run(permanent);
   }
 
   async function handleSudoPasswordSubmit(password: string) {
@@ -2141,6 +2174,7 @@ function FileManagerContent({
   }
 
   function handleCreateNewFolder() {
+    if (blockedByLock()) return;
     const defaultName = generateUniqueName(
       t("fileManager.newFolderDefault"),
       "directory",
@@ -2154,6 +2188,7 @@ function FileManagerContent({
   }
 
   function handleCreateNewFile() {
+    if (blockedByLock()) return;
     const defaultName = generateUniqueName(
       t("fileManager.newFileDefault"),
       "file",
@@ -2342,17 +2377,17 @@ function FileManagerContent({
       // Let saves from a previous session finish before reading the file back.
       await externalSavesRef.current.get(file.path);
       const data = await downloadSSHFile(sshSessionId!, file.path);
-      // Saves come back as UTF-8 text, so binary files would be corrupted.
-      let text: string;
+      // Text goes as UTF-8; anything else, like a picture, as base64 both ways.
+      let content: string = data.content;
+      let encoding: "utf8" | "base64" = "base64";
       try {
-        const bytes = base64ToBytes(data.content);
-        text = new TextDecoder("utf-8", {
+        content = new TextDecoder("utf-8", {
           fatal: true,
           ignoreBOM: true,
-        }).decode(bytes);
+        }).decode(base64ToBytes(data.content));
+        encoding = "utf8";
       } catch {
-        toast.error(t("fileManager.externalEditorTextOnly"));
-        return;
+        // Not text: kept as base64.
       }
       if (isStale()) return;
       const { data: result } = await fileManagerApi().post<{
@@ -2361,8 +2396,8 @@ function FileManagerContent({
         error?: string;
       }>("/local/editor/open", {
         fileName: file.name,
-        content: text,
-        encoding: "utf8",
+        content,
+        encoding,
       });
       if (!result.success || !result.editId) {
         throw new Error(result.error || "Failed to open external editor");
@@ -2383,8 +2418,24 @@ function FileManagerContent({
         if (event.type !== "editor-saved" || event.editId !== result.editId) {
           return;
         }
+        const write = () =>
+          event.encoding === "base64"
+            ? uploadSSHFile(
+                sessionId,
+                file.path.slice(0, file.path.lastIndexOf("/")) || "/",
+                file.name,
+                new File(
+                  [
+                    base64ToBytes(
+                      String(event.content),
+                    ) as Uint8Array<ArrayBuffer>,
+                  ],
+                  file.name,
+                ),
+              )
+            : writeSSHFile(sessionId, file.path, String(event.content));
         const next = (saves.get(file.path) ?? Promise.resolve()).then(() =>
-          writeSSHFile(sessionId, file.path, String(event.content)).then(
+          write().then(
             () => void toast.success(t("fileManager.fileSavedSuccessfully")),
             (error: {
               message?: string;
@@ -2427,6 +2478,14 @@ function FileManagerContent({
 
     if (!sshSessionId) {
       toast.error(t("fileManager.noSSHConnection"));
+      return;
+    }
+
+    if (
+      window.electronAPI?.isElectron &&
+      opensExternally(file.name, openExternallyTypes)
+    ) {
+      await handleOpenExternally(file);
       return;
     }
 
@@ -2515,6 +2574,7 @@ function FileManagerContent({
   }
 
   function handleCutFiles(files: FileItem[]) {
+    if (blockedByLock()) return;
     const entry = {
       files,
       operation: "cut" as const,
@@ -2566,6 +2626,7 @@ function FileManagerContent({
   }
 
   async function handleCrossHostPaste() {
+    if (blockedByLock()) return;
     if (!clipboard || !sshSessionId || !currentHost) return;
 
     const { files, operation, sourceSessionId } = clipboard;
@@ -2731,6 +2792,7 @@ function FileManagerContent({
   }
 
   async function handlePasteFiles() {
+    if (blockedByLock()) return;
     if (!clipboard || !sshSessionId) return;
     await waitForDeletes(pendingDeleteRef);
     if (
@@ -2758,6 +2820,7 @@ function FileManagerContent({
   }
 
   async function handleExtractArchive(file: FileItem) {
+    if (blockedByLock()) return;
     if (!sshSessionId) return;
     const sessionId = sshSessionId;
     const id = `${Date.now()}:${file.path}`;
@@ -2814,6 +2877,7 @@ function FileManagerContent({
   }
 
   function handleOpenCompressDialog(files: FileItem[]) {
+    if (blockedByLock()) return;
     setCompressDialogFiles(files);
   }
 
@@ -2856,6 +2920,7 @@ function FileManagerContent({
   }
 
   function handleOpenTransferDialog(files: FileItem[], move: boolean) {
+    if (move && blockedByLock()) return;
     setTransferFiles(files);
     setTransferMove(move);
     setTransferDialogOpen(true);
@@ -2926,6 +2991,7 @@ function FileManagerContent({
   }
 
   async function handleUndo() {
+    if (blockedByLock()) return;
     await waitForDeletes(pendingDeleteRef);
     if (undoHistory.length === 0) {
       toast.info(t("fileManager.noUndoableActions"));
@@ -3035,10 +3101,12 @@ function FileManagerContent({
   }
 
   function handleRenameFile(file: FileItem) {
+    if (blockedByLock()) return;
     setEditingFile(file);
   }
 
   function handleOpenPermissionsDialog(file: FileItem) {
+    if (blockedByLock()) return;
     setPermissionsDialogFile(file);
   }
 
@@ -3251,6 +3319,7 @@ function FileManagerContent({
   }
 
   function handleStartEdit(file: FileItem) {
+    if (blockedByLock()) return;
     setEditingFile(file);
   }
 
@@ -3562,6 +3631,7 @@ function FileManagerContent({
     draggedFiles: FileItem[],
     targetFolder: FileItem,
   ) {
+    if (blockedByLock()) return;
     if (!sshSessionId || targetFolder.type !== "directory") return;
     await waitForDeletes(pendingDeleteRef);
     try {
@@ -3683,6 +3753,7 @@ function FileManagerContent({
   }
 
   function handleRunExecutable(file: FileItem) {
+    if (blockedByLock()) return;
     if (!currentHost) {
       toast.error(t("fileManager.noHostSelected"));
       return;
@@ -3946,6 +4017,8 @@ function FileManagerContent({
       >
         <FileManagerToolbar
           t={t}
+          editLocked={editLocked}
+          onToggleEditLock={() => setEditLocked(currentHost?.id, !editLocked)}
           currentPath={currentPath}
           navIndex={navIndex}
           navHistoryLength={navHistory.length}
@@ -3970,6 +4043,19 @@ function FileManagerContent({
           handleRefreshDirectory={handleRefreshDirectory}
           handleDeleteFiles={handleDeleteFiles}
           handleCopyFiles={isFtp ? undefined : handleCopyFiles}
+          protocolSwitch={
+            protocolOptions.length > 1 && protocol ? (
+              <ToolbarSelect<FileProtocol>
+                value={protocol}
+                onChange={(next) => setPreferredProtocol(currentHost?.id, next)}
+                label={t("fileManager.protocol")}
+                options={protocolOptions.map((value) => ({
+                  value,
+                  label: t(`fileManager.protocols.${value}`),
+                }))}
+              />
+            ) : undefined
+          }
           handleFilesDropped={handleFilesDropped}
           handleCreateNewFolder={handleCreateNewFolder}
           handleCreateNewFile={handleCreateNewFile}
@@ -4263,6 +4349,23 @@ function FileManagerContent({
         }
         handleSudoPasswordSubmit={handleSudoPasswordSubmit}
       />
+      {currentHost && (
+        <AskUsernamePrompt
+          open={askingUsername}
+          hostId={currentHost.id}
+          hostName={currentHost.name || currentHost.ip}
+          onCancel={() => {
+            setAskingUsername(false);
+            setHasConnectionError(true);
+          }}
+          onSubmit={(name) => {
+            setAskedUsername(currentHost.id.toString(), name);
+            rememberUsername(currentHost.id, name);
+            setAskingUsername(false);
+            void initializeSSHConnection();
+          }}
+        />
+      )}
       <ConnectionLogPanel
         isConnecting={isReconnecting || isLoading}
         isConnected={!!sshSessionId && !isReconnecting}
@@ -4302,9 +4405,12 @@ function FileManagerInner({
 }
 
 export function FileManager(props: FileManagerProps) {
+  // A new protocol is a new connection, so the view starts over.
+  const preferred = usePreferredProtocol(props.initialHost?.id);
+  const protocol = fileProtocol(props.initialHost ?? null, preferred);
   return (
     <ConnectionLogProvider>
-      <FileManagerInner {...props} />
+      <FileManagerInner key={protocol ?? "none"} {...props} />
     </ConnectionLogProvider>
   );
 }

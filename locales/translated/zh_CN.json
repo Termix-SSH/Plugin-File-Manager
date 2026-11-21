@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "允许自签名证书"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV 端口"
+      },
+      "webdavHttps": {
+        "label": "通过 HTTPS 使用 WebDAV"
+      },
+      "webdavPath": {
+        "label": "WebDAV 路径"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "允许使用自签名 WebDAV 证书"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB 端口"
+      },
+      "smbShare": {
+        "label": "SMB 共享"
+      },
+      "smbDomain": {
+        "label": "SMB 域"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "目录历史记录大小",
         "description": "文件面板为每个主机记住的目录数量。"
+      },
+      "openExternallyTypes": {
+        "label": "在 Termix 外部打开以下文件类型",
+        "description": "仅限桌面版应用。指定文件扩展名（如 psd、jpg、pdf），以便在打开时使用外部编辑器或系统默认应用。多个扩展名请用逗号分隔，或使用 * 表示所有文件。"
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "新建文件夹",
     "rename": "重命名",
     "uploading": "正在上传...",
-    "externalEditorTextOnly": "仅文本文件可以外部打开，因为保存时会以文本形式写回。",
     "uploadFilesDone": "{{done}} / {{total}} 个文件",
     "uploadingFile": "正在上传 {{name}}...",
     "uploadingChunk": "正在上传 {{name}}：{{percent}}%（第 {{chunk}} 部分，共 {{total}} 部分）",
@@ -212,6 +242,9 @@
     "noSearchResults": "未找到“{{query}}”的结果",
     "searchFiles": "搜索文件...",
     "upload": "上传",
+    "lockChanges": "锁定更改",
+    "unlockChanges": "解锁更改",
+    "lockedNotice": "更改已锁定。请在工具栏中解锁以在此处编辑文件。",
     "selectHostToStart": "选择一台主机以开始文件管理",
     "sshRequiredForFileManager": "文件管理器需要 SSH。此主机未启用 SSH。",
     "failedToConnect": "无法连接到 SSH",
@@ -261,11 +294,11 @@
     "serverError": "服务器错误",
     "fileSavedSuccessfully": "文件保存成功",
     "failedToSaveFile": "无法保存文件",
-    "confirmDeleteSingleItem": "确定要永久删除“{{name}}”吗？",
-    "confirmDeleteMultipleItems_other": "确定要永久删除 {{count}} 个项目吗？",
-    "confirmDeleteMultipleItemsWithFolders_other": "确定要永久删除 {{count}} 个项目吗？其中包括文件夹及其内容。",
-    "confirmDeleteFolder": "确定要永久删除文件夹“{{name}}”及其所有内容吗？",
-    "moveToTrashWarning": "项目将被移动到 Termix 回收站，并可在保留期过期前恢复。",
+    "confirmDeleteSingleItem": "删除“{{name}}”？",
+    "confirmDeleteMultipleItems_other": "删除 {{count}} 个项目？",
+    "confirmDeleteMultipleItemsWithFolders_other": "删除 {{count}} 个项目？这将包括文件夹及其内容。",
+    "confirmDeleteFolder": "删除文件夹“{{name}}”及其所有内容？",
+    "moveToTrashWarning": "文件将移至 Termix 回收站，在保留期结束前可以恢复。",
     "itemsMovedToTrash_other": "已将 {{count}} 个项目移至废纸篓",
     "deletingItems": "正在删除：{{done}} / {{total}}。请等待操作完成后再进行粘贴或上传。",
     "movingToTrash": "正在移至回收站：{{done}} / {{total}}。请等待操作完成后再进行粘贴或上传。",
@@ -465,7 +498,22 @@
     "openAsText": "以文本打开",
     "confirmOpenAsText": "是否继续以文本方式打开此文件？这可能会降低浏览器速度。",
     "removeShortcutConfirm": "删除快捷方式 {{name}}？",
-    "clearRecentConfirm": "清除所有最近文件？"
+    "clearRecentConfirm": "清除所有最近文件？",
+    "deletePermanently": "永久删除",
+    "deletePermanentlyWarning": "文件将被永久删除，无法恢复。",
+    "moveToTrash": "移至回收站",
+    "askUsername": {
+      "title": "登录身份",
+      "description": "{{host}} 每次连接时都会要求输入用户名。请输入要用于登录的用户名。",
+      "connect": "连接"
+    },
+    "protocol": "协议",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "用户名",
     "password": "密码",
     "passwordSaved": "密码已保存，输入以更改"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "通过 WebDAV 浏览此主机上的文件，例如 Nextcloud、ownCloud 或 NAS。",
+    "originNote": "WebDAV 连接由 Termix 服务器发起。",
+    "https": "HTTPS",
+    "httpsDesc": "仅在没有 HTTPS 的服务器上关闭此选项。",
+    "path": "路径",
+    "pathHint": "WebDAV 在服务器上的位置。Nextcloud 使用 /remote.php/dav/files/<user>。留空表示根目录。",
+    "anonymousNote": "无需登录即可连接。"
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "浏览此主机上的 Windows 或 Samba 共享。",
+    "originNote": "SMB 连接由 Termix 服务器发起。",
+    "share": "共享",
+    "domain": "域或工作组",
+    "limits": "使用 SMB 2 和 NTLMv2。尚不支持需要 SMB 3、加密或签名的共享（例如 Windows 11 24H2 的默认设置）。",
+    "guestNote": "以访客身份连接，无需密码。"
   }
 }

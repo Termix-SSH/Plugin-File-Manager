@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Dopusti samopotpisani certifikat"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV preko HTTPS-a"
+      },
+      "webdavPath": {
+        "label": "WebDAV putanja"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Dopusti samopotpisani WebDAV certifikat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB port"
+      },
+      "smbShare": {
+        "label": "SMB dijeljenje"
+      },
+      "smbDomain": {
+        "label": "SMB domena"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Veličina povijesti mapa",
         "description": "Koliko mapa panel datoteka pamti za svaki host."
+      },
+      "openExternallyTypes": {
+        "label": "Otvori ove vrste datoteka izvan Termixa",
+        "description": "Samo za desktop aplikaciju. Krajnje ekstenzije datoteka, poput psd, jpg, pdf, koje se otvaraju u vašem vanjskom uređivaču ili sustavnoj aplikaciji ako niste odabrali drugo, kada ih otvorite. Odvojite ih zarezima ili koristite * za sve datoteke."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Nova mapa",
     "rename": "Preimenuj",
     "uploading": "Učitavanje...",
-    "externalEditorTextOnly": "Samo tekstualne datoteke mogu se otvoriti vanjski, jer se spremanja zapisuju natrag kao tekst.",
     "uploadFilesDone": "{{done}} / {{total}} datoteka",
     "uploadingFile": "Učitavanje {{name}}...",
     "uploadingChunk": "Učitavanje {{name}}: {{percent}}% (dio {{chunk}} od {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "Nema rezultata za „{{query}}“",
     "searchFiles": "Pretraži datoteke...",
     "upload": "Otpremi",
+    "lockChanges": "Zaključaj promjene",
+    "unlockChanges": "Otključaj promjene",
+    "lockedNotice": "Promjene su zaključane. Otključajte ih na traci alata za uređivanje datoteka ovdje.",
     "selectHostToStart": "Odaberite host za početak upravljanja datotekama",
     "sshRequiredForFileManager": "Upravitelj datoteka zahtijeva SSH. Na ovom hostu SSH nije omogućen.",
     "failedToConnect": "Povezivanje na SSH nije uspjelo",
@@ -307,15 +340,15 @@
     "serverError": "Greška poslužitelja",
     "fileSavedSuccessfully": "Datoteka uspješno spremljena",
     "failedToSaveFile": "Spremanje datoteke nije uspjelo",
-    "confirmDeleteSingleItem": "Jeste li sigurni da želite trajno izbrisati \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Jeste li sigurni da želite trajno obrisati {{count}} stavku?",
-    "confirmDeleteMultipleItems_few": "Jeste li sigurni da želite trajno obrisati {{count}} stavke?",
-    "confirmDeleteMultipleItems_other": "Jeste li sigurni da želite trajno obrisati {{count}} stavki?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Jeste li sigurni da želite trajno obrisati {{count}} stavku? To uključuje mapu i njezin sadržaj.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Jeste li sigurni da želite trajno obrisati {{count}} stavke? To uključuje mape i njihov sadržaj.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Jeste li sigurni da želite trajno obrisati {{count}} stavki? To uključuje mape i njihov sadržaj.",
-    "confirmDeleteFolder": "Jeste li sigurni da želite trajno izbrisati mapu \"{{name}}\" i sav njezin sadržaj?",
-    "moveToTrashWarning": "Stavke će biti premještene u Termix smeće i mogu se vratiti prije isteka razdoblja zadržavanja.",
+    "confirmDeleteSingleItem": "Izbrisati \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Izbrisati {{count}} stavku?",
+    "confirmDeleteMultipleItems_few": "Izbrisati {{count}} stavke?",
+    "confirmDeleteMultipleItems_other": "Izbrisati {{count}} stavki?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Izbrisati {{count}} stavku? To uključuje mapu i njezin sadržaj.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Izbrisati {{count}} stavke? To uključuje mape i njihov sadržaj.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Izbrisati {{count}} stavki? To uključuje mape i njihov sadržaj.",
+    "confirmDeleteFolder": "Izbrisati mapu \"{{name}}\" i sav njezin sadržaj?",
+    "moveToTrashWarning": "Idu u Termix smeće i mogu se vratiti dok ne istekne razdoblje zadržavanja.",
     "itemsMovedToTrash_one": "{{count}} stavka premještena u smeće",
     "itemsMovedToTrash_few": "{{count}} stavke premještene u smeće",
     "itemsMovedToTrash_other": "{{count}} stavki premješteno u smeće",
@@ -537,7 +570,22 @@
     "openAsText": "Otvori kao tekst",
     "confirmOpenAsText": "Želite li nastaviti s otvaranjem ove datoteke kao teksta? To može usporiti vaš preglednik.",
     "removeShortcutConfirm": "Ukloniti prečac {{name}}?",
-    "clearRecentConfirm": "Izbrisati sve nedavne datoteke?"
+    "clearRecentConfirm": "Izbrisati sve nedavne datoteke?",
+    "deletePermanently": "Trajno izbriši",
+    "deletePermanentlyWarning": "Trajno je obrisan i ne može se vratiti.",
+    "moveToTrash": "Premjesti u smeće",
+    "askUsername": {
+      "title": "Prijava kao",
+      "description": "{{host}} traži korisničko ime svaki put. Unesite ono za koje se želite prijaviti.",
+      "connect": "Poveži"
+    },
+    "protocol": "Protokol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Korisničko ime",
     "password": "Lozinka",
     "passwordSaved": "Lozinka je spremljena, upišite za promjenu"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Pregledavajte datoteke na ovom hostu putem WebDAV-a, poput Nextclouda, ownClouda ili NAS-a.",
+    "originNote": "WebDAV veze se uspostavljaju s Termix poslužitelja.",
+    "https": "HTTPS",
+    "httpsDesc": "Isključite samo za poslužitelj koji nema HTTPS.",
+    "path": "Putanja",
+    "pathHint": "Gdje se WebDAV nalazi na poslužitelju. Nextcloud koristi /remote.php/dav/files/<user>. Ostavite prazno za korijen.",
+    "anonymousNote": "Povezuje se bez prijave."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Pregledajte Windows ili Samba dijeljenje na ovom hostu.",
+    "originNote": "SMB veze se uspostavljaju s Termix poslužitelja.",
+    "share": "Dijeljeni resurs",
+    "domain": "Domena ili radna skupina",
+    "limits": "Koristi SMB 2 s NTLMv2. Dijeljeni resursi koji zahtijevaju SMB 3, šifriranje ili potpisivanje, poput onih na Windows 11 24H2 prema zadanim postavkama, još nisu podržani.",
+    "guestNote": "Povezuje se kao gost bez lozinke."
   }
 }

@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Επιτρέψτε αυτουπογεγραμμένο πιστοποιητικό"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Θύρα WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV μέσω HTTPS"
+      },
+      "webdavPath": {
+        "label": "Διαδρομή WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Επιτρέψτε αυτουπογεγραμμένο πιστοποιητικό WebDAV"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Θύρα SMB"
+      },
+      "smbShare": {
+        "label": "Κοινόχρηστο SMB"
+      },
+      "smbDomain": {
+        "label": "Domain SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Μέγεθος ιστορικού φακέλων",
         "description": "Πόσους φακέλους θυμάται ο πίνακας αρχείων για κάθε host."
+      },
+      "openExternallyTypes": {
+        "label": "Άνοιγμα αυτών των τύπων αρχείων εκτός Termix",
+        "description": "Μόνο για την εφαρμογή επιφάνειας εργασίας. Τερματισμοί αρχείων, όπως psd, jpg, pdf, που ανοίγουν στον εξωτερικό επεξεργαστή σας ή στην εφαρμογή του συστήματος όταν δεν έχει επιλεγεί κανένας, όταν τα ανοίγετε. Χωρίστε τα με κόμματα ή χρησιμοποιήστε * για κάθε αρχείο."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Νέος Φάκελος",
     "rename": "Μετονομασία",
     "uploading": "Ανέβασμα...",
-    "externalEditorTextOnly": "Μόνο αρχεία κειμένου μπορούν να ανοίξουν εξωτερικά, καθώς οι αποθηκεύσεις γράφονται ξανά ως κείμενο.",
     "uploadFilesDone": "{{done}} / {{total}} αρχεία",
     "uploadingFile": "Ανέβασμα του {{name}}...",
     "uploadingChunk": "Ανέβασμα του {{name}}: {{percent}}% (μέρος {{chunk}} από {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Δεν βρέθηκαν αποτελέσματα για \"{{query}}\"",
     "searchFiles": "Αναζήτηση αρχείων...",
     "upload": "Ανέβασμα",
+    "lockChanges": "Κλείδωμα αλλαγών",
+    "unlockChanges": "Ξεκλείδωμα αλλαγών",
+    "lockedNotice": "Οι αλλαγές είναι κλειδωμένες. Ξεκλειδώστε τις στη γραμμή εργαλείων για να επεξεργαστείτε αρχεία εδώ.",
     "selectHostToStart": "Επιλέξτε έναν υπολογιστή για να ξεκινήσετε τη διαχείριση αρχείων",
     "sshRequiredForFileManager": "Ο διαχειριστής αρχείων απαιτεί SSH. Αυτός ο υπολογιστής δεν έχει ενεργοποιημένο το SSH.",
     "failedToConnect": "Αποτυχία σύνδεσης στο SSH",
@@ -284,13 +317,13 @@
     "serverError": "Σφάλμα διακομιστή",
     "fileSavedSuccessfully": "Το αρχείο αποθηκεύτηκε επιτυχώς",
     "failedToSaveFile": "Αποτυχία αποθήκευσης αρχείου",
-    "confirmDeleteSingleItem": "Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά το \"{{name}}\";",
-    "confirmDeleteMultipleItems_one": "Είστε σίγουρος ότι θέλετε να διαγράψετε οριστικά {{count}} στοιχείο;",
-    "confirmDeleteMultipleItems_other": "Είστε σίγουρος ότι θέλετε να διαγράψετε οριστικά {{count}} στοιχεία;",
-    "confirmDeleteMultipleItemsWithFolders_one": "Είστε σίγουρος ότι θέλετε να διαγράψετε οριστικά {{count}} στοιχείο; Αυτό περιλαμβάνει έναν φάκελο και το περιεχόμενό του.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Είστε σίγουρος ότι θέλετε να διαγράψετε οριστικά {{count}} στοιχεία; Αυτό περιλαμβάνει φακέλους και το περιεχόμενό τους.",
-    "confirmDeleteFolder": "Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τον φάκελο \"{{name}}\" και όλο το περιεχόμενό του;",
-    "moveToTrashWarning": "Το/τα στοιχείο/α θα μετακινηθούν στον Καλάθι Απορριμμάτων του Termix και μπορούν να αποκατασταθούν πριν λήξει η περίοδος διατήρησης.",
+    "confirmDeleteSingleItem": "Διαγραφή του «{{name}}»;",
+    "confirmDeleteMultipleItems_one": "Διαγραφή {{count}} στοιχείου;",
+    "confirmDeleteMultipleItems_other": "Διαγραφή {{count}} στοιχείων;",
+    "confirmDeleteMultipleItemsWithFolders_one": "Διαγραφή {{count}} στοιχείου; Αυτό περιλαμβάνει έναν φάκελο και το περιεχόμενό του.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Διαγραφή {{count}} στοιχείων; Αυτό περιλαμβάνει φακέλους και το περιεχόμενό τους.",
+    "confirmDeleteFolder": "Διαγραφή του φακέλου «{{name}}» και όλου του περιεχομένου του;",
+    "moveToTrashWarning": "Πηγαίνει στον Καλάθι Απορριμμάτων του Termix και μπορεί να αποκατασταθεί μέχρι να λήξει η περίοδος διατήρησης.",
     "itemsMovedToTrash_one": "{{count}} στοιχείο μετακινήθηκε στον Καλάθι Απορριμμάτων",
     "itemsMovedToTrash_other": "{{count}} στοιχεία μετακινήθηκαν στον Καλάθι Απορριμμάτων",
     "deletingItems": "Διαγραφή: {{done}} / {{total}}. Περιμένετε να ολοκληρωθεί πριν επικολλήσετε ή ανεβάσετε αρχεία.",
@@ -501,7 +534,22 @@
     "openAsText": "Άνοιγμα ως Κείμενο",
     "confirmOpenAsText": "Θέλετε να συνεχίσετε ανοίγοντας αυτό το αρχείο ως κείμενο; Αυτό ενδέχεται να επιβραδύνει τον περιηγητή σας.",
     "removeShortcutConfirm": "Αφαίρεση του συντόμευσης {{name}};",
-    "clearRecentConfirm": "Εκκαθάριση όλων των πρόσφατων αρχείων;"
+    "clearRecentConfirm": "Εκκαθάριση όλων των πρόσφατων αρχείων;",
+    "deletePermanently": "Μόνιμη διαγραφή",
+    "deletePermanentlyWarning": "Διαγράφεται οριστικά και δεν μπορεί να ανακτηθεί.",
+    "moveToTrash": "Μεταφορά στο Καλάθι Απορριμμάτων",
+    "askUsername": {
+      "title": "Σύνδεση ως",
+      "description": "Το {{host}} ζητά όνομα χρήστη κάθε φορά. Πληκτρολογήστε αυτό με το οποίο θέλετε να συνδεθείτε.",
+      "connect": "Σύνδεση"
+    },
+    "protocol": "Πρωτόκολλο",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Όνομα χρήστη",
     "password": "Κωδικός πρόσβασης",
     "passwordSaved": "Ο κωδικός πρόσβασης αποθηκεύτηκε, πληκτρολογήστε για αλλαγή"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Περιηγηθείτε στα αρχεία σε αυτόν τον υπολογιστή μέσω WebDAV, όπως στο Nextcloud, ownCloud ή σε έναν NAS.",
+    "originNote": "Οι συνδέσεις WebDAV πραγματοποιούνται από τον διακομιστή Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Απενεργοποιήστε το μόνο για διακομιστές που δεν διαθέτουν HTTPS.",
+    "path": "Διαδρομή",
+    "pathHint": "Πού βρίσκεται το WebDAV στον διακομιστή. Το Nextcloud χρησιμοποιεί το /remote.php/dav/files/<user>. Αφήστε το κενό για τη ρίζα.",
+    "anonymousNote": "Συνδέεται χωρίς στοιχεία εισόδου."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Περιηγηθείτε σε ένα κοινόχρηστο φάκελο Windows ή Samba σε αυτόν τον υπολογιστή.",
+    "originNote": "Οι συνδέσεις SMB πραγματοποιούνται από τον εξυπηρετητή Termix.",
+    "share": "Κοινόχρηστο",
+    "domain": "Δομή ή ομάδα εργασίας",
+    "limits": "Χρησιμοποιεί SMB 2 με NTLMv2. Τα κοινόχρηστα που απαιτούν SMB 3, κρυπτογράφηση ή υπογραφή, όπως το Windows 11 24H2 από προεπιλογή, δεν υποστηρίζονται ακόμη.",
+    "guestNote": "Συνδέεται ως επισκέπτης χωρίς κωδικό πρόσβασης."
   }
 }

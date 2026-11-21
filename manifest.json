@@ -1,8 +1,8 @@
 {
   "id": "file-manager",
   "name": "File Manager",
-  "version": "1.2.2",
-  "description": "Browse, edit and move files over SFTP, including straight from one server to another.",
+  "version": "1.3.0",
+  "description": "Browse, edit and move files over SFTP, FTP, WebDAV and SMB, including straight from one server to another.",
   "author": {
     "name": "Termix"
   },
@@ -19,10 +19,11 @@
     "A trash you can restore deleted files from",
     "Copy files between two hosts, with the fastest route picked for you and an integrity check",
     "A files panel beside any SSH terminal that follows its folder, with a history of your folders",
-    "A side by side local and remote view in the desktop app"
+    "A side by side local and remote view in the desktop app",
+    "Browse WebDAV servers and SMB shares, like a NAS, Nextcloud or a Windows share"
   ],
   "engine": {
-    "termix": ">=26.11.2-0",
+    "termix": ">=26.11.3-0",
     "api": "^2.7.0"
   },
   "capabilities": [
@@ -105,6 +106,13 @@
           "labelKey": "settings.user.confirmBeforeTrash.label",
           "descriptionKey": "settings.user.confirmBeforeTrash.description",
           "default": true
+        },
+        {
+          "key": "openExternallyTypes",
+          "type": "string",
+          "labelKey": "settings.user.openExternallyTypes.label",
+          "descriptionKey": "settings.user.openExternallyTypes.description",
+          "default": ""
         },
         {
           "key": "companionAutoOpen",
@@ -237,6 +245,82 @@
             "default": false,
             "hidden": true,
             "defaultable": false
+          },
+          {
+            "key": "enableWebdav",
+            "type": "boolean",
+            "labelKey": "settings.host.enableWebdav.label",
+            "default": false,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "webdavPort",
+            "type": "number",
+            "labelKey": "settings.host.webdavPort.label",
+            "min": 0,
+            "max": 65535,
+            "default": 0,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "webdavHttps",
+            "type": "boolean",
+            "labelKey": "settings.host.webdavHttps.label",
+            "default": true,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "webdavPath",
+            "type": "string",
+            "labelKey": "settings.host.webdavPath.label",
+            "default": "",
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "webdavAllowSelfSigned",
+            "type": "boolean",
+            "labelKey": "settings.host.webdavAllowSelfSigned.label",
+            "default": false,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "enableSmb",
+            "type": "boolean",
+            "labelKey": "settings.host.enableSmb.label",
+            "default": false,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "smbPort",
+            "type": "number",
+            "labelKey": "settings.host.smbPort.label",
+            "min": 1,
+            "max": 65535,
+            "default": 445,
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "smbShare",
+            "type": "string",
+            "labelKey": "settings.host.smbShare.label",
+            "default": "",
+            "hidden": true,
+            "defaultable": false
+          },
+          {
+            "key": "smbDomain",
+            "type": "string",
+            "labelKey": "settings.host.smbDomain.label",
+            "default": "",
+            "hidden": true,
+            "defaultable": false
           }
         ]
       }
@@ -351,6 +435,16 @@
       {
         "id": "ftp",
         "defaultPort": 21,
+        "hostLoginFallback": ["username", "password"]
+      },
+      {
+        "id": "webdav",
+        "defaultPort": 443,
+        "hostLoginFallback": ["username", "password"]
+      },
+      {
+        "id": "smb",
+        "defaultPort": 445,
         "hostLoginFallback": ["username", "password"]
       }
     ]

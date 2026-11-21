@@ -1,4 +1,5 @@
 import { getErrorMessage } from "../lib/error-message";
+import { usernameFor } from "../lib/ask-username";
 import axios from "axios";
 import { asHttpError } from "../lib/http-error";
 import {
@@ -6,10 +7,11 @@ import {
   getFileManagerApiForSession,
   setSessionOrigin,
   clearSessionOrigin,
-  setSessionFtp,
+  setSessionProtocol,
   listHosts,
 } from "./client";
-import { usesFtp } from "../host-settings";
+import { fileProtocol } from "../host-settings";
+import { getPreferredProtocol } from "../lib/file-protocol";
 import {
   createFrontendLogger,
   resolveConnectionOrigin,
@@ -112,21 +114,25 @@ export async function connectSSH(
     connectionOrigin?: "local" | "remote" | null;
   },
 ): Promise<SSHConnectResult> {
-  const { connectionOrigin, ...body } = config;
+  const { connectionOrigin, ...rest } = config;
+  const body = { ...rest, username: usernameFor(sessionId, rest.username) };
   setSessionOrigin(
     sessionId,
     await resolveConnectionOrigin({ connectionOrigin }),
   );
-  let ftp = false;
+  let protocol: string | null = null;
   try {
     const record = (await listHosts()).find(
       (h) => String(h.id) === String(body.hostId),
     );
-    ftp = !!record && usesFtp(record);
+    if (record) {
+      protocol = fileProtocol(record, getPreferredProtocol(record.id));
+    }
   } catch {
     // keep SFTP
   }
-  setSessionFtp(sessionId, ftp);
+  const ftp = !!protocol && protocol !== "sftp";
+  setSessionProtocol(sessionId, ftp ? protocol : null);
   try {
     const response = await getFileManagerApiForSession(sessionId).post(
       "/connect",

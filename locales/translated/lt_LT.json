@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Leisti savarankiškai pasirašytą sertifikatą"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV prievadas"
+      },
+      "webdavHttps": {
+        "label": "WebDAV per HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV kelias"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Leisti pasirašytą WebDAV sertifikatą"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB prievadas"
+      },
+      "smbShare": {
+        "label": "SMB bendrinimas"
+      },
+      "smbDomain": {
+        "label": "SMB domenas"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Aplankų istorijos dydis",
         "description": "Kiek aplankų failų skydelis prisimena kiekvienam serveriui."
+      },
+      "openExternallyTypes": {
+        "label": "Atidaryti šiuos failų tipus už Termix ribų",
+        "description": "Tik darbalaukio programai. Failų plėtiniai, pvz., psd, jpg, pdf, kurie atidaromi jūsų išoriniame redaktoriuje arba sistemos programoje, jei jokia nepasirinkta. Atskirkite juos kableliais arba naudokite * visiems failams."
       }
     }
   },
@@ -139,7 +170,6 @@
     "newFolder": "Naujas aplankas",
     "rename": "Pervadinti",
     "uploading": "Įkeliamas...",
-    "externalEditorTextOnly": "Išoriniu redaktoriumi galima atidaryti tik tekstinius failus, nes įrašymai atnaujinami kaip tekstas.",
     "uploadFilesDone": "{{done}} / {{total}} failų",
     "uploadingFile": "Įkeliamas {{name}}...",
     "uploadingChunk": "Įkeliamas {{name}}: {{percent}}% (dalys {{chunk}} iš {{total}})",
@@ -257,6 +287,9 @@
     "noSearchResults": "Nieko nerasta pagal užklausą „{{query}}“",
     "searchFiles": "Ieškoti failų...",
     "upload": "Įkelti",
+    "lockChanges": "Užrakinti pakeitimus",
+    "unlockChanges": "Atrakinti pakeitimus",
+    "lockedNotice": "Pakeitimai užrakinti. Atrakinkite juos įrankių juostoje, kad galėtumėte redaguoti failus čia.",
     "selectHostToStart": "Pasirinkite hostą, kad pradėtumėte failų valdymą",
     "sshRequiredForFileManager": "Failų valdyklė reikalauja SSH. Šis hostas neturi įjungto SSH.",
     "failedToConnect": "Nepavyko prisijungti prie SSH",
@@ -330,17 +363,17 @@
     "serverError": "Serverio klaida",
     "fileSavedSuccessfully": "Failas sėkmingai išsaugotas",
     "failedToSaveFile": "Nepavyko išsaugoti failo",
-    "confirmDeleteSingleItem": "Ar tikrai norite visam laikui ištrinti „{{name}}“?",
-    "confirmDeleteMultipleItems_one": "Ar tikrai norite visam laikui ištrinti {{count}} elementą?",
-    "confirmDeleteMultipleItems_few": "Ar tikrai norite visam laikui ištrinti {{count}} elementus?",
-    "confirmDeleteMultipleItems_many": "Ar tikrai norite visam laikui ištrinti {{count}} elementų?",
-    "confirmDeleteMultipleItems_other": "Ar tikrai norite visam laikui ištrinti {{count}} elementų?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Ar tikrai norite visam laikui ištrinti {{count}} elementą? Tai apima aplanką ir jo turinį.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Ar tikrai norite visam laikui ištrinti {{count}} elementus? Tai apima aplankus ir jų turinį.",
-    "confirmDeleteMultipleItemsWithFolders_many": "Ar tikrai norite visam laikui ištrinti {{count}} elementų? Tai apima aplankus ir jų turinį.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Ar tikrai norite visam laikui ištrinti {{count}} elementų? Tai apima aplankus ir jų turinį.",
-    "confirmDeleteFolder": "Ar tikrai norite visam laikui ištrinti aplanką „{{name}}“ ir visą jo turinį?",
-    "moveToTrashWarning": "Elementai bus perkelti į Termix šiukšlinę ir gali būti atstatyti, kol baigsis išsaugojimo laikotarpis.",
+    "confirmDeleteSingleItem": "Ištrinti „{{name}}“?",
+    "confirmDeleteMultipleItems_one": "Ištrinti {{count}} elementą?",
+    "confirmDeleteMultipleItems_few": "Ištrinti {{count}} elementus?",
+    "confirmDeleteMultipleItems_many": "Ištrinti {{count}} elementų?",
+    "confirmDeleteMultipleItems_other": "Ištrinti {{count}} elementų?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Ištrinti {{count}} elementą? Tai apima aplanką ir jo turinį.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Ištrinti {{count}} elementus? Tai apima aplankus ir jų turinį.",
+    "confirmDeleteMultipleItemsWithFolders_many": "Ištrinti {{count}} elementų? Tai apima aplankus ir jų turinį.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Ištrinti {{count}} elementų? Tai apima aplankus ir jų turinį.",
+    "confirmDeleteFolder": "Ištrinti aplanką „{{name}}“ ir visą jo turinį?",
+    "moveToTrashWarning": "Jis patenka į Termix šiukšlinę ir gali būti atstatytas, kol baigsis išlaikymo laikotarpis.",
     "itemsMovedToTrash_one": "{{count}} elementas perkeltas į Šiukšlinę",
     "itemsMovedToTrash_few": "{{count}} elementai perkelti į Šiukšlinę",
     "itemsMovedToTrash_many": "{{count}} elementų perkelta į Šiukšlinę",
@@ -573,7 +606,22 @@
     "openAsText": "Atidaryti kaip tekstą",
     "confirmOpenAsText": "Ar norite tęsti ir atidaryti šį failą kaip tekstą? Tai gali sulėtinti naršyklę.",
     "removeShortcutConfirm": "Pašalinti nuorodą „{{name}}“?",
-    "clearRecentConfirm": "Išvalyti visus neseniai naudotus failus?"
+    "clearRecentConfirm": "Išvalyti visus neseniai naudotus failus?",
+    "deletePermanently": "Ištrinti visam laikui",
+    "deletePermanentlyWarning": "Jis bus ištrintas visam laikui ir negalės būti atstatytas.",
+    "moveToTrash": "Perkelti į šiukšlinę",
+    "askUsername": {
+      "title": "Prisijungti kaip",
+      "description": "{{host}} kiekvieną kartą prašo vartotojo vardo. Įveskite tą, kuriuo norite prisijungti.",
+      "connect": "Prisijungti"
+    },
+    "protocol": "Protokolas",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -798,5 +846,24 @@
     "username": "Vartotojo vardas",
     "password": "Slaptažodis",
     "passwordSaved": "Slaptažodis išsaugotas, įveskite norėdami pakeisti"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Naršykite failus šiame serveryje per WebDAV, pvz., Nextcloud, ownCloud arba NAS.",
+    "originNote": "WebDAV ryšiai nustatomi iš Termix serverio.",
+    "https": "HTTPS",
+    "httpsDesc": "Išjunkite tik tada, jei serveris neturi HTTPS.",
+    "path": "Kelias",
+    "pathHint": "Kur WebDAV yra serveryje. Nextcloud naudoja /remote.php/dav/files/<user>. Palikite tuščią šaknims.",
+    "anonymousNote": "Prisijungia be prisijungimo."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Naršykite Windows arba Samba bendrinimą šiame serveryje.",
+    "originNote": "SMB ryšiai nustatomi iš Termix serverio.",
+    "share": "Bendrinimas",
+    "domain": "Domenas arba darbo grupė",
+    "limits": "Naudoja SMB 2 su NTLMv2. Bendrinimai, reikalaujantys SMB 3, šifravimo arba parašų, pvz., Windows 11 24H2 pagal nutylėjimą, dar nepalaikomi.",
+    "guestNote": "Prisijungia kaip svečias be slaptažodžio."
   }
 }

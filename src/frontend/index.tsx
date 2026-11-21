@@ -31,6 +31,7 @@ import { FileManagerWidgetEditForm } from "./homepage/FileManagerWidgetEditForm.
 import { startTransferMonitor } from "./TransferMonitor.tsx";
 import { setFileManagerApp } from "./api/client";
 import { FtpHostSection } from "./FtpHostSection.tsx";
+import { SmbHostSection, WebdavHostSection } from "./RemoteHostSections.tsx";
 
 function FilesTab({ tab, host, sshHost, isVisible }: TabProps) {
   const data = tab.data as
@@ -172,6 +173,52 @@ export function activate(app: TermixApp): void {
     // Shown in the simple host editor (SDK 2.10.0).
     ...{ simple: true },
     component: FtpHostSection,
+  });
+
+  app.registerHostProtocol({
+    id: "webdav",
+    settingKey: "enableWebdav",
+    portKey: "webdavPort",
+    defaultPort: 443,
+    titleKey: "webdav.title",
+    descriptionKey: "webdav.description",
+    connectionOriginNoteKey: "webdav.originNote",
+    icon: FolderInput,
+    order: 71,
+  });
+
+  app.registerHostEditorSection({
+    id: "webdav",
+    group: "top",
+    titleKey: "webdav.title",
+    icon: FolderInput,
+    order: 15,
+    visible: (protocols) => !!protocols.enableWebdav,
+    ...{ simple: true },
+    component: WebdavHostSection,
+  });
+
+  app.registerHostProtocol({
+    id: "smb",
+    settingKey: "enableSmb",
+    portKey: "smbPort",
+    defaultPort: 445,
+    titleKey: "smb.title",
+    descriptionKey: "smb.description",
+    connectionOriginNoteKey: "smb.originNote",
+    icon: FolderInput,
+    order: 72,
+  });
+
+  app.registerHostEditorSection({
+    id: "smb",
+    group: "top",
+    titleKey: "smb.title",
+    icon: FolderInput,
+    order: 16,
+    visible: (protocols) => !!protocols.enableSmb,
+    ...{ simple: true },
+    component: SmbHostSection,
   });
 
   app.registerExtension("homepage.widgets", {

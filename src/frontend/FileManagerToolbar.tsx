@@ -10,6 +10,8 @@ import {
   FolderPlus,
   Laptop,
   Layout,
+  Lock,
+  LockOpen,
   Plus,
   RefreshCw,
   Trash2,
@@ -74,6 +76,11 @@ type FileManagerToolbarProps = {
   onToggleSidebar?: () => void;
   /** Side panel layout: path on its own line, icon only buttons, wrapping. */
   compact?: boolean;
+  /** Picks SFTP, FTP, WebDAV or SMB when a host has more than one. */
+  protocolSwitch?: React.ReactNode;
+  /** Guard against misclicks: blocks changes, browsing still works. */
+  editLocked?: boolean;
+  onToggleEditLock?: () => void;
 };
 
 function Breadcrumb({
@@ -242,6 +249,9 @@ export function FileManagerToolbar({
   sidebarOpen = true,
   onToggleSidebar,
   compact = false,
+  editLocked = false,
+  onToggleEditLock,
+  protocolSwitch,
 }: FileManagerToolbarProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -379,6 +389,7 @@ export function FileManagerToolbar({
                 size="icon-xs"
                 title={t("fileManager.delete")}
                 className="text-accent-brand hover:bg-accent-brand/20"
+                disabled={editLocked}
                 onClick={() => handleDeleteFiles(selectedFiles)}
               >
                 <Trash2 className="size-3.5" />
@@ -422,6 +433,37 @@ export function FileManagerToolbar({
             </Button>
           )}
 
+          {protocolSwitch}
+          {onToggleEditLock && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onToggleEditLock}
+              title={
+                editLocked
+                  ? t("fileManager.unlockChanges")
+                  : t("fileManager.lockChanges")
+              }
+              aria-label={
+                editLocked
+                  ? t("fileManager.unlockChanges")
+                  : t("fileManager.lockChanges")
+              }
+              aria-pressed={editLocked}
+              className={
+                editLocked
+                  ? "border-accent-brand/40 bg-accent-brand/10 text-accent-brand hover:text-accent-brand dark:border-accent-brand/40 dark:bg-accent-brand/10"
+                  : ""
+              }
+            >
+              {editLocked ? (
+                <Lock className="size-4" />
+              ) : (
+                <LockOpen className="size-4" />
+              )}
+            </Button>
+          )}
+
           <ViewToggle
             view={viewMode}
             onView={setViewMode}
@@ -443,6 +485,7 @@ export function FileManagerToolbar({
           <Button
             variant="outline"
             onClick={() => uploadInputRef.current?.click()}
+            disabled={editLocked}
             className={compact ? "flex" : "hidden md:flex"}
             title={t("fileManager.upload")}
             aria-label={t("fileManager.upload")}
@@ -506,6 +549,7 @@ export function FileManagerToolbar({
                 variant="outline"
                 title={t("fileManager.new")}
                 aria-label={t("fileManager.new")}
+                disabled={editLocked}
                 className="border-accent-brand/40 text-accent-brand hover:bg-accent-brand/10 hover:text-accent-brand dark:border-accent-brand/40"
               >
                 <Plus className="size-3.5" />

@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "允許自我簽署憑證"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV 連接埠"
+      },
+      "webdavHttps": {
+        "label": "透過 HTTPS 使用 WebDAV"
+      },
+      "webdavPath": {
+        "label": "WebDAV 路徑"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "允許使用自簽章 WebDAV 憑證"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB 連接埠"
+      },
+      "smbShare": {
+        "label": "SMB 共用"
+      },
+      "smbDomain": {
+        "label": "SMB 網域"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "資料夾歷史記錄數量",
         "description": "檔案面板為每個主機記住多少個資料夾。"
+      },
+      "openExternallyTypes": {
+        "label": "在 Termix 外部開啟這些檔案類型",
+        "description": "僅限桌面版應用程式。指定檔案副檔名（如 psd、jpg、pdf），開啟時會使用外部編輯器，若未設定則使用系統預設應用程式。請以逗號分隔，或使用 * 代表所有檔案。"
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "新增資料夾",
     "rename": "重新命名",
     "uploading": "正在上傳...",
-    "externalEditorTextOnly": "只有文字檔案可以外部開啟，因為儲存時會以文字格式寫回。",
     "uploadFilesDone": "{{done}} / {{total}} 個檔案",
     "uploadingFile": "正在上傳 {{name}}...",
     "uploadingChunk": "正在上傳 {{name}}：{{percent}}%（第 {{chunk}} 部分，共 {{total}} 部分）",
@@ -212,6 +242,9 @@
     "noSearchResults": "找不到「{{query}}」的結果",
     "searchFiles": "搜尋檔案...",
     "upload": "上傳",
+    "lockChanges": "鎖定變更",
+    "unlockChanges": "解除鎖定變更",
+    "lockedNotice": "變更已鎖定。請在工具列中解除鎖定，才能在此編輯檔案。",
     "selectHostToStart": "選擇一台主機以開始檔案管理",
     "sshRequiredForFileManager": "檔案管理器需要 SSH。此主機未啟用 SSH。",
     "failedToConnect": "無法連線至 SSH",
@@ -261,11 +294,11 @@
     "serverError": "伺服器錯誤",
     "fileSavedSuccessfully": "檔案儲存成功",
     "failedToSaveFile": "無法儲存檔案",
-    "confirmDeleteSingleItem": "確定要永久刪除「{{name}}」嗎？",
-    "confirmDeleteMultipleItems_other": "您確定要永久刪除 {{count}} 個項目嗎？",
-    "confirmDeleteMultipleItemsWithFolders_other": "您確定要永久刪除 {{count}} 個項目嗎？這包含資料夾及其內容。",
-    "confirmDeleteFolder": "確定要永久刪除資料夾「{{name}}」及其所有內容嗎？",
-    "moveToTrashWarning": "項目將被移至 Termix 垃圾桶，並可在保留期限屆滿前還原。",
+    "confirmDeleteSingleItem": "刪除「{{name}}」？",
+    "confirmDeleteMultipleItems_other": "刪除 {{count}} 個項目？",
+    "confirmDeleteMultipleItemsWithFolders_other": "刪除 {{count}} 個項目？這將包含資料夾及其內容。",
+    "confirmDeleteFolder": "刪除資料夾「{{name}}」及其所有內容？",
+    "moveToTrashWarning": "檔案將移至 Termix 資源回收筒，在保留期限結束前可還原。",
     "itemsMovedToTrash_other": "已將 {{count}} 個項目移至垃圾桶",
     "deletingItems": "正在刪除：{{done}} / {{total}}。請等待完成後再貼上或上傳檔案。",
     "movingToTrash": "正在移至垃圾桶：{{done}} / {{total}}。請等待完成後再貼上或上傳檔案。",
@@ -465,7 +498,22 @@
     "openAsText": "以文字開啟",
     "confirmOpenAsText": "確定要以文字模式開啟此檔案嗎？這可能會降低瀏覽器效能。",
     "removeShortcutConfirm": "要移除捷徑 {{name}} 嗎？",
-    "clearRecentConfirm": "要清除所有最近使用的檔案嗎？"
+    "clearRecentConfirm": "要清除所有最近使用的檔案嗎？",
+    "deletePermanently": "永久刪除",
+    "deletePermanentlyWarning": "檔案將被永久刪除，且無法復原。",
+    "moveToTrash": "移至垃圾桶",
+    "askUsername": {
+      "title": "登入身分",
+      "description": "{{host}} 每次連線時都會要求輸入使用者名稱。請輸入您要登入的使用者名稱。",
+      "connect": "連線"
+    },
+    "protocol": "通訊協定",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "使用者名稱",
     "password": "密碼",
     "passwordSaved": "密碼已儲存，輸入即可變更"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "透過 WebDAV 瀏覽此主機上的檔案，例如 Nextcloud、ownCloud 或 NAS。",
+    "originNote": "WebDAV 連線是由 Termix 伺服器發出。",
+    "https": "HTTPS",
+    "httpsDesc": "僅在伺服器未啟用 HTTPS 時關閉此選項。",
+    "path": "路徑",
+    "pathHint": "WebDAV 在伺服器上的路徑。Nextcloud 使用 /remote.php/dav/files/<user>。留空表示根目錄。",
+    "anonymousNote": "無需登入即可連線。"
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "瀏覽此主機上的 Windows 或 Samba 共用資料夾。",
+    "originNote": "SMB 連線是由 Termix 伺服器發出。",
+    "share": "共用資源",
+    "domain": "網域或工作群組",
+    "limits": "使用 SMB 2 與 NTLMv2。目前尚不支援需要 SMB 3、加密或簽章的共用資源（例如預設設定下的 Windows 11 24H2）。",
+    "guestNote": "以無密碼的訪客身分連線。"
   }
 }

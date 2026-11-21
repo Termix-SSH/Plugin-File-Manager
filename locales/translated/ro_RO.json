@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Permite certificatul auto-semnat"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "Port WebDAV"
+      },
+      "webdavHttps": {
+        "label": "WebDAV prin HTTPS"
+      },
+      "webdavPath": {
+        "label": "Cale WebDAV"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Permite un certificat WebDAV semnat de sine stătător"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "Port SMB"
+      },
+      "smbShare": {
+        "label": "Resursă partajată SMB"
+      },
+      "smbDomain": {
+        "label": "Domeniu SMB"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Dimensiunea istoricului de foldere",
         "description": "Câte foldere își amintește panoul de fișiere pentru fiecare gazdă."
+      },
+      "openExternallyTypes": {
+        "label": "Deschide aceste tipuri de fișiere în afara Termix",
+        "description": "Doar pentru aplicația desktop. Extensii de fișiere, precum psd, jpg, pdf, care se deschid în editorul extern sau în aplicația sistemului când nu este ales niciunul, atunci când le deschizi. Separă-le prin virgule sau folosește * pentru toate fișierele."
       }
     }
   },
@@ -136,7 +167,6 @@
     "newFolder": "Dosar nou",
     "rename": "Redenumește",
     "uploading": "Se încarcă...",
-    "externalEditorTextOnly": "Doar fișierele text pot fi deschise extern, deoarece salvările sunt scrise înapoi ca text.",
     "uploadFilesDone": "{{done}} / {{total}} fișiere",
     "uploadingFile": "Se încarcă {{name}}...",
     "uploadingChunk": "Se încarcă {{name}}: {{percent}}% (partea {{chunk}} din {{total}})",
@@ -242,6 +272,9 @@
     "noSearchResults": "Nu s-au găsit rezultate pentru „{{query}}”",
     "searchFiles": "Căutați fișiere...",
     "upload": "Încărcare",
+    "lockChanges": "Blochează modificările",
+    "unlockChanges": "Deblochează modificările",
+    "lockedNotice": "Modificările sunt blocate. Deblochează-le din bara de instrumente pentru a edita fișierele aici.",
     "selectHostToStart": "Selectați un gazdă pentru a începe gestionarea fișierelor",
     "sshRequiredForFileManager": "Managerul de fișiere necesită SSH. Această gazdă nu are SSH activat.",
     "failedToConnect": "Conectarea la SSH a eșuat",
@@ -307,15 +340,15 @@
     "serverError": "Eroare server",
     "fileSavedSuccessfully": "Fișierul salvat cu succes",
     "failedToSaveFile": "Salvarea fișierului a eșuat",
-    "confirmDeleteSingleItem": "Sigur doriți să ștergeți definitiv \"{{name}}\"?",
-    "confirmDeleteMultipleItems_one": "Sigur dorești să ștergi definitiv {{count}} element?",
-    "confirmDeleteMultipleItems_few": "Sigur dorești să ștergi definitiv {{count}} elemente?",
-    "confirmDeleteMultipleItems_other": "Sigur dorești să ștergi definitiv {{count}} elemente?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Sigur dorești să ștergi definitiv {{count}} element? Acesta include un dosar și conținutul său.",
-    "confirmDeleteMultipleItemsWithFolders_few": "Sigur dorești să ștergi definitiv {{count}} elemente? Acestea includ dosare și conținutul lor.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Sigur dorești să ștergi definitiv {{count}} elemente? Acestea includ dosare și conținutul lor.",
-    "confirmDeleteFolder": "Sigur doriți să ștergeți definitiv folderul \"{{name}}\" și tot conținutul său?",
-    "moveToTrashWarning": "Elementele vor fi mutate în Coșul de gunoi Termix și pot fi restaurate înainte de expirarea perioadei de retenție.",
+    "confirmDeleteSingleItem": "Ștergi „{{name}}”?",
+    "confirmDeleteMultipleItems_one": "Ștergi {{count}} element?",
+    "confirmDeleteMultipleItems_few": "Ștergi {{count}} elemente?",
+    "confirmDeleteMultipleItems_other": "Ștergi {{count}} elemente?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Ștergi {{count}} element? Acesta include un dosar și conținutul său.",
+    "confirmDeleteMultipleItemsWithFolders_few": "Ștergi {{count}} elemente? Acestea includ dosare și conținutul lor.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Ștergi {{count}} elemente? Acestea includ dosare și conținutul lor.",
+    "confirmDeleteFolder": "Ștergi dosarul „{{name}}” și tot conținutul său?",
+    "moveToTrashWarning": "Fișierul este mutat în Coșul de gunoi Termix și poate fi restaurat până la expirarea perioadei de retenție.",
     "itemsMovedToTrash_one": "{{count}} element mutat în Coș",
     "itemsMovedToTrash_few": "{{count}} elemente mutate în Coș",
     "itemsMovedToTrash_other": "{{count}} elemente mutate în Coș",
@@ -537,7 +570,22 @@
     "openAsText": "Deschide ca text",
     "confirmOpenAsText": "Dorești să continui deschiderea acestui fișier ca text? Acest lucru poate încetini browserul.",
     "removeShortcutConfirm": "Elimini scurtătura {{name}}?",
-    "clearRecentConfirm": "Ștergi toate fișierele recente?"
+    "clearRecentConfirm": "Ștergi toate fișierele recente?",
+    "deletePermanently": "Șterge definitiv",
+    "deletePermanentlyWarning": "Fișierul este șters definitiv și nu poate fi restaurat.",
+    "moveToTrash": "Mută în Coșul de gunoi",
+    "askUsername": {
+      "title": "Autentificare ca",
+      "description": "{{host}} solicită un nume de utilizator de fiecare dată. Introduceți numele de utilizator cu care doriți să vă autentificați.",
+      "connect": "Conectează-te"
+    },
+    "protocol": "Protocol",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -755,5 +803,24 @@
     "username": "Nume utilizator",
     "password": "Parolă",
     "passwordSaved": "Parola a fost salvată, tastați pentru a o modifica"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Răsfoiește fișierele de pe acest gazdă prin WebDAV, precum Nextcloud, ownCloud sau un NAS.",
+    "originNote": "Conexiunile WebDAV sunt stabilite de pe serverul Termix.",
+    "https": "HTTPS",
+    "httpsDesc": "Dezactivează doar pentru un server care nu are HTTPS.",
+    "path": "Cale",
+    "pathHint": "Unde se află WebDAV pe server. Nextcloud folosește /remote.php/dav/files/<user>. Lasă gol pentru rădăcină.",
+    "anonymousNote": "Se conectează fără autentificare."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Răsfoiește o resursă partajată Windows sau Samba de pe această gazdă.",
+    "originNote": "Conexiunile SMB sunt stabilite de pe serverul Termix.",
+    "share": "Resursă partajată",
+    "domain": "Domeniu sau grup de lucru",
+    "limits": "Folosește SMB 2 cu NTLMv2. Resursele partajate care necesită SMB 3, criptare sau semnare, precum Windows 11 24H2 implicit, nu sunt încă suportate.",
+    "guestNote": "Se conectează ca oaspete, fără parolă."
   }
 }

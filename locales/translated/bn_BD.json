@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "স্ব-স্বাক্ষরিত সার্টিফিকেট অনুমোদন করুন"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV পোর্ট"
+      },
+      "webdavHttps": {
+        "label": "HTTPS এর মাধ্যমে WebDAV"
+      },
+      "webdavPath": {
+        "label": "WebDAV পাথ"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "সেলফ-সাইনড WebDAV সার্টিফিকেট অনুমোদন করুন"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB পোর্ট"
+      },
+      "smbShare": {
+        "label": "SMB শেয়ার"
+      },
+      "smbDomain": {
+        "label": "SMB ডোমেইন"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "ফোল্ডার ইতিহাসের আকার",
         "description": "প্রতিটি হোস্টের জন্য ফাইল প্যানেল কতগুলো ফোল্ডার মনে রাখবে।"
+      },
+      "openExternallyTypes": {
+        "label": "এই ফাইল টাইপগুলো Termix এর বাইরে খুলুন",
+        "description": "শুধুমাত্র ডেস্কটপ অ্যাপের জন্য। psd, jpg, pdf এর মতো ফাইল এক্সটেনশন, যা আপনি খোলার সময় আপনার বাহ্যিক এডিটরে বা কোনোটি নির্বাচন না করলে সিস্টেম অ্যাপে খুলবে। এগুলো কমা দিয়ে আলাদা করুন, অথবা প্রতিটি ফাইলের জন্য * ব্যবহার করুন।"
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "নতুন ফোল্ডার",
     "rename": "নাম পরিবর্তন",
     "uploading": "আপলোড করা হচ্ছে...",
-    "externalEditorTextOnly": "শুধুমাত্র টেক্সট ফাইল বাইরে থেকে খোলা যায়, কারণ সেভ করা ডেটা টেক্সট হিসেবেই লেখা হয়।",
     "uploadFilesDone": "{{done}} / {{total}} ফাইল",
     "uploadingFile": "{{name}} আপলোড করা হচ্ছে...",
     "uploadingChunk": "{{name}} আপলোড করা হচ্ছে: {{percent}}% ({{total}} এর মধ্যে {{chunk}} অংশ)",
@@ -227,6 +257,9 @@
     "noSearchResults": "\"{{query}}\" এর জন্য কোনো ফলাফল পাওয়া যায়নি",
     "searchFiles": "ফাইল খুঁজুন...",
     "upload": "আপলোড",
+    "lockChanges": "পরিবর্তন লক করুন",
+    "unlockChanges": "পরিবর্তন আনলক করুন",
+    "lockedNotice": "পরিবর্তন লক করা আছে। এখানে ফাইল সম্পাদনা করতে টুলবার থেকে এটি আনলক করুন।",
     "selectHostToStart": "ফাইল ম্যানেজমেন্ট শুরু করতে একটি হোস্ট নির্বাচন করুন",
     "sshRequiredForFileManager": "ফাইল ম্যানেজারের জন্য SSH প্রয়োজন। এই হোস্টে SSH সক্রিয় নেই।",
     "failedToConnect": "SSH-এ সংযোগ করতে ব্যর্থ হয়েছে",
@@ -284,13 +317,13 @@
     "serverError": "সার্ভার ত্রুটি",
     "fileSavedSuccessfully": "ফাইল সফলভাবে সংরক্ষিত হয়েছে",
     "failedToSaveFile": "ফাইল সংরক্ষণ করতে ব্যর্থ হয়েছে",
-    "confirmDeleteSingleItem": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" স্থায়ীভাবে মুছে ফেলতে চান?",
-    "confirmDeleteMultipleItems_one": "আপনি কি নিশ্চিত যে আপনি {{count}} আইটেম স্থায়ীভাবে মুছে ফেলতে চান?",
-    "confirmDeleteMultipleItems_other": "আপনি কি নিশ্চিত যে আপনি {{count}} আইটেম স্থায়ীভাবে মুছে ফেলতে চান?",
-    "confirmDeleteMultipleItemsWithFolders_one": "আপনি কি নিশ্চিত যে আপনি {{count}} আইটেম স্থায়ীভাবে মুছে ফেলতে চান? এতে একটি ফোল্ডার এবং এর বিষয়বস্তু অন্তর্ভুক্ত।",
-    "confirmDeleteMultipleItemsWithFolders_other": "আপনি কি নিশ্চিত যে আপনি {{count}} আইটেম স্থায়ীভাবে মুছে ফেলতে চান? এতে ফোল্ডার এবং তাদের বিষয়বস্তু অন্তর্ভুক্ত।",
-    "confirmDeleteFolder": "আপনি কি নিশ্চিত যে আপনি ফোল্ডার \"{{name}}\" এবং এর সমস্ত বিষয়বস্তু স্থায়ীভাবে মুছে ফেলতে চান?",
-    "moveToTrashWarning": "আইটেম(গুলি) Termix ট্র্যাশে সরানো হবে এবং সংরক্ষণের সময়সীমা শেষ হওয়ার আগে পুনরুদ্ধার করা যাবে।",
+    "confirmDeleteSingleItem": "\"{{name}}\" মুছে ফেলবেন?",
+    "confirmDeleteMultipleItems_one": "{{count}}টি আইটেম মুছে ফেলবেন?",
+    "confirmDeleteMultipleItems_other": "{{count}}টি আইটেম মুছে ফেলবেন?",
+    "confirmDeleteMultipleItemsWithFolders_one": "{{count}}টি আইটেম মুছে ফেলবেন? এতে একটি ফোল্ডার এবং এর বিষয়বস্তু অন্তর্ভুক্ত।",
+    "confirmDeleteMultipleItemsWithFolders_other": "{{count}}টি আইটেম মুছে ফেলবেন? এতে ফোল্ডার এবং তাদের বিষয়বস্তু অন্তর্ভুক্ত।",
+    "confirmDeleteFolder": "ফোল্ডার \"{{name}}\" এবং এর সমস্ত বিষয়বস্তু মুছে ফেলবেন?",
+    "moveToTrashWarning": "এটি Termix ট্র্যাশে যাবে এবং রিটেনশন পিরিয়ড শেষ হওয়া পর্যন্ত পুনরুদ্ধার করা যাবে।",
     "itemsMovedToTrash_one": "{{count}} আইটেম ট্র্যাশে সরানো হয়েছে",
     "itemsMovedToTrash_other": "{{count}} আইটেম ট্র্যাশে সরানো হয়েছে",
     "deletingItems": "মুছে ফেলা হচ্ছে: {{done}} / {{total}}। পেস্ট বা আপলোড করার আগে এটি শেষ হওয়া পর্যন্ত অপেক্ষা করুন।",
@@ -501,7 +534,22 @@
     "openAsText": "টেক্সট হিসেবে খুলুন",
     "confirmOpenAsText": "আপনি কি এই ফাইলটি টেক্সট হিসেবে খুলতে চান? এটি আপনার ব্রাউজারকে ধীর করে দিতে পারে।",
     "removeShortcutConfirm": "শর্টকাট {{name}} মুছে ফেলবেন?",
-    "clearRecentConfirm": "সব সাম্প্রতিক ফাইল মুছে ফেলবেন?"
+    "clearRecentConfirm": "সব সাম্প্রতিক ফাইল মুছে ফেলবেন?",
+    "deletePermanently": "স্থায়ীভাবে মুছে ফেলুন",
+    "deletePermanentlyWarning": "এটি স্থায়ীভাবে মুছে ফেলা হবে এবং পুনরুদ্ধার করা যাবে না।",
+    "moveToTrash": "ট্রাশে সরান",
+    "askUsername": {
+      "title": "লগইন করুন",
+      "description": "{{host}} প্রতিবার ব্যবহারকারীর নাম চায়। লগইন করার জন্য ব্যবহারকারীর নামটি লিখুন।",
+      "connect": "সংযোগ করুন"
+    },
+    "protocol": "প্রোটোকল",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "ব্যবহারকারীর নাম",
     "password": "পাসওয়ার্ড",
     "passwordSaved": "পাসওয়ার্ড সংরক্ষিত, পরিবর্তন করতে টাইপ করুন"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Nextcloud, ownCloud বা NAS-এর মতো এই হোস্টে WebDAV-এর মাধ্যমে ফাইল ব্রাউজ করুন।",
+    "originNote": "WebDAV সংযোগ Termix সার্ভার থেকে স্থাপন করা হয়।",
+    "https": "HTTPS",
+    "httpsDesc": "শুধুমাত্র সেই সার্ভারের জন্য বন্ধ করুন যেখানে HTTPS নেই।",
+    "path": "পথ",
+    "pathHint": "সার্ভারে WebDAV কোথায় অবস্থিত। Nextcloud ব্যবহার করে /remote.php/dav/files/<user>। রুটের জন্য খালি রাখুন।",
+    "anonymousNote": "লগইন ছাড়াই সংযোগ স্থাপন করে।"
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "এই হোস্টে একটি Windows বা Samba শেয়ার ব্রাউজ করুন।",
+    "originNote": "SMB সংযোগগুলো Termix সার্ভার থেকে স্থাপিত হয়।",
+    "share": "শেয়ার",
+    "domain": "ডোমেইন বা ওয়ার্কগ্রুপ",
+    "limits": "এটি NTLMv2 সহ SMB 2 ব্যবহার করে। ডিফল্টভাবে উইন্ডোজ ১১ ২৪H2-এর মতো যেসব শেয়ারে SMB 3, এনক্রিপশন বা সাইনিংয়ের প্রয়োজন হয়, সেগুলো এখনো সমর্থিত নয়।",
+    "guestNote": "কোনো পাসওয়ার্ড ছাড়া গেস্ট হিসেবে সংযোগ স্থাপন করে।"
   }
 }

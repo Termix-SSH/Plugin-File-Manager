@@ -18,6 +18,7 @@ import type { SSHHost } from "../host-types";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { fileManagerApi } from "../api/client";
 import { subscribeLocalEvents } from "../lib/local-events";
+import { isEditLocked, useEditLocked } from "../lib/edit-lock";
 
 interface FileItem {
   name: string;
@@ -88,6 +89,7 @@ export function FileWindow({
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
+  const editLocked = useEditLocked(sshHost?.id);
   // null means no unsaved edit, so an emptied file still counts as a change.
   const [pendingContent, setPendingContent] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState(0);
@@ -325,6 +327,10 @@ export function FileWindow({
   };
 
   const handleSave = async (newContent: string, auto = false) => {
+    if (isEditLocked(sshHost?.id)) {
+      if (!auto) toast.info(t("fileManager.lockedNotice"));
+      return;
+    }
     try {
       setIsSaving(true);
 
@@ -605,7 +611,7 @@ export function FileWindow({
         isSaving={isSaving}
         resetKey={resetKey}
         onRevert={handleRevert}
-        isEditable={isEditable}
+        isEditable={isEditable && !editLocked}
         onContentChange={handleContentChange}
         onSave={(newContent) => handleSave(newContent)}
         onDownload={handleDownload}

@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "Tillåt självsignerat certifikat"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV-port"
+      },
+      "webdavHttps": {
+        "label": "WebDAV över HTTPS"
+      },
+      "webdavPath": {
+        "label": "WebDAV-sökväg"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "Tillåt ett självsignerat WebDAV-certifikat"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB-port"
+      },
+      "smbShare": {
+        "label": "SMB-delning"
+      },
+      "smbDomain": {
+        "label": "SMB-domän"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "Storlek på mapphistorik",
         "description": "Hur många mappar filsfältet kommer ihåg för varje värd."
+      },
+      "openExternallyTypes": {
+        "label": "Öppna dessa filtyper utanför Termix",
+        "description": "Endast skrivbordsappen. Filtillägg, som psd, jpg, pdf, som öppnas i din externa redigerare eller i systemets app om ingen är vald, när du öppnar dem. Separera dem med kommatecken eller använd * för alla filer."
       }
     }
   },
@@ -133,7 +164,6 @@
     "newFolder": "Ny mapp",
     "rename": "Byt namn",
     "uploading": "Laddar upp...",
-    "externalEditorTextOnly": "Endast textfiler kan öppnas externt, eftersom sparade ändringar skrivs tillbaka som text.",
     "uploadFilesDone": "{{done}} / {{total}} filer",
     "uploadingFile": "Laddar upp {{name}}...",
     "uploadingChunk": "Laddar upp {{name}}: {{percent}}% (del {{chunk}} av {{total}})",
@@ -227,6 +257,9 @@
     "noSearchResults": "Inga resultat hittades för \"{{query}}\"",
     "searchFiles": "Sök efter filer...",
     "upload": "Ladda upp",
+    "lockChanges": "Lås ändringar",
+    "unlockChanges": "Lås upp ändringar",
+    "lockedNotice": "Ändringar är låsta. Lås upp dem i verktygsfältet för att redigera filer här.",
     "selectHostToStart": "Välj en värd för att starta filhanteraren",
     "sshRequiredForFileManager": "Filhanteraren kräver SSH. Denna värd har inte SSH aktiverat.",
     "failedToConnect": "Misslyckades att ansluta till SSH",
@@ -284,13 +317,13 @@
     "serverError": "Serverfel",
     "fileSavedSuccessfully": "Filen sparades",
     "failedToSaveFile": "Misslyckades att spara fil",
-    "confirmDeleteSingleItem": "Är du säker på att du vill ta bort \"{{name}}\" permanent?",
-    "confirmDeleteMultipleItems_one": "Är du säker på att du vill ta bort {{count}} objekt permanent?",
-    "confirmDeleteMultipleItems_other": "Är du säker på att du vill ta bort {{count}} objekt permanent?",
-    "confirmDeleteMultipleItemsWithFolders_one": "Är du säker på att du vill ta bort {{count}} objekt permanent? Detta inkluderar en mapp och dess innehåll.",
-    "confirmDeleteMultipleItemsWithFolders_other": "Är du säker på att du vill ta bort {{count}} objekt permanent? Detta inkluderar mappar och deras innehåll.",
-    "confirmDeleteFolder": "Är du säker på att du vill ta bort mappen \"{{name}}\" och allt dess innehåll permanent?",
-    "moveToTrashWarning": "Objektet/objekten flyttas till Termix-papperskorgen och kan återställas innan behållstiden löper ut.",
+    "confirmDeleteSingleItem": "Ta bort \"{{name}}\"?",
+    "confirmDeleteMultipleItems_one": "Ta bort {{count}} objekt?",
+    "confirmDeleteMultipleItems_other": "Ta bort {{count}} objekt?",
+    "confirmDeleteMultipleItemsWithFolders_one": "Ta bort {{count}} objekt? Detta inkluderar en mapp och dess innehåll.",
+    "confirmDeleteMultipleItemsWithFolders_other": "Ta bort {{count}} objekt? Detta inkluderar mappar och deras innehåll.",
+    "confirmDeleteFolder": "Ta bort mappen \"{{name}}\" och allt dess innehåll?",
+    "moveToTrashWarning": "Det flyttas till Termix-papperskorgen och kan återställas tills behållstiden går ut.",
     "itemsMovedToTrash_one": "{{count}} objekt flyttat till Papperskorgen",
     "itemsMovedToTrash_other": "{{count}} objekt flyttade till Papperskorgen",
     "deletingItems": "Raderar: {{done}} / {{total}}. Vänta tills det är klart innan du klistrar in eller laddar upp.",
@@ -501,7 +534,22 @@
     "openAsText": "Öppna som text",
     "confirmOpenAsText": "Vill du fortsätta att öppna den här filen som text? Det kan sänka prestandan i din webbläsare.",
     "removeShortcutConfirm": "Ta bort genvägen {{name}}?",
-    "clearRecentConfirm": "Rensa alla senaste filer?"
+    "clearRecentConfirm": "Rensa alla senaste filer?",
+    "deletePermanently": "Ta bort permanent",
+    "deletePermanentlyWarning": "Det raderas permanent och kan inte återställas.",
+    "moveToTrash": "Flytta till papperskorgen",
+    "askUsername": {
+      "title": "Logga in som",
+      "description": "{{host}} ber om ett användarnamn varje gång. Ange det du vill logga in som.",
+      "connect": "Anslut"
+    },
+    "protocol": "Protokoll",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -712,5 +760,24 @@
     "username": "Användarnamn",
     "password": "Lösenord",
     "passwordSaved": "Lösenordet har sparats, skriv för att ändra"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Bläddra bland filer på denna värd via WebDAV, som Nextcloud, ownCloud eller en NAS.",
+    "originNote": "WebDAV-anslutningar görs från Termix-servern.",
+    "https": "HTTPS",
+    "httpsDesc": "Stäng av endast för en server som inte har HTTPS.",
+    "path": "Sökväg",
+    "pathHint": "Var WebDAV finns på servern. Nextcloud använder /remote.php/dav/files/<user>. Lämna tomt för roten.",
+    "anonymousNote": "Ansluter utan inloggning."
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "Bläddra bland en Windows- eller Samba-delning på denna värd.",
+    "originNote": "SMB-anslutningar görs från Termix-servern.",
+    "share": "Delning",
+    "domain": "Domän eller arbetsgrupp",
+    "limits": "Använder SMB 2 med NTLMv2. Delningar som kräver SMB 3, kryptering eller signering, som Windows 11 24H2 som standard, stöds inte ännu.",
+    "guestNote": "Ansluter som gäst utan lösenord."
   }
 }

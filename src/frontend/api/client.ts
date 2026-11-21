@@ -73,27 +73,38 @@ export function setSessionOrigin(
 
 export function clearSessionOrigin(sessionId: string): void {
   sessionOrigins.delete(sessionId);
-  ftpSessions.delete(sessionId);
+  remoteSessions.delete(sessionId);
 }
 
 export function getSessionOrigin(sessionId: string): "local" | "remote" {
   return sessionOrigins.get(sessionId) === "remote" ? "remote" : "local";
 }
 
-// Sessions opened over FTP talk to the /ftp routes of the same plugin API.
-const ftpSessions = new Set<string>();
+// Sessions opened over FTP, WebDAV or SMB talk to that protocol's routes,
+// like /ftp/listFiles, on the same plugin API.
+const remoteSessions = new Map<string, string>();
+
+export function setSessionProtocol(
+  sessionId: string,
+  protocol: string | null,
+): void {
+  if (protocol && protocol !== "sftp") remoteSessions.set(sessionId, protocol);
+  else remoteSessions.delete(sessionId);
+}
 
 export function setSessionFtp(sessionId: string, ftp: boolean): void {
-  if (ftp) ftpSessions.add(sessionId);
-  else ftpSessions.delete(sessionId);
+  setSessionProtocol(sessionId, ftp ? "ftp" : null);
 }
 
 export function isFtpSession(sessionId: string): boolean {
-  return ftpSessions.has(sessionId);
+  return remoteSessions.has(sessionId);
 }
 
-function ftpClient(base: FileManagerClient): FileManagerClient {
-  const at = (url: string) => `/ftp${url}`;
+function remoteClient(
+  base: FileManagerClient,
+  protocol: string,
+): FileManagerClient {
+  const at = (url: string) => `/${protocol}${url}`;
   return {
     get: (url, config) => base.get(at(url), config),
     delete: (url, config) => base.delete(at(url), config),
@@ -110,7 +121,8 @@ export function getFileManagerApiForSession(
   const base = app().apiFor(
     getSessionOrigin(sessionId),
   ) as unknown as FileManagerClient;
-  return ftpSessions.has(sessionId) ? ftpClient(base) : base;
+  const protocol = remoteSessions.get(sessionId);
+  return protocol ? remoteClient(base, protocol) : base;
 }
 
 function fileManagerApiFor(

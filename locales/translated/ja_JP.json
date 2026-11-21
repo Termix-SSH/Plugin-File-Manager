@@ -38,6 +38,33 @@
       },
       "ftpAllowSelfSigned": {
         "label": "自己署名証明書を許可する"
+      },
+      "enableWebdav": {
+        "label": "WebDAV"
+      },
+      "webdavPort": {
+        "label": "WebDAV ポート"
+      },
+      "webdavHttps": {
+        "label": "HTTPS 経由の WebDAV"
+      },
+      "webdavPath": {
+        "label": "WebDAV パス"
+      },
+      "webdavAllowSelfSigned": {
+        "label": "自己署名 WebDAV 証明書を許可する"
+      },
+      "enableSmb": {
+        "label": "SMB"
+      },
+      "smbPort": {
+        "label": "SMB ポート"
+      },
+      "smbShare": {
+        "label": "SMB シェア"
+      },
+      "smbDomain": {
+        "label": "SMB ドメイン"
       }
     },
     "user": {
@@ -79,6 +106,10 @@
       "companionHistorySize": {
         "label": "フォルダ履歴のサイズ",
         "description": "各ホストごとにファイルパネルが記憶するフォルダの数です。"
+      },
+      "openExternallyTypes": {
+        "label": "これらのファイルタイプを Termix 外で開く",
+        "description": "デスクトップアプリのみ。外部エディタや、選択されていない場合はシステムアプリで開くファイル拡張子（例：psd, jpg, pdf）を指定します。カンマで区切り、すべてのファイルに適用する場合は * を使用します。"
       }
     }
   },
@@ -130,7 +161,6 @@
     "newFolder": "新規フォルダ",
     "rename": "名前を変更",
     "uploading": "アップロード中...",
-    "externalEditorTextOnly": "保存はテキストとして書き込まれるため、テキストファイルのみ外部で開くことができます。",
     "uploadFilesDone": "{{done}} / {{total}} ファイル",
     "uploadingFile": "{{name}} をアップロード中...",
     "uploadingChunk": "{{name}} のアップロード中: {{percent}}% ({{total}} 件中 {{chunk}} 件目)",
@@ -212,6 +242,9 @@
     "noSearchResults": "「{{query}}」の検索結果はありません",
     "searchFiles": "ファイルを検索...",
     "upload": "アップロード",
+    "lockChanges": "変更をロック",
+    "unlockChanges": "変更のロックを解除",
+    "lockedNotice": "変更はロックされています。ここでファイルを編集するには、ツールバーでロックを解除してください。",
     "selectHostToStart": "ファイル管理を開始するにはホストを選択してください",
     "sshRequiredForFileManager": "ファイルマネージャーにはSSHが必要です。このホストではSSHが有効になっていません。",
     "failedToConnect": "SSHへの接続に失敗しました",
@@ -261,11 +294,11 @@
     "serverError": "サーバーエラー",
     "fileSavedSuccessfully": "ファイルを正常に保存しました",
     "failedToSaveFile": "ファイルの保存に失敗しました",
-    "confirmDeleteSingleItem": "「{{name}}」を完全に削除してもよろしいですか？",
-    "confirmDeleteMultipleItems_other": "{{count}} 個のアイテムを完全に削除してもよろしいですか？",
-    "confirmDeleteMultipleItemsWithFolders_other": "{{count}} 個のアイテムを完全に削除してもよろしいですか？これにはフォルダとその内容が含まれます。",
-    "confirmDeleteFolder": "フォルダ「{{name}}」とそのすべての内容を完全に削除してもよろしいですか？",
-    "moveToTrashWarning": "アイテムはTermixのゴミ箱に移動され、保持期間が経過する前に復元できます。",
+    "confirmDeleteSingleItem": "「{{name}}」を削除しますか？",
+    "confirmDeleteMultipleItems_other": "{{count}} 個のアイテムを削除しますか？",
+    "confirmDeleteMultipleItemsWithFolders_other": "{{count}} 個のアイテムを削除しますか？これにはフォルダとその内容が含まれます。",
+    "confirmDeleteFolder": "フォルダ「{{name}}」とそのすべての内容を削除しますか？",
+    "moveToTrashWarning": "Termix のゴミ箱に移動し、保持期間が終了するまで復元できます。",
     "itemsMovedToTrash_other": "{{count}} 個のアイテムをゴミ箱に移動しました",
     "deletingItems": "削除中: {{done}} / {{total}}。貼り付けやアップロードする前に完了を待ってください。",
     "movingToTrash": "ゴミ箱へ移動中: {{done}} / {{total}}。貼り付けやアップロードする前に完了を待ってください。",
@@ -465,7 +498,22 @@
     "openAsText": "テキストとして開く",
     "confirmOpenAsText": "このファイルをテキストとして開き続けますか？ブラウザの動作が遅くなる可能性があります。",
     "removeShortcutConfirm": "ショートカット「{{name}}」を削除しますか？",
-    "clearRecentConfirm": "最近のファイルをすべてクリアしますか？"
+    "clearRecentConfirm": "最近のファイルをすべてクリアしますか？",
+    "deletePermanently": "完全に削除",
+    "deletePermanentlyWarning": "完全に削除され、復元できません。",
+    "moveToTrash": "ゴミ箱に移動",
+    "askUsername": {
+      "title": "ログインユーザー",
+      "description": "{{host}} は毎回ユーザー名を求めます。ログインするユーザー名を入力してください。",
+      "connect": "接続"
+    },
+    "protocol": "プロトコル",
+    "protocols": {
+      "sftp": "SFTP",
+      "ftp": "FTP",
+      "webdav": "WebDAV",
+      "smb": "SMB"
+    }
   },
   "sftpTransfer": {
     "title": "SFTP",
@@ -669,5 +717,24 @@
     "username": "ユーザー名",
     "password": "パスワード",
     "passwordSaved": "パスワードが保存されました。変更するには入力してください"
+  },
+  "webdav": {
+    "title": "WebDAV",
+    "description": "Nextcloud、ownCloud、NAS などの WebDAV を介して、このホスト上のファイルを閲覧します。",
+    "originNote": "WebDAV 接続は Termix サーバーから行われます。",
+    "https": "HTTPS",
+    "httpsDesc": "HTTPS をサポートしていないサーバーの場合のみオフにしてください。",
+    "path": "パス",
+    "pathHint": "サーバー上の WebDAV の場所。Nextcloud では /remote.php/dav/files/<user> を使用します。ルートの場合は空のままにします。",
+    "anonymousNote": "ログインなしで接続します。"
+  },
+  "smb": {
+    "title": "SMB",
+    "description": "このホスト上の Windows または Samba シェアを閲覧します。",
+    "originNote": "SMB 接続は Termix サーバーから行われます。",
+    "share": "シェア",
+    "domain": "ドメインまたはワークグループ",
+    "limits": "NTLMv2 を使用した SMB 2 を使用します。Windows 11 24H2 のデフォルト設定など、SMB 3、暗号化、または署名を必要とするシェアは、まだサポートされていません。",
+    "guestNote": "パスワードなしでゲストとして接続します。"
   }
 }
