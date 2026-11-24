@@ -1310,14 +1310,16 @@ export async function activate(ctx: PluginContext) {
     port: number,
   ): Promise<void> {
     try {
-      const host = await ctx.hosts.get(hostId);
-      await ctx.asUser(userId, () =>
-        ctx.hosts.recordActivity(
+      // Runs after the connection is set up, outside the request, so every
+      // ctx.hosts call needs the user made explicit.
+      await ctx.asUser(userId, async () => {
+        const host = await ctx.hosts.get(hostId);
+        await ctx.hosts.recordActivity(
           hostId,
           "file_manager",
           host?.name || `${username}@${ip}:${port}`,
-        ),
-      );
+        );
+      });
     } catch (error) {
       fileLogger.warn("Failed to log file manager activity", {
         operation: "activity_log_error",
