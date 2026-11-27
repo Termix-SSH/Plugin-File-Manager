@@ -729,6 +729,15 @@
     "info": {
       "title": "File info"
     },
+    "read": {
+      "title": "Read a text file",
+      "description": "Returns the text of a file on the host. Files over 256 KB are refused."
+    },
+    "write": {
+      "title": "Write a text file",
+      "description": "Saves text to a file on the host, replacing what was there. The folder must exist.",
+      "content": "Content"
+    },
     "mkdir": {
       "title": "Make folder"
     },

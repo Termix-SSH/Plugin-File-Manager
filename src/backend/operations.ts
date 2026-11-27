@@ -24,6 +24,9 @@ function deletable(value: unknown): string {
   return path;
 }
 
+// The reader is often a model, so a file has to fit in what it can take.
+const MAX_READ_BYTES = 256 * 1024;
+
 /** File actions that need no open session. */
 export function registerOperations(
   ctx: PluginContext,
@@ -64,6 +67,32 @@ export function registerOperations(
           modified: new Date(stats.mtime * 1000).toISOString(),
         },
       };
+    },
+  });
+
+  ctx.operations.register("file-manager.read-file", {
+    run: async (input, context) => {
+      const path = cleanPath(input.path);
+      const hostId = requireHost(context);
+      const stats = await files.stat(hostId, path);
+      if (stats.isDirectory) throw new Error(`${path} is a folder`);
+      if (stats.size > MAX_READ_BYTES) {
+        throw new Error(
+          `${path} is ${stats.size} bytes, over the ${MAX_READ_BYTES} this reads`,
+        );
+      }
+      const content = await files.read(hostId, path);
+      return { summary: `Read ${path}`, data: { content } };
+    },
+  });
+
+  ctx.operations.register("file-manager.write-file", {
+    describe: (input) =>
+      `Would write ${Buffer.byteLength(String(input.content))} bytes to ${cleanPath(input.path)}`,
+    run: async (input, context) => {
+      const path = cleanPath(input.path);
+      await files.write(requireHost(context), path, String(input.content));
+      return { summary: `Wrote ${path}`, changed: true };
     },
   });
 

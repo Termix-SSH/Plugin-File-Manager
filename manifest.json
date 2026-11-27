@@ -393,6 +393,59 @@
           }
         },
         {
+          "id": "file-manager.read-file",
+          "titleKey": "operations.read.title",
+          "descriptionKey": "operations.read.description",
+          "icon": "FileText",
+          "scope": "host",
+          "risk": "read",
+          "permission": "use",
+          "hostAccess": "connect",
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true
+            }
+          ],
+          "surfaces": {
+            "assistant": true,
+            "mcp": true,
+            "palette": false
+          }
+        },
+        {
+          "id": "file-manager.write-file",
+          "titleKey": "operations.write.title",
+          "descriptionKey": "operations.write.description",
+          "icon": "FilePen",
+          "scope": "host",
+          "risk": "change",
+          "permission": "use",
+          "hostAccess": "edit",
+          "dryRun": "describe",
+          "inputs": [
+            {
+              "key": "path",
+              "type": "string",
+              "labelKey": "operations.path",
+              "required": true
+            },
+            {
+              "key": "content",
+              "type": "textarea",
+              "labelKey": "operations.write.content",
+              "required": true
+            }
+          ],
+          "surfaces": {
+            "assistant": true,
+            "mcp": true,
+            "palette": false
+          }
+        },
+        {
           "id": "file-manager.make-folder",
           "titleKey": "operations.mkdir.title",
           "icon": "FolderPlus",
