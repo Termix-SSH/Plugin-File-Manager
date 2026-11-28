@@ -4020,7 +4020,7 @@ function FileManagerContent({
 
   const filteredFiles = useMemo(
     () => filterAndSortFiles(files, searchQuery, sortBy, sortOrder, dirSizes),
-    [files, searchQuery, sortBy, sortOrder],
+    [files, searchQuery, sortBy, sortOrder, dirSizes],
   );
 
   if (!currentHost) {
