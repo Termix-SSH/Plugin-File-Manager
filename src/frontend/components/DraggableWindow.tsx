@@ -5,6 +5,7 @@ import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 
 interface DraggableWindowProps {
   title: string;
+  label?: string;
   children: React.ReactNode;
   initialX?: number;
   initialY?: number;
@@ -25,6 +26,7 @@ interface DraggableWindowProps {
 
 export function DraggableWindow({
   title,
+  label,
   children,
   initialX = 100,
   initialY = 100,
@@ -283,7 +285,7 @@ export function DraggableWindow({
       >
         <div className="flex items-center gap-3 flex-1 overflow-hidden">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-brand shrink-0">
-            {t("fileManager.editor")}
+            {label ?? t("fileManager.editor")}
           </span>
           <div className="h-4 w-px bg-border/50 shrink-0" />
           <span className="text-[10px] font-bold tracking-tight text-muted-foreground truncate">

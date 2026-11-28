@@ -28,11 +28,18 @@ import {
   FileSymlink,
   Move,
   GitCompare,
+  Loader2,
 } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import type { FileItem } from "./host-types";
 import type { CreateIntent } from "./file-manager-types.ts";
 import { formatFileSize } from "./file-manager-utils.ts";
+
+function DirSize({ v }: { v: number | null | undefined }) {
+  if (v === undefined)
+    return <Loader2 className="inline h-3 w-3 animate-spin" />;
+  return <>{v === null ? "-" : formatFileSize(v)}</>;
+}
 import {
   beginRemoteFilesDrag,
   isLocalFilesDrag,
@@ -122,7 +129,8 @@ interface FileManagerGridProps {
   onUndo?: () => void;
   onFileDrop?: (draggedFiles: FileItem[], targetFile: FileItem) => void;
   onFileDiff?: (file1: FileItem, file2: FileItem) => void;
-  onSystemDragStart?: (files: FileItem[]) => void;
+  onSystemDragStart?: (files: FileItem[]) => boolean | void;
+  dirSizes?: Record<string, number | null>;
   onSystemPrefetch?: (files: FileItem[]) => void;
   onSystemDragEnd?: (e: DragEvent, files: FileItem[]) => void;
   hasClipboard?: boolean;
@@ -269,6 +277,7 @@ export function FileManagerGrid({
   onSystemDragEnd,
   onSystemPrefetch,
   onSystemDragStart,
+  dirSizes,
   hasClipboard,
   createIntent,
   onConfirmCreate,
@@ -467,6 +476,12 @@ export function FileManagerGrid({
   const handleFileDragStart = (e: React.DragEvent, file: FileItem) => {
     const filesToDrag = selectedFiles.includes(file) ? selectedFiles : [file];
 
+    // Electron only honours startDrag when the HTML5 drag is cancelled.
+    if (onSystemDragStart?.(filesToDrag) === true) {
+      e.preventDefault();
+      return;
+    }
+
     setDragState({
       type: "internal",
       files: filesToDrag,
@@ -479,7 +494,6 @@ export function FileManagerGrid({
       e.dataTransfer,
       filesToDrag.map((f) => f.path),
     );
-    onSystemDragStart?.(filesToDrag);
   };
 
   const prefetchFor = (file: FileItem) => {
@@ -1371,10 +1385,11 @@ export function FileManagerGrid({
                               title={file.name}
                               onMouseDown={() => prefetchFor(file)}
                               onClick={(e) => handleFileClick(file, e)}
-                              onMouseEnter={() =>
-                                file.type === "directory" &&
-                                onDirectoryHover?.(file)
-                              }
+                              onMouseEnter={() => {
+                                if (file.type === "directory")
+                                  onDirectoryHover?.(file);
+                                else prefetchFor(file);
+                              }}
                               onMouseLeave={() =>
                                 file.type === "directory" &&
                                 onDirectoryLeave?.(file)
@@ -1426,6 +1441,12 @@ export function FileManagerGrid({
                                   file.size !== null && (
                                     <p className="text-[10px] font-medium text-muted-foreground/60 mt-0.5">
                                       {formatFileSize(file.size)}
+                                    </p>
+                                  )}
+                                {file.type === "directory" &&
+                                  typeof dirSizes?.[file.path] === "number" && (
+                                    <p className="text-[10px] font-medium text-muted-foreground/60 mt-0.5">
+                                      {formatFileSize(dirSizes[file.path]!)}
                                     </p>
                                   )}
                                 {file.type === "link" && file.linkTarget && (
@@ -1668,9 +1689,13 @@ export function FileManagerGrid({
                           <span className="text-[10px] text-right text-muted-foreground tabular-nums pointer-events-none truncate">
                             {file.type === "file" &&
                             file.size !== undefined &&
-                            file.size !== null
-                              ? formatFileSize(file.size)
-                              : "-"}
+                            file.size !== null ? (
+                              formatFileSize(file.size)
+                            ) : file.type === "directory" ? (
+                              <DirSize v={dirSizes?.[file.path]} />
+                            ) : (
+                              "-"
+                            )}
                           </span>
                         )}
 

@@ -8,6 +8,7 @@ export function filterAndSortFiles(
   searchQuery: string,
   sortBy: SortBy,
   sortOrder: "asc" | "desc",
+  dirSizes: Record<string, number | null> = {},
 ): FileItem[] {
   const q = searchQuery.toLowerCase();
   const collator = new Intl.Collator(undefined, {
@@ -34,7 +35,10 @@ export function filterAndSortFiles(
           result = (a.modifiedTimestamp || 0) - (b.modifiedTimestamp || 0);
           break;
         case "size":
-          result = (a.size || 0) - (b.size || 0);
+          result =
+            a.type === "directory"
+              ? (dirSizes[a.path] ?? 0) - (dirSizes[b.path] ?? 0)
+              : (a.size || 0) - (b.size || 0);
           break;
       }
       return sortOrder === "desc" ? -result : result;
