@@ -45,11 +45,14 @@ import { FileWindow } from "./components/FileWindow.tsx";
 import { DownloadProgressToast } from "./components/DownloadProgressToast.tsx";
 import { UploadProgressToast } from "./components/UploadProgressToast.tsx";
 import { DiffWindow } from "./components/DiffWindow.tsx";
+import { PropertiesWindow } from "./components/PropertiesWindow.tsx";
+import { getDirectorySizes } from "./api/properties-api";
 import { useDragToDesktop } from "./hooks/useDragToDesktop";
 import { useDragToSystemDesktop } from "./hooks/useDragToSystemDesktop";
 import { useNativeDragOut } from "./hooks/useNativeDragOut";
 import { useConfirm } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
+import { getLocalHome } from "./lib/local-files";
 import { isEditLocked, setEditLocked, useEditLocked } from "./lib/edit-lock";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import { FileManagerDialogs } from "./FileManagerDialogs.tsx";
@@ -556,6 +559,31 @@ function FileManagerContent({
 
   const nativeDrag = useNativeDragOut(sshSessionId || "");
   const nativeDragStarted = useRef(false);
+  const [dirSizes, setDirSizes] = useState<Record<string, number | null>>({});
+
+  // Folder sizes arrive in the background; undefined = pending, null = unavailable.
+  useEffect(() => {
+    setDirSizes({});
+    if (!sshSessionId || isFtp) return;
+    const dirs = files.filter((f) => f.type === "directory").map((f) => f.path);
+    if (dirs.length === 0) return;
+    let cancelled = false;
+    const chunks: string[][] = [];
+    for (let i = 0; i < dirs.length; i += 10)
+      chunks.push(dirs.slice(i, i + 10));
+    void runWithConcurrency(chunks, 2, async (chunk) => {
+      const sizes = await getDirectorySizes(sshSessionId, chunk).catch(
+        () => ({}) as Record<string, number>,
+      );
+      const settled = Object.fromEntries(
+        chunk.map((p) => [p, sizes[p] ?? null]),
+      );
+      if (!cancelled) setDirSizes((prev) => ({ ...prev, ...settled }));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [files, sshSessionId, isFtp]);
 
   const startKeepalive = useCallback(() => {
     if (!sshSessionId) return;
@@ -723,9 +751,19 @@ function FileManagerContent({
   const handleFileDragStart = useCallback(
     (files: FileItem[]) => {
       nativeDragStarted.current = nativeDrag.start(files);
+      if (nativeDragStarted.current) {
+        // Cancelled HTML5 drags get no dragend, so clean up on a timer.
+        systemDrag.cancelDragToSystem();
+        setTimeout(() => nativeDrag.cleanup(), 120000);
+      }
+      return nativeDragStarted.current;
     },
-    [nativeDrag],
+    [nativeDrag, systemDrag],
   );
+
+  const localTransfersRef = useRef<{
+    downloadRemoteItems: (items: FileItem[], dir: string) => Promise<void>;
+  } | null>(null);
 
   const handleFileDragEnd = useCallback(
     (e: DragEvent, draggedFiles: FileItem[]) => {
@@ -747,18 +785,29 @@ function FileManagerContent({
           return;
         }
 
-        systemDrag.startDragToSystem(draggedFiles, {
-          enableToast: true,
-          onSuccess: () => {
-            clearSelection();
-          },
-        });
-        systemDrag.handleDragEnd(e);
+        // Frame plugins can't start an OS drag, so a drop outside saves to
+        // the desktop's Downloads folder (files, folders, any size).
+        void getLocalHome()
+          .then(({ home, separator }) => {
+            toast.info(t("fileManager.dragOutDownloading"));
+            return localTransfersRef.current!.downloadRemoteItems(
+              draggedFiles,
+              `${home}${separator}Downloads`,
+            );
+          })
+          .then(() => clearSelection())
+          .catch(() => {
+            systemDrag.startDragToSystem(draggedFiles, {
+              enableToast: true,
+              onSuccess: () => clearSelection(),
+            });
+            systemDrag.handleDragEnd(e);
+          });
       } else {
         systemDrag.cancelDragToSystem();
       }
     },
-    [systemDrag, nativeDrag, clearSelection],
+    [systemDrag, nativeDrag, clearSelection, t],
   );
 
   const isConnectingRef = useRef(false);
@@ -1383,6 +1432,8 @@ function FileManagerContent({
     },
     onLocalChanged: () => setLocalPaneRefreshToken((prev) => prev + 1),
   });
+
+  localTransfersRef.current = localTransfers;
 
   // Entries dragged from the local pane onto the remote grid (or onto one of
   // its folders) upload into that folder, preserving directory structure.
@@ -3643,6 +3694,32 @@ function FileManagerContent({
     }
   }
 
+  function handleOpenProperties(file: FileItem) {
+    if (!sshSessionId) {
+      toast.error(t("fileManager.noSSHConnection"));
+      return;
+    }
+    openWindow({
+      title: file.name,
+      x: 100,
+      y: 80,
+      width: 460,
+      height: 420,
+      isMaximized: false,
+      isMinimized: false,
+      component: (windowId: string) => (
+        <PropertiesWindow
+          windowId={windowId}
+          file={file}
+          sshSessionId={sshSessionId}
+          initialX={100}
+          initialY={80}
+          onChangePermissions={handleOpenPermissionsDialog}
+        />
+      ),
+    });
+  }
+
   function handleFileDiff(file1: FileItem, file2: FileItem) {
     if (file1.type !== "file" || file2.type !== "file") {
       toast.error(t("fileManager.canOnlyCompareFiles"));
@@ -3942,8 +4019,8 @@ function FileManagerContent({
   }, [sortBy, sortOrder]);
 
   const filteredFiles = useMemo(
-    () => filterAndSortFiles(files, searchQuery, sortBy, sortOrder),
-    [files, searchQuery, sortBy, sortOrder],
+    () => filterAndSortFiles(files, searchQuery, sortBy, sortOrder, dirSizes),
+    [files, searchQuery, sortBy, sortOrder, dirSizes],
   );
 
   if (!currentHost) {
@@ -4208,6 +4285,7 @@ function FileManagerContent({
                 onFileDrop={handleFileDrop}
                 onFileDiff={handleFileDiff}
                 onSystemPrefetch={nativeDrag.prefetch}
+                dirSizes={dirSizes}
                 onSystemDragStart={handleFileDragStart}
                 onSystemDragEnd={handleFileDragEnd}
                 createIntent={createIntent}
@@ -4267,7 +4345,7 @@ function FileManagerContent({
                 onAddShortcut={handleAddShortcut}
                 isPinned={isPinnedFile}
                 currentPath={currentPath}
-                onProperties={isFtp ? undefined : handleOpenPermissionsDialog}
+                onProperties={isFtp ? undefined : handleOpenProperties}
                 onExtractArchive={isFtp ? undefined : handleExtractArchive}
                 onCompress={isFtp ? undefined : handleOpenCompressDialog}
                 onCopyPath={handleCopyPath}

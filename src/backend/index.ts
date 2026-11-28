@@ -39,6 +39,7 @@ import { registerFileContentRoutes } from "./content-routes.js";
 import { registerFileOperationRoutes } from "./operation-routes.js";
 import { registerFileDownloadRoutes } from "./download-routes.js";
 import { registerFileActionRoutes } from "./action-routes.js";
+import { registerPropertiesRoutes } from "./properties-routes.js";
 import {
   buildExtractCommand,
   friendlyExtractError,
@@ -1753,6 +1754,7 @@ export async function activate(ctx: PluginContext) {
     scheduleSessionCleanup,
     verifySessionOwnership,
   });
+  registerPropertiesRoutes(app, { ctx, sshSessions, verifySessionOwnership });
   registerFileActionRoutes(app, {
     ctx,
     sshSessions,
